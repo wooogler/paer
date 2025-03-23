@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(16,16) rotate(-20) translate(-16,-16)">
+    <!-- Pear Body -->
+    <path d="M16 4C13 4 12 6 12 7C12 8 13 9 16 9C19 9 20 8 20 7C20 6 19 4 16 4Z" fill="#4ADE80"/>
+    <path d="M16 8C11 8 6 12 6 19C6 26 10 30 16 30C22 30 26 26 26 19C26 12 21 8 16 8Z" fill="#EAB308"/>
+    
+    <!-- Leaf -->
+    <path d="M16 4C16 4 17 2 19 2C21 2 21 4 21 4C21 4 19 5 16 4Z" fill="#4ADE80"/>
+  </g>
+</svg> 
