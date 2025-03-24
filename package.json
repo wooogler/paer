@@ -2,39 +2,20 @@
   "name": "paer",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "description": "모노레포 프로젝트 - 프론트엔드와 백엔드",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@minoru/react-dnd-treeview": "^3.5.0",
-    "@tailwindcss/vite": "^4.0.15",
-    "@types/uuid": "^10.0.0",
-    "immer": "^10.1.1",
-    "react": "^19.0.0",
-    "react-arborist": "^3.4.3",
-    "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "^19.0.0",
-    "tailwindcss": "^4.0.15",
-    "uuid": "^11.1.0",
-    "zustand": "^5.0.3"
+    "dev:client": "pnpm --filter paer-client run dev",
+    "dev:server": "pnpm --filter paer-server run dev",
+    "dev": "concurrently --kill-others-on-fail \"pnpm run dev:client\" \"pnpm run dev:server\"",
+    "build:client": "pnpm --filter paer-client run build",
+    "build:server": "pnpm --filter paer-server run build",
+    "build": "pnpm -r run build",
+    "start": "pnpm --filter paer-server run start",
+    "lint": "pnpm -r run lint",
+    "test": "pnpm -r run test",
+    "clean": "pnpm -r exec rm -rf node_modules && rm -rf node_modules"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
-    "@types/node": "^22.13.11",
-    "@types/react": "^19.0.12",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.21.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^15.15.0",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.24.1",
-    "vite": "^6.2.0"
+    "concurrently": "^8.2.2"
   }
 }
