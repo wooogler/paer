@@ -3,11 +3,15 @@ import Structure from "./Structure";
 import Editor from "./Editor";
 import Pane from "./layout/Pane";
 import ToggleSwitch from "./ui/ToggleSwitch";
+import Button from "./ui/Button";
 import ChatInterface from "./chat/ChatInterface";
 import { useAppStore } from "../store/useAppStore";
+import { useChatStore } from "../store/useChatStore";
+import { readChatHistory } from "../utils/chatStorage";
 
 const Layout: React.FC = () => {
   const { displayMode, setDisplayMode } = useAppStore();
+  const { addMessage } = useChatStore();
 
   return (
     <div className="flex h-screen w-screen bg-white text-gray-800">
@@ -31,8 +35,24 @@ const Layout: React.FC = () => {
       <Pane title="Editor" width="45%">
         <Editor />
       </Pane>
-
-      <Pane title="AI Chat" width="25%" isLast>
+      
+      <Pane
+        title="AI Chat"
+        width="25%"
+        isLast
+        rightContent={
+          <Button
+            onChange={(checked) => {
+              if (checked) {
+                const chatHistory = readChatHistory();
+                chatHistory.forEach(({ role, content }) => {
+                  addMessage(content, role);
+                });
+              }
+            }}
+          />
+        }
+      >
         <div className="h-full">
           <ChatInterface />
         </div>

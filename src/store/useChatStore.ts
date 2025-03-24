@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ChatMessage } from "../types/chat";
 import { v4 as uuidv4 } from "uuid";
+import { readChatHistory, writeChatHistory } from "../utils/chatStorage";
 
 interface ChatStore {
   messages: ChatMessage[];
@@ -60,9 +61,11 @@ export const useChatStore = create<ChatStore>((set) => ({
       timestamp: Date.now(),
     };
 
-    set((state) => ({
-      messages: [...state.messages, newMessage],
-    }));
+    set((state) => {
+      const updatedMessages = [...state.messages, newMessage];
+      writeChatHistory(updatedMessages);
+      return { messages: updatedMessages };
+    });
 
     // Auto-respond to user messages
     if (role === "user") {
@@ -75,12 +78,17 @@ export const useChatStore = create<ChatStore>((set) => ({
           timestamp: Date.now(),
         };
 
-        set((state) => ({
-          messages: [...state.messages, systemResponse],
-        }));
+        set((state) => {
+          const updatedMessages = [...state.messages, systemResponse];
+          writeChatHistory(updatedMessages);
+          return { messages: updatedMessages };
+        });
       }, 1000);
     }
   },
 
-  clearMessages: () => set({ messages: [] }),
+  clearMessages: () => {
+    set({ messages: [] });
+    writeChatHistory([]);
+  },
 }));
