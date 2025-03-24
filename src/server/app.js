@@ -3,13 +3,6 @@ import dotenv from 'dotenv';
 import OpenAI from "openai";
 import fs from 'fs';
 
-const TITLE = 1;
-const BLOCK_ID = 2;
-const summary = 3;
-const INTENT = 4;
-const TYPE = 5;
-const CONTENT = 6;
-
 // Basic express server setup
 
 const app = express();
@@ -32,7 +25,9 @@ app.get('/test', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
-  getBlockContent("1.1.1.1","intent");
+//   test calls
+//   getBlockContent("1.1.1.1","intent");
+//   updateBlockContent("1.1.1.2","content","This is a test content");
 });
 
 // Handles request body
@@ -55,34 +50,53 @@ async function getTestResponse() {
 // Formats the response
 
 // Operates on block contents
-function getBlockContent(blockId, key) {
+function getBlockValue(blockId, key) {
     const [secId, subsecId=0, parId=0, senId=0] = blockId.split('.').map(Number);
 
-    fs.openSync(`./data/testContent.json`, {'utf8'})
+    const data = fs.readFileSync('./data/testContent.json');
+    const obj= JSON.parse(data);
 
-    const obj = JSON.parse();
+    // let data = JSON.stringify(punishments);
+    // fs.writeFileSync('punishmenthistory.json', data);
+
     let toGet = returnTargetBlock(obj, secId, subsecId, parId, senId);
     return toGet[key];
 }
 
+function updateBlockValue(blockId, key, valueToUpdate) {
+    const [secId, subsecId=0, parId=0, senId=0] = blockId.split('.').map(Number);
+
+    const data = fs.readFileSync('./data/testContent.json');
+    const obj= JSON.parse(data);
+
+    let toUpdate = returnTargetBlock(obj, secId, subsecId, parId, senId);
+    toUpdate[key] = valueToUpdate;
+    
+    let updatedData = JSON.stringify(obj);
+    fs.writeFileSync('./data/testContent.json', updatedData);
+
+    return;
+}
+
 function returnTargetBlock(obj, secId, subsecId, parId, senId) {
     let toGet = obj;
+    // return toGet;
     if (secId == 0) {
         return toGet;
     }
-    toGet = toGet["contents"][secId - 1];
+    toGet = toGet["content"][secId - 1];
     if (subsecId == 0) {
         return toGet;
     }
-    toGet = toGet["contents"][subsecId - 1];
+    toGet = toGet["content"][subsecId - 1];
     if (parId == 0) {
         return toGet;
     }
-    toGet = toGet["contents"][parId - 1];
+    toGet = toGet["content"][parId - 1];
     if (senId == 0) {
         return toGet;
     }
-    toGet = toGet["contents"][senId - 1];
+    toGet = toGet["content"][senId - 1];
     return toGet;
 }
 
