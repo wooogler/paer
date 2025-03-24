@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Content } from "../../types/content";
 import { useContentStore } from "../../store/useContentStore";
+import { useAppStore } from "../../store/useAppStore";
 
 interface TextEditorProps {
   content: Content;
@@ -12,6 +13,7 @@ interface TextEditorProps {
 const TextEditor: React.FC<TextEditorProps> = React.memo(
   ({ content, path, index, level = 0 }) => {
     const { updateContent } = useContentStore();
+    const { showHierarchy } = useAppStore();
 
     // For sentence type, content contains the actual text
     const handleChange = useCallback(
@@ -87,7 +89,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // Create vertical level indicator lines
     const renderLevelLines = () => {
-      if (level === 0) return null;
+      if (level === 0 || !showHierarchy) return null;
 
       const lines = [];
       for (let i = 0; i < level; i++) {
@@ -136,7 +138,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         {/* Vertical level indicator lines */}
         {renderLevelLines()}
 
-        <div style={{ paddingLeft: `${level * 16 + 16}px` }}>
+        <div
+          style={{ paddingLeft: showHierarchy ? `${level * 16 + 16}px` : "0" }}
+        >
           <div
             className={`flex flex-col gap-1 p-2 rounded-t-lg ${bgColorClass}`}
           >

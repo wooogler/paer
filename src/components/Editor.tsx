@@ -1,11 +1,13 @@
 import React from "react";
 import { useContentStore } from "../store/useContentStore";
+import { useAppStore } from "../store/useAppStore";
 import HierarchyTitle from "./editor/HierarchyTitle";
 import ParagraphEditor from "./editor/ParagraphEditor";
 import ContentRenderer from "./editor/ContentRenderer";
 
 const Editor: React.FC = () => {
   const { selectedContent, selectedPath, parentContents } = useContentStore();
+  const { showHierarchy } = useAppStore();
 
   if (!selectedContent || !selectedPath) {
     return (
@@ -27,21 +29,23 @@ const Editor: React.FC = () => {
   return (
     <div className="p-5">
       {/* Parent hierarchy information */}
-      <div className="mb-4">
-        {parentContents.map((content, index) => (
+      {showHierarchy && (
+        <div className="mb-4">
+          {parentContents.map((content, index) => (
+            <HierarchyTitle
+              key={index}
+              content={content}
+              level={index}
+              isCurrentSelected={false}
+            />
+          ))}
           <HierarchyTitle
-            key={index}
-            content={content}
-            level={index}
-            isCurrentSelected={false}
+            content={selectedContent}
+            level={parentContents.length}
+            isCurrentSelected={true}
           />
-        ))}
-        <HierarchyTitle
-          content={selectedContent}
-          level={parentContents.length}
-          isCurrentSelected={true}
-        />
-      </div>
+        </div>
+      )}
 
       <div className="mt-4">
         {selectedContent.type === "paragraph" ? (

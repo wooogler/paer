@@ -10,7 +10,8 @@ import { useChatStore } from "../store/useChatStore";
 import { readChatHistory } from "../utils/chatStorage";
 
 const Layout: React.FC = () => {
-  const { displayMode, setDisplayMode } = useAppStore();
+  const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
+    useAppStore();
   const { addMessage } = useChatStore();
 
   return (
@@ -32,10 +33,21 @@ const Layout: React.FC = () => {
         <Structure displayMode={displayMode} />
       </Pane>
 
-      <Pane title="Editor" width="45%">
+      <Pane
+        title="Editor"
+        width="45%"
+        rightContent={
+          <ToggleSwitch
+            checked={showHierarchy}
+            onChange={setShowHierarchy}
+            leftLabel="Sentence Only"
+            rightLabel="Show Hierarchy"
+          />
+        }
+      >
         <Editor />
       </Pane>
-      
+
       <Pane
         title="AI Chat"
         width="25%"
