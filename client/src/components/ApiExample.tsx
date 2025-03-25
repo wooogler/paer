@@ -19,8 +19,8 @@ const ApiExample: React.FC = () => {
         setData(response.data.data);
         setError(null);
       } catch (err) {
-        console.error("API 호출 오류:", err);
-        setError("데이터를 가져오는 중 오류가 발생했습니다.");
+        console.error("API call error:", err);
+        setError("An error occurred while fetching data.");
       } finally {
         setLoading(false);
       }
@@ -30,7 +30,7 @@ const ApiExample: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="p-4">데이터를 불러오는 중...</div>;
+    return <div className="p-4">Loading data...</div>;
   }
 
   if (error) {
@@ -39,7 +39,7 @@ const ApiExample: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">백엔드 API 데이터</h2>
+      <h2 className="text-xl font-bold mb-4">Backend API Data</h2>
       <ul className="list-disc pl-5">
         {data.map((item) => (
           <li key={item.id} className="mb-2">

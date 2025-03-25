@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { ChatMessage } from "../types/chat";
 import { v4 as uuidv4 } from "uuid";
-import { readChatHistory, writeChatHistory } from "../utils/chatStorage";
+import { writeChatHistory } from "../utils/chatStorage";
 
 interface ChatStore {
   messages: ChatMessage[];

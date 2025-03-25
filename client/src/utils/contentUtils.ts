@@ -1,4 +1,4 @@
-import { ContentType } from "../types/content";
+import { ContentType } from "@paer/shared";
 
 // Colors by content type
 export const getTypeColor = (type: ContentType) => {

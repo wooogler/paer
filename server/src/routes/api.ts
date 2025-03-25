@@ -1,17 +1,35 @@
-import express from "express";
+import {
+  FastifyInstance,
+  FastifyPluginAsync,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
+import { PaperController } from "../controllers/paperController";
 
-const router = express.Router();
+// Define routes as Fastify plugin
+const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
+  const paperController = new PaperController();
 
-// GET /api/data
-router.get("/data", (req, res) => {
-  res.json({
-    message: "API 데이터 응답 성공",
-    data: [
-      { id: 1, name: "항목 1" },
-      { id: 2, name: "항목 2" },
-      { id: 3, name: "항목 3" },
-    ],
-  });
-});
+  // GET /api/paper
+  fastify.get(
+    "/paper",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      return paperController.getPaper(request, reply);
+    }
+  );
 
-export default router;
+  // PATCH /api/paper/sentence
+  fastify.patch(
+    "/paper/sentence",
+    async (
+      request: FastifyRequest<{
+        Body: { blockId: string; content: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.updateSentence(request, reply);
+    }
+  );
+};
+
+export default apiRoutes;

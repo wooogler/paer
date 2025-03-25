@@ -1,5 +1,5 @@
 import React from "react";
-import { Content } from "../../types/content";
+import { Content } from "@paer/shared";
 import { useAppStore } from "../../store/useAppStore";
 import TextEditor from "./TextEditor";
 

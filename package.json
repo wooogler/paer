@@ -3,12 +3,19 @@
   "private": true,
   "version": "0.0.0",
   "description": "모노레포 프로젝트 - 프론트엔드와 백엔드",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
   "scripts": {
     "dev:client": "pnpm --filter paer-client run dev",
     "dev:server": "pnpm --filter paer-server run dev",
+    "dev:shared": "pnpm --filter @paer/shared run dev",
     "dev": "concurrently --kill-others-on-fail \"pnpm run dev:client\" \"pnpm run dev:server\"",
     "build:client": "pnpm --filter paer-client run build",
     "build:server": "pnpm --filter paer-server run build",
+    "build:shared": "pnpm --filter @paer/shared run build",
     "build": "pnpm -r run build",
     "start": "pnpm --filter paer-server run start",
     "lint": "pnpm -r run lint",

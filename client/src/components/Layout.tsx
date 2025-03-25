@@ -8,14 +8,37 @@ import ChatInterface from "./chat/ChatInterface";
 import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
 import { readChatHistory } from "../utils/chatStorage";
+import { usePaperQuery } from "../hooks/usePaperQuery";
 
 const Layout: React.FC = () => {
   const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
     useAppStore();
   const { addMessage } = useChatStore();
 
+  // Fetching data from server using React Query
+  const { isLoading, error } = usePaperQuery();
+
   return (
     <div className="flex h-screen w-screen bg-white text-gray-800">
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+            <p className="text-lg font-medium">Loading data...</p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+            <p className="text-lg font-medium text-red-600">
+              Data loading failed
+            </p>
+            <p className="text-sm text-gray-600">{(error as Error).message}</p>
+          </div>
+        </div>
+      )}
+
       <Pane
         title="Structure"
         width="30%"

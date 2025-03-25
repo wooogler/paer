@@ -1,20 +1,24 @@
 import { create } from "zustand";
-import { Content } from "../types/content";
-import testContent from "../data/testContent.json";
+import { Content, Paper } from "@paer/shared";
 
-// Initial test content is now imported from JSON file
-const typedTestContent = testContent as Content;
+const initialContent: Paper = {
+  title: "New Paper",
+  summary: "",
+  intent: "",
+  type: "paper",
+  content: [],
+};
 
 interface ContentState {
-  content: Content;
+  content: Paper;
   selectedContent: Content | null;
   selectedPath: number[] | null;
   parentContents: Content[]; // Parent contents of the selected content
 
   // Actions
-  setContent: (content: Content) => void;
+  setContent: (content: Paper) => void;
   setSelectedContent: (content: Content | null, path: number[] | null) => void;
-  updateContent: (path: number[], updatedContent: Partial<Content>) => void;
+  updateContent: (blockId: string, updatedContent: Partial<Content>) => void;
   addContent: (path: number[], newContent: Content) => void;
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
@@ -22,7 +26,7 @@ interface ContentState {
 
 export const useContentStore = create<ContentState>((set, get) => ({
   // Initial states
-  content: typedTestContent, // Using typed test content
+  content: initialContent,
   selectedContent: null,
   selectedPath: null,
   parentContents: [],
@@ -45,7 +49,7 @@ export const useContentStore = create<ContentState>((set, get) => ({
 
     // Find parent contents based on path
     if (path.length > 0) {
-      let current = rootContent;
+      let current: Content = rootContent;
       parentContents.push(current); // paper level
 
       const currentPath: number[] = [];
@@ -53,8 +57,9 @@ export const useContentStore = create<ContentState>((set, get) => ({
         currentPath.push(path[i]);
         if (!current.content || typeof current.content === "string") break;
 
-        current = current.content[path[i]];
-        if (current) {
+        const nextContent = current.content[path[i]];
+        if (nextContent) {
+          current = nextContent;
           parentContents.push(current); // section or subsection level
         }
       }
@@ -70,96 +75,96 @@ export const useContentStore = create<ContentState>((set, get) => ({
   // Get content by path
   getContentByPath: (path: number[]) => {
     const state = get();
-    let current = state.content;
+    if (path.length === 0) return state.content as Content;
+
+    let current: Content = state.content;
 
     for (let i = 0; i < path.length; i++) {
       if (!current.content || typeof current.content === "string") return null;
-      current = current.content[path[i]];
+      const nextContent = current.content[path[i]];
+      if (!nextContent) return null;
+      current = nextContent;
     }
 
-    return current || null;
+    return current;
   },
 
-  // Update content at specific path
-  updateContent: (path: number[], updatedContent: Partial<Content>) =>
+  // Update content by blockId
+  updateContent: (blockId: string, updatedContent: Partial<Content>) =>
     set((state) => {
-      const newContent = JSON.parse(JSON.stringify(state.content)); // Deep copy
-      let current = newContent;
+      const newContent = JSON.parse(JSON.stringify(state.content)) as Paper; // Deep copy
 
-      // Navigate to the target path except last index
-      for (let i = 0; i < path.length - 1; i++) {
-        if (!current.content || typeof current.content === "string")
-          return state;
-        current = current.content[path[i]];
-      }
+      // Helper function to recursively find and update content by blockId
+      const findAndUpdateContent = (
+        content: Content | Paper,
+        parent: Content | null = null,
+        parents: Content[] = []
+      ): {
+        found: boolean;
+        updatedContent: Content | null;
+        updatedParents: Content[];
+      } => {
+        // Check if current content has the matching blockId
+        if ("block-id" in content && content["block-id"] === blockId) {
+          // Update the content object in place
+          Object.assign(content, updatedContent);
+          return {
+            found: true,
+            updatedContent: content as Content,
+            updatedParents: [...parents],
+          };
+        }
 
-      // Update the last index content
-      if (!current.content || typeof current.content === "string") return state;
+        // If content has children, search recursively
+        if (content.content && Array.isArray(content.content)) {
+          for (let i = 0; i < content.content.length; i++) {
+            const child = content.content[i];
+            const result = findAndUpdateContent(child, content as Content, [
+              ...parents,
+              content as Content,
+            ]);
 
-      const lastIndex = path[path.length - 1];
-      current.content[lastIndex] = {
-        ...current.content[lastIndex],
-        ...updatedContent,
-      };
-
-      // Update selected content and parent contents
-      let updatedSelectedContent = state.selectedContent;
-      let updatedParentContents = [...state.parentContents];
-
-      // Check if the updated path matches the selected path
-      if (state.selectedPath) {
-        const selectedPath = state.selectedPath;
-        const updatePath = [...path];
-        updatePath.pop(); // Remove last index
-
-        // If the updated path affects the selected path
-        if (
-          selectedPath.length > 0 &&
-          selectedPath.join(",").startsWith(updatePath.join(","))
-        ) {
-          // Search entire content to reset
-          let selectedCurrent = newContent;
-          updatedParentContents = [newContent]; // Add root (paper) level
-
-          const currentPath: number[] = [];
-          for (let i = 0; i < selectedPath.length; i++) {
-            if (
-              !selectedCurrent.content ||
-              typeof selectedCurrent.content === "string"
-            )
-              break;
-
-            if (i < selectedPath.length - 1) {
-              currentPath.push(selectedPath[i]);
-              selectedCurrent = selectedCurrent.content[selectedPath[i]];
-              if (selectedCurrent) {
-                updatedParentContents.push(selectedCurrent);
-              }
-            } else {
-              updatedSelectedContent = selectedCurrent.content[selectedPath[i]];
+            if (result.found) {
+              // Child was already updated in-place in the recursive call
+              return result;
             }
           }
         }
+
+        return { found: false, updatedContent: null, updatedParents: [] };
+      };
+
+      const result = findAndUpdateContent(newContent);
+
+      if (!result.found) {
+        return state; // No content found with the given blockId
       }
 
       return {
         content: newContent,
-        selectedContent: updatedSelectedContent,
-        parentContents: updatedParentContents,
+        selectedContent:
+          state.selectedContent && state.selectedContent["block-id"] === blockId
+            ? { ...state.selectedContent, ...updatedContent }
+            : state.selectedContent,
+        parentContents: state.selectedPath
+          ? result.updatedParents
+          : state.parentContents,
       };
     }),
 
   // Add new content at specific path
   addContent: (path: number[], newContent: Content) =>
     set((state) => {
-      const content = { ...state.content };
-      let current = content;
+      const contentCopy = JSON.parse(JSON.stringify(state.content)) as Paper;
+      let current: Content = contentCopy;
 
       // Search path
       for (let i = 0; i < path.length; i++) {
         if (!current.content || typeof current.content === "string")
           return state;
-        current = current.content[path[i]];
+        const nextContent = current.content[path[i]];
+        if (!nextContent) return state;
+        current = nextContent;
       }
 
       // Add new content
@@ -171,20 +176,22 @@ export const useContentStore = create<ContentState>((set, get) => ({
 
       current.content.push(newContent);
 
-      return { content };
+      return { content: contentCopy };
     }),
 
   // Remove content at specific path
   removeContent: (path: number[]) =>
     set((state) => {
-      const content = { ...state.content };
-      let current = content;
+      const contentCopy = JSON.parse(JSON.stringify(state.content)) as Paper;
+      let current: Content = contentCopy;
 
       // Navigate to the target path except last index
       for (let i = 0; i < path.length - 1; i++) {
         if (!current.content || typeof current.content === "string")
           return state;
-        current = current.content[path[i]];
+        const nextContent = current.content[path[i]];
+        if (!nextContent) return state;
+        current = nextContent;
       }
 
       // Remove the last index content
@@ -193,6 +200,6 @@ export const useContentStore = create<ContentState>((set, get) => ({
       const lastIndex = path[path.length - 1];
       current.content.splice(lastIndex, 1);
 
-      return { content };
+      return { content: contentCopy };
     }),
 }));

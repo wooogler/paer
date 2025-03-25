@@ -1,6 +1,6 @@
 import React from "react";
 import { useContentStore } from "../../store/useContentStore";
-import { Content } from "../../types/content";
+import { Content } from "@paer/shared";
 import { isSelectableContent } from "../../utils/contentUtils";
 
 interface TreeItemProps {

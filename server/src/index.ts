@@ -1,18 +1,20 @@
-import express from "express";
-import cors from "cors";
+import Fastify from "fastify";
+import cors from "@fastify/cors";
 import path from "path";
 import dotenv from "dotenv";
-import apiRouter from "./routes/api";
+import apiRoutes from "./routes/api";
 import OpenAI from "openai";
 import fs from "fs";
 
-// Basic express server setup
-const app = express();
-const port = process.env.PORT || 3000;
+// Create Fastify instance
+const fastify = Fastify({ logger: true });
+const port = Number(process.env.PORT || 3000);
 
 // Middleware setup
-app.use(cors());
-app.use(express.json());
+fastify.register(cors, {
+  origin: true, // Allow all origins (for development)
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+});
 
 // Set path to .env file
 dotenv.config({ path: path.join(__dirname, "../../.env") });
@@ -21,42 +23,44 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// API routes
-app.use("/api", apiRouter);
+// Register API routes
+fastify.register(apiRoutes, { prefix: "/api" });
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Server is running" });
+// Add health check endpoint
+fastify.get("/api/health", async (request, reply) => {
+  return { status: "ok", message: "Server is running" };
 });
 
-// Serve static files for frontend (production environment)
+// Handle static files (production environment)
 if (process.env.NODE_ENV === "production") {
-  const clientPath = path.join(__dirname, "../../client/dist");
-  app.use(express.static(clientPath));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(clientPath, "index.html"));
+  fastify.register(import("@fastify/static"), {
+    root: path.join(__dirname, "../../client/dist"),
+    prefix: "/",
+  });
+
+  fastify.get("*", async (request, reply) => {
+    await reply.sendFile("index.html");
+    return reply;
   });
 }
 
-// Start the server with better error handling
-const server = app
-  .listen(port, () => {
+// Start the server
+const start = async () => {
+  try {
+    await fastify.listen({ port, host: "0.0.0.0" });
     console.log(`Server is running on port ${port}`);
-  })
-  .on("error", (err: any) => {
-    if (err.code === "EADDRINUSE") {
-      console.error(
-        `Port ${port} is already in use. Please use a different port.`
-      );
-      process.exit(1);
-    } else {
-      console.error("Server error:", err);
-    }
-  });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
 
-// Handle graceful shutdown
+start();
+
+// Graceful shutdown handling
 process.on("SIGINT", () => {
   console.log("SIGINT signal received: closing HTTP server");
-  server.close(() => {
+  fastify.close(() => {
     console.log("HTTP server closed");
     process.exit(0);
   });
@@ -64,13 +68,13 @@ process.on("SIGINT", () => {
 
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
-  server.close(() => {
+  fastify.close(() => {
     console.log("HTTP server closed");
     process.exit(0);
   });
 });
 
-// Operates on block contents
+// Block data processing functions
 function getBlockValue(blockId: string, key: string) {
   const [secId, subsecId = 0, parId = 0, senId = 0] = blockId
     .split(".")

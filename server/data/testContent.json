@@ -37,7 +37,7 @@
                   "summary": "Writers need better organization tools",
                   "intent": "To identify the need",
                   "type": "sentence",
-                  "content": "Professional writers and researchers need better organization tools to improve their workflow and document quality."
+                  "content": "Professional writers and researchers need better organization tools to improve their workflow and document quality. "
                 }
               ]
             },
@@ -59,7 +59,7 @@
                   "summary": "Need for semantic structure",
                   "intent": "To explain the need for better structure",
                   "type": "sentence",
-                  "content": "There is a growing need for tools that understand and support the semantic structure of documents, beyond simple formatting and outlining."
+                  "content": "There is a growing need for tools that understand and support the semantic structure of documents, beyond simple formatting and outlining. "
                 }
               ]
             }
@@ -83,7 +83,7 @@
                   "summary": "Documents lack logical flow",
                   "intent": "To describe coherence problems",
                   "type": "sentence",
-                  "content": "Many documents suffer from a lack of logical flow and connection between different sections and ideas."
+                  "content": "Many documents suffer from a lack of logical flow and connection between different sections and ideas. hello"
                 },
                 {
                   "block-id": "1.2.1.2",

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Content } from "../../types/content";
+import { Content } from "@paer/shared";
 
 interface HierarchyTitleProps {
   content: Content;

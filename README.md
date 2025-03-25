@@ -1,13 +1,53 @@
-# Paer
+# Paer Project
 
-프론트엔드와 백엔드가 통합된 모노레포 프로젝트
+A monorepo project containing both frontend and backend.
 
-## 프로젝트 구조
+## Setup
+
+1. Clone the repository
+2. Install dependencies with `pnpm install`
+3. Copy `.env.example` to `.env` and configure your environment variables
 
 ```
-/paer
-  /client         # React 프론트엔드
-  /server         # Express 백엔드
+# Copy environment variables
+cp .env.example .env
+```
+
+4. Edit the `.env` file with your configuration
+
+## Environment Variables
+
+All environment variables for both client and server are managed in the root `.env` file:
+
+### Server Variables
+
+- `PORT` - The port the server will run on (default: 3000)
+- `NODE_ENV` - Environment (development, production)
+- `OPENAI_API_KEY` - Your OpenAI API key
+
+### Client Variables
+
+- `VITE_API_URL` - API URL for the client (default: http://localhost:3000/api)
+- `VITE_NODE_ENV` - Client environment
+
+## Development
+
+Start the development server:
+
+```
+pnpm dev
+```
+
+This will start both the client and server in development mode.
+
+## Project Structure
+
+```
+/
+├── client/         # Frontend React application
+├── server/         # Backend Fastify server
+├── shared/         # Shared types and utilities
+└── .env            # Environment variables for both client and server
 ```
 
 ## 설치 방법
