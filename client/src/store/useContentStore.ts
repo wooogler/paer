@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { Content, Paper } from "@paer/shared";
 
 const initialContent: Paper = {
@@ -19,187 +20,319 @@ interface ContentState {
   setContent: (content: Paper) => void;
   setSelectedContent: (content: Content | null, path: number[] | null) => void;
   updateContent: (blockId: string, updatedContent: Partial<Content>) => void;
-  addContent: (path: number[], newContent: Content) => void;
+  addContent: (
+    path: number[],
+    newContent: Content,
+    insertIndex?: number
+  ) => void;
+  addSentence: (blockId: string | null) => void; // blockId가 null이면 맨 앞에 추가
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
 }
 
-export const useContentStore = create<ContentState>((set, get) => ({
-  // Initial states
-  content: initialContent,
-  selectedContent: null,
-  selectedPath: null,
-  parentContents: [],
+export const useContentStore = create<ContentState>()(
+  persist(
+    (set, get) => ({
+      // Initial states
+      content: initialContent,
+      selectedContent: null,
+      selectedPath: null,
+      parentContents: [],
 
-  // Actions
-  setContent: (content) => set({ content }),
+      // Actions
+      setContent: (content) => set({ content }),
 
-  // Set selected content and find parent contents
-  setSelectedContent: (content, path) => {
-    if (!content || !path) {
-      return set({
-        selectedContent: null,
-        selectedPath: null,
-        parentContents: [],
-      });
-    }
-
-    const rootContent = get().content;
-    const parentContents: Content[] = [];
-
-    // Find parent contents based on path
-    if (path.length > 0) {
-      let current: Content = rootContent;
-      parentContents.push(current); // paper level
-
-      const currentPath: number[] = [];
-      for (let i = 0; i < path.length - 1; i++) {
-        currentPath.push(path[i]);
-        if (!current.content || typeof current.content === "string") break;
-
-        const nextContent = current.content[path[i]];
-        if (nextContent) {
-          current = nextContent;
-          parentContents.push(current); // section or subsection level
-        }
-      }
-    }
-
-    return set({
-      selectedContent: content,
-      selectedPath: path,
-      parentContents,
-    });
-  },
-
-  // Get content by path
-  getContentByPath: (path: number[]) => {
-    const state = get();
-    if (path.length === 0) return state.content as Content;
-
-    let current: Content = state.content;
-
-    for (let i = 0; i < path.length; i++) {
-      if (!current.content || typeof current.content === "string") return null;
-      const nextContent = current.content[path[i]];
-      if (!nextContent) return null;
-      current = nextContent;
-    }
-
-    return current;
-  },
-
-  // Update content by blockId
-  updateContent: (blockId: string, updatedContent: Partial<Content>) =>
-    set((state) => {
-      const newContent = JSON.parse(JSON.stringify(state.content)) as Paper; // Deep copy
-
-      // Helper function to recursively find and update content by blockId
-      const findAndUpdateContent = (
-        content: Content | Paper,
-        parent: Content | null = null,
-        parents: Content[] = []
-      ): {
-        found: boolean;
-        updatedContent: Content | null;
-        updatedParents: Content[];
-      } => {
-        // Check if current content has the matching blockId
-        if ("block-id" in content && content["block-id"] === blockId) {
-          // Update the content object in place
-          Object.assign(content, updatedContent);
-          return {
-            found: true,
-            updatedContent: content as Content,
-            updatedParents: [...parents],
-          };
+      // Set selected content and find parent contents
+      setSelectedContent: (content, path) => {
+        if (!content || !path) {
+          return set({
+            selectedContent: null,
+            selectedPath: null,
+            parentContents: [],
+          });
         }
 
-        // If content has children, search recursively
-        if (content.content && Array.isArray(content.content)) {
-          for (let i = 0; i < content.content.length; i++) {
-            const child = content.content[i];
-            const result = findAndUpdateContent(child, content as Content, [
-              ...parents,
-              content as Content,
-            ]);
+        const rootContent = get().content;
+        const parentContents: Content[] = [];
 
-            if (result.found) {
-              // Child was already updated in-place in the recursive call
-              return result;
+        // Find parent contents based on path
+        if (path.length > 0) {
+          let current: Content = rootContent;
+          parentContents.push(current); // paper level
+
+          const currentPath: number[] = [];
+          for (let i = 0; i < path.length - 1; i++) {
+            currentPath.push(path[i]);
+            if (!current.content || typeof current.content === "string") break;
+
+            const nextContent = current.content[path[i]];
+            if (nextContent) {
+              current = nextContent;
+              parentContents.push(current); // section or subsection level
             }
           }
         }
 
-        return { found: false, updatedContent: null, updatedParents: [] };
-      };
+        return set({
+          selectedContent: content,
+          selectedPath: path,
+          parentContents,
+        });
+      },
 
-      const result = findAndUpdateContent(newContent);
+      // Get content by path
+      getContentByPath: (path: number[]) => {
+        const state = get();
+        if (path.length === 0) return state.content as Content;
 
-      if (!result.found) {
-        return state; // No content found with the given blockId
-      }
+        let current: Content = state.content;
 
-      return {
-        content: newContent,
-        selectedContent:
-          state.selectedContent && state.selectedContent["block-id"] === blockId
-            ? { ...state.selectedContent, ...updatedContent }
-            : state.selectedContent,
-        parentContents: state.selectedPath
-          ? result.updatedParents
-          : state.parentContents,
-      };
+        for (let i = 0; i < path.length; i++) {
+          if (!current.content || typeof current.content === "string")
+            return null;
+          const nextContent = current.content[path[i]];
+          if (!nextContent) return null;
+          current = nextContent;
+        }
+
+        return current;
+      },
+
+      // Update content by blockId
+      updateContent: (blockId: string, updatedContent: Partial<Content>) =>
+        set((state) => {
+          const newContent = JSON.parse(JSON.stringify(state.content)) as Paper; // Deep copy
+
+          // Helper function to recursively find and update content by blockId
+          const findAndUpdateContent = (
+            content: Content | Paper,
+            parent: Content | null = null,
+            parents: Content[] = []
+          ): {
+            found: boolean;
+            updatedContent: Content | null;
+            updatedParents: Content[];
+          } => {
+            // Check if current content has the matching blockId
+            if ("block-id" in content && content["block-id"] === blockId) {
+              // Update the content object in place
+              Object.assign(content, updatedContent);
+              return {
+                found: true,
+                updatedContent: content as Content,
+                updatedParents: [...parents],
+              };
+            }
+
+            // If content has children, search recursively
+            if (content.content && Array.isArray(content.content)) {
+              for (let i = 0; i < content.content.length; i++) {
+                const child = content.content[i];
+                const result = findAndUpdateContent(child, content as Content, [
+                  ...parents,
+                  content as Content,
+                ]);
+
+                if (result.found) {
+                  // Child was already updated in-place in the recursive call
+                  return result;
+                }
+              }
+            }
+
+            return { found: false, updatedContent: null, updatedParents: [] };
+          };
+
+          const result = findAndUpdateContent(newContent);
+
+          if (!result.found) {
+            return state; // No content found with the given blockId
+          }
+
+          return {
+            content: newContent,
+            selectedContent:
+              state.selectedContent &&
+              state.selectedContent["block-id"] === blockId
+                ? { ...state.selectedContent, ...updatedContent }
+                : state.selectedContent,
+            parentContents: state.selectedPath
+              ? result.updatedParents
+              : state.parentContents,
+          };
+        }),
+
+      // Add new content at specific path
+      addContent: (path: number[], newContent: Content, insertIndex?: number) =>
+        set((state) => {
+          const contentCopy = JSON.parse(
+            JSON.stringify(state.content)
+          ) as Paper;
+          let current: Content = contentCopy;
+
+          // Search path
+          for (let i = 0; i < path.length; i++) {
+            if (!current.content || typeof current.content === "string")
+              return state;
+            const nextContent = current.content[path[i]];
+            if (!nextContent) return state;
+            current = nextContent;
+          }
+
+          // Add new content
+          if (!current.content) {
+            current.content = [];
+          } else if (typeof current.content === "string") {
+            return state; // Cannot add to string
+          }
+
+          // If insertIndex is provided, insert at that position, otherwise push to the end
+          if (insertIndex !== undefined && Array.isArray(current.content)) {
+            // Ensure insertIndex is valid (between 0 and array length)
+            const validIndex = Math.max(
+              0,
+              Math.min(insertIndex, current.content.length)
+            );
+            current.content.splice(validIndex, 0, newContent);
+          } else {
+            current.content.push(newContent);
+          }
+
+          return {
+            content: contentCopy,
+            // If we're adding to the currently selected content, update the parentContents
+            parentContents:
+              state.selectedPath &&
+              path.join(",").startsWith(state.selectedPath.join(","))
+                ? [...state.parentContents]
+                : state.parentContents,
+          };
+        }),
+
+      // Remove content at specific path
+      removeContent: (path: number[]) =>
+        set((state) => {
+          const contentCopy = JSON.parse(
+            JSON.stringify(state.content)
+          ) as Paper;
+          let current: Content = contentCopy;
+
+          // Navigate to the target path except last index
+          for (let i = 0; i < path.length - 1; i++) {
+            if (!current.content || typeof current.content === "string")
+              return state;
+            const nextContent = current.content[path[i]];
+            if (!nextContent) return state;
+            current = nextContent;
+          }
+
+          // Remove the last index content
+          if (!current.content || typeof current.content === "string")
+            return state;
+
+          const lastIndex = path[path.length - 1];
+          current.content.splice(lastIndex, 1);
+
+          return { content: contentCopy };
+        }),
+
+      // Add sentence after the sentence with given blockId
+      addSentence: (blockId: string | null) =>
+        set((state) => {
+          const newContent = JSON.parse(JSON.stringify(state.content)) as Paper; // Deep copy
+
+          // Create a new empty sentence
+          const newSentence: Content = {
+            type: "sentence",
+            summary: "",
+            intent: "Provide additional information",
+            content: "",
+            "block-id": Date.now().toString(),
+          };
+
+          // If blockId is null, add to the beginning of selected paragraph
+          if (blockId === null && state.selectedContent && state.selectedPath) {
+            if (state.selectedContent.type === "paragraph") {
+              // Find the paragraph in our copy
+              let current: Content = newContent as Content;
+              for (let i = 0; i < state.selectedPath.length; i++) {
+                if (!current.content || typeof current.content === "string")
+                  return state;
+                current = current.content[state.selectedPath[i]];
+              }
+
+              // Add to the beginning of paragraph
+              if (!current.content) current.content = [];
+              if (Array.isArray(current.content)) {
+                current.content.unshift(newSentence);
+                return { content: newContent };
+              }
+            }
+            return state;
+          }
+
+          // Helper function to find the sentence and its parent
+          const findSentenceAndParent = (
+            content: Content | Paper,
+            parent: Content | null = null
+          ): {
+            found: boolean;
+            sentence: Content | null;
+            parent: Content | null;
+            index: number;
+          } => {
+            // Check if current content has the matching blockId
+            if ("block-id" in content && content["block-id"] === blockId) {
+              return {
+                found: true,
+                sentence: content as Content,
+                parent,
+                index: -1, // Will be set later if parent is found
+              };
+            }
+
+            // If content has children, search recursively
+            if (content.content && Array.isArray(content.content)) {
+              for (let i = 0; i < content.content.length; i++) {
+                const child = content.content[i];
+                const result = findSentenceAndParent(child, content as Content);
+
+                if (result.found) {
+                  // If direct child of this content
+                  if (result.parent === content) {
+                    result.index = i;
+                  }
+                  return result;
+                }
+              }
+            }
+
+            return { found: false, sentence: null, parent: null, index: -1 };
+          };
+
+          const result = findSentenceAndParent(newContent);
+
+          if (!result.found || !result.parent || result.index === -1) {
+            return state;
+          }
+
+          // Insert after the found sentence
+          if (Array.isArray(result.parent.content)) {
+            result.parent.content.splice(result.index + 1, 0, newSentence);
+          }
+
+          return { content: newContent };
+        }),
     }),
-
-  // Add new content at specific path
-  addContent: (path: number[], newContent: Content) =>
-    set((state) => {
-      const contentCopy = JSON.parse(JSON.stringify(state.content)) as Paper;
-      let current: Content = contentCopy;
-
-      // Search path
-      for (let i = 0; i < path.length; i++) {
-        if (!current.content || typeof current.content === "string")
-          return state;
-        const nextContent = current.content[path[i]];
-        if (!nextContent) return state;
-        current = nextContent;
-      }
-
-      // Add new content
-      if (!current.content) {
-        current.content = [];
-      } else if (typeof current.content === "string") {
-        return state; // Cannot add to string
-      }
-
-      current.content.push(newContent);
-
-      return { content: contentCopy };
-    }),
-
-  // Remove content at specific path
-  removeContent: (path: number[]) =>
-    set((state) => {
-      const contentCopy = JSON.parse(JSON.stringify(state.content)) as Paper;
-      let current: Content = contentCopy;
-
-      // Navigate to the target path except last index
-      for (let i = 0; i < path.length - 1; i++) {
-        if (!current.content || typeof current.content === "string")
-          return state;
-        const nextContent = current.content[path[i]];
-        if (!nextContent) return state;
-        current = nextContent;
-      }
-
-      // Remove the last index content
-      if (!current.content || typeof current.content === "string") return state;
-
-      const lastIndex = path[path.length - 1];
-      current.content.splice(lastIndex, 1);
-
-      return { content: contentCopy };
-    }),
-}));
+    {
+      name: "content-storage", // localStorage에 저장할 이름
+      storage: createJSONStorage(() => localStorage), // 브라우저의 localStorage 사용
+      partialize: (state) => ({
+        // 저장할 상태만 선택
+        selectedContent: state.selectedContent,
+        selectedPath: state.selectedPath,
+        parentContents: state.parentContents,
+      }),
+    }
+  )
+);

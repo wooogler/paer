@@ -29,3 +29,31 @@ export const updateSentenceContent = async (
     throw new Error("Failed to update sentence content");
   }
 };
+
+// Add a new sentence after the sentence with the given block-id
+// If blockId is null, add to the beginning of the selected paragraph
+export const addSentenceAfter = async (
+  blockId: string | null
+): Promise<void> => {
+  try {
+    await api.post("/paper/sentence", { blockId });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error adding sentence:", error.message);
+    }
+    throw new Error("Failed to add new sentence");
+  }
+};
+
+/**
+ * 문장을 삭제하는 API 함수
+ * @param blockId 삭제할 문장의 ID
+ */
+export async function deleteSentence(blockId: string): Promise<void> {
+  try {
+    await api.delete(`/paper/sentence/${blockId}`);
+  } catch (error) {
+    console.error("Error deleting sentence:", error);
+    throw error;
+  }
+}

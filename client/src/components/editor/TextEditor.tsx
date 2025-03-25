@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
-import { useUpdateSentence } from "../../hooks/usePaperQuery";
+import {
+  useUpdateSentence,
+  useDeleteSentence,
+} from "../../hooks/usePaperQuery";
 
 interface TextEditorProps {
   content: Content;
@@ -14,10 +17,13 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const { updateContent } = useContentStore();
     const { showHierarchy } = useAppStore();
     const updateSentenceMutation = useUpdateSentence();
+    const deleteSentenceMutation = useDeleteSentence();
     // Add state to save current content when focus starts
     const [initialContent, setInitialContent] = useState<string>("");
     // Add state to track if content has been changed
     const [isContentChanged, setIsContentChanged] = useState<boolean>(false);
+    // Add state to track hover for delete button
+    const [isHovered, setIsHovered] = useState<boolean>(false);
 
     // Manage content value in local state for better responsiveness
     const [localValue, setLocalValue] = useState<string>(
@@ -117,6 +123,19 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       [isContentChanged, handleUpdate, content.type]
     );
 
+    // Delete handler
+    const handleDelete = useCallback(() => {
+      if (content.type === "sentence" && content["block-id"]) {
+        // Confirm before deleting
+        if (window.confirm("Do you want to delete this sentence?")) {
+          // Send delete request to server
+          deleteSentenceMutation.mutate(content["block-id"], {
+            onSuccess: () => {},
+          });
+        }
+      }
+    }, [content.type, content["block-id"], deleteSentenceMutation]);
+
     // Determine background color CSS class based on content type
     const bgColorClass = useMemo(() => {
       switch (content.type) {
@@ -192,9 +211,24 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     };
 
     return (
-      <div className="relative">
+      <div
+        className="relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         {/* Vertical level indicator lines */}
         {renderLevelLines()}
+
+        {/* Delete button - only show for sentences when hovered */}
+        {isHovered && content.type === "sentence" && content["block-id"] && (
+          <button
+            onClick={handleDelete}
+            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-10"
+            title="문장 삭제"
+          >
+            ✕
+          </button>
+        )}
 
         <div
           style={{ paddingLeft: showHierarchy ? `${level * 16 + 16}px` : "0" }}

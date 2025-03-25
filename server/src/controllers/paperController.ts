@@ -44,4 +44,43 @@ export class PaperController {
         .send({ error: "Failed to update sentence content" });
     }
   }
+
+  async addSentence(
+    request: FastifyRequest<{ Body: { blockId: string | null } }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { blockId } = request.body;
+
+      // blockId can be null (to add at the beginning of a paragraph)
+      await this.paperService.addSentence(blockId);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error in addSentence:", error);
+      return reply.code(500).send({ error: "Failed to add new sentence" });
+    }
+  }
+
+  /**
+   * 문장 삭제
+   */
+  async deleteSentence(
+    request: FastifyRequest<{ Params: { blockId: string } }>,
+    reply: FastifyReply
+  ): Promise<void> {
+    try {
+      const { blockId } = request.params;
+
+      if (!blockId) {
+        return reply.code(400).send({ error: "Missing blockId" });
+      }
+
+      await this.paperService.deleteSentence(blockId);
+      return reply.code(200).send({ success: true });
+    } catch (error) {
+      console.error("Error deleting sentence:", error);
+      return reply.code(500).send({ error: "Failed to delete sentence" });
+    }
+  }
 }
