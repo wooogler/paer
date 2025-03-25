@@ -46,8 +46,8 @@ export const addSentenceAfter = async (
 };
 
 /**
- * 문장을 삭제하는 API 함수
- * @param blockId 삭제할 문장의 ID
+ * API function to delete a sentence
+ * @param blockId ID of the sentence to delete
  */
 export async function deleteSentence(blockId: string): Promise<void> {
   try {

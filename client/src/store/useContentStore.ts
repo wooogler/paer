@@ -25,7 +25,7 @@ interface ContentState {
     newContent: Content,
     insertIndex?: number
   ) => void;
-  addSentence: (blockId: string | null) => void; // blockId가 null이면 맨 앞에 추가
+  addSentence: (blockId: string | null) => void; // If blockId is null, add to the beginning
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
 }
@@ -325,10 +325,10 @@ export const useContentStore = create<ContentState>()(
         }),
     }),
     {
-      name: "content-storage", // localStorage에 저장할 이름
-      storage: createJSONStorage(() => localStorage), // 브라우저의 localStorage 사용
+      name: "content-storage", // Name to save in localStorage
+      storage: createJSONStorage(() => localStorage), // Use browser's localStorage
       partialize: (state) => ({
-        // 저장할 상태만 선택
+        // Select only states to store
         selectedContent: state.selectedContent,
         selectedPath: state.selectedPath,
         parentContents: state.parentContents,

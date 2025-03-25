@@ -74,21 +74,21 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // Expose focus method
     useEffect(() => {
-      // 새로 추가된 문장의 blockId와 현재 문장의 blockId를 비교하여 포커스 적용
+      // Compare blockId of newly added sentence with current sentence to apply focus
       const newBlockId = getNewSentenceBlockId();
       if (
         content.type === "sentence" &&
         content["block-id"] &&
         newBlockId === content["block-id"]
       ) {
-        // 새로 추가된 문장인 경우 내용 초기화
+        // Initialize content for newly added sentence
         setLocalValue("");
         setInitialContent("");
 
-        // setTimeout을 사용하여 렌더링이 완료된 후 포커스 적용
+        // Use setTimeout to apply focus after rendering is complete
         setTimeout(() => {
           focus();
-          // 포커스 적용 후 newSentenceBlockId 초기화
+          // Reset newSentenceBlockId after focus is applied
           setNewSentenceBlockId(null);
         }, 100);
       }
@@ -140,7 +140,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         // Set focus state to false
         setIsFocused(false);
 
-        // 업데이트 후 포커스 해제
+        // Remove focus after update
         if (textareaRef.current) {
           textareaRef.current.blur();
         }
@@ -161,7 +161,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       // Set focus state to false
       setIsFocused(false);
 
-      // 취소 후 포커스 해제
+      // Remove focus after cancel
       if (textareaRef.current) {
         textareaRef.current.blur();
       }
@@ -171,7 +171,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const handleDelete = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
         // Confirm before deleting
-        if (window.confirm("정말 이 문장을 삭제하시겠습니까?")) {
+        if (window.confirm("Are you sure you want to delete this sentence?")) {
           // Send delete request to server
           deleteSentenceMutation.mutate(content["block-id"], {
             onSuccess: () => {},
@@ -188,7 +188,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           e.preventDefault(); // Prevent default Enter behavior
           handleUpdate(); // Execute update
 
-          // 업데이트 후 포커스 해제
+          // Remove focus after update
           if (textareaRef.current) {
             textareaRef.current.blur();
           }
@@ -320,7 +320,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           <button
             onClick={handleDelete}
             className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-10"
-            title="문장 삭제"
+            title="Delete sentence"
           >
             ✕
           </button>

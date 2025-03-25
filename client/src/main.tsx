@@ -4,11 +4,11 @@ import "./index.css";
 import App from "./App.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// React Query 클라이언트 생성
+// Create React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5분
+      staleTime: 1000 * 60 * 5, // 5 minutes
       retry: 1,
     },
   },

@@ -31,7 +31,7 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // POST /api/paper/sentence - 새 문장 추가
+  // POST /api/paper/sentence - Add new sentence
   fastify.post(
     "/paper/sentence",
     async (
@@ -44,7 +44,7 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // 문장 삭제 API
+  // Delete sentence API
   fastify.delete<{ Params: { blockId: string } }>(
     "/paper/sentence/:blockId",
     async (request, reply) => {
