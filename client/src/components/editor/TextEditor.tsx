@@ -6,8 +6,6 @@ import { useUpdateSentence } from "../../hooks/usePaperQuery";
 
 interface TextEditorProps {
   content: Content;
-  path: number[];
-  index: number;
   level?: number;
 }
 

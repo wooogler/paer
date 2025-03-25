@@ -5,6 +5,7 @@ interface HierarchyTitleProps {
   content: Content;
   level?: number;
   isCurrentSelected?: boolean;
+  renderLines?: boolean;
   displayMode?: "summary" | "intent";
 }
 
@@ -14,6 +15,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     level = 0,
     isCurrentSelected = false,
     displayMode = "summary",
+    renderLines = true,
   }) => {
     // Get icon color class based on content type
     const iconColorClass = useMemo(() => {
@@ -37,9 +39,9 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     const titleSizeClass = useMemo(() => {
       switch (level) {
         case 0:
-          return "text-2xl";
+          return "text-3xl";
         case 1:
-          return "text-xl";
+          return "text-2xl";
         case 2:
           return "text-lg";
         default:
@@ -88,12 +90,12 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
         }`}
       >
         {/* Vertical level indicator lines */}
-        {renderLevelLines()}
+        {renderLines && renderLevelLines()}
 
         {/* Title content */}
         <div
           className="relative"
-          style={{ paddingLeft: `${level * 16 + 16}px` }}
+          style={{ paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px" }}
         >
           <div
             className={`${titleSizeClass} font-bold flex items-center gap-2`}

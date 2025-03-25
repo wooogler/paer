@@ -9,19 +9,26 @@ const Editor: React.FC = () => {
   const { selectedContent, selectedPath, parentContents } = useContentStore();
   const { showHierarchy } = useAppStore();
 
+  // 선택된 콘텐츠 로깅
+  console.log("Editor - selectedContent:", selectedContent);
+
   if (!selectedContent || !selectedPath) {
     return (
       <div className="p-5 text-center text-gray-500">
-        Select a section, subsection, or paragraph to edit
+        Select a section, subsection, paragraph, or paper to edit
       </div>
     );
   }
 
-  // Only allow editing for section, subsection, and paragraph types
-  if (!["section", "subsection", "paragraph"].includes(selectedContent.type)) {
+  // Only allow editing for paper, section, subsection, and paragraph types
+  if (
+    !["paper", "section", "subsection", "paragraph"].includes(
+      selectedContent.type
+    )
+  ) {
     return (
       <div className="p-5 text-center text-gray-500">
-        Only sections, subsections, and paragraphs can be edited
+        Only paper, sections, subsections, and paragraphs can be edited
       </div>
     );
   }
@@ -48,20 +55,12 @@ const Editor: React.FC = () => {
       )}
 
       <div className="mt-4">
-        {selectedContent.type === "paragraph" ? (
-          <ParagraphEditor
-            content={selectedContent}
-            path={selectedPath}
-            level={parentContents.length}
-          />
-        ) : (
-          <ContentRenderer
-            content={selectedContent}
-            path={selectedPath}
-            isTopLevel={true}
-            level={parentContents.length}
-          />
-        )}
+        <ContentRenderer
+          content={selectedContent}
+          path={selectedPath}
+          isTopLevel={true}
+          level={parentContents.length}
+        />
       </div>
     </div>
   );

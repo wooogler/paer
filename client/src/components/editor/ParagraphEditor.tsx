@@ -25,13 +25,13 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
     const sentenceLevel = level + 1;
 
     return (
-      <div className={`mb-8 ${!showHierarchy ? "pl-0" : `pl-${level * 4}`}`}>
+      <div
+        className={` ${!showHierarchy ? "pt-2 pl-0" : `pl-${level * 4} mb-4`}`}
+      >
         {content.content.map((sentenceContent, index) => (
           <TextEditor
             key={index}
             content={sentenceContent}
-            path={path}
-            index={index}
             level={sentenceLevel}
           />
         ))}

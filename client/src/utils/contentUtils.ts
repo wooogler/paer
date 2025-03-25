@@ -68,5 +68,5 @@ export const getSimpleBackgroundColor = (type: ContentType): string => {
 
 // Check if content type is selectable
 export const isSelectableContent = (type: ContentType): boolean => {
-  return ["section", "subsection", "paragraph"].includes(type);
+  return ["paper", "section", "subsection", "paragraph"].includes(type);
 };
