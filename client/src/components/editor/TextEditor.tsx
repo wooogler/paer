@@ -1,29 +1,50 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
 import {
   useUpdateSentence,
   useDeleteSentence,
+  getNewSentenceBlockId,
+  setNewSentenceBlockId,
 } from "../../hooks/usePaperQuery";
 
 interface TextEditorProps {
   content: Content;
   level?: number;
+  index?: number;
+  isLast?: boolean;
+  onNextFocus?: () => void;
+  onAddNewSentence?: () => void;
 }
 
 const TextEditor: React.FC<TextEditorProps> = React.memo(
-  ({ content, level = 0 }) => {
+  ({
+    content,
+    level = 0,
+    index,
+    isLast = false,
+    onNextFocus,
+    onAddNewSentence,
+  }) => {
     const { updateContent } = useContentStore();
     const { showHierarchy } = useAppStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
     // Add state to save current content when focus starts
     const [initialContent, setInitialContent] = useState<string>("");
-    // Add state to track if content has been changed
-    const [isContentChanged, setIsContentChanged] = useState<boolean>(false);
+    // Add state to track if the textarea is focused
+    const [isFocused, setIsFocused] = useState<boolean>(false);
     // Add state to track hover for delete button
     const [isHovered, setIsHovered] = useState<boolean>(false);
+    // Add ref for textarea to manage focus
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // Manage content value in local state for better responsiveness
     const [localValue, setLocalValue] = useState<string>(
@@ -42,17 +63,42 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       setLocalValue(newValue);
       // Also update initial content for accurate change detection
       setInitialContent(newValue);
-      // Reset isContentChanged state when content changes
-      setIsContentChanged(false);
     }, [content.type, content.content, content.summary]);
+
+    // Focus the textarea
+    const focus = useCallback(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, []);
+
+    // Expose focus method
+    useEffect(() => {
+      // 새로 추가된 문장의 blockId와 현재 문장의 blockId를 비교하여 포커스 적용
+      const newBlockId = getNewSentenceBlockId();
+      if (
+        content.type === "sentence" &&
+        content["block-id"] &&
+        newBlockId === content["block-id"]
+      ) {
+        // 새로 추가된 문장인 경우 내용 초기화
+        setLocalValue("");
+        setInitialContent("");
+
+        // setTimeout을 사용하여 렌더링이 완료된 후 포커스 적용
+        setTimeout(() => {
+          focus();
+          // 포커스 적용 후 newSentenceBlockId 초기화
+          setNewSentenceBlockId(null);
+        }, 100);
+      }
+    }, [content, focus]);
 
     // For sentence type, content contains the actual text
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
         setLocalValue(value);
-        // Mark as changed if different from initial value
-        setIsContentChanged(value !== initialContent);
 
         if (content.type !== "sentence") {
           // For non-sentence types, maintain real-time updates
@@ -61,18 +107,20 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           }
         }
       },
-      [content.type, content["block-id"], updateContent, initialContent]
+      [content.type, content["block-id"], updateContent]
     );
 
     // Add onFocus event handler
     const handleFocus = useCallback(() => {
-      // Don't directly use content.content on focus
-      // Keep initialContent as is and only check change state when needed
-      if (content.type === "sentence") {
-        // Set change state if current localValue differs from initialContent
-        setIsContentChanged(localValue !== initialContent);
-      }
-    }, [content.type, localValue, initialContent]);
+      // Set focus state to true
+      setIsFocused(true);
+    }, []);
+
+    // Add onBlur event handler
+    const handleBlur = useCallback(() => {
+      // Set focus state to false
+      setIsFocused(false);
+    }, []);
 
     // Update button handler
     const handleUpdate = useCallback(() => {
@@ -89,8 +137,13 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         // Also update initial content with current value
         setInitialContent(localValue);
 
-        // Reset change state
-        setIsContentChanged(false);
+        // Set focus state to false
+        setIsFocused(false);
+
+        // 업데이트 후 포커스 해제
+        if (textareaRef.current) {
+          textareaRef.current.blur();
+        }
       }
     }, [
       content.type,
@@ -104,30 +157,21 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const handleCancel = useCallback(() => {
       // Restore to original content
       setLocalValue(initialContent);
-      // Reset change state
-      setIsContentChanged(false);
-    }, [initialContent]);
 
-    // Keyboard event handler
-    const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // When Enter key is pressed (without Shift key)
-        if (e.key === "Enter" && !e.shiftKey && content.type === "sentence") {
-          // Only works when content is changed and Update button is active
-          if (isContentChanged) {
-            e.preventDefault(); // Prevent default Enter behavior
-            handleUpdate(); // Execute update
-          }
-        }
-      },
-      [isContentChanged, handleUpdate, content.type]
-    );
+      // Set focus state to false
+      setIsFocused(false);
+
+      // 취소 후 포커스 해제
+      if (textareaRef.current) {
+        textareaRef.current.blur();
+      }
+    }, [initialContent]);
 
     // Delete handler
     const handleDelete = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
         // Confirm before deleting
-        if (window.confirm("Do you want to delete this sentence?")) {
+        if (window.confirm("정말 이 문장을 삭제하시겠습니까?")) {
           // Send delete request to server
           deleteSentenceMutation.mutate(content["block-id"], {
             onSuccess: () => {},
@@ -135,6 +179,58 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         }
       }
     }, [content.type, content["block-id"], deleteSentenceMutation]);
+
+    // Keyboard event handler
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // When Enter key is pressed (without Shift key)
+        if (e.key === "Enter" && !e.shiftKey && content.type === "sentence") {
+          e.preventDefault(); // Prevent default Enter behavior
+          handleUpdate(); // Execute update
+
+          // 업데이트 후 포커스 해제
+          if (textareaRef.current) {
+            textareaRef.current.blur();
+          }
+        }
+
+        // When Shift+Enter is pressed for a sentence
+        if (e.key === "Enter" && e.shiftKey && content.type === "sentence") {
+          e.preventDefault(); // Prevent default Enter behavior
+
+          // Always update the current content
+          handleUpdate();
+
+          // If this is the last sentence, add a new one
+          if (isLast && onAddNewSentence) {
+            onAddNewSentence();
+          }
+          // Otherwise move focus to the next sentence
+          else if (onNextFocus) {
+            onNextFocus();
+          }
+        }
+
+        // When Backspace is pressed in an empty sentence
+        if (
+          e.key === "Backspace" &&
+          content.type === "sentence" &&
+          localValue === ""
+        ) {
+          e.preventDefault(); // Prevent default Backspace behavior
+          handleDelete(); // Delete the current sentence
+        }
+      },
+      [
+        handleUpdate,
+        content.type,
+        isLast,
+        onNextFocus,
+        onAddNewSentence,
+        localValue,
+        handleDelete,
+      ]
+    );
 
     // Determine background color CSS class based on content type
     const bgColorClass = useMemo(() => {
@@ -246,15 +342,17 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           </div>
           <div>
             <textarea
+              ref={textareaRef}
               value={localValue}
               onChange={handleChange}
               onFocus={handleFocus}
+              onBlur={handleBlur}
               onKeyDown={handleKeyDown}
               className={`w-full min-h-[80px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm ${borderColorClass}`}
             />
 
-            {/* Show button only when there are changes */}
-            {isContentChanged && content.type === "sentence" && (
+            {/* Show button when focused (regardless of content changes) */}
+            {isFocused && content.type === "sentence" && (
               <div className="flex justify-end gap-2 mb-2">
                 <button
                   onClick={handleCancel}

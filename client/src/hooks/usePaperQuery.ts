@@ -7,7 +7,10 @@ import {
 } from "../api/paperApi";
 import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
-import { Paper } from "@paer/shared";
+import { Paper, Content } from "@paer/shared";
+
+// 새로 추가된 문장의 blockId를 저장하는 전역 변수
+let newSentenceBlockId: string | null = null;
 
 export function usePaperQuery() {
   const setContent = useContentStore((state) => state.setContent);
@@ -27,6 +30,16 @@ export function usePaperQuery() {
   }, [query.data, setContent]);
 
   return query;
+}
+
+// 새로 추가된 문장의 blockId를 가져오는 함수
+export function getNewSentenceBlockId(): string | null {
+  return newSentenceBlockId;
+}
+
+// 새로 추가된 문장의 blockId를 설정하는 함수
+export function setNewSentenceBlockId(blockId: string | null): void {
+  newSentenceBlockId = blockId;
 }
 
 // Sentence 업데이트를 위한 mutation hook
@@ -66,10 +79,17 @@ export function useAddSentence() {
 
   return useMutation({
     mutationFn: (blockId: string | null) => addSentenceAfter(blockId),
-    onSuccess: async () => {
+    onSuccess: async (response, blockId) => {
       // 서버에서 즉시 최신 데이터 가져오기
       try {
         const newData = await fetchPaper();
+
+        // 새로 추가된 문장의 blockId 찾기
+        const addedSentenceBlockId = findNewSentenceBlockId(newData, blockId);
+        if (addedSentenceBlockId) {
+          // 전역 변수에 저장
+          setNewSentenceBlockId(addedSentenceBlockId);
+        }
 
         // 캐시 직접 업데이트
         queryClient.setQueryData(["paper"], newData);
@@ -92,6 +112,94 @@ export function useAddSentence() {
       queryClient.invalidateQueries({ queryKey: ["paper"] });
     },
   });
+}
+
+// 새로 추가된 문장의 blockId를 찾는 함수
+function findNewSentenceBlockId(
+  data: Paper,
+  prevBlockId: string | null
+): string | null {
+  if (prevBlockId === null) {
+    // 첫 문장으로 추가한 경우, 첫 번째 paragraph의 첫 번째 문장의 blockId 찾기
+    return findFirstSentenceBlockId(data);
+  }
+
+  // prevBlockId 다음에 추가된 문장의 blockId 찾기
+  return findNextSentenceBlockId(data, prevBlockId);
+}
+
+// 첫 번째 문장의 blockId 찾기
+function findFirstSentenceBlockId(content: Content | Paper): string | null {
+  if (
+    content.type === "paragraph" &&
+    content.content &&
+    Array.isArray(content.content)
+  ) {
+    // 첫 번째 문장이 있으면 그 blockId 반환
+    if (content.content.length > 0) {
+      const firstSentence = content.content[0];
+      if (
+        typeof firstSentence !== "string" &&
+        firstSentence.type === "sentence" &&
+        firstSentence["block-id"]
+      ) {
+        return firstSentence["block-id"] as string;
+      }
+    }
+    return null;
+  }
+
+  // 재귀적으로 모든 콘텐츠 확인
+  if (content.content && Array.isArray(content.content)) {
+    for (const child of content.content) {
+      if (typeof child !== "string") {
+        const blockId = findFirstSentenceBlockId(child);
+        if (blockId) {
+          return blockId;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+// prevBlockId 다음에 추가된 문장의 blockId 찾기
+function findNextSentenceBlockId(
+  content: Content | Paper,
+  prevBlockId: string
+): string | null {
+  if (content.content && Array.isArray(content.content)) {
+    for (let i = 0; i < content.content.length; i++) {
+      const child = content.content[i];
+
+      if (typeof child === "string") continue;
+
+      // 이전 블록을 찾음
+      if (child["block-id"] === prevBlockId && child.type === "sentence") {
+        // 다음 인덱스에 문장이 있는지 확인
+        if (i + 1 < content.content.length) {
+          const nextSentence = content.content[i + 1];
+          if (
+            typeof nextSentence !== "string" &&
+            nextSentence.type === "sentence" &&
+            nextSentence["block-id"]
+          ) {
+            // 다음 문장의 blockId 반환
+            return nextSentence["block-id"] as string;
+          }
+        }
+      }
+
+      // 재귀적으로 탐색
+      const blockId = findNextSentenceBlockId(child, prevBlockId);
+      if (blockId) {
+        return blockId;
+      }
+    }
+  }
+
+  return null;
 }
 
 // 문장 삭제를 위한 mutation hook
