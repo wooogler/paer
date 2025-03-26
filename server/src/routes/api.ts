@@ -5,6 +5,7 @@ import {
   FastifyRequest,
 } from "fastify";
 import { PaperController } from "../controllers/paperController";
+import { request } from "http";
 
 // Define routes as Fastify plugin
 const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
@@ -49,6 +50,19 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/paper/sentence/:blockId",
     async (request, reply) => {
       return paperController.deleteSentence(request, reply);
+    }
+  );
+
+  // POST /api/openai/askllm
+  fastify.post(
+    "/openai/askllm",
+    async (
+      request: FastifyRequest<{
+        Body: { text: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.askLLM(request, reply);
     }
   );
 };

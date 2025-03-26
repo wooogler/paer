@@ -1,12 +1,17 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { PaperService } from "../services/paperService";
 import { PaperSchema } from "@paer/shared";
+import { OpenAI } from "openai";
 
 export class PaperController {
   private paperService: PaperService;
+  private client: OpenAI;
 
   constructor() {
     this.paperService = new PaperService();
+    this.client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
   }
 
   async getPaper(request: FastifyRequest, reply: FastifyReply): Promise<any> {
@@ -81,6 +86,23 @@ export class PaperController {
     } catch (error) {
       console.error("Error deleting sentence:", error);
       return reply.code(500).send({ error: "Failed to delete sentence" });
+    }
+  }
+
+  async askLLM(request: FastifyRequest< { Body: { text: string } } >, reply: FastifyReply) {
+    const { text } = request.body;
+    
+    try {
+      const response = await this.client.completions.create({
+        model: "text-davinci-003",
+        prompt: text,
+        max_tokens: 100,
+      });
+
+      return reply.send(response);
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      return reply.status(500).send({ error: errorMessage });
     }
   }
 }
