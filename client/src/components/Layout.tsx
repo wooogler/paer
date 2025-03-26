@@ -5,8 +5,11 @@ import Pane from "./layout/Pane";
 import ToggleSwitch from "./ui/ToggleSwitch";
 import Button from "./ui/Button";
 import ChatInterface from "./chat/ChatInterface";
+import FileImport from "./FileImport";
 import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
+import { usePaperStore } from "../store/paperStore";
+import { processPaperContent, savePaper } from "../services/fileService";
 import { readChatHistory } from "../utils/chatStorage";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 
@@ -14,9 +17,22 @@ const Layout: React.FC = () => {
   const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
     useAppStore();
   const { addMessage } = useChatStore();
+  const { setPaper } = usePaperStore();
 
   // Fetching data from server using React Query
   const { isLoading, error } = usePaperQuery();
+
+  const handleFileImport = async (content: string) => {
+    try {
+      const processedPaper = await processPaperContent(content);
+      setPaper(processedPaper);
+      await savePaper(processedPaper);
+      // You might want to show a success message here
+    } catch (error) {
+      console.error('Error processing paper:', error);
+      // You might want to show an error message here
+    }
+  };
 
   return (
     <div className="flex h-screen w-screen bg-white text-gray-800">
@@ -43,14 +59,17 @@ const Layout: React.FC = () => {
         title="Structure"
         width="30%"
         rightContent={
-          <ToggleSwitch
-            checked={displayMode === "intent"}
-            onChange={(checked) =>
-              setDisplayMode(checked ? "intent" : "summary")
-            }
-            leftLabel="Summary"
-            rightLabel="Intent"
-          />
+          <div className="flex items-center gap-2">
+            <FileImport onFileImport={handleFileImport} />
+            <ToggleSwitch
+              checked={displayMode === "intent"}
+              onChange={(checked) =>
+                setDisplayMode(checked ? "intent" : "summary")
+              }
+              leftLabel="Summary"
+              rightLabel="Intent"
+            />
+          </div>
         }
       >
         <Structure displayMode={displayMode} />

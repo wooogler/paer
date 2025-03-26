@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import path from "path";
 import dotenv from "dotenv";
 import apiRoutes from "./routes/api";
+import paperRoutes from "./routes/papers";
 import OpenAI from "openai";
 import fs from "fs";
 
@@ -25,6 +26,7 @@ const client = new OpenAI({
 
 // Register API routes
 fastify.register(apiRoutes, { prefix: "/api" });
+fastify.register(paperRoutes, { prefix: "/api/papers" });
 
 // Add health check endpoint
 fastify.get("/api/health", async (request, reply) => {
