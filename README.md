@@ -50,59 +50,59 @@ This will start both the client and server in development mode.
 └── .env            # Environment variables for both client and server
 ```
 
-## 설치 방법
+## Installation Method
 
-1. 의존성 설치
+1. Install Dependencies
 
 ```bash
-# 루트 패키지와 모든 하위 패키지의 의존성 설치
+# Install dependencies for root package and all subpackages
 npm run install:all
 
-# 또는 개별적으로 설치
-npm run client:install   # 클라이언트 의존성만 설치
-npm run server:install   # 서버 의존성만 설치
+# Or install individually
+npm run client:install   # Install client dependencies only
+npm run server:install   # Install server dependencies only
 ```
 
-2. 서버 환경 변수 설정
+2. Server Environment Variable Setup
 
 ```bash
-# server 디렉토리에서
+# In the server directory
 cp .env.example .env
-# 필요한 경우 .env 파일을 수정
+# Modify the .env file if necessary
 ```
 
-## 개발 모드 실행
+## Running Development Mode
 
 ```bash
-# 클라이언트와 서버 동시에 실행
+# Run client and server simultaneously
 npm run dev
 
-# 또는 개별적으로 실행
-npm run dev:client   # 클라이언트만 실행
-npm run dev:server   # 서버만 실행
+# Or run individually
+npm run dev:client   # Run client only
+npm run dev:server   # Run server only
 ```
 
-## 빌드 및 프로덕션 실행
+## Build and Production Execution
 
 ```bash
-# 클라이언트와 서버 모두 빌드
+# Build both client and server
 npm run build
 
-# 빌드 후 프로덕션 모드로 서버 실행
+# Run server in production mode after build
 npm start
 ```
 
-## 기술 스택
+## Technology Stack
 
-### 프론트엔드
+### Frontend
 
 - React
 - TypeScript
 - Vite
-- Zustand (상태 관리)
+- Zustand (State Management)
 - Tailwind CSS
 
-### 백엔드
+### Backend
 
 - Express
 - TypeScript

@@ -25,7 +25,6 @@ interface ContentState {
     newContent: Content,
     insertIndex?: number
   ) => void;
-  addSentence: (blockId: string | null) => void; // If blockId is null, add to the beginning
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
 }
@@ -233,94 +232,6 @@ export const useContentStore = create<ContentState>()(
           current.content.splice(lastIndex, 1);
 
           return { content: contentCopy };
-        }),
-
-      // Add sentence after the sentence with given blockId
-      addSentence: (blockId: string | null) =>
-        set((state) => {
-          const newContent = JSON.parse(JSON.stringify(state.content)) as Paper; // Deep copy
-
-          // Create a new empty sentence
-          const newSentence: Content = {
-            type: "sentence",
-            summary: "",
-            intent: "Provide additional information",
-            content: "",
-            "block-id": Date.now().toString(),
-          };
-
-          // If blockId is null, add to the beginning of selected paragraph
-          if (blockId === null && state.selectedContent && state.selectedPath) {
-            if (state.selectedContent.type === "paragraph") {
-              // Find the paragraph in our copy
-              let current: Content = newContent as Content;
-              for (let i = 0; i < state.selectedPath.length; i++) {
-                if (!current.content || typeof current.content === "string")
-                  return state;
-                current = current.content[state.selectedPath[i]];
-              }
-
-              // Add to the beginning of paragraph
-              if (!current.content) current.content = [];
-              if (Array.isArray(current.content)) {
-                current.content.unshift(newSentence);
-                return { content: newContent };
-              }
-            }
-            return state;
-          }
-
-          // Helper function to find the sentence and its parent
-          const findSentenceAndParent = (
-            content: Content | Paper,
-            parent: Content | null = null
-          ): {
-            found: boolean;
-            sentence: Content | null;
-            parent: Content | null;
-            index: number;
-          } => {
-            // Check if current content has the matching blockId
-            if ("block-id" in content && content["block-id"] === blockId) {
-              return {
-                found: true,
-                sentence: content as Content,
-                parent,
-                index: -1, // Will be set later if parent is found
-              };
-            }
-
-            // If content has children, search recursively
-            if (content.content && Array.isArray(content.content)) {
-              for (let i = 0; i < content.content.length; i++) {
-                const child = content.content[i];
-                const result = findSentenceAndParent(child, content as Content);
-
-                if (result.found) {
-                  // If direct child of this content
-                  if (result.parent === content) {
-                    result.index = i;
-                  }
-                  return result;
-                }
-              }
-            }
-
-            return { found: false, sentence: null, parent: null, index: -1 };
-          };
-
-          const result = findSentenceAndParent(newContent);
-
-          if (!result.found || !result.parent || result.index === -1) {
-            return state;
-          }
-
-          // Insert after the found sentence
-          if (Array.isArray(result.parent.content)) {
-            result.parent.content.splice(result.index + 1, 0, newSentence);
-          }
-
-          return { content: newContent };
         }),
     }),
     {

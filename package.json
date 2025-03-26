@@ -2,7 +2,7 @@
   "name": "paer",
   "private": true,
   "version": "0.0.0",
-  "description": "모노레포 프로젝트 - 프론트엔드와 백엔드",
+  "description": "Monorepo project - Frontend and Backend",
   "workspaces": [
     "client",
     "server",

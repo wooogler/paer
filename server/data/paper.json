@@ -30,7 +30,7 @@
                   "summary": "Modern writing tools lack structured approach",
                   "intent": "To point out the limitation",
                   "type": "sentence",
-                  "content": "Modern writing tools often lack a structured approach, leading to disorganized documents and reduced clarity. hello"
+                  "content": "Modern writing tools often lack a structured approach, leading to disorganized documents and reduced clarity. "
                 },
                 {
                   "block-id": "1.1.1.2",
@@ -83,7 +83,7 @@
                   "summary": "Documents lack logical flow",
                   "intent": "To describe coherence problems",
                   "type": "sentence",
-                  "content": "Many documents suffer from a lack of logical flow and connection between different sections and ideas. hello"
+                  "content": "Many documents suffer from a lack of logical flow and connection between different sections and ideas."
                 },
                 {
                   "block-id": "1.2.1.2",

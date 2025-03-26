@@ -50,23 +50,6 @@ export class PaperController {
     }
   }
 
-  async addSentence(
-    request: FastifyRequest<{ Body: { blockId: string | null } }>,
-    reply: FastifyReply
-  ): Promise<any> {
-    try {
-      const { blockId } = request.body;
-
-      // blockId can be null (to add at the beginning of a paragraph)
-      await this.paperService.addSentence(blockId);
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error in addSentence:", error);
-      return reply.code(500).send({ error: "Failed to add new sentence" });
-    }
-  }
-
   async addBlock(
     request: FastifyRequest<{
       Body: {
@@ -87,13 +70,39 @@ export class PaperController {
       );
       return { success: true, blockId: newBlockId };
     } catch (error) {
-      console.error("Error in addSentence:", error);
+      console.error("Error in addBlock:", error);
       return reply.code(500).send({ error: "Failed to add new block" });
     }
   }
 
+  async updateBlock(
+    request: FastifyRequest<{
+      Body: {
+        targetBlockId: string;
+        blockType?: ContentType;
+        keyToUpdate: string;
+        updatedValue: string;
+      };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { targetBlockId, keyToUpdate, updatedValue } = request.body;
+      // blockType is no longer needed, so using findBlockById
+      await this.paperService.updateBlock(
+        targetBlockId,
+        keyToUpdate,
+        updatedValue
+      );
+      return { success: true };
+    } catch (error) {
+      console.error("Error in updateBlock:", error);
+      return reply.code(500).send({ error: "Failed to update target block" });
+    }
+  }
+
   /**
-   * 문장 삭제
+   * Delete a sentence
    */
   async deleteSentence(
     request: FastifyRequest<{ Params: { blockId: string } }>,
@@ -111,6 +120,28 @@ export class PaperController {
     } catch (error) {
       console.error("Error deleting sentence:", error);
       return reply.code(500).send({ error: "Failed to delete sentence" });
+    }
+  }
+
+  /**
+   * Delete a block
+   */
+  async deleteBlock(
+    request: FastifyRequest<{ Params: { blockId: string } }>,
+    reply: FastifyReply
+  ): Promise<void> {
+    try {
+      const { blockId } = request.params;
+
+      if (!blockId) {
+        return reply.code(400).send({ error: "Missing blockId" });
+      }
+
+      await this.paperService.deleteBlock(blockId);
+      return reply.code(200).send({ success: true });
+    } catch (error) {
+      console.error("Error deleting block:", error);
+      return reply.code(500).send({ error: "Failed to delete block" });
     }
   }
 

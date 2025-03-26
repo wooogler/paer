@@ -42,69 +42,6 @@ export class PaperRepository {
     }
   }
 
-  async addSentence(blockId: string | null): Promise<void> {
-    try {
-      // Read the current data
-      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
-
-      // Create a new empty sentence
-      const newSentence = {
-        type: "sentence",
-        summary: "",
-        intent: "Provide additional information",
-        content: "",
-        "block-id": Date.now().toString(),
-      };
-
-      let added = false;
-
-      if (blockId === null) {
-        // Add at the beginning of the selected paragraph (assuming first paragraph)
-        if (paperData.content && Array.isArray(paperData.content)) {
-          // Find first paragraph in paper
-          for (let i = 0; i < paperData.content.length; i++) {
-            const section = paperData.content[i];
-            if (section.content && Array.isArray(section.content)) {
-              for (let j = 0; j < section.content.length; j++) {
-                const subsection = section.content[j];
-                if (
-                  subsection.type === "paragraph" &&
-                  subsection.content &&
-                  Array.isArray(subsection.content)
-                ) {
-                  // Add to the beginning of the first paragraph found
-                  subsection.content.unshift(newSentence);
-                  added = true;
-                  break;
-                }
-              }
-            }
-            if (added) break;
-          }
-        }
-      } else {
-        // Add after the specified sentence
-        added = this.findAndAddSentence(paperData, blockId, newSentence);
-      }
-
-      if (!added) {
-        throw new Error(
-          `Could not add sentence${blockId ? ` after blockId ${blockId}` : ""}`
-        );
-      }
-
-      // Write the updated data back to the file
-      fs.writeFileSync(
-        this.filePath,
-        JSON.stringify(paperData, null, 2),
-        "utf-8"
-      );
-    } catch (error) {
-      console.error("Error adding new sentence:", error);
-      throw new Error("Failed to add new sentence");
-    }
-  }
-
   // Adds a new block to the document
   // Assumption: The client knows the parent block ID
   async addBlock(
@@ -120,16 +57,38 @@ export class PaperRepository {
 
       newBlockId = Date.now().toString();
 
-      // Initializes a new block w/ specified block type and assigned block ID
-      const newBlock = {
-        type: blockType,
+      // Create empty sentence object (to add to paragraph)
+      const emptySentence = {
+        type: "sentence" as const,
         summary: "",
         intent: "Provide additional information",
         content: "",
-        "block-id": newBlockId, // Assigns a unique block ID using timestamp
-        ...(blockType !== "sentence" && { title: "" }),
+        "block-id": (Date.now() + 1).toString(), // Add +1 to ensure block ID is not duplicated
       };
 
+      // Initializes a new block w/ specified block type and assigned block ID
+      const newBlock = {
+        type: blockType,
+        // For paragraph type, set summary to "Empty Summary"
+        summary: blockType === "paragraph" ? "Empty Summary" : "",
+        intent: "Empty Intent",
+        // For paragraph type, initialize with an array containing an empty sentence
+        content:
+          blockType === "sentence"
+            ? ""
+            : blockType === "paragraph"
+            ? [emptySentence]
+            : [],
+        "block-id": newBlockId, // Assigns a unique block ID using timestamp
+        ...(blockType !== "sentence" && {
+          title:
+            blockType === "section"
+              ? "New Section"
+              : blockType === "subsection"
+              ? "New Subsection"
+              : "",
+        }),
+      };
       if (!parentBlockId) {
         throw new Error(
           `Could not add the new block because parent block is not provided.`
@@ -170,29 +129,56 @@ export class PaperRepository {
     return newBlockId;
   }
 
-  private findAndUpdateSentence(
-    obj: any,
-    blockId: string,
-    content: string
-  ): boolean {
-    // Check if current object has the matching block-id
-    if (obj["block-id"] === blockId) {
-      if (obj.type === "sentence") {
-        obj.content = content;
-        return true;
+  // Updates a block with the specified key-value pair
+  async updateBlock(
+    targetBlockId: string,
+    keyToUpdate: string,
+    updatedValue: string
+  ): Promise<void> {
+    try {
+      // Reads the current paper file as JSON
+      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+
+      // Find the block
+      const targetBlock = this.findBlockById(paperData, targetBlockId);
+
+      if (!targetBlock) {
+        throw new Error(`Block with ID ${targetBlockId} not found`);
       }
+
+      // Updates the target block with the specified key-value pair
+      targetBlock[keyToUpdate] = updatedValue;
+
+      // Write the updated JSON back to the paper file
+      fs.writeFileSync(
+        this.filePath,
+        JSON.stringify(paperData, null, 2),
+        "utf-8"
+      );
+    } catch (error) {
+      console.error("Error updating a block:", error);
+      throw new Error(`Failed to update block ${targetBlockId}`);
+    }
+  }
+
+  // Find block by ID function (search recursively)
+  private findBlockById(obj: any, blockId: string): any {
+    // Check if the current object's block-id matches the target ID
+    if (obj && obj["block-id"] === blockId) {
+      return obj;
     }
 
-    // If not found at this level, recursively search in the content array
-    if (Array.isArray(obj.content)) {
-      for (const item of obj.content) {
-        if (this.findAndUpdateSentence(item, blockId, content)) {
-          return true;
+    // If the object has a content array, search recursively
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      for (const child of obj.content) {
+        const found = this.findBlockById(child, blockId);
+        if (found) {
+          return found;
         }
       }
     }
 
-    return false;
+    return null;
   }
 
   // Finds the block given the ID
@@ -228,29 +214,23 @@ export class PaperRepository {
     }
   }
 
-  private findAndAddSentence(
+  private findAndUpdateSentence(
     obj: any,
     blockId: string,
-    newSentence: any
+    content: string
   ): boolean {
     // Check if current object has the matching block-id
     if (obj["block-id"] === blockId) {
-      // Find the parent object that contains this sentence
-      return false; // Cannot add here directly, need parent's content array
+      if (obj.type === "sentence") {
+        obj.content = content;
+        return true;
+      }
     }
-    // Look in the content array
+
+    // If not found at this level, recursively search in the content array
     if (Array.isArray(obj.content)) {
-      for (let i = 0; i < obj.content.length; i++) {
-        const item = obj.content[i];
-
-        // If this item has the matching blockId, insert after it
-        if (item["block-id"] === blockId) {
-          obj.content.splice(i + 1, 0, newSentence);
-          return true;
-        }
-
-        // Otherwise, search deeper
-        if (this.findAndAddSentence(item, blockId, newSentence)) {
+      for (const item of obj.content) {
+        if (this.findAndUpdateSentence(item, blockId, content)) {
           return true;
         }
       }
@@ -260,23 +240,23 @@ export class PaperRepository {
   }
 
   /**
-   * 문장 삭제
-   * @param blockId 삭제할 문장의 ID
+   * Delete a sentence
+   * @param blockId ID of the sentence to delete
    */
   async deleteSentence(blockId: string): Promise<void> {
     try {
-      // 파일에서 데이터 읽기
+      // Read data from file
       const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
       const paperData: Paper = JSON.parse(fileContent);
 
-      // 삭제 수행
+      // Perform deletion
       const deleted = this.findAndDeleteSentence(paperData, blockId);
 
       if (!deleted) {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // 파일에 저장
+      // Save to file
       await fs.promises.writeFile(
         this.filePath,
         JSON.stringify(paperData, null, 2),
@@ -289,22 +269,22 @@ export class PaperRepository {
   }
 
   /**
-   * 재귀적으로 문장을 찾아 삭제하는 헬퍼 메서드
+   * Helper method to recursively find and delete a sentence
    */
   private findAndDeleteSentence(obj: any, blockId: string): boolean {
-    // 배열인 경우
+    // If it's an array
     if (Array.isArray(obj)) {
-      // 문장 블록을 직접 찾아서 삭제
+      // Find and delete the sentence block directly
       for (let i = 0; i < obj.length; i++) {
         const item = obj[i];
 
-        // 이 항목이 blockId와 일치하는 문장이면 삭제
+        // If this item is a sentence matching the blockId, delete it
         if (item && item.type === "sentence" && item["block-id"] === blockId) {
-          obj.splice(i, 1); // 배열에서 삭제
+          obj.splice(i, 1); // Remove from array
           return true;
         }
 
-        // 재귀적으로 자식 항목 검색
+        // Recursively search child items
         if (this.findAndDeleteSentence(item, blockId)) {
           return true;
         }
@@ -313,13 +293,13 @@ export class PaperRepository {
       return false;
     }
 
-    // 객체인 경우 각 속성을 검사
+    // If it's an object, check each property
     if (obj && typeof obj === "object") {
-      // 객체의 children이나 content 속성에서 검색
+      // Search in the children or content properties of the object
       for (const key of Object.keys(obj)) {
         if (key === "children" || key === "content") {
           if (this.findAndDeleteSentence(obj[key], blockId)) {
-            // 문단에 문장이 없는 경우 빈 배열로 설정
+            // If a paragraph has no sentences, set to empty array
             if (
               Array.isArray(obj[key]) &&
               obj.type === "paragraph" &&
@@ -327,6 +307,75 @@ export class PaperRepository {
             ) {
               obj[key] = [];
             }
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Delete a block
+   * @param blockId ID of the block to delete
+   */
+  async deleteBlock(blockId: string): Promise<void> {
+    try {
+      // Read data from file
+      const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
+      const paperData: Paper = JSON.parse(fileContent);
+
+      // Perform deletion
+      const deleted = this.findAndDeleteBlock(paperData, blockId);
+
+      if (!deleted) {
+        throw new Error(`Block with block-id ${blockId} not found`);
+      }
+
+      // Save to file
+      await fs.promises.writeFile(
+        this.filePath,
+        JSON.stringify(paperData, null, 2),
+        "utf-8"
+      );
+    } catch (error) {
+      console.error("Error deleting block:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Helper method to recursively find and delete a block
+   */
+  private findAndDeleteBlock(obj: any, blockId: string): boolean {
+    // If it's an array
+    if (Array.isArray(obj)) {
+      // Find and delete the block directly
+      for (let i = 0; i < obj.length; i++) {
+        const item = obj[i];
+
+        // If this item matches the blockId, delete it
+        if (item && item["block-id"] === blockId) {
+          obj.splice(i, 1); // Remove from array
+          return true;
+        }
+
+        // Recursively search child items
+        if (this.findAndDeleteBlock(item, blockId)) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    // If it's an object, check each property
+    if (obj && typeof obj === "object") {
+      // Search in the children or content properties of the object
+      for (const key of Object.keys(obj)) {
+        if (key === "children" || key === "content") {
+          if (this.findAndDeleteBlock(obj[key], blockId)) {
             return true;
           }
         }

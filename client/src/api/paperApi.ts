@@ -1,4 +1,4 @@
-import { type Paper } from "@paer/shared";
+import { type Paper, ContentType } from "@paer/shared";
 import api from "../services/api";
 
 // API function definition
@@ -27,21 +27,6 @@ export const updateSentenceContent = async (
       console.error("Error updating sentence:", error.message);
     }
     throw new Error("Failed to update sentence content");
-  }
-};
-
-// Add a new sentence after the sentence with the given block-id
-// If blockId is null, add to the beginning of the selected paragraph
-export const addSentenceAfter = async (
-  blockId: string | null
-): Promise<void> => {
-  try {
-    await api.post("/paper/sentence", { blockId });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error adding sentence:", error.message);
-    }
-    throw new Error("Failed to add new sentence");
   }
 };
 
@@ -87,3 +72,100 @@ export const updateSentenceSummary = async (
     throw new Error("Failed to update sentence summary");
   }
 };
+
+// Add a new block (section, subsection, paragraph)
+export const addBlock = async (
+  parentBlockId: string | null,
+  prevBlockId: string | null,
+  blockType: ContentType
+): Promise<string> => {
+  try {
+    const response = await api.post("/paper/block", {
+      parentBlockId,
+      prevBlockId,
+      blockType,
+    });
+    return response.data.blockId as string;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error adding block:", error.message);
+    }
+    throw new Error("Failed to add new block");
+  }
+};
+
+// Update block intent
+export const updateBlockIntent = async (
+  targetBlockId: string,
+  blockType: ContentType,
+  intent: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/block/intent", {
+      targetBlockId,
+      blockType,
+      keyToUpdate: "intent",
+      updatedValue: intent,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating block intent:", error.message);
+    }
+    throw new Error("Failed to update block intent");
+  }
+};
+
+// Update block summary
+export const updateBlockSummary = async (
+  targetBlockId: string,
+  blockType: ContentType,
+  summary: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/block/summary", {
+      targetBlockId,
+      blockType,
+      keyToUpdate: "summary",
+      updatedValue: summary,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating block summary:", error.message);
+    }
+    throw new Error("Failed to update block summary");
+  }
+};
+
+// Update block title
+export const updateBlockTitle = async (
+  targetBlockId: string,
+  blockType: ContentType,
+  title: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/block/title", {
+      targetBlockId,
+      blockType,
+      keyToUpdate: "title",
+      updatedValue: title,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating block title:", error.message);
+    }
+    throw new Error("Failed to update block title");
+  }
+};
+
+/**
+ * API function to delete a block
+ * @param blockId ID of the block to delete
+ */
+export async function deleteBlock(blockId: string): Promise<void> {
+  try {
+    await api.delete(`/paper/block/${blockId}`);
+  } catch (error) {
+    console.error("Error deleting block:", error);
+    throw new Error("Failed to delete block");
+  }
+}

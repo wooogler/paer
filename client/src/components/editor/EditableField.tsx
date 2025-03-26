@@ -13,6 +13,9 @@ interface EditableFieldProps {
   isHovered: boolean;
   isSentence: boolean;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  fontSize?: string;
+  fontWeight?: string;
+  extraButton?: React.ReactNode;
 }
 
 const EditableField: React.FC<EditableFieldProps> = ({
@@ -28,48 +31,60 @@ const EditableField: React.FC<EditableFieldProps> = ({
   isHovered,
   isSentence,
   onKeyDown,
+  fontSize,
+  fontWeight,
+  extraButton,
 }) => {
   return (
-    <div className="text-sm relative group flex items-center gap-1 min-h-[24px]">
+    <div
+      className={`relative group flex items-center gap-1 min-h-[24px] w-full ${
+        fontSize || "text-sm"
+      } ${fontWeight || ""}`}
+    >
       {icon && <span className="font-medium flex-shrink-0">{icon}</span>}
 
       {isEditing ? (
-        <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2 flex-1 w-full">
           <input
             ref={inputRef}
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
-            className="flex-1 p-1 rounded border"
+            className={`flex-1 p-1 rounded border w-full min-w-0 ${
+              fontSize || ""
+            } ${fontWeight || ""}`}
             placeholder={placeholder}
           />
           <button
             onClick={onCancel}
-            className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200"
+            className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 flex-shrink-0"
           >
             Cancel
           </button>
           <button
             onClick={onUpdate}
-            className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white"
+            className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white flex-shrink-0"
           >
             Update
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-1 flex-1">
+        <div className="flex items-center gap-1 flex-1 w-full">
           <span className={`break-words ${!value ? "text-gray-400" : ""}`}>
             {value || placeholder}
           </span>
-          {isHovered && isSentence && (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-gray-700 flex-shrink-0"
-              title={`Edit ${placeholder.toLowerCase()}`}
-            >
-              ✎
-            </button>
+          {isHovered && (
+            <>
+              <button
+                onClick={() => setIsEditing(true)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-gray-700 flex-shrink-0 ml-1"
+                title={`Edit ${placeholder.toLowerCase()}`}
+              >
+                ✎
+              </button>
+              {extraButton}
+            </>
           )}
         </div>
       )}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Structure from "./Structure";
 import Editor from "./Editor";
 import Pane from "./layout/Pane";
@@ -12,15 +12,36 @@ import { usePaperStore } from "../store/paperStore";
 import { processPaperContent, savePaper } from "../services/fileService";
 import { readChatHistory } from "../utils/chatStorage";
 import { usePaperQuery } from "../hooks/usePaperQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Layout: React.FC = () => {
   const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
     useAppStore();
   const { addMessage } = useChatStore();
   const { setPaper } = usePaperStore();
+  const queryClient = useQueryClient();
 
   // Fetching data from server using React Query
-  const { isLoading, error } = usePaperQuery();
+  const { isLoading, error, refetch } = usePaperQuery();
+
+  // 페이지 로드 시 데이터 새로고침
+  useEffect(() => {
+    // 페이지 로드 시 무조건 새로고침
+    refetch();
+
+    // 페이지 새로고침 시 데이터 리로드
+    const handleBeforeUnload = () => {
+      // 브라우저 새로고침 전에 캐시 무효화
+      queryClient.removeQueries({ queryKey: ["paper"] });
+    };
+
+    // 브라우저 새로고침 이벤트 리스너 등록
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [refetch, queryClient]);
 
   const handleFileImport = async (content: string) => {
     try {
