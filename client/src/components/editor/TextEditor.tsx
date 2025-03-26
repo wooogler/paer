@@ -388,7 +388,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           }}
         >
           <div
-            className={`flex flex-col gap-1 p-2 rounded-t-lg ${bgColorClass}`}
+            className={`flex flex-col py-1 px-2 rounded-t-lg ${bgColorClass}`}
           >
             {/* Summary Field */}
             <EditableField

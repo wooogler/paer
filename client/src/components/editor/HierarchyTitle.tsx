@@ -75,7 +75,9 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       if (content.type === "paragraph") {
         // For paragraphs, show summary or intent based on display mode
         // to maintain consistency with TreeItem component
-        return displayMode === "summary" ? content.summary : content.intent;
+        return displayMode === "summary"
+          ? content.summary || "Empty Summary"
+          : content.intent || "Empty Intent";
       }
       return (
         content.title ||
@@ -84,17 +86,13 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     };
 
     return (
-      <div
-        className={`mb-4 relative ${
-          isCurrentSelected ? "bg-blue-50 rounded-md" : ""
-        }`}
-      >
+      <div className={`relative ${isCurrentSelected ? "bg-transparent" : ""}`}>
         {/* Vertical level indicator lines */}
         {renderLines && renderLevelLines()}
 
         {/* Title content */}
         <div
-          className="relative"
+          className="relative py-1"
           style={{ paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px" }}
         >
           <div
@@ -109,13 +107,17 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             {/* Display summary for non-paragraph types */}
             {content.type !== "paragraph" && (
               <div>
-                <span className="break-words">{content.summary}</span>
+                <span className="break-words">
+                  {content.summary || "Empty Summary"}
+                </span>
               </div>
             )}
             {/* Display intent for all types */}
             <div className="flex items-center gap-2">
               <span className="font-medium">🎯</span>
-              <span className="break-words">{content.intent}</span>
+              <span className="break-words">
+                {content.intent || "Empty Intent"}
+              </span>
             </div>
           </div>
         </div>

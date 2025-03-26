@@ -3,6 +3,7 @@ import { Content } from "@paer/shared";
 import { useAppStore } from "../../store/useAppStore";
 import { useAddSentence } from "../../hooks/usePaperQuery";
 import TextEditor from "./TextEditor";
+import AddBlockButton from "./AddBlockButton";
 
 interface ParagraphEditorProps {
   content: Content;
@@ -123,21 +124,14 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
       >
         {/* Top add button - before all sentences */}
         <div
-          className="relative h-4 group cursor-pointer"
           onMouseEnter={() => setHoverIndex(-1)}
           onMouseLeave={() => setHoverIndex(null)}
         >
-          {hoverIndex === -1 && (
-            <div className="absolute inset-x-0 flex justify-center">
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center transform transition-transform hover:scale-110 z-10"
-                onClick={() => handleAddSentence(0)}
-                title="Add sentence at the beginning"
-              >
-                +
-              </button>
-            </div>
-          )}
+          <AddBlockButton
+            onClick={() => handleAddSentence(0)}
+            isVisible={hoverIndex === -1}
+            blockType="sentence"
+          />
         </div>
 
         {/* Render all sentences with add buttons between them */}
@@ -160,21 +154,14 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
 
               {/* Add button between sentences */}
               <div
-                className="relative h-4 group cursor-pointer"
                 onMouseEnter={() => setHoverIndex(index)}
                 onMouseLeave={() => setHoverIndex(null)}
               >
-                {hoverIndex === index && (
-                  <div className="absolute inset-x-0 flex justify-center">
-                    <button
-                      className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center transform transition-transform hover:scale-110 z-10"
-                      onClick={() => handleAddSentence(index + 1)}
-                      title="Add sentence here"
-                    >
-                      +
-                    </button>
-                  </div>
-                )}
+                <AddBlockButton
+                  onClick={() => handleAddSentence(index + 1)}
+                  isVisible={hoverIndex === index}
+                  blockType="sentence"
+                />
               </div>
             </React.Fragment>
           ))}
