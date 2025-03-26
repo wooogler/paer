@@ -106,7 +106,6 @@ export const useContentStore = create<ContentState>()(
           // Helper function to recursively find and update content by blockId
           const findAndUpdateContent = (
             content: Content | Paper,
-            parent: Content | null = null,
             parents: Content[] = []
           ): {
             found: boolean;
@@ -128,7 +127,7 @@ export const useContentStore = create<ContentState>()(
             if (content.content && Array.isArray(content.content)) {
               for (let i = 0; i < content.content.length; i++) {
                 const child = content.content[i];
-                const result = findAndUpdateContent(child, content as Content, [
+                const result = findAndUpdateContent(child, [
                   ...parents,
                   content as Content,
                 ]);

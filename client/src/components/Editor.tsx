@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useContentStore } from "../store/useContentStore";
 import { useAppStore } from "../store/useAppStore";
 import HierarchyTitle from "./editor/HierarchyTitle";
-import ParagraphEditor from "./editor/ParagraphEditor";
 import ContentRenderer from "./editor/ContentRenderer";
 
 const Editor: React.FC = () => {

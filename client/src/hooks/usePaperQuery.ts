@@ -79,7 +79,7 @@ export function useAddSentence() {
 
   return useMutation({
     mutationFn: (blockId: string | null) => addSentenceAfter(blockId),
-    onSuccess: async (response, blockId) => {
+    onSuccess: async (_, blockId) => {
       // 서버에서 즉시 최신 데이터 가져오기
       try {
         const newData = await fetchPaper();

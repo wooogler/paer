@@ -18,21 +18,13 @@ import {
 interface TextEditorProps {
   content: Content;
   level?: number;
-  index?: number;
   isLast?: boolean;
   onNextFocus?: () => void;
   onAddNewSentence?: () => void;
 }
 
 const TextEditor: React.FC<TextEditorProps> = React.memo(
-  ({
-    content,
-    level = 0,
-    index,
-    isLast = false,
-    onNextFocus,
-    onAddNewSentence,
-  }) => {
+  ({ content, level = 0, isLast = false, onNextFocus, onAddNewSentence }) => {
     const { updateContent } = useContentStore();
     const { showHierarchy } = useAppStore();
     const updateSentenceMutation = useUpdateSentence();

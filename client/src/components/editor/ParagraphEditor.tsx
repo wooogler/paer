@@ -11,7 +11,7 @@ interface ParagraphEditorProps {
 }
 
 const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
-  ({ content, path, level = 0 }) => {
+  ({ content, level = 0 }) => {
     const { showHierarchy } = useAppStore();
     const addSentenceMutation = useAddSentence();
 
