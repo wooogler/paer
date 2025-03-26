@@ -95,7 +95,6 @@ export class PaperController {
   async updateBlock(
     request: FastifyRequest<{
       Body: {
-        parentBlockId: string | null;
         targetBlockId: string;
         blockType: ContentType;
         keyToUpdate: string;
@@ -105,10 +104,9 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { parentBlockId, targetBlockId, blockType, keyToUpdate, updatedValue } = request.body;
+      const { targetBlockId, blockType, keyToUpdate, updatedValue } = request.body;
       // blockId can be null (to add at the beginning of a paragraph)
       await this.paperService.updateBlock(
-        parentBlockId,
         targetBlockId,
         blockType,
         keyToUpdate,

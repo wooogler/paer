@@ -63,43 +63,41 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-    // POST /api/paper/bloc/intent - Update block intent
-    fastify.post(
-      "/paper/block/intent",
-      async (
-        request: FastifyRequest<{
-          Body: {
-            parentBlockId: string | null;
-            targetBlockId: string;
-            blockType: ContentType;
-            keyToUpdate: "intent";
-            updatedValue: string;
-          };
-        }>,
-        reply: FastifyReply
-      ) => {
-        return paperController.updateBlock(request, reply);
-      }
-    );
+  // POST /api/paper/block/intent - Update block intent
+  fastify.post(
+    "/paper/block/intent",
+    async (
+      request: FastifyRequest<{
+        Body: {
+          targetBlockId: string;
+          blockType: ContentType;
+          keyToUpdate: "intent";
+          updatedValue: string;
+        };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.updateBlock(request, reply);
+    }
+  );
 
-        // POST /api/paper/bloc/summary - Update block summary
-        fastify.post(
-          "/paper/block/summary",
-          async (
-            request: FastifyRequest<{
-              Body: {
-                parentBlockId: string | null;
-                targetBlockId: string;
-                blockType: ContentType;
-                keyToUpdate: "summary";
-                updatedValue: string;
-              };
-            }>,
-            reply: FastifyReply
-          ) => {
-            return paperController.updateBlock(request, reply);
-          }
-        );
+  // POST /api/paper/bloc/summary - Update block summary
+  fastify.post(
+    "/paper/block/summary",
+    async (
+      request: FastifyRequest<{
+        Body: {
+          targetBlockId: string;
+          blockType: ContentType;
+          keyToUpdate: "summary";
+          updatedValue: string;
+        };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.updateBlock(request, reply);
+    }
+  );
 
   // Delete sentence API
   fastify.delete<{ Params: { blockId: string } }>(
