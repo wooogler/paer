@@ -108,10 +108,14 @@ export class PaperRepository {
 
   // Adds a new block to the document
   // Assumption: The client knows the parent block ID
-  async addBlock(parentBlockId: string | null, prevBlockId: string | null, blockType: ContentTypeSchemaEnum): Promise<void> {
+  async addBlock(parentBlockId: string | null, prevBlockId: string | null, blockType: ContentTypeSchemaEnum): Promise<string> {
+    let newBlockId = "-1";
+    
     try {
       // Reads the current paper file as JSON
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+
+      newBlockId = Date.now().toString();
 
       // Initializes a new block w/ specified block type and assigned block ID
       const newBlock = {
@@ -119,11 +123,11 @@ export class PaperRepository {
         summary: "",
         intent: "Provide additional information",
         content: "",
-        "block-id": Date.now().toString(),  // Assigns a unique block ID using timestamp
+        "block-id": newBlockId,  // Assigns a unique block ID using timestamp
       };
 
       if (!parentBlockId) {
-          throw new Error(
+        throw new Error(
           `Could not add the new block because parent block is not provided.`);
       }
 
@@ -148,6 +152,8 @@ export class PaperRepository {
       console.error("Error adding a new block:", error);
       throw new Error("Failed to add a new block");
     }
+
+    return newBlockId;
   }
 
   private findAndUpdateSentence(
@@ -173,6 +179,11 @@ export class PaperRepository {
     }
 
     return false;
+  }
+
+  // Finds the block given the ID
+  private getBlockById(root: Paper, blockId: string) {
+    
   }
 
   private findAndAddSentence(
