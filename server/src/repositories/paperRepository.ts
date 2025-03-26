@@ -129,6 +129,7 @@ export class PaperRepository {
         intent: "Provide additional information",
         content: "",
         "block-id": newBlockId, // Assigns a unique block ID using timestamp
+        ... ((blockType != "sentence" && {title: ""}))
       };
 
       if (!parentBlockId) {
