@@ -57,22 +57,22 @@ export class PaperRepository {
 
       newBlockId = Date.now().toString();
 
-      // 빈 sentence 객체 생성 (paragraph에 추가할 용도)
+      // Create empty sentence object (to add to paragraph)
       const emptySentence = {
         type: "sentence" as const,
         summary: "",
         intent: "Provide additional information",
         content: "",
-        "block-id": (Date.now() + 1).toString(), // 블록 ID가 중복되지 않도록 +1
+        "block-id": (Date.now() + 1).toString(), // Add +1 to ensure block ID is not duplicated
       };
 
       // Initializes a new block w/ specified block type and assigned block ID
       const newBlock = {
         type: blockType,
-        // paragraph 타입인 경우 summary를 "Empty Summary"로 설정
+        // For paragraph type, set summary to "Empty Summary"
         summary: blockType === "paragraph" ? "Empty Summary" : "",
         intent: "Empty Intent",
-        // paragraph 타입인 경우 빈 sentence가 포함된 배열로 초기화
+        // For paragraph type, initialize with an array containing an empty sentence
         content:
           blockType === "sentence"
             ? ""
@@ -139,7 +139,7 @@ export class PaperRepository {
       // Reads the current paper file as JSON
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
 
-      // 블록 찾기
+      // Find the block
       const targetBlock = this.findBlockById(paperData, targetBlockId);
 
       if (!targetBlock) {
@@ -161,14 +161,14 @@ export class PaperRepository {
     }
   }
 
-  // 블록 ID로 블록 찾기 함수 (재귀적으로 탐색)
+  // Find block by ID function (search recursively)
   private findBlockById(obj: any, blockId: string): any {
-    // 현재 객체의 block-id가 찾는 ID와 일치하는지 확인
+    // Check if the current object's block-id matches the target ID
     if (obj && obj["block-id"] === blockId) {
       return obj;
     }
 
-    // content 배열을 가진 경우 재귀적으로 탐색
+    // If the object has a content array, search recursively
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
         const found = this.findBlockById(child, blockId);
@@ -240,8 +240,8 @@ export class PaperRepository {
   }
 
   /**
-   * 문장 삭제
-   * @param blockId 삭제할 문장의 ID
+   * Delete a sentence
+   * @param blockId ID of the sentence to delete
    */
   async deleteSentence(blockId: string): Promise<void> {
     try {

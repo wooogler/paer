@@ -15,7 +15,7 @@ import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
 import { Paper, Content, ContentType } from "@paer/shared";
 
-// 새로 추가된 문장의 blockId를 저장하는 전역 변수
+// Global variable to store the blockId of the newly added sentence
 let newSentenceBlockId: string | null = null;
 
 export function usePaperQuery() {
@@ -31,7 +31,7 @@ export function usePaperQuery() {
   });
 
   useEffect(() => {
-    // 데이터가 성공적으로 로드되면 스토어에 저장
+    // Store in the state when data is loaded successfully
     if (query.data) {
       setContent(query.data);
     }
@@ -40,17 +40,17 @@ export function usePaperQuery() {
   return query;
 }
 
-// 새로 추가된 문장의 blockId를 가져오는 함수
+// Function to get the blockId of the newly added sentence
 export function getNewSentenceBlockId(): string | null {
   return newSentenceBlockId;
 }
 
-// 새로 추가된 문장의 blockId를 설정하는 함수
+// Function to set the blockId of the newly added sentence
 export function setNewSentenceBlockId(blockId: string | null): void {
   newSentenceBlockId = blockId;
 }
 
-// Sentence 업데이트를 위한 mutation hook
+// Mutation hook for updating sentences
 export const useUpdateSentence = () => {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -80,17 +80,17 @@ export const useUpdateSentence = () => {
       }
     },
     onSuccess: async () => {
-      // 서버에서 즉시 최신 데이터 가져오기
+      // Fetch latest data from server immediately
       try {
         const newData = await fetchPaper();
 
-        // 캐시 직접 업데이트
+        // Cache directly update
         queryClient.setQueryData(["paper"], newData);
 
-        // 스토어 직접 업데이트
+        // State directly update
         setContent(newData);
 
-        // 현재 선택된 content가 있으면 해당 path로 다시 선택하여 UI 업데이트
+        // If current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
           const refreshedContent = findContentByPath(newData, selectedPath);
           if (refreshedContent) {
@@ -101,7 +101,7 @@ export const useUpdateSentence = () => {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (즉시 새로고침)
+      // Invalidate query immediately (refresh immediately)
       queryClient.invalidateQueries({
         queryKey: ["paper"],
         exact: true,
@@ -111,7 +111,7 @@ export const useUpdateSentence = () => {
   });
 };
 
-// 문장 삭제를 위한 mutation hook
+// Sentence deletion mutation hook
 export function useDeleteSentence() {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -121,17 +121,17 @@ export function useDeleteSentence() {
   return useMutation({
     mutationFn: (blockId: string) => deleteSentence(blockId),
     onSuccess: async () => {
-      // 서버에서 즉시 최신 데이터 가져오기
+      // Fetch latest data from server immediately
       try {
         const newData = await fetchPaper();
 
-        // 캐시 직접 업데이트
+        // Cache directly update
         queryClient.setQueryData(["paper"], newData);
 
-        // 스토어 직접 업데이트
+        // State directly update
         setContent(newData);
 
-        // 현재 선택된 content가 있으면 해당 path로 다시 선택하여 UI 업데이트
+        // If current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
           const refreshedContent = findContentByPath(newData, selectedPath);
           if (refreshedContent) {
@@ -142,7 +142,7 @@ export function useDeleteSentence() {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (즉시 새로고침)
+      // Invalidate query immediately (refresh immediately)
       queryClient.invalidateQueries({
         queryKey: ["paper"],
         exact: true,
@@ -152,7 +152,7 @@ export function useDeleteSentence() {
   });
 }
 
-// Block intent 업데이트를 위한 mutation hook
+// Block intent update mutation hook
 export function useUpdateBlockIntent() {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -197,7 +197,7 @@ export function useUpdateBlockIntent() {
   });
 }
 
-// Block summary 업데이트를 위한 mutation hook
+// Block summary update mutation hook
 export function useUpdateBlockSummary() {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -242,7 +242,7 @@ export function useUpdateBlockSummary() {
   });
 }
 
-// Block title 업데이트를 위한 mutation hook
+// Block title update mutation hook
 export function useUpdateBlockTitle() {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -287,7 +287,7 @@ export function useUpdateBlockTitle() {
   });
 }
 
-// 경로를 기반으로 콘텐츠를 찾는 헬퍼 함수
+// Helper function to find content based on path
 function findContentByPath(rootContent: any, path: number[]): any {
   let current = rootContent;
   for (let i = 0; i < path.length; i++) {
@@ -304,7 +304,7 @@ function findContentByPath(rootContent: any, path: number[]): any {
   return current;
 }
 
-// Block 추가를 위한 mutation hook
+// Block addition mutation hook
 export function useAddBlock() {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -324,17 +324,17 @@ export function useAddBlock() {
       return await addBlock(parentBlockId, prevBlockId, blockType);
     },
     onSuccess: async () => {
-      // 서버에서 즉시 최신 데이터 가져오기
+      // Fetch latest data from server immediately
       try {
         const newData = await fetchPaper();
 
-        // 캐시 직접 업데이트
+        // Cache directly update
         queryClient.setQueryData(["paper"], newData);
 
-        // 스토어 직접 업데이트
+        // State directly update
         setContent(newData);
 
-        // 현재 선택된 content가 있으면 해당 path로 다시 선택하여 UI 업데이트
+        // If current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
           const refreshedContent = findContentByPath(newData, selectedPath);
           if (refreshedContent) {
@@ -345,7 +345,7 @@ export function useAddBlock() {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (즉시 새로고침)
+      // Invalidate query immediately (refresh immediately)
       queryClient.invalidateQueries({
         queryKey: ["paper"],
         exact: true,
@@ -355,7 +355,7 @@ export function useAddBlock() {
   });
 }
 
-// Block 삭제를 위한 mutation hook
+// Block deletion mutation hook
 export function useDeleteBlock() {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
@@ -367,24 +367,24 @@ export function useDeleteBlock() {
       await deleteBlock(blockId);
     },
     onSuccess: async () => {
-      // 서버에서 즉시 최신 데이터 가져오기
+      // Fetch latest data from server immediately
       try {
         const newData = await fetchPaper();
 
-        // 캐시 직접 업데이트
+        // Cache directly update
         queryClient.setQueryData(["paper"], newData);
 
-        // 스토어 직접 업데이트
+        // State directly update
         setContent(newData);
 
-        // 현재 선택된 content가 있으면 해당 path로 다시 선택하여 UI 업데이트
-        // 삭제된 블록이 선택되었던 경우 선택 해제
+        // If current selected content exists, select it again to update UI
+        // If the deleted block was selected, deselect it
         if (selectedContent && selectedPath) {
           const refreshedContent = findContentByPath(newData, selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           } else {
-            // 경로가 더 이상 유효하지 않으면 선택 해제
+            // If the path is no longer valid, deselect it
             setSelectedContent(null, []);
           }
         }
@@ -392,7 +392,7 @@ export function useDeleteBlock() {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (즉시 새로고침)
+      // Invalidate query immediately (refresh immediately)
       queryClient.invalidateQueries({
         queryKey: ["paper"],
         exact: true,
