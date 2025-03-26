@@ -7,6 +7,8 @@ import {
   addSentenceAfter,
   deleteSentence,
   addBlock,
+  updateBlockIntent,
+  updateBlockSummary,
 } from "../api/paperApi";
 import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
@@ -276,6 +278,103 @@ export function useDeleteSentence() {
       }
 
       // 이후 쿼리 무효화 (즉시 새로고침)
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
+    },
+  });
+}
+
+// Block intent 업데이트를 위한 mutation hook
+export function useUpdateBlockIntent() {
+  const queryClient = useQueryClient();
+  const setContent = useContentStore((state) => state.setContent);
+  const { selectedContent, selectedPath, setSelectedContent } =
+    useContentStore();
+
+  return useMutation({
+    mutationFn: async ({
+      parentBlockId,
+      targetBlockId,
+      blockType,
+      intent,
+    }: {
+      parentBlockId: string | null;
+      targetBlockId: string;
+      blockType: ContentType;
+      intent: string;
+    }) => {
+      await updateBlockIntent(parentBlockId, targetBlockId, blockType, intent);
+    },
+    onSuccess: async () => {
+      try {
+        const newData = await fetchPaper();
+        queryClient.setQueryData(["paper"], newData);
+        setContent(newData);
+
+        if (selectedContent && selectedPath) {
+          const refreshedContent = findContentByPath(newData, selectedPath);
+          if (refreshedContent) {
+            setSelectedContent(refreshedContent, selectedPath);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch updated data:", error);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
+    },
+  });
+}
+
+// Block summary 업데이트를 위한 mutation hook
+export function useUpdateBlockSummary() {
+  const queryClient = useQueryClient();
+  const setContent = useContentStore((state) => state.setContent);
+  const { selectedContent, selectedPath, setSelectedContent } =
+    useContentStore();
+
+  return useMutation({
+    mutationFn: async ({
+      parentBlockId,
+      targetBlockId,
+      blockType,
+      summary,
+    }: {
+      parentBlockId: string | null;
+      targetBlockId: string;
+      blockType: ContentType;
+      summary: string;
+    }) => {
+      await updateBlockSummary(
+        parentBlockId,
+        targetBlockId,
+        blockType,
+        summary
+      );
+    },
+    onSuccess: async () => {
+      try {
+        const newData = await fetchPaper();
+        queryClient.setQueryData(["paper"], newData);
+        setContent(newData);
+
+        if (selectedContent && selectedPath) {
+          const refreshedContent = findContentByPath(newData, selectedPath);
+          if (refreshedContent) {
+            setSelectedContent(refreshedContent, selectedPath);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch updated data:", error);
+      }
+
       queryClient.invalidateQueries({
         queryKey: ["paper"],
         exact: true,

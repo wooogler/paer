@@ -62,7 +62,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
           <span className={`break-words ${!value ? "text-gray-400" : ""}`}>
             {value || placeholder}
           </span>
-          {isHovered && isSentence && (
+          {isHovered && (
             <button
               onClick={() => setIsEditing(true)}
               className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-gray-700 flex-shrink-0"

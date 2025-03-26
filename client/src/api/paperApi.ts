@@ -108,3 +108,49 @@ export const addBlock = async (
     throw new Error("Failed to add new block");
   }
 };
+
+// Update block intent
+export const updateBlockIntent = async (
+  parentBlockId: string | null,
+  targetBlockId: string,
+  blockType: ContentType,
+  intent: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/block/intent", {
+      parentBlockId,
+      targetBlockId,
+      blockType,
+      keyToUpdate: "intent",
+      updatedValue: intent,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating block intent:", error.message);
+    }
+    throw new Error("Failed to update block intent");
+  }
+};
+
+// Update block summary
+export const updateBlockSummary = async (
+  parentBlockId: string | null,
+  targetBlockId: string,
+  blockType: ContentType,
+  summary: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/block/summary", {
+      parentBlockId,
+      targetBlockId,
+      blockType,
+      keyToUpdate: "summary",
+      updatedValue: summary,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating block summary:", error.message);
+    }
+    throw new Error("Failed to update block summary");
+  }
+};

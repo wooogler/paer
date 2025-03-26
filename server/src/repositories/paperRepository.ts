@@ -174,8 +174,8 @@ export class PaperRepository {
       const prevBlockIndex = !prevBlockId
         ? -1
         : parentBlock.content.findIndex(
-          (block: any) => block["block-id"] === prevBlockId
-        );
+            (block: any) => block["block-id"] === prevBlockId
+          );
       parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
 
       // Write the updated JSON back to the paper file
@@ -193,7 +193,13 @@ export class PaperRepository {
   }
 
   // Updates a block with the specified key-value pair
-  async updateBlock(parentBlockId: string | null, targetBlockId: string, blockType: ContentType, keyToUpdate: string, updatedValue: string): Promise<void> {
+  async updateBlock(
+    parentBlockId: string | null,
+    targetBlockId: string,
+    blockType: ContentType,
+    keyToUpdate: string,
+    updatedValue: string
+  ): Promise<void> {
     try {
       // Reads the current paper file as JSON
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
@@ -218,9 +224,9 @@ export class PaperRepository {
 
       // Finds the index of the previous block ID within the parent block; return -1 if not found
       const targetBlock = parentBlock.content.find(
-          (block: any) => block["block-id"] === targetBlockId
-        );
-      
+        (block: any) => block["block-id"] === targetBlockId
+      );
+
       // Updates the target block with the specified key-value pair
       targetBlock[keyToUpdate] = updatedValue;
 

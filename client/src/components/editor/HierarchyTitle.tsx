@@ -1,6 +1,11 @@
-import React, { useMemo, useState } from "react";
-import { Content } from "@paer/shared";
+import React, { useMemo, useState, useRef, useCallback } from "react";
+import { Content, ContentType } from "@paer/shared";
 import { FaTrash } from "react-icons/fa";
+import EditableField from "./EditableField";
+import {
+  useUpdateBlockIntent,
+  useUpdateBlockSummary,
+} from "../../hooks/usePaperQuery";
 
 interface HierarchyTitleProps {
   content: Content;
@@ -21,6 +26,29 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     isPlaceholder = false,
   }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [editingIntent, setEditingIntent] = useState(false);
+    const [editingSummary, setEditingSummary] = useState(false);
+    const [localIntent, setLocalIntent] = useState(content.intent || "");
+    const [localSummary, setLocalSummary] = useState(content.summary || "");
+
+    const intentInputRef = useRef<HTMLInputElement>(null);
+    const summaryInputRef = useRef<HTMLInputElement>(null);
+
+    const updateBlockIntentMutation = useUpdateBlockIntent();
+    const updateBlockSummaryMutation = useUpdateBlockSummary();
+
+    // 부모 블록 ID를 추출하는 로직 (실제 구현은 애플리케이션 구조에 따라 다름)
+    const parentBlockId = null; // 이 부분은 실제 구현에 맞게 수정해야 함
+
+    // Update local intent and summary state when content props change
+    React.useEffect(() => {
+      if (content.intent !== undefined) {
+        setLocalIntent(content.intent);
+      }
+      if (content.summary !== undefined) {
+        setLocalSummary(content.summary);
+      }
+    }, [content.intent, content.summary]);
 
     // Get icon color class based on content type
     const iconColorClass = useMemo(() => {
@@ -110,8 +138,84 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       */
     };
 
+    // Handlers for editable fields
+    const handleIntentUpdate = useCallback(() => {
+      if (content.type !== "sentence" && content["block-id"]) {
+        updateBlockIntentMutation.mutate({
+          parentBlockId: parentBlockId,
+          targetBlockId: content["block-id"],
+          blockType: content.type as ContentType,
+          intent: localIntent,
+        });
+        setEditingIntent(false);
+      }
+    }, [
+      content.type,
+      content["block-id"],
+      localIntent,
+      parentBlockId,
+      updateBlockIntentMutation,
+    ]);
+
+    const handleSummaryUpdate = useCallback(() => {
+      if (content.type !== "sentence" && content["block-id"]) {
+        updateBlockSummaryMutation.mutate({
+          parentBlockId: parentBlockId,
+          targetBlockId: content["block-id"],
+          blockType: content.type as ContentType,
+          summary: localSummary,
+        });
+        setEditingSummary(false);
+      }
+    }, [
+      content.type,
+      content["block-id"],
+      localSummary,
+      parentBlockId,
+      updateBlockSummaryMutation,
+    ]);
+
+    const handleIntentCancel = useCallback(() => {
+      setLocalIntent(content.intent || "");
+      setEditingIntent(false);
+    }, [content.intent]);
+
+    const handleSummaryCancel = useCallback(() => {
+      setLocalSummary(content.summary || "");
+      setEditingSummary(false);
+    }, [content.summary]);
+
+    const handleIntentKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          handleIntentUpdate();
+        } else if (e.key === "Escape") {
+          handleIntentCancel();
+        }
+      },
+      [handleIntentUpdate, handleIntentCancel]
+    );
+
+    const handleSummaryKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          handleSummaryUpdate();
+        } else if (e.key === "Escape") {
+          handleSummaryCancel();
+        }
+      },
+      [handleSummaryUpdate, handleSummaryCancel]
+    );
+
     // Display delete for any content type except paper and placeholder content
     const showDeleteButton = content.type !== "paper" && !isPlaceholder;
+
+    // Only allow editing for non-sentence blocks
+    const isEditableBlock =
+      content.type !== "sentence" && content.type !== "paper" && !isPlaceholder;
+
+    // isParagraph for special handling
+    const isParagraph = content.type === "paragraph";
 
     return (
       <div
@@ -127,53 +231,139 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
         {/* Title content */}
         <div
           className="relative"
-          style={{ paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px" }}
+          style={{
+            paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px",
+          }}
         >
-          <div
-            className={`${titleSizeClass} font-bold flex items-center gap-2 group relative`}
-          >
-            <span className={`${iconColorClass} break-words`}>
-              {getDisplayTitle()}
-            </span>
+          {/* 일반 타입일 경우 제목 표시 */}
+          {!isParagraph && (
+            <div
+              className={`${titleSizeClass} font-bold flex items-center gap-2 group relative`}
+            >
+              <span className={`${iconColorClass} break-words`}>
+                {getDisplayTitle()}
+              </span>
 
-            {/* Delete button */}
-            {showDeleteButton && (
-              <button
-                className={`text-red-500 hover:text-red-700 ml-2 transition-opacity duration-200 ${
-                  isHovered ? "opacity-100" : "opacity-0"
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (
-                    window.confirm(
-                      `Are you sure you want to delete this ${content.type}?`
-                    )
-                  ) {
-                    handleDeleteBlock();
-                  }
-                }}
-                aria-label={`Delete ${content.type}`}
-              >
-                <FaTrash size={14} />
-              </button>
-            )}
-          </div>
+              {/* Action buttons */}
+              {isHovered && showDeleteButton && (
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (
+                      window.confirm(
+                        `Are you sure you want to delete this ${content.type}?`
+                      )
+                    ) {
+                      handleDeleteBlock();
+                    }
+                  }}
+                  aria-label={`Delete ${content.type}`}
+                >
+                  <FaTrash size={14} />
+                </button>
+              )}
+            </div>
+          )}
 
           <div className={`text-base flex flex-col text-gray-700`}>
-            {/* Display summary for non-paragraph types */}
-            {content.type !== "paragraph" && (
-              <div>
-                <span className="break-words">
-                  {content.summary || "Empty Summary"}
-                </span>
+            {/* paragraph 타입일 경우 summary를 title 처럼 표시 */}
+            {isParagraph && (
+              <div
+                className={`${titleSizeClass} font-bold flex items-center gap-2 group relative mb-2`}
+              >
+                {isEditableBlock ? (
+                  <div className={`${iconColorClass} flex-grow`}>
+                    <EditableField
+                      value={localSummary}
+                      onChange={setLocalSummary}
+                      onUpdate={handleSummaryUpdate}
+                      onCancel={handleSummaryCancel}
+                      isEditing={editingSummary}
+                      setIsEditing={setEditingSummary}
+                      inputRef={summaryInputRef}
+                      placeholder="Empty Summary"
+                      isHovered={isHovered}
+                      isSentence={true}
+                      onKeyDown={handleSummaryKeyDown}
+                    />
+                  </div>
+                ) : (
+                  <span className={`${iconColorClass} break-words`}>
+                    {content.summary || "Empty Summary"}
+                  </span>
+                )}
+
+                {/* Delete button for paragraph */}
+                {isHovered && showDeleteButton && (
+                  <button
+                    className="text-red-500 hover:text-red-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (
+                        window.confirm(
+                          `Are you sure you want to delete this ${content.type}?`
+                        )
+                      ) {
+                        handleDeleteBlock();
+                      }
+                    }}
+                    aria-label={`Delete ${content.type}`}
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                )}
               </div>
             )}
+
+            {/* Display summary for non-paragraph types */}
+            {!isParagraph && (
+              <div>
+                {isEditableBlock ? (
+                  <EditableField
+                    value={localSummary}
+                    onChange={setLocalSummary}
+                    onUpdate={handleSummaryUpdate}
+                    onCancel={handleSummaryCancel}
+                    isEditing={editingSummary}
+                    setIsEditing={setEditingSummary}
+                    inputRef={summaryInputRef}
+                    placeholder="Empty Summary"
+                    isHovered={isHovered}
+                    isSentence={true}
+                    onKeyDown={handleSummaryKeyDown}
+                  />
+                ) : (
+                  <span className="break-words">
+                    {content.summary || "Empty Summary"}
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Display intent for all types */}
             <div className="flex items-center gap-2">
               <span className="font-medium">🎯</span>
-              <span className="break-words">
-                {content.intent || "Empty Intent"}
-              </span>
+              {isEditableBlock ? (
+                <EditableField
+                  value={localIntent}
+                  onChange={setLocalIntent}
+                  onUpdate={handleIntentUpdate}
+                  onCancel={handleIntentCancel}
+                  isEditing={editingIntent}
+                  setIsEditing={setEditingIntent}
+                  inputRef={intentInputRef}
+                  placeholder="Empty Intent"
+                  icon=""
+                  isHovered={isHovered}
+                  isSentence={true}
+                  onKeyDown={handleIntentKeyDown}
+                />
+              ) : (
+                <span className="break-words">
+                  {content.intent || "Empty Intent"}
+                </span>
+              )}
             </div>
           </div>
         </div>
