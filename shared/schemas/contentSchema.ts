@@ -9,6 +9,14 @@ export const ContentTypeSchema = z.enum([
   "sentence",
 ]);
 
+export enum ContentTypeSchemaEnum {
+  Paper = "paper",
+  Section = "section",
+  Subsection = "subsection",
+  Paragraph = "paragraph",
+  Sentence = "sentence",
+}
+
 export type ContentType = z.infer<typeof ContentTypeSchema>;
 
 // Define Content interface for better type safety

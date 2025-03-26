@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { Paper } from "@paer/shared";
+import { Paper, ContentTypeSchemaEnum } from "@paer/shared";
+import e from "cors";
 
 export class PaperRepository {
   private readonly filePath: string;
@@ -105,6 +106,56 @@ export class PaperRepository {
     }
   }
 
+  // Adds a new block to the document
+  // Assumption: The client knows the parent block ID
+  async addBlock(parentBlockId: string | null, prevBlockId: string | null, blockType: ContentTypeSchemaEnum): Promise<string> {
+    let newBlockId = "-1";
+    
+    try {
+      // Reads the current paper file as JSON
+      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+
+      newBlockId = Date.now().toString();
+
+      // Initializes a new block w/ specified block type and assigned block ID
+      const newBlock = {
+        type: blockType,
+        summary: "",
+        intent: "Provide additional information",
+        content: "",
+        "block-id": newBlockId,  // Assigns a unique block ID using timestamp
+      };
+
+      if (!parentBlockId) {
+        throw new Error(
+          `Could not add the new block because parent block is not provided.`);
+      }
+
+      // Finds the parent block; throws an error if not found
+      const parentBlock = paperData.content.find((block: any) => block["block-id"] === parentBlockId);
+      if (!parentBlock) {
+        throw new Error(
+          `Could not find the parent block with block ID ${parentBlockId}`);
+      }
+
+      // Finds the index of the previous block ID within the parent block; return -1 if not found
+      const prevBlockIndex = -1 ? (!prevBlockId) : parentBlock.content.findIndex((block: any) => block["block-id"] === prevBlockId);
+      parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
+
+      // Write the updated JSON back to the paper file
+      fs.writeFileSync(
+        this.filePath,
+        JSON.stringify(paperData, null, 2),
+        "utf-8"
+      );
+    } catch (error) {
+      console.error("Error adding a new block:", error);
+      throw new Error("Failed to add a new block");
+    }
+
+    return newBlockId;
+  }
+
   private findAndUpdateSentence(
     obj: any,
     blockId: string,
@@ -128,6 +179,11 @@ export class PaperRepository {
     }
 
     return false;
+  }
+
+  // Finds the block given the ID
+  private getBlockById(root: Paper, blockId: string) {
+    
   }
 
   private findAndAddSentence(

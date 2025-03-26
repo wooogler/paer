@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { PaperService } from "../services/paperService";
-import { PaperSchema } from "@paer/shared";
+import { PaperSchema, ContentTypeSchemaEnum } from "@paer/shared";
 import { OpenAI } from "openai";
 
 export class PaperController {
@@ -64,6 +64,27 @@ export class PaperController {
     } catch (error) {
       console.error("Error in addSentence:", error);
       return reply.code(500).send({ error: "Failed to add new sentence" });
+    }
+  }
+
+  async addBlock(
+    request: FastifyRequest<{
+      Body: {
+        parentBlockId: string | null,
+        prevBlockId: string | null,
+        blockType: ContentTypeSchemaEnum
+      }
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { parentBlockId, prevBlockId, blockType } = request.body;
+      // blockId can be null (to add at the beginning of a paragraph)
+      const newBlockId = await this.paperService.addBlock(parentBlockId, prevBlockId, blockType);
+      return { success: true, blockId: newBlockId};
+    } catch (error) {
+      console.error("Error in addSentence:", error);
+      return reply.code(500).send({ error: "Failed to add new block" });
     }
   }
 
