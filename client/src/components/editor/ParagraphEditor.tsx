@@ -148,7 +148,6 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
                 <TextEditor
                   content={sentenceContent}
                   level={sentenceLevel}
-                  index={index}
                   isLast={index === (content.content?.length || 0) - 1}
                   onNextFocus={() => handleNextFocus(index)}
                   onAddNewSentence={
