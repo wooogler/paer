@@ -63,13 +63,12 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // PATCH /api/paper/block/intent - Update block intent
-  fastify.patch(
+  // POST /api/paper/block/intent - Update block intent
+  fastify.post(
     "/paper/block/intent",
     async (
       request: FastifyRequest<{
         Body: {
-          parentBlockId: string | null;
           targetBlockId: string;
           blockType: ContentType;
           keyToUpdate: "intent";
@@ -82,13 +81,12 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // PATCH /api/paper/bloc/summary - Update block summary
-  fastify.patch(
+  // POST /api/paper/bloc/summary - Update block summary
+  fastify.post(
     "/paper/block/summary",
     async (
       request: FastifyRequest<{
         Body: {
-          parentBlockId: string | null;
           targetBlockId: string;
           blockType: ContentType;
           keyToUpdate: "summary";

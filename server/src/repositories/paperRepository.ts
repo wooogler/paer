@@ -200,6 +200,7 @@ export class PaperRepository {
     keyToUpdate: string,
     updatedValue: string
   ): Promise<void> {
+  async updateBlock(targetBlockId: string, blockType: ContentType, keyToUpdate: string, updatedValue: string): Promise<void> {
     try {
       // Reads the current paper file as JSON
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
@@ -227,6 +228,8 @@ export class PaperRepository {
         (block: any) => block["block-id"] === targetBlockId
       );
 
+      );
+      
       // Updates the target block with the specified key-value pair
       targetBlock[keyToUpdate] = updatedValue;
 
