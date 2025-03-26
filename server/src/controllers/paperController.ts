@@ -72,7 +72,7 @@ export class PaperController {
       Body: {
         parentBlockId: string | null;
         prevBlockId: string | null;
-        blockType: typeof ContentTypeSchema;
+        blockType: string;
       };
     }>,
     reply: FastifyReply

@@ -86,13 +86,17 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     };
 
     return (
-      <div className={`relative ${isCurrentSelected ? "bg-transparent" : ""}`}>
+      <div
+        className={`relative ${
+          isCurrentSelected ? "bg-blue-50 rounded-md" : ""
+        }`}
+      >
         {/* Vertical level indicator lines */}
         {renderLines && renderLevelLines()}
 
         {/* Title content */}
         <div
-          className="relative py-1"
+          className="relative"
           style={{ paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px" }}
         >
           <div

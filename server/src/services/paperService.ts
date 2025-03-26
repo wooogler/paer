@@ -26,7 +26,7 @@ export class PaperService {
   async addBlock(
     parentBlockId: string | null,
     prevBlockId: string | null,
-    blockType: typeof ContentTypeSchema
+    blockType: string
   ): Promise<string> {
     return this.paperRepository.addBlock(parentBlockId, prevBlockId, blockType);
   }

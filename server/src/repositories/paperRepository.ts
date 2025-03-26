@@ -1,8 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { Paper, ContentTypeSchema, ContentTypeSchemaEnum, Content } from "@paer/shared";
+import { Paper, ContentTypeSchema, Content } from "@paer/shared";
 import e from "cors";
-
 
 export class PaperRepository {
   private readonly filePath: string;
@@ -112,7 +111,7 @@ export class PaperRepository {
   async addBlock(
     parentBlockId: string | null,
     prevBlockId: string | null,
-    blockType: typeof ContentTypeSchema
+    blockType: string
   ): Promise<string> {
     let newBlockId = "-1";
 
@@ -129,7 +128,7 @@ export class PaperRepository {
         intent: "Provide additional information",
         content: "",
         "block-id": newBlockId, // Assigns a unique block ID using timestamp
-        ... ((blockType != "sentence" && {title: ""}))
+        ...(blockType !== "sentence" && { title: "" }),
       };
 
       if (!parentBlockId) {
@@ -139,16 +138,20 @@ export class PaperRepository {
       }
 
       // Finds the parent block; throws an error if not found
-      const parentBlock = this.getBlockById(paperData, parentBlockId, blockType);
-      if (parentBlock == 'undefined') {
+      const parentBlock = this.getBlockById(
+        paperData,
+        parentBlockId,
+        blockType
+      );
+      if (!parentBlock) {
         throw new Error(
           `Could not find the parent block with block ID ${parentBlockId}`
         );
       }
 
       // Finds the index of the previous block ID within the parent block; return -1 if not found
-      const prevBlockIndex = -1
-        ? !prevBlockId
+      const prevBlockIndex = !prevBlockId
+        ? -1
         : parentBlock.content.findIndex(
             (block: any) => block["block-id"] === prevBlockId
           );
@@ -194,7 +197,7 @@ export class PaperRepository {
   }
 
   // Finds the block given the ID
-  private getBlockById(root: any, blockId: string, blockType: typeof ContentTypeSchema) {
+  private getBlockById(root: any, blockId: string, blockType: string) {
     const matchingId = (block: any) => block["block-id"] === blockId;
     switch (blockType) {
       case "section":
@@ -205,12 +208,13 @@ export class PaperRepository {
 
       case "paragraph":
         for (const section of root.content) {
-          if (section.content != 'undefined') {
+          if (section.content) {
             const match = section.content?.find(matchingId);
-            if (match != 'undefined') return match;
+            if (match) return match;
           }
         }
-      
+        return undefined;
+
       case "sentence":
         for (const section of root.content) {
           for (const subsection of section.content) {
@@ -218,7 +222,11 @@ export class PaperRepository {
             if (match) return match;
           }
         }
-    } 
+        return undefined;
+
+      default:
+        return undefined;
+    }
   }
 
   private findAndAddSentence(
