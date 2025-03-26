@@ -8,7 +8,7 @@ export class PaperController {
   private client: OpenAI;
 
   constructor() {
-    this.paperService = new PaperService();
+    this.paperService = new PaperService("./data/paper.json");
     this.client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -89,9 +89,12 @@ export class PaperController {
     }
   }
 
-  async askLLM(request: FastifyRequest< { Body: { text: string } } >, reply: FastifyReply) {
+  async askLLM(
+    request: FastifyRequest<{ Body: { text: string } }>,
+    reply: FastifyReply
+  ) {
     const { text } = request.body;
-    
+
     try {
       const response = await this.client.completions.create({
         model: "text-davinci-003",
@@ -103,6 +106,112 @@ export class PaperController {
     } catch (error) {
       const errorMessage = (error as Error).message;
       return reply.status(500).send({ error: errorMessage });
+    }
+  }
+
+  async updateSentenceIntent(
+    request: FastifyRequest<{
+      Body: { blockId: string; intent: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { blockId, intent } = request.body;
+
+      // Validate input
+      if (!blockId || !intent) {
+        return reply
+          .code(400)
+          .send({ error: "blockId and intent are required" });
+      }
+
+      // Get current paper content
+      const paper = await this.paperService.getPaper();
+
+      // Helper function to find and update sentence
+      const findAndUpdateSentence = (content: any): boolean => {
+        if (content["block-id"] === blockId && content.type === "sentence") {
+          content.intent = intent;
+          return true;
+        }
+
+        if (Array.isArray(content.content)) {
+          for (const child of content.content) {
+            if (findAndUpdateSentence(child)) return true;
+          }
+        }
+
+        return false;
+      };
+
+      // Try to find and update the sentence
+      const found = findAndUpdateSentence(paper);
+      if (!found) {
+        return reply.code(404).send({ error: "Sentence not found" });
+      }
+
+      // Save updated paper
+      await this.paperService.savePaper(paper);
+
+      return reply.send({ success: true });
+    } catch (error) {
+      console.error("Error updating sentence intent:", error);
+      return reply
+        .code(500)
+        .send({ error: "Failed to update sentence intent" });
+    }
+  }
+
+  async updateSentenceSummary(
+    request: FastifyRequest<{
+      Body: { blockId: string; summary: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { blockId, summary } = request.body;
+
+      // Validate input
+      if (!blockId || !summary) {
+        return reply
+          .code(400)
+          .send({ error: "blockId and summary are required" });
+      }
+
+      // Get current paper content
+      const paper = await this.paperService.getPaper();
+
+      // Helper function to find and update sentence
+      const findAndUpdateSentence = (content: any): boolean => {
+        if (content["block-id"] === blockId && content.type === "sentence") {
+          content.summary = summary;
+          return true;
+        }
+
+        if (Array.isArray(content.content)) {
+          for (const child of content.content) {
+            if (findAndUpdateSentence(child)) return true;
+          }
+        }
+
+        return false;
+      };
+
+      // Try to find and update the sentence
+      const found = findAndUpdateSentence(paper);
+      if (!found) {
+        return reply.code(404).send({ error: "Sentence not found" });
+      }
+
+      // Save updated paper
+      await this.paperService.savePaper(paper);
+
+      return reply.send({ success: true });
+    } catch (error) {
+      console.error("Error updating sentence summary:", error);
+      return reply
+        .code(500)
+        .send({ error: "Failed to update sentence summary" });
     }
   }
 }

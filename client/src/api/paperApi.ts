@@ -57,3 +57,33 @@ export async function deleteSentence(blockId: string): Promise<void> {
     throw error;
   }
 }
+
+// Update sentence intent
+export const updateSentenceIntent = async (
+  blockId: string,
+  intent: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/sentence/intent", { blockId, intent });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating sentence intent:", error.message);
+    }
+    throw new Error("Failed to update sentence intent");
+  }
+};
+
+// Update sentence summary
+export const updateSentenceSummary = async (
+  blockId: string,
+  summary: string
+): Promise<void> => {
+  try {
+    await api.patch("/paper/sentence/summary", { blockId, summary });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error updating sentence summary:", error.message);
+    }
+    throw new Error("Failed to update sentence summary");
+  }
+};

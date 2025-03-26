@@ -14,21 +14,32 @@ import {
   getNewSentenceBlockId,
   setNewSentenceBlockId,
 } from "../../hooks/usePaperQuery";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateSentenceContent } from "../../api/paperApi";
 
 interface TextEditorProps {
   content: Content;
   level?: number;
   isLast?: boolean;
+  showHierarchy?: boolean;
   onNextFocus?: () => void;
   onAddNewSentence?: () => void;
 }
 
 const TextEditor: React.FC<TextEditorProps> = React.memo(
-  ({ content, level = 0, isLast = false, onNextFocus, onAddNewSentence }) => {
+  ({
+    content,
+    level = 0,
+    isLast = false,
+    showHierarchy = true,
+    onNextFocus,
+    onAddNewSentence,
+  }) => {
     const { updateContent } = useContentStore();
-    const { showHierarchy } = useAppStore();
+    const { showHierarchy: appShowHierarchy } = useAppStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
+    const queryClient = useQueryClient();
     // Add state to save current content when focus starts
     const [initialContent, setInitialContent] = useState<string>("");
     // Add state to track if the textarea is focused
@@ -37,6 +48,14 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const [isHovered, setIsHovered] = useState<boolean>(false);
     // Add ref for textarea to manage focus
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [editingIntent, setEditingIntent] = useState(false);
+    const [editingSummary, setEditingSummary] = useState(false);
+    const [localIntent, setLocalIntent] = useState(content.intent || "");
+    const [localSummary, setLocalSummary] = useState(content.summary || "");
+    const intentInputRef = useRef<HTMLInputElement>(null);
+    const summaryInputRef = useRef<HTMLInputElement>(null);
+    // 강제 리렌더링을 위한 상태 변수
+    const [updateTrigger, setUpdateTrigger] = useState(0);
 
     // Manage content value in local state for better responsiveness
     const [localValue, setLocalValue] = useState<string>(
@@ -56,6 +75,23 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       // Also update initial content for accurate change detection
       setInitialContent(newValue);
     }, [content.type, content.content, content.summary]);
+
+    // Update local intent and summary state when content props change
+    useEffect(() => {
+      console.log(
+        "Content props changed - intent:",
+        content.intent,
+        "summary:",
+        content.summary
+      );
+
+      if (content.intent !== undefined) {
+        setLocalIntent(content.intent);
+      }
+      if (content.summary !== undefined) {
+        setLocalSummary(content.summary);
+      }
+    }, [content.intent, content.summary]);
 
     // Focus the textarea
     const focus = useCallback(() => {
@@ -280,7 +316,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // Create vertical level indicator lines
     const renderLevelLines = () => {
-      if (level === 0 || !showHierarchy) return null;
+      if (level === 0 || !appShowHierarchy) return null;
 
       const lines = [];
       for (let i = 0; i < level; i++) {
@@ -297,6 +333,120 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       }
       return lines;
     };
+
+    // Handle intent update
+    const handleIntentUpdate = useCallback(() => {
+      if (content.type === "sentence" && content["block-id"]) {
+        console.log(
+          "Intent update - Before:",
+          content.intent,
+          "New:",
+          localIntent
+        );
+
+        // Use the same updateSentenceMutation for intent updates
+        updateSentenceMutation.mutate({
+          blockId: content["block-id"],
+          intent: localIntent,
+        });
+
+        // Then update store for immediate UI update
+        updateContent(content["block-id"], { intent: localIntent });
+
+        // 강제 리렌더링 트리거
+        setUpdateTrigger((prev) => prev + 1);
+
+        setEditingIntent(false);
+      }
+    }, [
+      content.type,
+      content["block-id"],
+      localIntent,
+      updateSentenceMutation,
+      updateContent,
+    ]);
+
+    // Handle summary update
+    const handleSummaryUpdate = useCallback(() => {
+      if (content.type === "sentence" && content["block-id"]) {
+        console.log(
+          "Summary update - Before:",
+          content.summary,
+          "New:",
+          localSummary
+        );
+
+        // Use the same updateSentenceMutation for summary updates
+        updateSentenceMutation.mutate({
+          blockId: content["block-id"],
+          summary: localSummary,
+        });
+
+        // Then update store for immediate UI update
+        updateContent(content["block-id"], { summary: localSummary });
+
+        // 강제 리렌더링 트리거
+        setUpdateTrigger((prev) => prev + 1);
+
+        setEditingSummary(false);
+      }
+    }, [
+      content.type,
+      content["block-id"],
+      localSummary,
+      updateSentenceMutation,
+      updateContent,
+    ]);
+
+    // Handle intent cancel
+    const handleIntentCancel = useCallback(() => {
+      setLocalIntent(content.intent || "");
+      setEditingIntent(false);
+    }, [content.intent]);
+
+    // Handle summary cancel
+    const handleSummaryCancel = useCallback(() => {
+      setLocalSummary(content.summary || "");
+      setEditingSummary(false);
+    }, [content.summary]);
+
+    // Handle intent key down
+    const handleIntentKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          handleIntentUpdate();
+        } else if (e.key === "Escape") {
+          handleIntentCancel();
+        }
+      },
+      [handleIntentUpdate, handleIntentCancel]
+    );
+
+    // Handle summary key down
+    const handleSummaryKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+          handleSummaryUpdate();
+        } else if (e.key === "Escape") {
+          handleSummaryCancel();
+        }
+      },
+      [handleSummaryUpdate, handleSummaryCancel]
+    );
+
+    // Focus intent input when editing starts
+    useEffect(() => {
+      if (editingIntent && intentInputRef.current) {
+        intentInputRef.current.focus();
+      }
+    }, [editingIntent]);
+
+    // Focus summary input when editing starts
+    useEffect(() => {
+      if (editingSummary && summaryInputRef.current) {
+        summaryInputRef.current.focus();
+      }
+    }, [editingSummary]);
 
     return (
       <div
@@ -319,17 +469,96 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         )}
 
         <div
-          style={{ paddingLeft: showHierarchy ? `${level * 16 + 16}px` : "0" }}
+          style={{
+            paddingLeft:
+              showHierarchy && (!content.type || content.type !== "sentence")
+                ? `${level * 16 + 16}px`
+                : "0",
+          }}
         >
           <div
             className={`flex flex-col gap-1 p-2 rounded-t-lg ${bgColorClass}`}
           >
-            <div className="text-sm">
-              <span className="break-words">{content.summary}</span>
+            <div className="text-sm relative group">
+              {editingSummary ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={summaryInputRef}
+                    type="text"
+                    value={localSummary}
+                    onChange={(e) => setLocalSummary(e.target.value)}
+                    onKeyDown={handleSummaryKeyDown}
+                    className="flex-1 p-1 rounded border"
+                    placeholder="Enter summary"
+                  />
+                  <button
+                    onClick={handleSummaryCancel}
+                    className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSummaryUpdate}
+                    className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    Update
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <span className="break-words">{localSummary}</span>
+                  {isHovered && content.type === "sentence" && (
+                    <button
+                      onClick={() => setEditingSummary(true)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-gray-700 flex-shrink-0"
+                      title="Edit summary"
+                    >
+                      ✎
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
-            <div className="text-sm flex items-center gap-2">
+            <div className="text-sm flex items-center gap-2 relative group">
               <span className="font-medium">🎯 </span>
-              <span className="break-words">{content.intent}</span>
+              {editingIntent ? (
+                <div className="flex items-center gap-2 flex-1">
+                  <input
+                    ref={intentInputRef}
+                    type="text"
+                    value={localIntent}
+                    onChange={(e) => setLocalIntent(e.target.value)}
+                    onKeyDown={handleIntentKeyDown}
+                    className="flex-1 p-1 rounded border"
+                    placeholder="Enter intent"
+                  />
+                  <button
+                    onClick={handleIntentCancel}
+                    className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleIntentUpdate}
+                    className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white"
+                  >
+                    Update
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <span className="break-words">{localIntent}</span>
+                  {isHovered && content.type === "sentence" && (
+                    <button
+                      onClick={() => setEditingIntent(true)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-500 hover:text-gray-700 flex-shrink-0"
+                      title="Edit intent"
+                    >
+                      ✎
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           <div>

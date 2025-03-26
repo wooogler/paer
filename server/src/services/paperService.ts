@@ -1,11 +1,14 @@
 import { Paper } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
+import fs from "fs/promises";
 
 export class PaperService {
   private paperRepository: PaperRepository;
+  private paperPath: string;
 
-  constructor() {
+  constructor(paperPath: string) {
     this.paperRepository = new PaperRepository();
+    this.paperPath = paperPath;
   }
 
   async getPaper(): Promise<Paper> {
@@ -26,5 +29,18 @@ export class PaperService {
    */
   async deleteSentence(blockId: string): Promise<void> {
     return this.paperRepository.deleteSentence(blockId);
+  }
+
+  async savePaper(paper: Paper): Promise<void> {
+    try {
+      await fs.writeFile(
+        this.paperPath,
+        JSON.stringify(paper, null, 2),
+        "utf-8"
+      );
+    } catch (error) {
+      console.error("Error saving paper:", error);
+      throw new Error("Failed to save paper");
+    }
   }
 }

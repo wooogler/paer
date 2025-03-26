@@ -65,6 +65,32 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       return paperController.askLLM(request, reply);
     }
   );
+
+  // PATCH /api/paper/sentence/intent - Update sentence intent
+  fastify.patch(
+    "/paper/sentence/intent",
+    async (
+      request: FastifyRequest<{
+        Body: { blockId: string; intent: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.updateSentenceIntent(request, reply);
+    }
+  );
+
+  // PATCH /api/paper/sentence/summary - Update sentence summary
+  fastify.patch(
+    "/paper/sentence/summary",
+    async (
+      request: FastifyRequest<{
+        Body: { blockId: string; summary: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.updateSentenceSummary(request, reply);
+    }
+  );
 };
 
 export default apiRoutes;

@@ -6,7 +6,7 @@ export class PaperRepository {
   private readonly filePath: string;
 
   constructor() {
-    this.filePath = path.join(__dirname, "../../data/testContent.json");
+    this.filePath = path.join(__dirname, "../../data/paper.json");
   }
 
   async getPaper(): Promise<Paper> {

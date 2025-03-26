@@ -80,9 +80,7 @@ function getBlockValue(blockId: string, key: string) {
     .split(".")
     .map(Number);
 
-  const data = fs.readFileSync(
-    path.join(__dirname, "../data/testContent.json")
-  );
+  const data = fs.readFileSync(path.join(__dirname, "../data/paper.json"));
   const obj = JSON.parse(data.toString());
 
   let toGet = returnTargetBlock(obj, secId, subsecId, parId, senId);
@@ -94,7 +92,7 @@ function updateBlockValue(blockId: string, key: string, valueToUpdate: string) {
     .split(".")
     .map(Number);
 
-  const dataPath = path.join(__dirname, "../data/testContent.json");
+  const dataPath = path.join(__dirname, "../data/paper.json");
   const data = fs.readFileSync(dataPath);
   const obj = JSON.parse(data.toString());
 

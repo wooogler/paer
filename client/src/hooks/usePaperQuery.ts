@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchPaper,
   updateSentenceContent,
+  updateSentenceSummary,
+  updateSentenceIntent,
   addSentenceAfter,
   deleteSentence,
 } from "../api/paperApi";
@@ -43,13 +45,34 @@ export function setNewSentenceBlockId(blockId: string | null): void {
 }
 
 // Sentence 업데이트를 위한 mutation hook
-export function useUpdateSentence() {
+export const useUpdateSentence = () => {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
+  const { selectedContent, selectedPath, setSelectedContent } =
+    useContentStore();
 
   return useMutation({
-    mutationFn: ({ blockId, content }: { blockId: string; content: string }) =>
-      updateSentenceContent(blockId, content),
+    mutationFn: async ({
+      blockId,
+      content,
+      summary,
+      intent,
+    }: {
+      blockId: string;
+      content?: string;
+      summary?: string;
+      intent?: string;
+    }) => {
+      if (content !== undefined) {
+        await updateSentenceContent(blockId, content);
+      }
+      if (summary !== undefined) {
+        await updateSentenceSummary(blockId, summary);
+      }
+      if (intent !== undefined) {
+        await updateSentenceIntent(blockId, intent);
+      }
+    },
     onSuccess: async () => {
       // 서버에서 즉시 최신 데이터 가져오기
       try {
@@ -60,6 +83,14 @@ export function useUpdateSentence() {
 
         // 스토어 직접 업데이트
         setContent(newData);
+
+        // 현재 선택된 content가 있으면 해당 path로 다시 선택하여 UI 업데이트
+        if (selectedContent && selectedPath) {
+          const refreshedContent = findContentByPath(newData, selectedPath);
+          if (refreshedContent) {
+            setSelectedContent(refreshedContent, selectedPath);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch updated data:", error);
       }
@@ -68,7 +99,7 @@ export function useUpdateSentence() {
       queryClient.invalidateQueries({ queryKey: ["paper"] });
     },
   });
-}
+};
 
 // 새 Sentence 추가를 위한 mutation hook
 export function useAddSentence() {
