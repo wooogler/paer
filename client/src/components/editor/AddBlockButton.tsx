@@ -103,13 +103,19 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
               </button>
             </div>
           ) : (
-            <HierarchyTitle
-              content={placeholderContent}
-              level={
-                blockType === "section" ? 1 : blockType === "subsection" ? 2 : 3
-              }
-              renderLines={false}
-            />
+            <div className="bg-gray-100 rounded-md py-2">
+              <HierarchyTitle
+                content={placeholderContent}
+                level={
+                  blockType === "section"
+                    ? 1
+                    : blockType === "subsection"
+                    ? 2
+                    : 3
+                }
+                renderLines={false}
+              />
+            </div>
           )}
         </div>
       </div>
