@@ -41,22 +41,6 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
       }
     };
 
-    // Get hover background color based on block type
-    const getHoverBgColor = (): string => {
-      switch (getNextBlockType()) {
-        case "section":
-          return "bg-orange-50/80";
-        case "subsection":
-          return "bg-purple-50/80";
-        case "paragraph":
-          return "bg-green-50/80";
-        case "sentence":
-          return "bg-blue-50/80";
-        default:
-          return "bg-gray-50/80";
-      }
-    };
-
     return (
       <div className={`${config.marginClass} ${!showHierarchy ? "pl-0" : ""}`}>
         {/* Show title if configured and not top level */}

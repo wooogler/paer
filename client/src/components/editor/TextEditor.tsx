@@ -8,8 +8,6 @@ import {
   getNewSentenceBlockId,
   setNewSentenceBlockId,
 } from "../../hooks/usePaperQuery";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateSentenceContent } from "../../api/paperApi";
 import EditableField from "./EditableField";
 import LevelIndicator, {
   getBackgroundColorClass,
@@ -38,7 +36,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const { showHierarchy: appShowHierarchy } = useAppStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
-    const queryClient = useQueryClient();
 
     // State for textarea
     const [initialContent, setInitialContent] = useState<string>("");

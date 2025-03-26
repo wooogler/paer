@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { useContentStore } from "../store/useContentStore";
 import { useUpdateSentence } from "../hooks/usePaperQuery";
 
 export const TextEditor = () => {
-  const { selectedContent, selectedPath, setSelectedContent } =
-    useContentStore();
+  const { selectedContent, selectedPath } = useContentStore();
   const updateSentence = useUpdateSentence();
 
   const handleIntentUpdate = async () => {

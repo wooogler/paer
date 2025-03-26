@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Paper, ContentTypeSchema, Content } from "@paer/shared";
-import e from "cors";
+import { Paper, ContentType } from "@paer/shared";
 
 export class PaperRepository {
   private readonly filePath: string;
@@ -111,7 +110,7 @@ export class PaperRepository {
   async addBlock(
     parentBlockId: string | null,
     prevBlockId: string | null,
-    blockType: string
+    blockType: ContentType
   ): Promise<string> {
     let newBlockId = "-1";
 
@@ -197,7 +196,7 @@ export class PaperRepository {
   }
 
   // Finds the block given the ID
-  private getBlockById(root: any, blockId: string, blockType: string) {
+  private getBlockById(root: any, blockId: string, blockType: ContentType) {
     const matchingId = (block: any) => block["block-id"] === blockId;
     switch (blockType) {
       case "section":

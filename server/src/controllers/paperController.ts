@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { PaperService } from "../services/paperService";
-import { PaperSchema, ContentTypeSchema } from "@paer/shared";
-import { OpenAI } from "openai";
+import OpenAI from "openai";
+import { ContentType, PaperSchema } from "@paer/shared";
 
 export class PaperController {
   private paperService: PaperService;
@@ -72,7 +72,7 @@ export class PaperController {
       Body: {
         parentBlockId: string | null;
         prevBlockId: string | null;
-        blockType: string;
+        blockType: ContentType;
       };
     }>,
     reply: FastifyReply
