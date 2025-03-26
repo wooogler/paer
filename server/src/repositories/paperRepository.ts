@@ -120,16 +120,38 @@ export class PaperRepository {
 
       newBlockId = Date.now().toString();
 
+      // 빈 sentence 객체 생성 (paragraph에 추가할 용도)
+      const emptySentence = {
+        type: "sentence" as const,
+        summary: "",
+        intent: "Provide additional information",
+        content: "",
+        "block-id": (Date.now() + 1).toString(), // 블록 ID가 중복되지 않도록 +1
+      };
+
       // Initializes a new block w/ specified block type and assigned block ID
       const newBlock = {
         type: blockType,
-        summary: "",
-        intent: "Provide additional information",
-        content: blockType === "sentence" ? "" : [],
+        // paragraph 타입인 경우 summary를 "Empty Summary"로 설정
+        summary: blockType === "paragraph" ? "Empty Summary" : "",
+        intent: "Empty Intent",
+        // paragraph 타입인 경우 빈 sentence가 포함된 배열로 초기화
+        content:
+          blockType === "sentence"
+            ? ""
+            : blockType === "paragraph"
+            ? [emptySentence]
+            : [],
         "block-id": newBlockId, // Assigns a unique block ID using timestamp
-        ...(blockType !== "sentence" && { title: "" }),
+        ...(blockType !== "sentence" && {
+          title:
+            blockType === "section"
+              ? "New Section"
+              : blockType === "subsection"
+              ? "New Subsection"
+              : "",
+        }),
       };
-
       if (!parentBlockId) {
         throw new Error(
           `Could not add the new block because parent block is not provided.`

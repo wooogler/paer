@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Content } from "@paer/shared";
+import { FaTrash } from "react-icons/fa";
 
 interface HierarchyTitleProps {
   content: Content;
@@ -7,6 +8,7 @@ interface HierarchyTitleProps {
   isCurrentSelected?: boolean;
   renderLines?: boolean;
   displayMode?: "summary" | "intent";
+  isPlaceholder?: boolean;
 }
 
 const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
@@ -16,7 +18,10 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     isCurrentSelected = false,
     displayMode = "summary",
     renderLines = true,
+    isPlaceholder = false,
   }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
     // Get icon color class based on content type
     const iconColorClass = useMemo(() => {
       switch (content.type) {
@@ -85,11 +90,36 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       );
     };
 
+    // Handle delete block (UI only)
+    const handleDeleteBlock = () => {
+      const blockId = content["block-id"];
+      if (!blockId) return;
+
+      console.log(`Delete ${content.type} block with ID: ${blockId}`);
+      // 여기에서는 UI만 구현하고 실제 서버 호출은 하지 않습니다.
+      // 나중에 서버 API가 구현되면 아래와 같이 사용할 수 있습니다.
+      /*
+      // 뮤테이션 훅 추가
+      const deleteBlockMutation = useDeleteBlock();
+      
+      deleteBlockMutation.mutate(blockId, {
+        onSuccess: () => {
+          // 성공 처리
+        }
+      });
+      */
+    };
+
+    // Display delete for any content type except paper and placeholder content
+    const showDeleteButton = content.type !== "paper" && !isPlaceholder;
+
     return (
       <div
         className={`relative ${
           isCurrentSelected ? "bg-blue-50 rounded-md" : ""
         }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Vertical level indicator lines */}
         {renderLines && renderLevelLines()}
@@ -100,11 +130,33 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
           style={{ paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px" }}
         >
           <div
-            className={`${titleSizeClass} font-bold flex items-center gap-2`}
+            className={`${titleSizeClass} font-bold flex items-center gap-2 group relative`}
           >
             <span className={`${iconColorClass} break-words`}>
               {getDisplayTitle()}
             </span>
+
+            {/* Delete button */}
+            {showDeleteButton && (
+              <button
+                className={`text-red-500 hover:text-red-700 ml-2 transition-opacity duration-200 ${
+                  isHovered ? "opacity-100" : "opacity-0"
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (
+                    window.confirm(
+                      `Are you sure you want to delete this ${content.type}?`
+                    )
+                  ) {
+                    handleDeleteBlock();
+                  }
+                }}
+                aria-label={`Delete ${content.type}`}
+              >
+                <FaTrash size={14} />
+              </button>
+            )}
           </div>
 
           <div className={`text-base flex flex-col text-gray-700`}>

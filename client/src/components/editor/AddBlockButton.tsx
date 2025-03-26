@@ -118,6 +118,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
                     : 3
                 }
                 renderLines={false}
+                isPlaceholder={true}
               />
             </div>
           )}
