@@ -30,8 +30,8 @@ const EditableField: React.FC<EditableFieldProps> = ({
   onKeyDown,
 }) => {
   return (
-    <div className="text-sm relative group">
-      {icon && <span className="font-medium">{icon} </span>}
+    <div className="text-sm relative group flex items-center gap-1 min-h-[24px]">
+      {icon && <span className="font-medium flex-shrink-0">{icon}</span>}
 
       {isEditing ? (
         <div className="flex items-center gap-2 flex-1">
@@ -58,8 +58,10 @@ const EditableField: React.FC<EditableFieldProps> = ({
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-1">
-          <span className="break-words">{value}</span>
+        <div className="flex items-center gap-1 flex-1">
+          <span className={`break-words ${!value ? "text-gray-400" : ""}`}>
+            {value || placeholder}
+          </span>
           {isHovered && isSentence && (
             <button
               onClick={() => setIsEditing(true)}
