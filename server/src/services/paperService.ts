@@ -32,11 +32,17 @@ export class PaperService {
   }
 
   async updateBlock(
-    targetBlockId: string, 
+    targetBlockId: string,
     blockType: ContentType,
-    keyToUpdate: string, updatedValue: string
+    keyToUpdate: string,
+    updatedValue: string
   ): Promise<void> {
-    return this.paperRepository.updateBlock(targetBlockId, blockType, keyToUpdate, updatedValue);
+    return this.paperRepository.updateBlock(
+      targetBlockId,
+      blockType,
+      keyToUpdate,
+      updatedValue
+    );
   }
 
   /**

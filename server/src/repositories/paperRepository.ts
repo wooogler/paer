@@ -194,7 +194,6 @@ export class PaperRepository {
 
   // Updates a block with the specified key-value pair
   async updateBlock(
-    parentBlockId: string | null,
     targetBlockId: string,
     blockType: ContentType,
     keyToUpdate: string,
@@ -204,27 +203,11 @@ export class PaperRepository {
       // Reads the current paper file as JSON
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
 
-      if (!parentBlockId) {
-        throw new Error(
-          `Could not add the new block because parent block is not provided.`
-        );
-      }
-
       // Finds the parent block; throws an error if not found
-      const parentBlock = this.getBlockById(
+      const targetBlock = this.getBlockById(
         paperData,
-        parentBlockId,
+        targetBlockId,
         blockType
-      );
-      if (!parentBlock) {
-        throw new Error(
-          `Could not find the parent block with block ID ${parentBlockId}`
-        );
-      }
-
-      // Finds the index of the previous block ID within the parent block; return -1 if not found
-      const targetBlock = parentBlock.content.find(
-        (block: any) => block["block-id"] === targetBlockId
       );
 
       // Updates the target block with the specified key-value pair

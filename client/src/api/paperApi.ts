@@ -111,14 +111,12 @@ export const addBlock = async (
 
 // Update block intent
 export const updateBlockIntent = async (
-  parentBlockId: string | null,
   targetBlockId: string,
   blockType: ContentType,
   intent: string
 ): Promise<void> => {
   try {
     await api.patch("/paper/block/intent", {
-      parentBlockId,
       targetBlockId,
       blockType,
       keyToUpdate: "intent",
@@ -134,14 +132,12 @@ export const updateBlockIntent = async (
 
 // Update block summary
 export const updateBlockSummary = async (
-  parentBlockId: string | null,
   targetBlockId: string,
   blockType: ContentType,
   summary: string
 ): Promise<void> => {
   try {
     await api.patch("/paper/block/summary", {
-      parentBlockId,
       targetBlockId,
       blockType,
       keyToUpdate: "summary",

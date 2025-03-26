@@ -20,6 +20,22 @@
           "type": "subsection",
           "content": [
             {
+              "type": "paragraph",
+              "summary": "Empty Summary",
+              "intent": "Empty Intent",
+              "content": [
+                {
+                  "type": "sentence",
+                  "summary": "",
+                  "intent": "Provide additional information",
+                  "content": "hello",
+                  "block-id": "1743026527909"
+                }
+              ],
+              "block-id": "1743026527908",
+              "title": ""
+            },
+            {
               "block-id": "1.1.1",
               "summary": "Writing is a complex task that requires",
               "intent": "To explain the complexity of writing",

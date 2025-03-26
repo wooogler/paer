@@ -296,7 +296,6 @@ export function useUpdateBlockIntent() {
 
   return useMutation({
     mutationFn: async ({
-      parentBlockId,
       targetBlockId,
       blockType,
       intent,
@@ -306,7 +305,7 @@ export function useUpdateBlockIntent() {
       blockType: ContentType;
       intent: string;
     }) => {
-      await updateBlockIntent(parentBlockId, targetBlockId, blockType, intent);
+      await updateBlockIntent(targetBlockId, blockType, intent);
     },
     onSuccess: async () => {
       try {
@@ -342,7 +341,6 @@ export function useUpdateBlockSummary() {
 
   return useMutation({
     mutationFn: async ({
-      parentBlockId,
       targetBlockId,
       blockType,
       summary,
@@ -352,12 +350,7 @@ export function useUpdateBlockSummary() {
       blockType: ContentType;
       summary: string;
     }) => {
-      await updateBlockSummary(
-        parentBlockId,
-        targetBlockId,
-        blockType,
-        summary
-      );
+      await updateBlockSummary(targetBlockId, blockType, summary);
     },
     onSuccess: async () => {
       try {

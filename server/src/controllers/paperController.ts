@@ -104,7 +104,8 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { targetBlockId, blockType, keyToUpdate, updatedValue } = request.body;
+      const { targetBlockId, blockType, keyToUpdate, updatedValue } =
+        request.body;
       // blockId can be null (to add at the beginning of a paragraph)
       await this.paperService.updateBlock(
         targetBlockId,
