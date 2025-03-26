@@ -40,16 +40,16 @@ export class PaperService {
   }
 
   /**
-   * 문장 삭제
-   * @param blockId 삭제할 문장의 ID
+   * Delete a sentence
+   * @param blockId ID of the sentence to delete
    */
   async deleteSentence(blockId: string): Promise<void> {
     return this.paperRepository.deleteSentence(blockId);
   }
 
   /**
-   * 블록 삭제
-   * @param blockId 삭제할 블록의 ID
+   * Delete a block
+   * @param blockId ID of the block to delete
    */
   async deleteBlock(blockId: string): Promise<void> {
     return this.paperRepository.deleteBlock(blockId);

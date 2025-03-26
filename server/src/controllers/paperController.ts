@@ -88,7 +88,7 @@ export class PaperController {
   ): Promise<any> {
     try {
       const { targetBlockId, keyToUpdate, updatedValue } = request.body;
-      // blockType은 더 이상 필요 없으므로 findBlockById 사용
+      // blockType is no longer needed, so using findBlockById
       await this.paperService.updateBlock(
         targetBlockId,
         keyToUpdate,
@@ -102,7 +102,7 @@ export class PaperController {
   }
 
   /**
-   * 문장 삭제
+   * Delete a sentence
    */
   async deleteSentence(
     request: FastifyRequest<{ Params: { blockId: string } }>,
@@ -124,7 +124,7 @@ export class PaperController {
   }
 
   /**
-   * 블록 삭제
+   * Delete a block
    */
   async deleteBlock(
     request: FastifyRequest<{ Params: { blockId: string } }>,

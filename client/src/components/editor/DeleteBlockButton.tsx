@@ -8,7 +8,7 @@ interface DeleteBlockButtonProps {
 }
 
 /**
- * 블록 삭제 버튼 컴포넌트
+ * Block delete button component
  */
 const DeleteBlockButton: React.FC<DeleteBlockButtonProps> = ({
   contentType,

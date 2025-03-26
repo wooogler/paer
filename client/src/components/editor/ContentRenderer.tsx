@@ -44,7 +44,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = React.memo(
       content.type === "paper" ||
       (content.content && Array.isArray(content.content))
     ) {
-      // content.content가 없는 경우, 빈 배열로 초기화
+      // Initialize content.content as an empty array if it doesn't exist
       const safeContent = {
         ...content,
         content:

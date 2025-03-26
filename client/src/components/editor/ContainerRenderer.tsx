@@ -23,7 +23,7 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
     const [hoverIndex, setHoverIndex] = React.useState<number | null>(null);
     const addBlockMutation = useAddBlock();
 
-    // content.content가 없거나 배열이 아닌 경우를 처리
+    // Handle cases where content.content is null or not an array
     const safeContent = {
       ...content,
       content:
@@ -48,7 +48,7 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
       }
     };
 
-    // Block 추가 함수
+    // Function to add a new block
     const handleAddBlock = (prevIndex: number) => {
       const blockType = getNextBlockType();
       const parentBlockId = content["block-id"] || null;

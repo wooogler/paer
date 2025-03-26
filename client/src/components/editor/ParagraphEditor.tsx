@@ -36,7 +36,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
       (index: number) => {
         // If at beginning, pass null as blockId
         if (index === 0) {
-          // sentence 타입의 새 블록을 추가
+          // Add a new block with sentence type
           addBlockMutation.mutate(
             {
               parentBlockId: content["block-id"] as string,
@@ -45,21 +45,21 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             },
             {
               onSuccess: () => {
-                // 새 문장이 추가되면 자동으로 포커스됨
-                // block-id를 별도 상태로 관리하여 포커스 처리
+                // New sentence will be focused automatically
+                // Managing block-id as a separate state for focus handling
               },
             }
           );
           return;
         }
 
-        // 이미 이전에 content.content가 배열인지 확인했으므로 여기서는 안전하게 접근 가능
+        // Safe to access content.content since we've already checked it's an array
         const contentArray = content.content as Content[];
         // Otherwise, get the blockId of the sentence before the insertion point
         const prevSentence = contentArray[index - 1];
 
         if (typeof prevSentence !== "string" && prevSentence["block-id"]) {
-          // 서버에 요청 후 클라이언트 상태 업데이트
+          // Send request to server and update client state
           addBlockMutation.mutate(
             {
               parentBlockId: content["block-id"] as string,
@@ -68,8 +68,8 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             },
             {
               onSuccess: () => {
-                // 새 문장이 추가되면 자동으로 포커스됨
-                // block-id를 별도 상태로 관리하여 포커스 처리
+                // New sentence will be focused automatically
+                // Managing block-id as a separate state for focus handling
               },
             }
           );
@@ -120,8 +120,8 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             },
             {
               onSuccess: () => {
-                // 새 문장이 추가되면 자동으로 포커스됨
-                // block-id를 별도 상태로 관리하여 포커스 처리
+                // New sentence will be focused automatically
+                // Managing block-id as a separate state for focus handling
               },
             }
           );
@@ -136,8 +136,8 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
           },
           {
             onSuccess: () => {
-              // 새 문장이 추가되면 자동으로 포커스됨
-              // block-id를 별도 상태로 관리하여 포커스 처리
+              // New sentence will be focused automatically
+              // Managing block-id as a separate state for focus handling
             },
           }
         );

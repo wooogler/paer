@@ -45,8 +45,8 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     const updateBlockTitleMutation = useUpdateBlockTitle();
     const deleteBlockMutation = useDeleteBlock();
 
-    // 부모 블록 ID를 추출하는 로직 (실제 구현은 애플리케이션 구조에 따라 다름)
-    const parentBlockId = null; // 이 부분은 실제 구현에 맞게 수정해야 함
+    // Logic to extract parent block ID (actual implementation depends on application structure)
+    const parentBlockId = null; // This part should be modified according to actual implementation
 
     // Update local intent and summary state when content props change
     React.useEffect(() => {
@@ -120,7 +120,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
 
       deleteBlockMutation.mutate(blockId, {
         onSuccess: () => {
-          // 성공 처리
+          // Success handling
         },
       });
     }, [content, deleteBlockMutation]);
@@ -148,7 +148,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
               summary: value,
             });
           } else {
-            // title 업데이트를 위한 전용 API 사용
+            // Use dedicated API for title updates
             updateBlockTitleMutation.mutate({
               parentBlockId,
               targetBlockId: content["block-id"],
@@ -303,7 +303,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             paddingLeft: renderLines ? `${level * 16 + 16}px` : "0px",
           }}
         >
-          {/* 일반 타입일 경우 제목 표시 */}
+          {/* Normal type title display */}
           {!isParagraph && (
             <div
               className={`${titleSizeClass} font-bold flex items-center gap-2 group relative`}
@@ -342,7 +342,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
           )}
 
           <div className={`text-base flex flex-col text-gray-700`}>
-            {/* paragraph 타입일 경우 summary를 title 처럼 표시 */}
+            {/* For paragraph type, display summary as title */}
             {isParagraph && (
               <div
                 className={`${titleSizeClass} font-bold flex items-center gap-2 group relative mb-2`}

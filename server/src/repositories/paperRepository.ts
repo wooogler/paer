@@ -245,18 +245,18 @@ export class PaperRepository {
    */
   async deleteSentence(blockId: string): Promise<void> {
     try {
-      // 파일에서 데이터 읽기
+      // Read data from file
       const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
       const paperData: Paper = JSON.parse(fileContent);
 
-      // 삭제 수행
+      // Perform deletion
       const deleted = this.findAndDeleteSentence(paperData, blockId);
 
       if (!deleted) {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // 파일에 저장
+      // Save to file
       await fs.promises.writeFile(
         this.filePath,
         JSON.stringify(paperData, null, 2),
@@ -269,22 +269,22 @@ export class PaperRepository {
   }
 
   /**
-   * 재귀적으로 문장을 찾아 삭제하는 헬퍼 메서드
+   * Helper method to recursively find and delete a sentence
    */
   private findAndDeleteSentence(obj: any, blockId: string): boolean {
-    // 배열인 경우
+    // If it's an array
     if (Array.isArray(obj)) {
-      // 문장 블록을 직접 찾아서 삭제
+      // Find and delete the sentence block directly
       for (let i = 0; i < obj.length; i++) {
         const item = obj[i];
 
-        // 이 항목이 blockId와 일치하는 문장이면 삭제
+        // If this item is a sentence matching the blockId, delete it
         if (item && item.type === "sentence" && item["block-id"] === blockId) {
-          obj.splice(i, 1); // 배열에서 삭제
+          obj.splice(i, 1); // Remove from array
           return true;
         }
 
-        // 재귀적으로 자식 항목 검색
+        // Recursively search child items
         if (this.findAndDeleteSentence(item, blockId)) {
           return true;
         }
@@ -293,13 +293,13 @@ export class PaperRepository {
       return false;
     }
 
-    // 객체인 경우 각 속성을 검사
+    // If it's an object, check each property
     if (obj && typeof obj === "object") {
-      // 객체의 children이나 content 속성에서 검색
+      // Search in the children or content properties of the object
       for (const key of Object.keys(obj)) {
         if (key === "children" || key === "content") {
           if (this.findAndDeleteSentence(obj[key], blockId)) {
-            // 문단에 문장이 없는 경우 빈 배열로 설정
+            // If a paragraph has no sentences, set to empty array
             if (
               Array.isArray(obj[key]) &&
               obj.type === "paragraph" &&
@@ -317,23 +317,23 @@ export class PaperRepository {
   }
 
   /**
-   * 블록 삭제
-   * @param blockId 삭제할 블록의 ID
+   * Delete a block
+   * @param blockId ID of the block to delete
    */
   async deleteBlock(blockId: string): Promise<void> {
     try {
-      // 파일에서 데이터 읽기
+      // Read data from file
       const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
       const paperData: Paper = JSON.parse(fileContent);
 
-      // 삭제 수행
+      // Perform deletion
       const deleted = this.findAndDeleteBlock(paperData, blockId);
 
       if (!deleted) {
         throw new Error(`Block with block-id ${blockId} not found`);
       }
 
-      // 파일에 저장
+      // Save to file
       await fs.promises.writeFile(
         this.filePath,
         JSON.stringify(paperData, null, 2),
@@ -346,22 +346,22 @@ export class PaperRepository {
   }
 
   /**
-   * 재귀적으로 블록을 찾아 삭제하는 헬퍼 메서드
+   * Helper method to recursively find and delete a block
    */
   private findAndDeleteBlock(obj: any, blockId: string): boolean {
-    // 배열인 경우
+    // If it's an array
     if (Array.isArray(obj)) {
-      // 블록을 직접 찾아서 삭제
+      // Find and delete the block directly
       for (let i = 0; i < obj.length; i++) {
         const item = obj[i];
 
-        // 이 항목이 blockId와 일치하는 블록이면 삭제
+        // If this item matches the blockId, delete it
         if (item && item["block-id"] === blockId) {
-          obj.splice(i, 1); // 배열에서 삭제
+          obj.splice(i, 1); // Remove from array
           return true;
         }
 
-        // 재귀적으로 자식 항목 검색
+        // Recursively search child items
         if (this.findAndDeleteBlock(item, blockId)) {
           return true;
         }
@@ -370,9 +370,9 @@ export class PaperRepository {
       return false;
     }
 
-    // 객체인 경우 각 속성을 검사
+    // If it's an object, check each property
     if (obj && typeof obj === "object") {
-      // 객체의 children이나 content 속성에서 검색
+      // Search in the children or content properties of the object
       for (const key of Object.keys(obj)) {
         if (key === "children" || key === "content") {
           if (this.findAndDeleteBlock(obj[key], blockId)) {

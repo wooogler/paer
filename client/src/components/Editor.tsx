@@ -14,9 +14,9 @@ const Editor: React.FC = () => {
   } = useContentStore();
   const { showHierarchy } = useAppStore();
 
-  // 페이지가 새로고침된 후에도 선택된 경로에 대한 컨텐츠를 복원하는 효과
+  // Effect to restore content for selected path even after page refresh
   useEffect(() => {
-    // 경로가 있고 컨텐츠가 없는 경우(새로고침 후 상태) 컨텐츠를 복원
+    // If path exists but content is missing (after refresh), restore the content
     if (selectedPath && !selectedContent) {
       const content = getContentByPath(selectedPath);
       if (content) {
