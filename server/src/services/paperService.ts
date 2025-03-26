@@ -19,10 +19,6 @@ export class PaperService {
     return this.paperRepository.updateSentenceContent(blockId, content);
   }
 
-  async addSentence(blockId: string | null): Promise<void> {
-    return this.paperRepository.addSentence(blockId);
-  }
-
   async addBlock(
     parentBlockId: string | null,
     prevBlockId: string | null,
@@ -33,13 +29,11 @@ export class PaperService {
 
   async updateBlock(
     targetBlockId: string,
-    blockType: ContentType,
     keyToUpdate: string,
     updatedValue: string
   ): Promise<void> {
     return this.paperRepository.updateBlock(
       targetBlockId,
-      blockType,
       keyToUpdate,
       updatedValue
     );
@@ -51,6 +45,14 @@ export class PaperService {
    */
   async deleteSentence(blockId: string): Promise<void> {
     return this.paperRepository.deleteSentence(blockId);
+  }
+
+  /**
+   * 블록 삭제
+   * @param blockId 삭제할 블록의 ID
+   */
+  async deleteBlock(blockId: string): Promise<void> {
+    return this.paperRepository.deleteBlock(blockId);
   }
 
   async savePaper(paper: Paper): Promise<void> {

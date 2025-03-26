@@ -50,23 +50,6 @@ export class PaperController {
     }
   }
 
-  async addSentence(
-    request: FastifyRequest<{ Body: { blockId: string | null } }>,
-    reply: FastifyReply
-  ): Promise<any> {
-    try {
-      const { blockId } = request.body;
-
-      // blockId can be null (to add at the beginning of a paragraph)
-      await this.paperService.addSentence(blockId);
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error in addSentence:", error);
-      return reply.code(500).send({ error: "Failed to add new sentence" });
-    }
-  }
-
   async addBlock(
     request: FastifyRequest<{
       Body: {
@@ -96,7 +79,7 @@ export class PaperController {
     request: FastifyRequest<{
       Body: {
         targetBlockId: string;
-        blockType: ContentType;
+        blockType?: ContentType;
         keyToUpdate: string;
         updatedValue: string;
       };
@@ -104,12 +87,10 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { targetBlockId, blockType, keyToUpdate, updatedValue } =
-        request.body;
-      // blockId can be null (to add at the beginning of a paragraph)
+      const { targetBlockId, keyToUpdate, updatedValue } = request.body;
+      // blockType은 더 이상 필요 없으므로 findBlockById 사용
       await this.paperService.updateBlock(
         targetBlockId,
-        blockType,
         keyToUpdate,
         updatedValue
       );
@@ -139,6 +120,28 @@ export class PaperController {
     } catch (error) {
       console.error("Error deleting sentence:", error);
       return reply.code(500).send({ error: "Failed to delete sentence" });
+    }
+  }
+
+  /**
+   * 블록 삭제
+   */
+  async deleteBlock(
+    request: FastifyRequest<{ Params: { blockId: string } }>,
+    reply: FastifyReply
+  ): Promise<void> {
+    try {
+      const { blockId } = request.params;
+
+      if (!blockId) {
+        return reply.code(400).send({ error: "Missing blockId" });
+      }
+
+      await this.paperService.deleteBlock(blockId);
+      return reply.code(200).send({ success: true });
+    } catch (error) {
+      console.error("Error deleting block:", error);
+      return reply.code(500).send({ error: "Failed to delete block" });
     }
   }
 

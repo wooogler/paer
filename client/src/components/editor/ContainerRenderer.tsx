@@ -88,9 +88,7 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
         <div
           onMouseEnter={() => setHoverIndex(-1)}
           onMouseLeave={() => setHoverIndex(null)}
-          className={`group cursor-pointer transition-all duration-200 ${
-            hoverIndex === -1 ? "h-auto" : "h-4"
-          }`}
+          className={`group cursor-pointer transition-all duration-200`}
         >
           <AddBlockButton
             onClick={() => handleAddBlock(-1)}
@@ -135,9 +133,7 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
                 <div
                   onMouseEnter={() => setHoverIndex(index)}
                   onMouseLeave={() => setHoverIndex(null)}
-                  className={`group cursor-pointer transition-all duration-200 ${
-                    hoverIndex === index ? "h-auto" : "h-4"
-                  }`}
+                  className={`group cursor-pointer transition-all duration-200`}
                 >
                   <AddBlockButton
                     onClick={() => handleAddBlock(index)}

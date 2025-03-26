@@ -33,19 +33,6 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // POST /api/paper/sentence - Add new sentence
-  fastify.post(
-    "/paper/sentence",
-    async (
-      request: FastifyRequest<{
-        Body: { blockId: string | null };
-      }>,
-      reply: FastifyReply
-    ) => {
-      return paperController.addSentence(request, reply);
-    }
-  );
-
   // POST /api/paper/block - Add new block
   fastify.post(
     "/paper/block",
@@ -64,38 +51,77 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   );
 
   // POST /api/paper/block/intent - Update block intent
-  fastify.post(
+  fastify.patch(
     "/paper/block/intent",
     async (
       request: FastifyRequest<{
         Body: {
           targetBlockId: string;
-          blockType: ContentType;
-          keyToUpdate: "intent";
           updatedValue: string;
         };
       }>,
       reply: FastifyReply
     ) => {
-      return paperController.updateBlock(request, reply);
+      const { targetBlockId, updatedValue } = request.body;
+      const modifiedRequest = {
+        ...request,
+        body: {
+          targetBlockId,
+          keyToUpdate: "intent",
+          updatedValue,
+        },
+      };
+      return paperController.updateBlock(modifiedRequest, reply);
     }
   );
 
-  // POST /api/paper/bloc/summary - Update block summary
-  fastify.post(
+  // PATCH /api/paper/block/summary - Update block summary
+  fastify.patch(
     "/paper/block/summary",
     async (
       request: FastifyRequest<{
         Body: {
           targetBlockId: string;
-          blockType: ContentType;
-          keyToUpdate: "summary";
           updatedValue: string;
         };
       }>,
       reply: FastifyReply
     ) => {
-      return paperController.updateBlock(request, reply);
+      const { targetBlockId, updatedValue } = request.body;
+      const modifiedRequest = {
+        ...request,
+        body: {
+          targetBlockId,
+          keyToUpdate: "summary",
+          updatedValue,
+        },
+      };
+      return paperController.updateBlock(modifiedRequest, reply);
+    }
+  );
+
+  // PATCH /api/paper/block/title - Update block title
+  fastify.patch(
+    "/paper/block/title",
+    async (
+      request: FastifyRequest<{
+        Body: {
+          targetBlockId: string;
+          updatedValue: string;
+        };
+      }>,
+      reply: FastifyReply
+    ) => {
+      const { targetBlockId, updatedValue } = request.body;
+      const modifiedRequest = {
+        ...request,
+        body: {
+          targetBlockId,
+          keyToUpdate: "title",
+          updatedValue,
+        },
+      };
+      return paperController.updateBlock(modifiedRequest, reply);
     }
   );
 
@@ -104,6 +130,14 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/paper/sentence/:blockId",
     async (request, reply) => {
       return paperController.deleteSentence(request, reply);
+    }
+  );
+
+  // Delete block API
+  fastify.delete<{ Params: { blockId: string } }>(
+    "/paper/block/:blockId",
+    async (request, reply) => {
+      return paperController.deleteBlock(request, reply);
     }
   );
 

@@ -1,6 +1,5 @@
 import React from "react";
 import { Content, ContentType } from "@paer/shared";
-import HierarchyTitle from "./HierarchyTitle";
 
 interface AddBlockButtonProps {
   onClick: () => void;
@@ -14,8 +13,6 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
   onClick,
   isVisible,
   blockType,
-  parentBlockId,
-  prevBlockId,
 }) => {
   // Get button text based on block type
   const getButtonText = (): string => {
@@ -98,30 +95,13 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
     >
       <div className="flex items-center gap-2">
         <div className="flex-1 h2">
-          {blockType === "sentence" ? (
-            <div className="relative group h-1 cursor-pointer flex items-center justify-center">
-              <button
-                className={`${getButtonColor()} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10`}
-              >
-                {getButtonText()}
-              </button>
-            </div>
-          ) : (
-            <div className="bg-gray-100 rounded-md py-2">
-              <HierarchyTitle
-                content={placeholderContent}
-                level={
-                  blockType === "section"
-                    ? 1
-                    : blockType === "subsection"
-                    ? 2
-                    : 3
-                }
-                renderLines={false}
-                isPlaceholder={true}
-              />
-            </div>
-          )}
+          <div className="relative group h-1 cursor-pointer flex items-center justify-center">
+            <button
+              className={`${getButtonColor()} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10`}
+            >
+              {getButtonText()}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { Content } from "@paer/shared";
 import { useAppStore } from "../../store/useAppStore";
-import { useAddSentence, useAddBlock } from "../../hooks/usePaperQuery";
+import { useAddBlock } from "../../hooks/usePaperQuery";
 import TextEditor from "./TextEditor";
 import AddBlockButton from "./AddBlockButton";
 
@@ -14,7 +14,6 @@ interface ParagraphEditorProps {
 const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
   ({ content, level = 0 }) => {
     const { showHierarchy } = useAppStore();
-    const addSentenceMutation = useAddSentence();
     const addBlockMutation = useAddBlock();
 
     const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -37,13 +36,20 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
       (index: number) => {
         // If at beginning, pass null as blockId
         if (index === 0) {
-          // 서버에 요청 후 클라이언트 상태 업데이트
-          addSentenceMutation.mutate(null, {
-            onSuccess: () => {
-              // 새 문장이 추가되면 자동으로 포커스됨
-              // block-id를 별도 상태로 관리하여 포커스 처리
+          // sentence 타입의 새 블록을 추가
+          addBlockMutation.mutate(
+            {
+              parentBlockId: content["block-id"] as string,
+              prevBlockId: null,
+              blockType: "sentence",
             },
-          });
+            {
+              onSuccess: () => {
+                // 새 문장이 추가되면 자동으로 포커스됨
+                // block-id를 별도 상태로 관리하여 포커스 처리
+              },
+            }
+          );
           return;
         }
 
@@ -54,17 +60,24 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
 
         if (typeof prevSentence !== "string" && prevSentence["block-id"]) {
           // 서버에 요청 후 클라이언트 상태 업데이트
-          addSentenceMutation.mutate(prevSentence["block-id"] as string, {
-            onSuccess: () => {
-              // 새 문장이 추가되면 자동으로 포커스됨
-              // block-id를 별도 상태로 관리하여 포커스 처리
+          addBlockMutation.mutate(
+            {
+              parentBlockId: content["block-id"] as string,
+              prevBlockId: prevSentence["block-id"] as string,
+              blockType: "sentence",
             },
-          });
+            {
+              onSuccess: () => {
+                // 새 문장이 추가되면 자동으로 포커스됨
+                // block-id를 별도 상태로 관리하여 포커스 처리
+              },
+            }
+          );
         } else {
           // Previous sentence has no blockId, cannot add
         }
       },
-      [addSentenceMutation, content.content]
+      [addBlockMutation, content]
     );
 
     // Function to handle focus for the next sentence
@@ -99,23 +112,37 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
 
         if (typeof lastSentence !== "string" && lastSentence["block-id"]) {
           // Add a new sentence after the last one
-          addSentenceMutation.mutate(lastSentence["block-id"] as string, {
+          addBlockMutation.mutate(
+            {
+              parentBlockId: content["block-id"] as string,
+              prevBlockId: lastSentence["block-id"] as string,
+              blockType: "sentence",
+            },
+            {
+              onSuccess: () => {
+                // 새 문장이 추가되면 자동으로 포커스됨
+                // block-id를 별도 상태로 관리하여 포커스 처리
+              },
+            }
+          );
+        }
+      } else {
+        // If there are no sentences, add at the beginning
+        addBlockMutation.mutate(
+          {
+            parentBlockId: content["block-id"] as string,
+            prevBlockId: null,
+            blockType: "sentence",
+          },
+          {
             onSuccess: () => {
               // 새 문장이 추가되면 자동으로 포커스됨
               // block-id를 별도 상태로 관리하여 포커스 처리
             },
-          });
-        }
-      } else {
-        // If there are no sentences, add at the beginning
-        addSentenceMutation.mutate(null, {
-          onSuccess: () => {
-            // 새 문장이 추가되면 자동으로 포커스됨
-            // block-id를 별도 상태로 관리하여 포커스 처리
-          },
-        });
+          }
+        );
       }
-    }, [addSentenceMutation, content.content]);
+    }, [addBlockMutation, content]);
 
     return (
       <div

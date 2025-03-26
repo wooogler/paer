@@ -1,10 +1,13 @@
 import React, { useMemo, useState, useRef, useCallback } from "react";
 import { Content, ContentType } from "@paer/shared";
-import { FaTrash } from "react-icons/fa";
 import EditableField from "./EditableField";
+import DeleteBlockButton from "./DeleteBlockButton";
+import LevelLines from "./LevelLines";
 import {
   useUpdateBlockIntent,
   useUpdateBlockSummary,
+  useUpdateBlockTitle,
+  useDeleteBlock,
 } from "../../hooks/usePaperQuery";
 
 interface HierarchyTitleProps {
@@ -28,14 +31,19 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     const [isHovered, setIsHovered] = useState(false);
     const [editingIntent, setEditingIntent] = useState(false);
     const [editingSummary, setEditingSummary] = useState(false);
+    const [editingTitle, setEditingTitle] = useState(false);
     const [localIntent, setLocalIntent] = useState(content.intent || "");
     const [localSummary, setLocalSummary] = useState(content.summary || "");
+    const [localTitle, setLocalTitle] = useState(content.title || "");
 
     const intentInputRef = useRef<HTMLInputElement>(null);
     const summaryInputRef = useRef<HTMLInputElement>(null);
+    const titleInputRef = useRef<HTMLInputElement>(null);
 
     const updateBlockIntentMutation = useUpdateBlockIntent();
     const updateBlockSummaryMutation = useUpdateBlockSummary();
+    const updateBlockTitleMutation = useUpdateBlockTitle();
+    const deleteBlockMutation = useDeleteBlock();
 
     // 부모 블록 ID를 추출하는 로직 (실제 구현은 애플리케이션 구조에 따라 다름)
     const parentBlockId = null; // 이 부분은 실제 구현에 맞게 수정해야 함
@@ -48,7 +56,10 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       if (content.summary !== undefined) {
         setLocalSummary(content.summary);
       }
-    }, [content.intent, content.summary]);
+      if (content.title !== undefined) {
+        setLocalTitle(content.title);
+      }
+    }, [content.intent, content.summary, content.title]);
 
     // Get icon color class based on content type
     const iconColorClass = useMemo(() => {
@@ -82,32 +93,10 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       }
     }, [level]);
 
-    // Create vertical level indicator lines
-    const renderLevelLines = () => {
-      if (level === 0) return null;
-
-      const lines = [];
-      for (let i = 0; i < level; i++) {
-        // Last line uses content type color, others use grey
-        const lineColorClass =
-          i === level - 1 ? iconColorClass : "border-gray-300";
-
-        lines.push(
-          <div
-            key={i}
-            className={`absolute border-l-2 ${lineColorClass} h-full`}
-            style={{ left: `${i * 16 + 8}px` }}
-          />
-        );
-      }
-      return lines;
-    };
-
     // Determine how to display the title
-    const getDisplayTitle = () => {
+    const getDisplayTitle = useCallback(() => {
       if (content.type === "paragraph") {
         // For paragraphs, show summary or intent based on display mode
-        // to maintain consistency with TreeItem component
         return displayMode === "summary"
           ? content.summary || "Empty Summary"
           : content.intent || "Empty Intent";
@@ -116,95 +105,122 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
         content.title ||
         content.type.charAt(0).toUpperCase() + content.type.slice(1)
       );
-    };
+    }, [
+      content.type,
+      content.title,
+      content.summary,
+      content.intent,
+      displayMode,
+    ]);
 
-    // Handle delete block (UI only)
-    const handleDeleteBlock = () => {
+    // Handle delete block
+    const handleDeleteBlock = useCallback(() => {
       const blockId = content["block-id"];
       if (!blockId) return;
 
-      console.log(`Delete ${content.type} block with ID: ${blockId}`);
-      // 여기에서는 UI만 구현하고 실제 서버 호출은 하지 않습니다.
-      // 나중에 서버 API가 구현되면 아래와 같이 사용할 수 있습니다.
-      /*
-      // 뮤테이션 훅 추가
-      const deleteBlockMutation = useDeleteBlock();
-      
       deleteBlockMutation.mutate(blockId, {
         onSuccess: () => {
           // 성공 처리
-        }
+        },
       });
-      */
-    };
+    }, [content, deleteBlockMutation]);
 
-    // Handlers for editable fields
+    // Generic handler for updating block properties
+    const handleBlockUpdate = useCallback(
+      (
+        property: "intent" | "summary" | "title",
+        value: string,
+        setEditing: React.Dispatch<React.SetStateAction<boolean>>
+      ) => {
+        if (content.type !== "sentence" && content["block-id"]) {
+          if (property === "intent") {
+            updateBlockIntentMutation.mutate({
+              parentBlockId,
+              targetBlockId: content["block-id"],
+              blockType: content.type as ContentType,
+              intent: value,
+            });
+          } else if (property === "summary") {
+            updateBlockSummaryMutation.mutate({
+              parentBlockId,
+              targetBlockId: content["block-id"],
+              blockType: content.type as ContentType,
+              summary: value,
+            });
+          } else {
+            // title 업데이트를 위한 전용 API 사용
+            updateBlockTitleMutation.mutate({
+              parentBlockId,
+              targetBlockId: content["block-id"],
+              blockType: content.type as ContentType,
+              title: value,
+            });
+          }
+
+          setEditing(false);
+        }
+      },
+      [
+        content,
+        parentBlockId,
+        updateBlockIntentMutation,
+        updateBlockSummaryMutation,
+        updateBlockTitleMutation,
+      ]
+    );
+
+    // Handlers for intent updates
     const handleIntentUpdate = useCallback(() => {
-      if (content.type !== "sentence" && content["block-id"]) {
-        updateBlockIntentMutation.mutate({
-          parentBlockId: parentBlockId,
-          targetBlockId: content["block-id"],
-          blockType: content.type as ContentType,
-          intent: localIntent,
-        });
-        setEditingIntent(false);
-      }
-    }, [
-      content.type,
-      content["block-id"],
-      localIntent,
-      parentBlockId,
-      updateBlockIntentMutation,
-    ]);
-
-    const handleSummaryUpdate = useCallback(() => {
-      if (content.type !== "sentence" && content["block-id"]) {
-        updateBlockSummaryMutation.mutate({
-          parentBlockId: parentBlockId,
-          targetBlockId: content["block-id"],
-          blockType: content.type as ContentType,
-          summary: localSummary,
-        });
-        setEditingSummary(false);
-      }
-    }, [
-      content.type,
-      content["block-id"],
-      localSummary,
-      parentBlockId,
-      updateBlockSummaryMutation,
-    ]);
+      handleBlockUpdate("intent", localIntent, setEditingIntent);
+    }, [handleBlockUpdate, localIntent]);
 
     const handleIntentCancel = useCallback(() => {
       setLocalIntent(content.intent || "");
       setEditingIntent(false);
     }, [content.intent]);
 
+    const handleIntentKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") handleIntentUpdate();
+        else if (e.key === "Escape") handleIntentCancel();
+      },
+      [handleIntentUpdate, handleIntentCancel]
+    );
+
+    // Handlers for summary updates
+    const handleSummaryUpdate = useCallback(() => {
+      handleBlockUpdate("summary", localSummary, setEditingSummary);
+    }, [handleBlockUpdate, localSummary]);
+
     const handleSummaryCancel = useCallback(() => {
       setLocalSummary(content.summary || "");
       setEditingSummary(false);
     }, [content.summary]);
 
-    const handleIntentKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          handleIntentUpdate();
-        } else if (e.key === "Escape") {
-          handleIntentCancel();
-        }
-      },
-      [handleIntentUpdate, handleIntentCancel]
-    );
-
     const handleSummaryKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          handleSummaryUpdate();
-        } else if (e.key === "Escape") {
-          handleSummaryCancel();
-        }
+        if (e.key === "Enter") handleSummaryUpdate();
+        else if (e.key === "Escape") handleSummaryCancel();
       },
       [handleSummaryUpdate, handleSummaryCancel]
+    );
+
+    // Handlers for title updates
+    const handleTitleUpdate = useCallback(() => {
+      handleBlockUpdate("title", localTitle, setEditingTitle);
+    }, [handleBlockUpdate, localTitle]);
+
+    const handleTitleCancel = useCallback(() => {
+      setLocalTitle(content.title || "");
+      setEditingTitle(false);
+    }, [content.title]);
+
+    const handleTitleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") handleTitleUpdate();
+        else if (e.key === "Escape") handleTitleCancel();
+      },
+      [handleTitleUpdate, handleTitleCancel]
     );
 
     // Display delete for any content type except paper and placeholder content
@@ -217,6 +233,56 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     // isParagraph for special handling
     const isParagraph = content.type === "paragraph";
 
+    // Render the delete button with appropriate styling
+    const renderDeleteButton = useCallback(
+      (className = "") =>
+        showDeleteButton && isHovered ? (
+          <DeleteBlockButton
+            contentType={content.type}
+            onDelete={handleDeleteBlock}
+            className={className}
+          />
+        ) : null,
+      [showDeleteButton, isHovered, content.type, handleDeleteBlock]
+    );
+
+    // Render editable field for summary or intent
+    const renderEditableField = useCallback(
+      (
+        value: string,
+        onChange: (value: string) => void,
+        onUpdate: () => void,
+        onCancel: () => void,
+        isEditing: boolean,
+        setIsEditing: React.Dispatch<React.SetStateAction<boolean>>,
+        inputRef: React.RefObject<HTMLInputElement>,
+        placeholder: string,
+        onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void,
+        extraProps?: {
+          icon?: string;
+          fontSize?: string;
+          fontWeight?: string;
+          extraButton?: React.ReactNode;
+        }
+      ) => (
+        <EditableField
+          value={value}
+          onChange={onChange}
+          onUpdate={onUpdate}
+          onCancel={onCancel}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          inputRef={inputRef}
+          placeholder={placeholder}
+          isHovered={isHovered}
+          isSentence={true}
+          onKeyDown={onKeyDown}
+          {...extraProps}
+        />
+      ),
+      [isHovered]
+    );
+
     return (
       <div
         className={`relative ${
@@ -226,7 +292,9 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Vertical level indicator lines */}
-        {renderLines && renderLevelLines()}
+        {renderLines && (
+          <LevelLines level={level} iconColorClass={iconColorClass} />
+        )}
 
         {/* Title content */}
         <div
@@ -240,28 +308,35 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             <div
               className={`${titleSizeClass} font-bold flex items-center gap-2 group relative`}
             >
-              <span className={`${iconColorClass} break-words`}>
-                {getDisplayTitle()}
-              </span>
-
-              {/* Action buttons */}
-              {isHovered && showDeleteButton && (
-                <button
-                  className="text-red-500 hover:text-red-700"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (
-                      window.confirm(
-                        `Are you sure you want to delete this ${content.type}?`
-                      )
-                    ) {
-                      handleDeleteBlock();
+              {isEditableBlock ? (
+                <div className={`${iconColorClass} flex-grow w-full`}>
+                  {renderEditableField(
+                    localTitle,
+                    setLocalTitle,
+                    handleTitleUpdate,
+                    handleTitleCancel,
+                    editingTitle,
+                    setEditingTitle,
+                    titleInputRef,
+                    "Title",
+                    handleTitleKeyDown,
+                    {
+                      fontSize: titleSizeClass,
+                      fontWeight: "font-bold",
+                      extraButton: renderDeleteButton(
+                        "opacity-0 group-hover:opacity-100 transition-opacity ml-1"
+                      ),
                     }
-                  }}
-                  aria-label={`Delete ${content.type}`}
-                >
-                  <FaTrash size={14} />
-                </button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <span className={`${iconColorClass} break-words`}>
+                    {getDisplayTitle()}
+                  </span>
+                  {/* Action buttons */}
+                  {renderDeleteButton()}
+                </>
               )}
             </div>
           )}
@@ -273,45 +348,30 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                 className={`${titleSizeClass} font-bold flex items-center gap-2 group relative mb-2`}
               >
                 {isEditableBlock ? (
-                  <div className={`${iconColorClass} flex-grow`}>
-                    <EditableField
-                      value={localSummary}
-                      onChange={setLocalSummary}
-                      onUpdate={handleSummaryUpdate}
-                      onCancel={handleSummaryCancel}
-                      isEditing={editingSummary}
-                      setIsEditing={setEditingSummary}
-                      inputRef={summaryInputRef}
-                      placeholder="Empty Summary"
-                      isHovered={isHovered}
-                      isSentence={true}
-                      onKeyDown={handleSummaryKeyDown}
-                    />
+                  <div className={`${iconColorClass} flex-grow w-full`}>
+                    {renderEditableField(
+                      localSummary,
+                      setLocalSummary,
+                      handleSummaryUpdate,
+                      handleSummaryCancel,
+                      editingSummary,
+                      setEditingSummary,
+                      summaryInputRef,
+                      "Empty Summary",
+                      handleSummaryKeyDown,
+                      {
+                        fontSize: titleSizeClass,
+                        fontWeight: "font-bold",
+                        extraButton: renderDeleteButton(
+                          "opacity-0 group-hover:opacity-100 transition-opacity ml-1"
+                        ),
+                      }
+                    )}
                   </div>
                 ) : (
                   <span className={`${iconColorClass} break-words`}>
                     {content.summary || "Empty Summary"}
                   </span>
-                )}
-
-                {/* Delete button for paragraph */}
-                {isHovered && showDeleteButton && (
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (
-                        window.confirm(
-                          `Are you sure you want to delete this ${content.type}?`
-                        )
-                      ) {
-                        handleDeleteBlock();
-                      }
-                    }}
-                    aria-label={`Delete ${content.type}`}
-                  >
-                    <FaTrash size={14} />
-                  </button>
                 )}
               </div>
             )}
@@ -320,19 +380,17 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             {!isParagraph && (
               <div>
                 {isEditableBlock ? (
-                  <EditableField
-                    value={localSummary}
-                    onChange={setLocalSummary}
-                    onUpdate={handleSummaryUpdate}
-                    onCancel={handleSummaryCancel}
-                    isEditing={editingSummary}
-                    setIsEditing={setEditingSummary}
-                    inputRef={summaryInputRef}
-                    placeholder="Empty Summary"
-                    isHovered={isHovered}
-                    isSentence={true}
-                    onKeyDown={handleSummaryKeyDown}
-                  />
+                  renderEditableField(
+                    localSummary,
+                    setLocalSummary,
+                    handleSummaryUpdate,
+                    handleSummaryCancel,
+                    editingSummary,
+                    setEditingSummary,
+                    summaryInputRef,
+                    "Empty Summary",
+                    handleSummaryKeyDown
+                  )
                 ) : (
                   <span className="break-words">
                     {content.summary || "Empty Summary"}
@@ -342,23 +400,23 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             )}
 
             {/* Display intent for all types */}
-            <div className="flex items-center gap-2">
-              <span className="font-medium">🎯</span>
+            <div className="flex items-center gap-2 w-full mb-2">
+              <span className="font-medium flex-shrink-0">🎯</span>
               {isEditableBlock ? (
-                <EditableField
-                  value={localIntent}
-                  onChange={setLocalIntent}
-                  onUpdate={handleIntentUpdate}
-                  onCancel={handleIntentCancel}
-                  isEditing={editingIntent}
-                  setIsEditing={setEditingIntent}
-                  inputRef={intentInputRef}
-                  placeholder="Empty Intent"
-                  icon=""
-                  isHovered={isHovered}
-                  isSentence={true}
-                  onKeyDown={handleIntentKeyDown}
-                />
+                <div className="flex-grow w-full">
+                  {renderEditableField(
+                    localIntent,
+                    setLocalIntent,
+                    handleIntentUpdate,
+                    handleIntentCancel,
+                    editingIntent,
+                    setEditingIntent,
+                    intentInputRef,
+                    "Empty Intent",
+                    handleIntentKeyDown,
+                    { icon: "" }
+                  )}
+                </div>
               ) : (
                 <span className="break-words">
                   {content.intent || "Empty Intent"}
