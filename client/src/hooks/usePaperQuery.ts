@@ -22,7 +22,9 @@ export function usePaperQuery() {
     queryKey: ["paper"],
     queryFn: fetchPaper,
     staleTime: 0,
+    refetchOnMount: "always",
     refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   useEffect(() => {
@@ -96,8 +98,12 @@ export const useUpdateSentence = () => {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (백그라운드에서 추가적인 새로고침)
-      queryClient.invalidateQueries({ queryKey: ["paper"] });
+      // 이후 쿼리 무효화 (즉시 새로고침)
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 };
@@ -140,8 +146,12 @@ export function useAddSentence() {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (백그라운드에서 추가적인 새로고침)
-      queryClient.invalidateQueries({ queryKey: ["paper"] });
+      // 이후 쿼리 무효화 (즉시 새로고침)
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 }
@@ -265,8 +275,12 @@ export function useDeleteSentence() {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (백그라운드에서 추가적인 새로고침)
-      queryClient.invalidateQueries({ queryKey: ["paper"] });
+      // 이후 쿼리 무효화 (즉시 새로고침)
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 }
@@ -329,8 +343,12 @@ export function useAddBlock() {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // 이후 쿼리 무효화 (백그라운드에서 추가적인 새로고침)
-      queryClient.invalidateQueries({ queryKey: ["paper"] });
+      // 이후 쿼리 무효화 (즉시 새로고침)
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 }
