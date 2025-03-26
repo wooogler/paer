@@ -6,7 +6,7 @@ import {
 } from "fastify";
 import { PaperController } from "../controllers/paperController";
 import { request } from "http";
-import { ContentTypeSchemaEnum } from "@paer/shared";
+import { ContentTypeSchema } from "@paer/shared";
 
 // Define routes as Fastify plugin
 const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
@@ -51,10 +51,11 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/paper/block",
     async (
       request: FastifyRequest<{
-        Body: { 
-          parentBlockId: string | null,
-          prevBlockId: string | null,
-          blockType: ContentTypeSchemaEnum};
+        Body: {
+          parentBlockId: string | null;
+          prevBlockId: string | null;
+          blockType: typeof ContentTypeSchema;
+        };
       }>,
       reply: FastifyReply
     ) => {

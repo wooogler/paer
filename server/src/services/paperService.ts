@@ -1,4 +1,4 @@
-import { ContentTypeSchemaEnum, Paper } from "@paer/shared";
+import { ContentTypeSchema, Paper } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
 import fs from "fs/promises";
 
@@ -23,7 +23,11 @@ export class PaperService {
     return this.paperRepository.addSentence(blockId);
   }
 
-  async addBlock(parentBlockId: string | null, prevBlockId: string | null, blockType: ContentTypeSchemaEnum): Promise<string> {
+  async addBlock(
+    parentBlockId: string | null,
+    prevBlockId: string | null,
+    blockType: typeof ContentTypeSchema
+  ): Promise<string> {
     return this.paperRepository.addBlock(parentBlockId, prevBlockId, blockType);
   }
 

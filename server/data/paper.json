@@ -30,7 +30,7 @@
                   "summary": "Modern writing tools lack structured approach",
                   "intent": "To point out the limitation",
                   "type": "sentence",
-                  "content": "Modern writing tools often lack a structured approach, leading to disorganized documents and reduced clarity."
+                  "content": "Modern writing tools often lack a structured approach, leading to disorganized documents and reduced clarity. hello"
                 },
                 {
                   "block-id": "1.1.1.2",
@@ -38,6 +38,13 @@
                   "intent": "To identify the need",
                   "type": "sentence",
                   "content": "Professional writers and researchers need better organization tools to improve their workflow and document quality."
+                },
+                {
+                  "type": "sentence",
+                  "summary": "",
+                  "intent": "Provide additional information",
+                  "content": "hello",
+                  "block-id": "1743002615886"
                 }
               ]
             },
