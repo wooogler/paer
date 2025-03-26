@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { Paper, ContentTypeSchema } from "@paer/shared";
+import { Paper, ContentTypeSchema, ContentTypeSchemaEnum, Content } from "@paer/shared";
 import e from "cors";
+
 
 export class PaperRepository {
   private readonly filePath: string;
@@ -137,10 +138,8 @@ export class PaperRepository {
       }
 
       // Finds the parent block; throws an error if not found
-      const parentBlock = paperData.content.find(
-        (block: any) => block["block-id"] === parentBlockId
-      );
-      if (!parentBlock) {
+      const parentBlock = this.getBlockById(paperData, parentBlockId, blockType);
+      if (parentBlock == 'undefined') {
         throw new Error(
           `Could not find the parent block with block ID ${parentBlockId}`
         );
@@ -194,7 +193,32 @@ export class PaperRepository {
   }
 
   // Finds the block given the ID
-  private getBlockById(root: Paper, blockId: string) {}
+  private getBlockById(root: any, blockId: string, blockType: typeof ContentTypeSchema) {
+    const matchingId = (block: any) => block["block-id"] === blockId;
+    switch (blockType) {
+      case "section":
+        return root;
+
+      case "subsection":
+        return root.content.find(matchingId);
+
+      case "paragraph":
+        for (const section of root.content) {
+          if (section.content != 'undefined') {
+            const match = section.content?.find(matchingId);
+            if (match != 'undefined') return match;
+          }
+        }
+      
+      case "sentence":
+        for (const section of root.content) {
+          for (const subsection of section.content) {
+            const match = subsection.content.find(matchingId);
+            if (match) return match;
+          }
+        }
+    } 
+  }
 
   private findAndAddSentence(
     obj: any,
@@ -206,7 +230,6 @@ export class PaperRepository {
       // Find the parent object that contains this sentence
       return false; // Cannot add here directly, need parent's content array
     }
-
     // Look in the content array
     if (Array.isArray(obj.content)) {
       for (let i = 0; i < obj.content.length; i++) {
