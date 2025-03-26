@@ -125,7 +125,7 @@ export class PaperRepository {
         type: blockType,
         summary: "",
         intent: "Provide additional information",
-        content: "",
+        content: blockType === "sentence" ? "" : [],
         "block-id": newBlockId, // Assigns a unique block ID using timestamp
         ...(blockType !== "sentence" && { title: "" }),
       };

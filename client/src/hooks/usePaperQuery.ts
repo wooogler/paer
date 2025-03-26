@@ -6,10 +6,11 @@ import {
   updateSentenceIntent,
   addSentenceAfter,
   deleteSentence,
+  addBlock,
 } from "../api/paperApi";
 import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
-import { Paper, Content } from "@paer/shared";
+import { Paper, Content, ContentType } from "@paer/shared";
 
 // 새로 추가된 문장의 blockId를 저장하는 전역 변수
 let newSentenceBlockId: string | null = null;
@@ -285,4 +286,51 @@ function findContentByPath(rootContent: any, path: number[]): any {
     current = current.content[path[i]];
   }
   return current;
+}
+
+// Block 추가를 위한 mutation hook
+export function useAddBlock() {
+  const queryClient = useQueryClient();
+  const setContent = useContentStore((state) => state.setContent);
+  const { selectedContent, selectedPath, setSelectedContent } =
+    useContentStore();
+
+  return useMutation({
+    mutationFn: async ({
+      parentBlockId,
+      prevBlockId,
+      blockType,
+    }: {
+      parentBlockId: string | null;
+      prevBlockId: string | null;
+      blockType: ContentType;
+    }) => {
+      return await addBlock(parentBlockId, prevBlockId, blockType);
+    },
+    onSuccess: async () => {
+      // 서버에서 즉시 최신 데이터 가져오기
+      try {
+        const newData = await fetchPaper();
+
+        // 캐시 직접 업데이트
+        queryClient.setQueryData(["paper"], newData);
+
+        // 스토어 직접 업데이트
+        setContent(newData);
+
+        // 현재 선택된 content가 있으면 해당 path로 다시 선택하여 UI 업데이트
+        if (selectedContent && selectedPath) {
+          const refreshedContent = findContentByPath(newData, selectedPath);
+          if (refreshedContent) {
+            setSelectedContent(refreshedContent, selectedPath);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch updated data:", error);
+      }
+
+      // 이후 쿼리 무효화 (백그라운드에서 추가적인 새로고침)
+      queryClient.invalidateQueries({ queryKey: ["paper"] });
+    },
+  });
 }

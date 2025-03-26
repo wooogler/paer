@@ -4,6 +4,7 @@ import { useAppStore } from "../../store/useAppStore";
 import HierarchyTitle from "./HierarchyTitle";
 import ContentRenderer from "./ContentRenderer";
 import AddBlockButton from "./AddBlockButton";
+import { useAddBlock } from "../../hooks/usePaperQuery";
 
 interface ContainerRendererProps {
   content: Content;
@@ -20,10 +21,16 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
   ({ content, path, level, isTopLevel, config }) => {
     const { showHierarchy } = useAppStore();
     const [hoverIndex, setHoverIndex] = React.useState<number | null>(null);
+    const addBlockMutation = useAddBlock();
 
-    if (!content.content || !Array.isArray(content.content)) {
-      return null;
-    }
+    // content.content가 없거나 배열이 아닌 경우를 처리
+    const safeContent = {
+      ...content,
+      content:
+        content.content && Array.isArray(content.content)
+          ? content.content
+          : [],
+    };
 
     // Determine which block type to add based on the current content type
     const getNextBlockType = (): ContentType => {
@@ -39,6 +46,31 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
         default:
           return "paragraph";
       }
+    };
+
+    // Block 추가 함수
+    const handleAddBlock = (prevIndex: number) => {
+      const blockType = getNextBlockType();
+      const parentBlockId = content["block-id"] || null;
+
+      let prevBlockId = null;
+      if (
+        prevIndex >= 0 &&
+        content.content &&
+        Array.isArray(content.content) &&
+        prevIndex < content.content.length
+      ) {
+        const prevBlock = content.content[prevIndex];
+        if (typeof prevBlock !== "string" && prevBlock["block-id"]) {
+          prevBlockId = prevBlock["block-id"] as string;
+        }
+      }
+
+      addBlockMutation.mutate({
+        parentBlockId,
+        prevBlockId,
+        blockType,
+      });
     };
 
     return (
@@ -61,17 +93,19 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
           }`}
         >
           <AddBlockButton
-            onClick={() => {}}
+            onClick={() => handleAddBlock(-1)}
             isVisible={hoverIndex === -1}
             blockType={getNextBlockType()}
+            parentBlockId={content["block-id"] || null}
+            prevBlockId={null}
           />
         </div>
 
         {/* Render children with dividers between paragraphs */}
-        {content.content.map((child, index) => {
+        {safeContent.content.map((child, index) => {
           const isParagraph =
             typeof child !== "string" && child.type === "paragraph";
-          const contentArray = content.content as Content[];
+          const contentArray = safeContent.content as Content[];
           const prevChild = index > 0 ? contentArray[index - 1] : null;
           const isPrevParagraph =
             prevChild &&
@@ -106,9 +140,15 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
                   }`}
                 >
                   <AddBlockButton
-                    onClick={() => {}}
+                    onClick={() => handleAddBlock(index)}
                     isVisible={hoverIndex === index}
                     blockType={getNextBlockType()}
+                    parentBlockId={content["block-id"] || null}
+                    prevBlockId={
+                      typeof child !== "string"
+                        ? (child["block-id"] as string) || null
+                        : null
+                    }
                   />
                 </div>
               )}

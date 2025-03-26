@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { Content } from "@paer/shared";
 import { useAppStore } from "../../store/useAppStore";
-import { useAddSentence } from "../../hooks/usePaperQuery";
+import { useAddSentence, useAddBlock } from "../../hooks/usePaperQuery";
 import TextEditor from "./TextEditor";
 import AddBlockButton from "./AddBlockButton";
 
@@ -15,6 +15,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
   ({ content, level = 0 }) => {
     const { showHierarchy } = useAppStore();
     const addSentenceMutation = useAddSentence();
+    const addBlockMutation = useAddBlock();
 
     const [hoverIndex, setHoverIndex] = useState<number | null>(null);
     // Refs for each textarea in the sentences
@@ -131,6 +132,8 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             onClick={() => handleAddSentence(0)}
             isVisible={hoverIndex === -1}
             blockType="sentence"
+            parentBlockId={content["block-id"] || null}
+            prevBlockId={null}
           />
         </div>
 
@@ -161,6 +164,12 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
                   onClick={() => handleAddSentence(index + 1)}
                   isVisible={hoverIndex === index}
                   blockType="sentence"
+                  parentBlockId={content["block-id"] || null}
+                  prevBlockId={
+                    typeof sentenceContent !== "string"
+                      ? (sentenceContent["block-id"] as string) || null
+                      : null
+                  }
                 />
               </div>
             </React.Fragment>

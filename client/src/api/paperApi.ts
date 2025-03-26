@@ -1,4 +1,4 @@
-import { type Paper } from "@paer/shared";
+import { type Paper, ContentType } from "@paer/shared";
 import api from "../services/api";
 
 // API function definition
@@ -85,5 +85,26 @@ export const updateSentenceSummary = async (
       console.error("Error updating sentence summary:", error.message);
     }
     throw new Error("Failed to update sentence summary");
+  }
+};
+
+// Add a new block (section, subsection, paragraph)
+export const addBlock = async (
+  parentBlockId: string | null,
+  prevBlockId: string | null,
+  blockType: ContentType
+): Promise<string> => {
+  try {
+    const response = await api.post("/paper/block", {
+      parentBlockId,
+      prevBlockId,
+      blockType,
+    });
+    return response.data.blockId as string;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error adding block:", error.message);
+    }
+    throw new Error("Failed to add new block");
   }
 };

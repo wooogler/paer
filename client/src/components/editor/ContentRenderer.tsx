@@ -38,10 +38,24 @@ const ContentRenderer: React.FC<ContentRendererProps> = React.memo(
     const config = typeConfig[content.type];
 
     // For container types (section, subsection, paper)
-    if (content.content && Array.isArray(content.content)) {
+    if (
+      content.type === "section" ||
+      content.type === "subsection" ||
+      content.type === "paper" ||
+      (content.content && Array.isArray(content.content))
+    ) {
+      // content.content가 없는 경우, 빈 배열로 초기화
+      const safeContent = {
+        ...content,
+        content:
+          content.content && Array.isArray(content.content)
+            ? content.content
+            : [],
+      };
+
       return (
         <ContainerRenderer
-          content={content}
+          content={safeContent}
           path={path}
           level={level}
           isTopLevel={isTopLevel}
