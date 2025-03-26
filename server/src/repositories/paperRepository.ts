@@ -152,8 +152,8 @@ export class PaperRepository {
       const prevBlockIndex = !prevBlockId
         ? -1
         : parentBlock.content.findIndex(
-            (block: any) => block["block-id"] === prevBlockId
-          );
+          (block: any) => block["block-id"] === prevBlockId
+        );
       parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
 
       // Write the updated JSON back to the paper file
@@ -170,29 +170,48 @@ export class PaperRepository {
     return newBlockId;
   }
 
-  private findAndUpdateSentence(
-    obj: any,
-    blockId: string,
-    content: string
-  ): boolean {
-    // Check if current object has the matching block-id
-    if (obj["block-id"] === blockId) {
-      if (obj.type === "sentence") {
-        obj.content = content;
-        return true;
-      }
-    }
+  // Updates a block with the specified key-value pair
+  async updateBlock(parentBlockId: string | null, targetBlockId: string, blockType: ContentType, keyToUpdate: string, updatedValue: string): Promise<void> {
+    try {
+      // Reads the current paper file as JSON
+      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
 
-    // If not found at this level, recursively search in the content array
-    if (Array.isArray(obj.content)) {
-      for (const item of obj.content) {
-        if (this.findAndUpdateSentence(item, blockId, content)) {
-          return true;
-        }
+      if (!parentBlockId) {
+        throw new Error(
+          `Could not add the new block because parent block is not provided.`
+        );
       }
-    }
 
-    return false;
+      // Finds the parent block; throws an error if not found
+      const parentBlock = this.getBlockById(
+        paperData,
+        parentBlockId,
+        blockType
+      );
+      if (!parentBlock) {
+        throw new Error(
+          `Could not find the parent block with block ID ${parentBlockId}`
+        );
+      }
+
+      // Finds the index of the previous block ID within the parent block; return -1 if not found
+      const targetBlock = parentBlock.content.find(
+          (block: any) => block["block-id"] === targetBlockId
+        );
+      
+      // Updates the target block with the specified key-value pair
+      targetBlock[keyToUpdate] = updatedValue;
+
+      // Write the updated JSON back to the paper file
+      fs.writeFileSync(
+        this.filePath,
+        JSON.stringify(paperData, null, 2),
+        "utf-8"
+      );
+    } catch (error) {
+      console.error("Error updating a block:", error);
+      throw new Error(`Failed to update block ${targetBlockId}`);
+    }
   }
 
   // Finds the block given the ID
@@ -226,6 +245,31 @@ export class PaperRepository {
       default:
         return undefined;
     }
+  }
+
+  private findAndUpdateSentence(
+    obj: any,
+    blockId: string,
+    content: string
+  ): boolean {
+    // Check if current object has the matching block-id
+    if (obj["block-id"] === blockId) {
+      if (obj.type === "sentence") {
+        obj.content = content;
+        return true;
+      }
+    }
+
+    // If not found at this level, recursively search in the content array
+    if (Array.isArray(obj.content)) {
+      for (const item of obj.content) {
+        if (this.findAndUpdateSentence(item, blockId, content)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   private findAndAddSentence(
