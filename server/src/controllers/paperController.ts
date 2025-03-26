@@ -87,8 +87,37 @@ export class PaperController {
       );
       return { success: true, blockId: newBlockId };
     } catch (error) {
-      console.error("Error in addSentence:", error);
+      console.error("Error in addBlock:", error);
       return reply.code(500).send({ error: "Failed to add new block" });
+    }
+  }
+
+  async updateBlock(
+    request: FastifyRequest<{
+      Body: {
+        parentBlockId: string | null;
+        targetBlockId: string;
+        blockType: ContentType;
+        keyToUpdate: string;
+        updatedValue: string;
+      };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { parentBlockId, targetBlockId, blockType, keyToUpdate, updatedValue } = request.body;
+      // blockId can be null (to add at the beginning of a paragraph)
+      await this.paperService.updateBlock(
+        parentBlockId,
+        targetBlockId,
+        blockType,
+        keyToUpdate,
+        updatedValue
+      );
+      return { success: true };
+    } catch (error) {
+      console.error("Error in updateBlock:", error);
+      return reply.code(500).send({ error: "Failed to update target block" });
     }
   }
 

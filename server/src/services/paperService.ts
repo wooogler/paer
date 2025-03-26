@@ -31,6 +31,15 @@ export class PaperService {
     return this.paperRepository.addBlock(parentBlockId, prevBlockId, blockType);
   }
 
+  async updateBlock(
+    parentBlockId: string | null,
+    targetBlockId: string, 
+    blockType: ContentType,
+    keyToUpdate: string, updatedValue: string
+  ): Promise<void> {
+    return this.paperRepository.updateBlock(parentBlockId, targetBlockId, blockType, keyToUpdate, updatedValue);
+  }
+
   /**
    * 문장 삭제
    * @param blockId 삭제할 문장의 ID
