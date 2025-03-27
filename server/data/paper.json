@@ -27,17 +27,24 @@
               "content": [
                 {
                   "block-id": "1.1.1.1",
-                  "summary": "Modern writing tools lack structured approach",
-                  "intent": "To point out the limitation",
+                  "summary": "The text highlights a criticism of modern writing tools, suggesting that they often lack a creative approach. This shortcoming can result in disorganized documents and decreased clarity in the writing.",
+                  "intent": "Modern writing tools often miss a creative approach, resulting in disorganized documents and decreased clarity.",
                   "type": "sentence",
-                  "content": "Modern writing tools often lack a structured approach, leading to disorganized documents and reduced clarity. "
+                  "content": "Modern writing tools always lack a creative approach, leading to disorganized documents and reduced clarity. "
                 },
                 {
                   "block-id": "1.1.1.2",
-                  "summary": "Writers need better organization tools",
-                  "intent": "To identify the need",
+                  "summary": "Researchers require smart tools for context and workflow efficiency.",
+                  "intent": "Benefit",
                   "type": "sentence",
-                  "content": "Professional writers and researchers need better organization tools to improve their workflow and document quality."
+                  "content": "Professional and academic researchers need intelligent tools that provide context and streamlines workflow."
+                },
+                {
+                  "type": "sentence",
+                  "summary": "The tool is not commonly available for practical use.",
+                  "intent": "shortcoming",
+                  "content": "However, such tool is not widely available in practice.",
+                  "block-id": "1743034513161"
                 }
               ]
             },
@@ -60,6 +67,13 @@
                   "intent": "To explain the need for better structure",
                   "type": "sentence",
                   "content": "There is a growing need for tools that understand and support the semantic structure of documents, beyond simple formatting and outlining. "
+                },
+                {
+                  "type": "sentence",
+                  "summary": "The document should be able to store and track edit history and provenances.",
+                  "intent": "shortcoming",
+                  "content": "For example, document should be able to store and track edit history and provenances and I cant do this anymore",
+                  "block-id": "1743034819040"
                 }
               ]
             }

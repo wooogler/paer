@@ -18,13 +18,37 @@ export class PaperRepository {
     }
   }
 
-  async updateSentenceContent(blockId: string, content: string): Promise<void> {
+  // async updateSentenceContent(blockId: string, content: string): Promise<void> {
+  //   try {
+  //     // Read the current data
+  //     const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+
+  //     // Find and update the sentence with matching block-id
+  //     const updated = this.findAndUpdateSentence(paperData, blockId, content);
+
+  //     if (!updated) {
+  //       throw new Error(`Sentence with block-id ${blockId} not found`);
+  //     }
+
+  //     // Write the updated data back to the file
+  //     fs.writeFileSync(
+  //       this.filePath,
+  //       JSON.stringify(paperData, null, 2),
+  //       "utf-8"
+  //     );
+  //   } catch (error) {
+  //     console.error("Error updating sentence content:", error);
+  //     throw new Error("Failed to update sentence content");
+  //   }
+  // }
+
+  async updateSentence(blockId: string, content: string, summary: string, intent: string): Promise<void> {
     try {
       // Read the current data
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
 
       // Find and update the sentence with matching block-id
-      const updated = this.findAndUpdateSentence(paperData, blockId, content);
+      const updated = this.findAndUpdateSentence(paperData, blockId, content, summary, intent);
 
       if (!updated) {
         throw new Error(`Sentence with block-id ${blockId} not found`);
@@ -214,15 +238,61 @@ export class PaperRepository {
     }
   }
 
+  // private findAndUpdateSentence(
+  //   obj: any,
+  //   blockId: string,
+  //   content: string
+  // ): boolean {
+  //   // Check if current object has the matching block-id
+  //   if (obj["block-id"] === blockId) {
+  //     if (obj.type === "sentence") {
+  //       obj.content = content;
+  //       return true;
+  //     }
+  //   }
+
+  //   private findAndUpdateSentence(
+  //     obj: any,
+  //     blockId: string,
+  //     content: string,
+  //     summary: string,
+  //     intent: string
+  //   ): boolean {
+  //     // Check if current object has the matching block-id
+  //     if (obj["block-id"] === blockId) {
+  //       if (obj.type === "sentence") {
+  //         obj.content = content;
+  //         obj.summary = summary;
+  //         obj.intent = intent;
+  //         return true;
+  //       }
+  //     }
+
+  //   // If not found at this level, recursively search in the content array
+  //   if (Array.isArray(obj.content)) {
+  //     for (const item of obj.content) {
+  //       if (this.findAndUpdateSentence(item, blockId, content)) {
+  //         return true;
+  //       }
+  //     }
+  //   }
+
+  //   return false;
+  // }
+
   private findAndUpdateSentence(
     obj: any,
     blockId: string,
-    content: string
+    content: string,
+    summary: string,
+    intent: string
   ): boolean {
     // Check if current object has the matching block-id
     if (obj["block-id"] === blockId) {
       if (obj.type === "sentence") {
         obj.content = content;
+        obj.summary = summary;
+        obj.intent = intent;
         return true;
       }
     }
@@ -230,7 +300,7 @@ export class PaperRepository {
     // If not found at this level, recursively search in the content array
     if (Array.isArray(obj.content)) {
       for (const item of obj.content) {
-        if (this.findAndUpdateSentence(item, blockId, content)) {
+        if (this.findAndUpdateSentence(item, blockId, content, summary, intent)) {
           return true;
         }
       }

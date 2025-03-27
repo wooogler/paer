@@ -39,7 +39,7 @@ export class PaperController {
         return reply.code(400).send({ error: "Missing blockId or content" });
       }
 
-      await this.paperService.updateSentenceContent(blockId, content);
+      await this.paperService.updateSentence(blockId, content);
 
       return { success: true };
     } catch (error) {
