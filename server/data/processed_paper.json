@@ -1,347 +1,4524 @@
 {
-  "title": "Beyond the Chat: Interaction, Verification and Auditing Tools To Improve Transparency and Accuracy when Editing Text with an LLM",
-  "block-id": "1743034838",
+  "title": "Understanding The Motivations and Participatory Culture Behind Viewing Reaction Videos",
+  "block-id": "1743112376",
   "summary": "",
   "intent": "",
   "type": "paper",
   "content": [
     {
-      "title": "Introduction",
-      "block-id": "1743034838",
-      "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": []
-    },
-    {
-      "title": "Related Work",
-      "block-id": "1743034839",
-      "summary": "",
-      "intent": "",
+      "title": "Main Content",
+      "block-id": "1743112376",
       "type": "section",
       "content": [
         {
-          "title": "Intelligent Text-Editing Interfaces",
-          "block-id": "1743034840",
-          "summary": "",
-          "intent": "",
+          "title": "Content",
+          "block-id": "1743112377",
           "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "2020202020",
-          "block-id": "1743034841",
+          "content": [
+            {
+              "block-id": "1743112379",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112378",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "NLP is a field of computer science, artificial intelligence, and linguistics concerned with the interactions between computers and human (natural) languages."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112382",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112380",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "$$ is the eighteenth letter of the Greek alphabet, and carries the 's' sound."
+                },
+                {
+                  "block-id": "1743112381",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In the system of Greek numerals, it has a value of 200."
+                }
+              ]
+            }
+          ],
           "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Ethical Considerations of Co-writing",
-          "block-id": "1743034842",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Text Editing in NLP",
-          "block-id": "1743034843",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Information Verification \\& Auditing",
-          "block-id": "1743034844",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
+          "intent": ""
         }
-      ]
+      ],
+      "summary": "",
+      "intent": ""
     },
     {
-      "title": "Survey on Current Text Editing Practices",
-      "block-id": "1743034845",
-      "summary": "",
-      "intent": "",
+      "title": "Research Design",
+      "block-id": "1743112388",
       "type": "section",
       "content": [
         {
-          "title": "Survey and Study Participant Recruitment",
-          "block-id": "1743034846",
-          "summary": "",
-          "intent": "",
+          "title": "Content",
+          "block-id": "1743112389",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112392",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112390",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This study employed a qualitative approach to understand the motivations, characteristics, and engagement practices of viewers of reaction videos."
+                },
+                {
+                  "block-id": "1743112391",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The research addresses our three primary questions:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112394",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112393",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We utilized a combination of surveys and semi-structured interviews to gather comprehensive data."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         },
         {
-          "title": "Survey Results",
-          "block-id": "1743034847",
-          "summary": "",
-          "intent": "",
+          "title": "Survey and Interview Participants",
+          "block-id": "1743112395",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112397",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112396",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P01 & Male & Black / African-American & 21 & Bachelor's & TikTok, YouTube & Sports, Creator-Specific, Music \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112399",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112398",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P02 & Female & Multi-Racial & 19 & Bachelor's & TikTok, YouTube & Gaming, Experiments \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112402",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112400",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P03 & Male & Black / African-American & 26 & Ph.D."
+                },
+                {
+                  "block-id": "1743112401",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "& YouTube & TV Shows, Movies, Creator-Specific \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112404",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112403",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P04 & Male & Black / African-American & 22 & Bachelor's & YouTube & Gaming \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112406",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112405",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P05 & Female & Hispanic & 22 & Bachelor's & Snapchat, TikTok, YouTube & Beauty, Horror, Creator-Specific \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112408",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112407",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P06 & Male & Black / African-American & 21 & Bachelor's & Twitter, YouTube & Music, Creator-Specific \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112410",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112409",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P07 & Female & Hispanic & 22 & Bachelor's & YouTube, TikTok & Gaming, Popular Culture \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112412",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112411",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P08 & Female & Black / African-American & 23 & Bachelor's & YouTube & Music, Anime \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112415",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112413",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P09 & Female & Asian & 26 & Ph.D."
+                },
+                {
+                  "block-id": "1743112414",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "& YouTube & TV Shows, Challenges \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112417",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112416",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P10 & Male & Black / African-American & 25 & Bachelor's & Facebook, Twitter, Instagram, YouTube & Comedy, Music \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112419",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112418",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P11 & Male & Black / African-American & 27 & Bachelor's & YouTube & Sports, Comedy, Wildlife \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112421",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112420",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P12 & Male & Black / African-American & 30 & Master's & YouTube, TikTok, Facebook & Tech, Music \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112423",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112422",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P13 & Male & Black / African-American & 18 & Bachelor's & YouTube, TikTok, Instagram & Music, Creator-Specific \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112426",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112424",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P14 & Female & Asian & 22 & Ph.D."
+                },
+                {
+                  "block-id": "1743112425",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "& YouTube, TikTok & Music \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112428",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112427",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P15 & Female & Asian & 20 & Bachelor's & YouTube, Instagram & Creator-Specific, News-Related, Comedy \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112430",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112429",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P16 & Male & Asian & 22 & Master's & YouTube, TikTok, Instagram & TV Shows \\\\"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112435",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112431",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The study involved 16 participants who were recruited through a Study Interest survey on Google Form and the platform Prolific."
+                },
+                {
+                  "block-id": "1743112432",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "A total of 15 responses were collected from the Prolific survey, and 17 responses were collected from the Google Form survey."
+                },
+                {
+                  "block-id": "1743112433",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants who agreed to participate were contacted and scheduled for interviews."
+                },
+                {
+                  "block-id": "1743112434",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participant demographics included a range of ages, genders, races, and educational backgrounds, ensuring a diverse sample."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112439",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112436",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Informed consent was obtained from all participants prior to their involvement."
+                },
+                {
+                  "block-id": "1743112437",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants were assured of their anonymity and confidentiality, and they were informed of their right to withdraw from the study at any time without penalty."
+                },
+                {
+                  "block-id": "1743112438",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants were compensated for their time with a 15 dollar Amazon Gift Card"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112443",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112440",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Data was collected using semi-structured interviews that were conducted either in-person or via Zoom."
+                },
+                {
+                  "block-id": "1743112441",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The interviews focused on participants' experiences and perspectives on reaction videos, addressing topics such as their motivations for watching, characteristics of the videos, and how they engaged with the content."
+                },
+                {
+                  "block-id": "1743112442",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Each interview lasted approximately 25-30 minutes and was audio-recorded with participants' consent."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112445",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112444",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "After the interviews, participants were asked to fill out a short demographics survey, which included questions about their age, gender, race and ethnicity, education level, sexual orientation, and occupation."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         }
-      ]
+      ],
+      "summary": "",
+      "intent": ""
     },
     {
-      "title": "InkSync System Components and Interface",
-      "block-id": "1743034848",
-      "summary": "",
-      "intent": "",
+      "title": "Data Analysis",
+      "block-id": "1743112446",
       "type": "section",
       "content": [
         {
-          "title": "InkSync System Components",
-          "block-id": "1743034849",
-          "summary": "",
-          "intent": "",
+          "title": "Content",
+          "block-id": "1743112447",
           "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Edit-suggesting Components",
-          "block-id": "1743034850",
+          "content": [
+            {
+              "block-id": "1743112451",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112448",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The interviews were transcribed using the platform Sonix.AI, and the transcriptions were then coded by the research team."
+                },
+                {
+                  "block-id": "1743112449",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The coding process involved identifying patterns and themes in the data through thematic analysis."
+                },
+                {
+                  "block-id": "1743112450",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We used the codes to identify similar groups and patterns in the data, and these groups were then used to create themes that emerged from the participants' experiences and perspectives on reaction videos."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112454",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112452",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The coded data was analyzed using Miro, a digital collaboration platform, to group and visualize the data based on similarities between the codes."
+                },
+                {
+                  "block-id": "1743112453",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This iterative process of open coding, axial coding, and selective coding allowed for a comprehensive understanding of the participants' motivations, viewing practices, and engagement with reaction videos."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112457",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112455",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As seen in our table, our participants engage with a wide spectrum of original content (OC), ranging from blockbuster movies, sports, and popular music videos to more niche, or subcultural, genres such as indie films, underground music, anime, and even beauty-related content."
+                },
+                {
+                  "block-id": "1743112456",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We can see the selection of content reflects both the diverse interests of the audience and the role that RVs play in deepening and/or broadening those interests."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112461",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112458",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It is clear that age also influences both platform and genre preferences as well."
+                },
+                {
+                  "block-id": "1743112459",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Younger participants (ages 18-22) gravitated towards \"newer\" platforms like TikTok and Snapchat, whereas older participants (ages 24-30) preferred more established platforms like Facebook and Twitter."
+                },
+                {
+                  "block-id": "1743112460",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This pattern seems to mirror broader generational media trends and highlights age-based segmentation in both platform usage and RV discovery."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112464",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112462",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Before exploring the results, it is important to define key terms that we will use throughout the analysis of reaction video (RV) culture."
+                },
+                {
+                  "block-id": "1743112463",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These terms will help clarify the roles and content involved in the consumption and production of reaction videos:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112468",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112465",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "With the glossary defined, we can now go into our work's two major findings."
+                },
+                {
+                  "block-id": "1743112466",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "First, we will discuss how viewers discover RVs - which also ties into the type of content that they consume and how they consume RVs."
+                },
+                {
+                  "block-id": "1743112467",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "From there, we'll be discussing the values that viewers derive from RVs - and the manners in which they consume RVs."
+                }
+              ]
+            }
+          ],
           "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Warn-Verify-Audit Framework",
-          "block-id": "1743034851",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
+          "intent": ""
         }
-      ]
+      ],
+      "summary": "",
+      "intent": ""
     },
     {
-      "title": "Usability Study 1: Interaction Style Evaluation",
-      "block-id": "1743034852",
-      "summary": "",
-      "intent": "",
+      "title": "How Viewers Discover RVs",
+      "block-id": "1743112469",
       "type": "section",
       "content": [
         {
-          "title": "Participants",
-          "block-id": "1743034853",
-          "summary": "",
-          "intent": "",
+          "title": "Content",
+          "block-id": "1743112470",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112474",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112471",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Viewers discover reaction videos (RVs) in a variety of ways."
+                },
+                {
+                  "block-id": "1743112472",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Whether they encounter RVs by actively seeking content, stumble upon algorithmically curated suggestions, or follow recommendations shared by friends and/or family, the RV discovery process often varies and is constantly evolving."
+                },
+                {
+                  "block-id": "1743112473",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "From our analysis, four major pathways emerged around how viewers discover RVs: content-led, creator-led, algorithmically-led, and socially-led."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         },
         {
-          "title": "Study Procedure",
-          "block-id": "1743034854",
-          "summary": "",
-          "intent": "",
+          "title": "I watch RVs because I like the Content",
+          "block-id": "1743112476",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112479",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112477",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Many interviewees (e.g., P3, P16) described actively seeking out reaction videos  enjoying the original content (OC)."
+                },
+                {
+                  "block-id": "1743112478",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In P3’s words:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112482",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112480",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``So, I'll go watch the Atlanta episode and then if I came across the reaction video on YouTube first, I would bookmark it."
+                },
+                {
+                  "block-id": "1743112481",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And then after I watched the episode, I would go back and watch the reaction video because then it will make more sense to me and it won't spoil it for me\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112485",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112483",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "By seeking external responses and commentary, participants enhance their emotional experience."
+                },
+                {
+                  "block-id": "1743112484",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It is as if they are treating the RV like a ``mock conversation”, and seeing how others interpret their favorite/\"must-see\" scenes."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112487",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112486",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In this case, viewers actively search for RVs that respond to the OC of their interests."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112489",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112488",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Yeah, I just go search for reaction videos based on the video I've seen before.\" - P12"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112491",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112490",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``..if there's something I really like, sometimes I'll just search it up and look up reaction videos to that.\" - P8"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112494",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112492",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Search-based discovery highlights the proactive role that viewers can play in curating their own RV experiences."
+                },
+                {
+                  "block-id": "1743112493",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "By actively seeking out reactions to OC, viewers are either aiming to contextualize their own interpretations or gauging broader opinions within a community of shared interests."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112497",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112495",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Viewers often approach RVs with varying levels of familiarity with the original content (OC)."
+                },
+                {
+                  "block-id": "1743112496",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For many, the decision to watch an RV stems from their prior engagement with the OC, especially when it is a topic or media they are deeply interested in."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112500",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112498",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "However, it does not necessarily mean they only watch RVs after watching OC."
+                },
+                {
+                  "block-id": "1743112499",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Watching RVs can be a way of accessing OC socially."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112503",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112501",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "`` ...sometimes I'll see an album reaction before I finish an entire album and then just end up watching the album reaction, where they get to songs where I haven't heard."
+                },
+                {
+                  "block-id": "1743112502",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So it's kind of like I'm listening to it with them at the same time.\" - P6"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112506",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112504",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I never watch the original video because the ones that I typically watch, it's either, I've already seen them while it was happening right there and then, or I know what the content is going to be."
+                },
+                {
+                  "block-id": "1743112505",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So I just like to watch them react to that original video.\" - P4"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112508",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112507",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These quotes highlight how prior familiarity allows viewers to focus on the reactor’s interpretation or insight, which adds new dimensions to their understanding of the OC."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112511",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112509",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The repeated consumption of RVs for the same OC emerged as a notable behavior among viewers."
+                },
+                {
+                  "block-id": "1743112510",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants highlighted the value of watching different reactors interpret the same content, as each reaction offered unique perspectives, humor, or cultural context."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112513",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112512",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This excerpt from P3 shows how comparatively binging RVs allows viewers to enjoy diverse interpretations of content, effectively enriching their overall experience."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         },
         {
-          "title": "Evaluation Methodology and Results",
-          "block-id": "1743034855",
-          "summary": "",
-          "intent": "",
+          "title": "I watch RVs because I like the Content-creator",
+          "block-id": "1743112514",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112516",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112515",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Although the primary consumption pathway for RVs looks to be content-led, some participants mentioned that their consumption of RVs was more so fueled by the content creators themselves."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112518",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112517",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This pathway is followed when existing fans of a content creator/streamer discover that the creator is branching into reaction content."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112521",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112519",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Multiple participants cited the idea of ``staying for the reactor\" rather than caring about the media being reacted to."
+                },
+                {
+                  "block-id": "1743112520",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For instance, P1 remarked:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112524",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112522",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I already watched him for gaming, so if he does reaction videos, I'm still down."
+                },
+                {
+                  "block-id": "1743112523",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It’s mostly about his comedic style.\" - P1"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112526",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112525",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "When asked to share videos that interested them, one participant mentioned how, although they weren't particularly a big fan of the original content's genre, the reactor themselves led them to watch the RV:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112530",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112527",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I think it's just her..."
+                },
+                {
+                  "block-id": "1743112528",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Like, I'm not really too into fantasy as a genre."
+                },
+                {
+                  "block-id": "1743112529",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So, I just clicked on this because I knew she would make it funny.\" - P5"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112533",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112531",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Here, we can see how the creator's personality derives loyalty from the viewer and, by extension, drives the viewer’s consumption."
+                },
+                {
+                  "block-id": "1743112532",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This, in turn, makes reaction videos a natural extension of the creator’s broader brand."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
+        },
+        {
+          "title": "Algorithmic Recommendation",
+          "block-id": "1743112534",
+          "type": "subsection",
+          "content": [
+            {
+              "block-id": "1743112540",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112535",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Many viewers discover RVs through platform algorithms, particularly on YouTube and TikTok."
+                },
+                {
+                  "block-id": "1743112536",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "All participants mentioned their usage of YouTube, establishing it as the most influential platform in shaping viewer habits and motivations."
+                },
+                {
+                  "block-id": "1743112537",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Platforms like TikTok and Instagram closely followed, indicating their prevalence as well."
+                },
+                {
+                  "block-id": "1743112538",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This suggests that these platforms and their respective recommendation algorithms play a significant role in influencing genre exposure and viewer preferences."
+                },
+                {
+                  "block-id": "1743112539",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants frequently mentioned how YouTube's algorithm consistently recommends reaction videos based on their prior viewing habits."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112542",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112541",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I usually just discover them through my YouTube recommended page or my Instagram.\" - P15"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112545",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112543",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...some of them just pop up on my YouTube channel, probably because YouTube studies everyone."
+                },
+                {
+                  "block-id": "1743112544",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So they kind of know what you want.\" - P11"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112547",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112546",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Similarly, TikTok's \"For You\" page plays a significant role in surfacing RVs to users, presenting them as part of their curated feed."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112550",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112548",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "`But from what I understand, I have unintentionally  reaction videos on my feed, which the more you watch, the more that TikTok senses the idea that, \"Oh, you like these videos?"
+                },
+                {
+                  "block-id": "1743112549",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We'll add them more onto your network.\" - P7"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112552",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112551",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As P7 describes, TikTok's algorithm, in particular, demonstrates the power of predictive content delivery."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112554",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112553",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This algorithmic discovery reinforces existing viewing habits by adapting to users' preferences over time."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112557",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112555",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Short-form platforms such as YouTube Shorts, TikTok clips, and Instagram Reels frequently serve as a gateway to full-length reaction videos."
+                },
+                {
+                  "block-id": "1743112556",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These videos tend to be much shorter in length compared to their full-length RV counterparts and are powered by their respective platform's algorithms."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112559",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112558",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "One participant (P2) explained how TikTok \"snippets\" can be a gateway to full-length videos on YouTube:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112562",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112560",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``TikTok is maybe like little snippets, whereas YouTube you can watch like the full thing."
+                },
+                {
+                  "block-id": "1743112561",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Sometimes I see it on TikTok, I'll try to find it on YouTube so I can watch the entire thing.\""
+                }
+              ]
+            },
+            {
+              "block-id": "1743112564",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112563",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In these cases, the brevity and immediacy of short-form clips help viewers decide whether to invest in a longer reaction or investigate the original show or video."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
+        },
+        {
+          "title": "Social Recommendation",
+          "block-id": "1743112565",
+          "type": "subsection",
+          "content": [
+            {
+              "block-id": "1743112567",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112566",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Finally, friends, family and significant others are another key avenue for discovering RVs."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112569",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112568",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Usually like my boyfriend, he'll send me certain stuff to those  roleplays because he also does roleplay...\" - P2"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112571",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112570",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...a friend of mine told me the reaction - we were just talking about it like two days ago and she was talking about a particular video she saw on YouTube,  I just went, popped on YouTube and just checked all the videos, all reactions .\" - P12"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112574",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112572",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These quotes highlight the social dimension of RV discovery, where viewers rely on recommendations from their personal networks to explore new content."
+                },
+                {
+                  "block-id": "1743112573",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These interactions often create a shared experience, reinforcing social connections through the mutual enjoyment of RVs."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112576",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112575",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'll sometimes watch these reaction videos with like, my, like my friend or my family and like we all have a group laugh and like that additional commentary brings just this other layer of like comedic aspect like the that the original video might not have...\" - P15"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112579",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112577",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Social recommendations seem impactful because they come with a sense of trust."
+                },
+                {
+                  "block-id": "1743112578",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "When someone close to a viewer suggests an RV, it often carries implicit validation, which in turn makes the viewer more likely to engage."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112581",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112580",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This not only introduces viewers to new content but also helps strengthen interpersonal bonds through a shared appreciation of RVs."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         }
-      ]
+      ],
+      "summary": "",
+      "intent": ""
     },
     {
-      "title": "Usability Study 2: Warn, Verify and Audit",
-      "block-id": "1743034856",
-      "summary": "",
-      "intent": "",
+      "title": "Values Viewers Found from Watching Reaction Videos",
+      "block-id": "1743112582",
       "type": "section",
       "content": [
         {
-          "title": "Participants",
-          "block-id": "1743034857",
-          "summary": "",
-          "intent": "",
+          "title": "Shared Interests and Emotional Connections (Curiosity, Internal Factors, My Voice/Approval",
+          "block-id": "1743112584",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112588",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112585",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Reaction videos (RVs) provide a unique space for viewers to connect emotionally, not just with the content, but also with the reactors and other viewers."
+                },
+                {
+                  "block-id": "1743112586",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Many participants described RVs as a way to relive the emotions of discovering content while feeling validated by shared responses."
+                },
+                {
+                  "block-id": "1743112587",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As P11 puts it:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112593",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112589",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "it just tells me that there's someone out there that feels the same way."
+                },
+                {
+                  "block-id": "1743112590",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "There's someone out there that can relate."
+                },
+                {
+                  "block-id": "1743112591",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And whenever I say exactly how I feel about a video and someone else is like, you know, affirming it..."
+                },
+                {
+                  "block-id": "1743112592",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "There's this joy that comes with it that's  okay yeah, you're like me...\" - P11"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112595",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112594",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Another participant highlighted how RVs can help create an emotional bond with reactors:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112597",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112596",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...Like it makes me feel more connected to the reactors because they're just posting videos  love...\" - P14"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112599",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112598",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Likewise, P6 speaks about how these connections can be formed with other viewers:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112601",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112600",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "if I see a comment that like kind of mimics what I say,  I'm not alone in my opinion in a way.\" - P6"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112603",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112602",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This shared emotional resonance reinforces the sense of community among viewers centered around the original content, making RVs an immersive form of social entertainment."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112605",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112604",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Interviews revealed that many viewers practice non-linear or selective viewing behaviors, skimming to specific segments or only partially consuming entire reaction videos."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112607",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112606",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants often prefer to focus on what they believe to be key scenes or emotional highlights, rather than watching every second of a reactor’s commentary."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112609",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112608",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For example, P8 would look for \"pop-offs\" or highly emotional outbursts in her consumption of RVs:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112612",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112610",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Yeah, because if I see something I like and they seem like they don't like it, I'll just click on the video, dislike it, and not watch it."
+                },
+                {
+                  "block-id": "1743112611",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "If I'm going to watch, they have to be excited about it, praising it, really popping off.\" - P8"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112614",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112613",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This practice of selective viewing is also shared by P2 who explicitly described how she selectively skips around:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112618",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112615",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Sometimes people talk too much, and sometimes I really want to watch the video and then their opinion."
+                },
+                {
+                  "block-id": "1743112616",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But sometimes they're just talking..."
+                },
+                {
+                  "block-id": "1743112617",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "so then that's when I'll skip to see their opinion on the video.\" - P2"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112620",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112619",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Interestingly enough, she also mentioned how she disliked when the reactors  would skip around:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112622",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112621",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``One thing that kind of irritates me is when they skip every like 5 seconds.\" - P2"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112624",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112623",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This example illustrates how viewers prefer to be more in control of their viewing experience, rather than simply watching the reactor."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112626",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112625",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Additionally, two participants highlighted their usage of YouTube's features in their consumption of RVs:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112631",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112627",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Yeah, sometimes I really like YouTube’s feature that shows the 'most replayed' parts."
+                },
+                {
+                  "block-id": "1743112628",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I think that's usually the most interesting stuff, so I naturally replay those segments multiple times."
+                },
+                {
+                  "block-id": "1743112629",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For example, there’s this song called 'Supernova,' and it repeats 'su-su-su-supernova' many times, which sounds a bit awkward."
+                },
+                {
+                  "block-id": "1743112630",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So in this reaction video, the reactor is specifically making fun of that part, and I find it really entertaining.\" - P14"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112633",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112632",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Another thing is that YouTube often has analytics showing the most replayed sections, so I'll sometimes skip directly to those highlighted parts and just watch those.\" - P15"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112635",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112634",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This further emphasizes how viewers prefer to take control of their own viewing experience using their respective platforms provided utilities and how it influences their overall perception of the content."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112638",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112636",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Some participants still prefer watching from start to finish—especially for the  they encounter that reactor."
+                },
+                {
+                  "block-id": "1743112637",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "However, repeated viewings tend to be more selective:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112641",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112639",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Usually, I watch reaction videos all the way through from beginning to end."
+                },
+                {
+                  "block-id": "1743112640",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But if it's a video I've watched before, I might skip through to certain parts I want to see again, or if I know they talk a little bit at the beginning, I'll skip until they actually start reacting.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112645",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112642",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "By selectively re-watching only the funniest or most dramatic moments, viewers effectively “scrub” through previously seen content to revisit highlights."
+                },
+                {
+                  "block-id": "1743112643",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In this way, skipping and scrubbing become normal strategies that viewers utilize to tailor their viewing experience."
+                },
+                {
+                  "block-id": "1743112644",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It is a driven focus on personally interesting segments and a discarding the rest."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         },
         {
-          "title": "Modifying the System to Introduce Errors",
-          "block-id": "1743034858",
-          "summary": "",
-          "intent": "",
+          "title": "Consuming Content Together Makes Me Less Lonely",
+          "block-id": "1743112646",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112649",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112647",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For many viewers, RVs emulate the experience of watching content with friends or family."
+                },
+                {
+                  "block-id": "1743112648",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The casual and communal nature of RVs is especially appealing to those looking for lighthearted content while relaxing or doing work."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112654",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112650",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``For example, if I'm listening to a song and I realize Shawn Cee  reacted to it on stream, I'll load up the stream or a clip to hear his opinion."
+                },
+                {
+                  "block-id": "1743112651",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Typically, I'll have it running in the background out of curiosity while I do other work."
+                },
+                {
+                  "block-id": "1743112652",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It feels a bit like having someone around—even if you're not fully paying attention to them or whatever they're watching."
+                },
+                {
+                  "block-id": "1743112653",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's just nice having that presence in your ear."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112656",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112655",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The value that the viewers suggested was in creating somewhat of a pseudo-watch party."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112658",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112657",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For instance, P1 found himself \"less lonely\" as he consumed RVs late at night:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112665",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112659",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I feel like reaction videos, especially with a good creator..."
+                },
+                {
+                  "block-id": "1743112660",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "it's weird because you almost feel even more engaged having someone kind of like weirdly watch it with you."
+                },
+                {
+                  "block-id": "1743112661",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's like having another voice there."
+                },
+                {
+                  "block-id": "1743112662",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It just makes it seem weirdly less lonely."
+                },
+                {
+                  "block-id": "1743112663",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I could be in my bed at 2 AM scrolling through TikTok, and I'm on a Kai Cenat reaction video, and it's almost like he's talking to me while watching."
+                },
+                {
+                  "block-id": "1743112664",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'm hearing someone's thoughts as they watch, and they're pretty funny.\" - P1"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112667",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112666",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P9 also shared the same sentiments of being less lonely:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112672",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112668",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``When I'm home alone, I might not talk much, and the house feels too silent."
+                },
+                {
+                  "block-id": "1743112669",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But when I put on a reaction video, it's like someone is there with me, and I can draw a lot of energy from the reactor."
+                },
+                {
+                  "block-id": "1743112670",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It feels like I'm accompanied—that I'm not alone."
+                },
+                {
+                  "block-id": "1743112671",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's a form of mental support, I guess.\" - P9"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112674",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112673",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Likewise, P3 and P6 mentioned how this consumption of content alongside the reactor makes the experience much more engaging:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112677",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112675",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Sometimes it's better to watch a trailer with the reactors because it just makes it so much more fun."
+                },
+                {
+                  "block-id": "1743112676",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'll watch the original trailer afterward and then think about it.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112679",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112678",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The circumstances of the COVID-19 pandemic also led to a notable increase in RV viewership, as many turned to this form of content for connection and entertainment during isolation."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112681",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112680",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P3 explicitly credited their engagement with RVs to the pandemic:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112686",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112682",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I really got into them during the pandemic."
+                },
+                {
+                  "block-id": "1743112683",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I started watching a bunch of different types of videos on YouTube at the time, and reaction videos were a part of that."
+                },
+                {
+                  "block-id": "1743112684",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It was nice hearing everybody's opinions because they really got me thinking about the shows."
+                },
+                {
+                  "block-id": "1743112685",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I never usually talk to people about shows, so it was just really nice to hear from people who get it.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112688",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112687",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P3 added on to this by saying:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112691",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112689",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Reaction videos provided laughter and good times during a very dark period."
+                },
+                {
+                  "block-id": "1743112690",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Most people were watching videos or streaming shows, and reaction videos became a way to have conversations about these things without needing direct interaction.\" – P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112694",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112692",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It is safe to say that RVs played a role in both entertaining and comforting viewers to cope with a quiet and lonesome situation (e.g., during the pandemic)."
+                },
+                {
+                  "block-id": "1743112693",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The social value of RVs seemed to increase more in this setting, and ultimately, it was the viewers who received this unexpected benefit."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         },
         {
-          "title": "Study Procedure",
-          "block-id": "1743034859",
-          "summary": "",
-          "intent": "",
+          "title": "A new community you can engage w/ for similar tastes",
+          "block-id": "1743112695",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112698",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112696",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "From our interviews, we were able to see a unique aspect of RVs, which was the community that forms from them."
+                },
+                {
+                  "block-id": "1743112697",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Many participants noted how RVs provided a space for them to indulge in interests that they did not have the privilege of doing in real life."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112700",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112699",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For example, P13 discussed how RVs replace certain voids that they have not been able to fill within their own local community:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112705",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112701",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Sometimes it feels like people aren't always in the mood to talk about certain things, especially when I'm back home."
+                },
+                {
+                  "block-id": "1743112702",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "There aren't as many people I share interests with, particularly regarding more obscure music, movies, or TV shows."
+                },
+                {
+                  "block-id": "1743112703",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In , where there are many artists and creative people, I can discuss these things easily, knowing they'll have their own perspective."
+                },
+                {
+                  "block-id": "1743112704",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But when that's not an option, watching reaction videos provides a similar sense of fulfillment, because it allows me to see someone else's opinion on topics I wouldn't normally be able to talk about with the people around me."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112707",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112706",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P14 shared the same sentiments by saying:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112714",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112708",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Seeing something I like and also enjoyed by other people creates a sense of emotional resonance for me, especially when watching K-pop videos, which feel a bit like their own subculture."
+                },
+                {
+                  "block-id": "1743112709",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It helps me find other people who enjoy the same things and gives me a greater sense of community, particularly since most K-pop fans are online."
+                },
+                {
+                  "block-id": "1743112710",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It makes me feel more closely connected."
+                },
+                {
+                  "block-id": "1743112711",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Also, it's just fun and pretty interesting to see."
+                },
+                {
+                  "block-id": "1743112712",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For me, I especially prefer watching reactions to content I've already seen, like music videos, because I'm already familiar with them and want to see how other people react."
+                },
+                {
+                  "block-id": "1743112713",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "That's definitely part of the incentive."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112717",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112715",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Overall, it seems that reaction videos have the power to digitally bring people together."
+                },
+                {
+                  "block-id": "1743112716",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Viewers are able to find communities of like-minded individuals and safely indulge in their passions."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112720",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112718",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Virtually all interviewees described at least ``liking'' (thumbs-up/heart) reaction videos they enjoyed."
+                },
+                {
+                  "block-id": "1743112719",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Several saw this as the simplest way to support reactors:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112723",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112721",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``If I like a video, I'll like it on YouTube."
+                },
+                {
+                  "block-id": "1743112722",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For TikTok, like snippets and stuff, I'll probably put laughing emojis...\" - P2"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112725",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112724",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For some viewers, their motive for leaving a like is contingent on how much they  enjoyed the video:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112728",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112726",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I'd say that  most engagement I do other than watching the video is, if I really, really like it, I'll give it a like."
+                },
+                {
+                  "block-id": "1743112727",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But, that's kind of rare if I  enough to do that."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112730",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112729",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "With this being the simplest form of engagement, it's no surprise that most viewers are willing to click a button to show their support."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112733",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112731",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Commenting was more varied."
+                },
+                {
+                  "block-id": "1743112732",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Some participants (P3, P15) said they were too shy or worried about the reactor responding directly:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112735",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112734",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I'm scared they might respond, and I'd be overwhelmed."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112737",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112736",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I prefer just to stay quiet and watch.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112739",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112738",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Others felt confident in offering content suggestions, especially if the reactor actively solicited ideas:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112742",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112740",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Uh, there was these two guys from my city...they don't know that I know them...they used to make reaction videos."
+                },
+                {
+                  "block-id": "1743112741",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I kept telling them watch this one K-pop song that I really like and I just commented like on 100 videos in a row, and they finally did it.\" - P8"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112745",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112743",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``For YouTube Shorts, I usually don't comment because the videos are too quick—I don't really have time to leave comments."
+                },
+                {
+                  "block-id": "1743112744",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But for regular YouTube videos, yes, especially if the creator specifically says something like, 'leave a comment if there's something interesting you want me to watch.' In those cases, I'll suggest videos, like a 'Do Not Laugh' challenge.\" - P9"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112747",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112746",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In some cases, participants mentioned engaging with fellow viewers in the comments section:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112750",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112748",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I go through the comment section sometimes..."
+                },
+                {
+                  "block-id": "1743112749",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I don't know why, but I know whenever you watch a video and you want to comment and  that there's this top comment, I just reply to that particular comment.\" - P11"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112753",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112751",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I don't comment often, mostly because I don't feel I have much to add to the conversation, especially since I don't have a platform where others would see it."
+                },
+                {
+                  "block-id": "1743112752",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Sometimes I'll see comments that are just so egregious that I feel compelled to respond because some opinions make me wonder, 'why?' But that's just my personal preference.\" - P6"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112755",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112754",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "On the other hand, some participants were more content spectating the comment section:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112758",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112756",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``When I'm watching something on YouTube, I usually don't go as far as commenting, especially when there are thousands of comments—it feels like mine would just disappear into the ether, and you can't really have a meaningful conversation."
+                },
+                {
+                  "block-id": "1743112757",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "There are rare exceptions, but generally, I prefer reading comments and seeing the interactions between other users.\" - P13"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112761",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112759",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Compared to other modalities of engagement, commenting seems to be the most direct way to not only engage with the reactor, but also fellow viewers."
+                },
+                {
+                  "block-id": "1743112760",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It allows viewers a \"sometimes\" safe space to share their own thoughts and hear others' thoughts on the same content."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         },
         {
-          "title": "Evaluation Methodology and Results",
-          "block-id": "1743034860",
-          "summary": "",
-          "intent": "",
+          "title": "Discovering New Perspectives",
+          "block-id": "1743112762",
           "type": "subsection",
-          "content": []
+          "content": [
+            {
+              "block-id": "1743112765",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112763",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Another major value viewers derive from RVs is the ability to see familiar content through fresh perspectives."
+                },
+                {
+                  "block-id": "1743112764",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "By watching how others interpret or critique the same material, viewers not only expand their understanding and appreciation, but they also get the opportunity to learn about things that they may have missed out on their first go-around."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112770",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112766",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Sometimes it opens up different perspectives for whoever watches it."
+                },
+                {
+                  "block-id": "1743112767",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Or like, for example, I didn't know that on White Ferrari by Frank Ocean, there's a very small chunk of Kanye vocals right in the middle that just says love."
+                },
+                {
+                  "block-id": "1743112768",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And then somebody pointed that out and I would have never known that, even though I listened to that song constantly, that it even existed in the first place."
+                },
+                {
+                  "block-id": "1743112769",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And I learned from that from a reaction video...\" - P6"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112772",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112771",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Likewise, P7 stated:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112783",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112773",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...I like to compare my opinions with the reactors opinions."
+                },
+                {
+                  "block-id": "1743112774",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I like to see how they felt about it."
+                },
+                {
+                  "block-id": "1743112775",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Did we feel the same?"
+                },
+                {
+                  "block-id": "1743112776",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Did we have the same opinion?"
+                },
+                {
+                  "block-id": "1743112777",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Did we reach the same conclusion?"
+                },
+                {
+                  "block-id": "1743112778",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "How did we feel about the movie in this case?"
+                },
+                {
+                  "block-id": "1743112779",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And so I feel like a lot of times though, reactors really can pick out like these important details that I don't necessarily pick out during the movie because I just like to watch for enjoyment."
+                },
+                {
+                  "block-id": "1743112780",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I don't necessarily like to analyze movies because I feel like movie critics do a good job of doing that."
+                },
+                {
+                  "block-id": "1743112781",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But I feel like reactors are able to enjoy and analyze the movies at the same time."
+                },
+                {
+                  "block-id": "1743112782",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And so no matter what I feel like, even if I have watched the content before, I just learned something completely new and different with every reaction video that comes across me.\" - P7 }"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112786",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112784",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "RVs also encourage reflection on personal interpretations of original content, providing a shared and safe space for viewers to evaluate and even challenge their own opinions."
+                },
+                {
+                  "block-id": "1743112785",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This process plays a dual role in both fostering a deeper appreciation for the OC, while also building a connection with a community of like-minded individuals."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112791",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112787",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...usually those reaction videos will make me feel more in love with the original content because I find there are some aspects that I've never thought about in the past, or  this part is really good."
+                },
+                {
+                  "block-id": "1743112788",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "people like it,  yeah I should like it a little bit more."
+                },
+                {
+                  "block-id": "1743112789",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "gives me kind of a sense  collective kind of feeling like, oh this is a group , and I like it more."
+                },
+                {
+                  "block-id": "1743112790",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I feel like it actually really  positive impact  my experience.\" - P14"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112794",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112792",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "There was a subset of participants who indicated that they appreciate reactors that explore cultural or political subtext, giving them a broader perspective on the media."
+                },
+                {
+                  "block-id": "1743112793",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For example, P14 was watching a reaction to a particular Chinese TV drama and had this to say:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112803",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112795",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...But if there's, you know, like a reaction to it, I think it gives like more context like another layer of meaning of it, like how people react to such arts or like this production and, how people from certain kind of backgrounds reacted to this..."
+                },
+                {
+                  "block-id": "1743112796",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I really like the Chinese TV dramas and there's a guy  reaction videos on it, and he's giving many  his interpretation of the contents, like how he thinks it's kind of like a..."
+                },
+                {
+                  "block-id": "1743112797",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I don't know how to say it."
+                },
+                {
+                  "block-id": "1743112798",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's mostly about the Qin dynasty, like, really long time ago."
+                },
+                {
+                  "block-id": "1743112799",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And, like, how women are fight in the palace, like things like that."
+                },
+                {
+                  "block-id": "1743112800",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And he's using his experience in the military to like do metaphors like those women are similar to the ones in  military."
+                },
+                {
+                  "block-id": "1743112801",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And  connections that I'd never thought about in the past..."
+                },
+                {
+                  "block-id": "1743112802",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The reactors usually bring their own experience or interpretations, and sometimes it adds a lot of things and also makes me sometimes think a lot...\" - P14 }"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112805",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112804",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Collectively, these quotes highlight the value RVs have in influencing viewer's opinions as well as expanding their previous knowledge on original content."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
+        },
+        {
+          "title": "Entertainment and Passive Usage",
+          "block-id": "1743112806",
+          "type": "subsection",
+          "content": [
+            {
+              "block-id": "1743112810",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112807",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Aside from emotional and social connections, RVs also serve as a source of ``easy\" entertainment for passive consumption."
+                },
+                {
+                  "block-id": "1743112808",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Many viewers enjoy RVs, whether as background noise while performing other tasks, as a way to relax, even escape from their daily tasks, or simply as lighthearted, engaging content."
+                },
+                {
+                  "block-id": "1743112809",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As P5 states:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112815",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112811",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I guess the main goal is just to be entertained..."
+                },
+                {
+                  "block-id": "1743112812",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "and I think with other videos I tend to not be focused on the content as much because it feels very scripted."
+                },
+                {
+                  "block-id": "1743112813",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This  just feels different and it catches my attention more and the goal is to like..."
+                },
+                {
+                  "block-id": "1743112814",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "be in the moment and just watching it and getting my mind off of homework and other stuff that's going on.\" - P5"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112817",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112816",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Similarly, P7 also stated that:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112822",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112818",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I like how they can be just a simple way of distracting."
+                },
+                {
+                  "block-id": "1743112819",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I feel like, especially me, who has that routine of getting up, going to work, getting off from work, coming home, doing my nightly routine and going to sleep..."
+                },
+                {
+                  "block-id": "1743112820",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I feel that reaction videos tend to kind of put a pause in my life, or they tend to distract me from what I'm doing specifically during that day..."
+                },
+                {
+                  "block-id": "1743112821",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It just kind of feels like a sense of comfort and  just pause for a minute and breathe\" - P7"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112826",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112823",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The purpose of lighthearted, engaging content often affects the way that they play the videos."
+                },
+                {
+                  "block-id": "1743112824",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Some of them mentioned that they just keep it on background and let it play."
+                },
+                {
+                  "block-id": "1743112825",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "When asked about the usual environment in which a viewer normally consumes RVs, P4 went into detail and said:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112831",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112827",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``So typically if I'm having lunch, like in the living room or just in my room somewhere, and I want to pass the time while I eat, I kind of just prop up my phone or computer, pop on YouTube and then kind of just watch as I eat."
+                },
+                {
+                  "block-id": "1743112828",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Recently I've kind of just been throwing a YouTube video on while I go to bed -  something that's listenable."
+                },
+                {
+                  "block-id": "1743112829",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And so, I find that..."
+                },
+                {
+                  "block-id": "1743112830",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "reaction videos that I might have already seen, or I know what they're going to watch, I just throw that on as like background noise while I go to bed.\" - P4"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112833",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112832",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "On that same notion of letting RVs auto-play in the background, P7 stated:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112838",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112834",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...nowadays I usually just have it in the background, like if I'm listening to a song and I'm like, oh, Shawn Cee reacted to this on stream, I go boot up the stream or one of the stream clips and then hear his opinion on it, because he has a very intellectual way of going about talking about his music..."
+                },
+                {
+                  "block-id": "1743112835",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So yeah, usually I end up having it in the background, just like out of curiosity, and I end up doing work."
+                },
+                {
+                  "block-id": "1743112836",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So it's kind of like you're with somebody, but you're also not paying attention to them or whatever they're watching."
+                },
+                {
+                  "block-id": "1743112837",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But it's nice to have that in your ear...\" - P7"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112840",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112839",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Interestingly enough, a few participants (P12 \\& P13) mentioned saving/downloading RVs for future playback."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112844",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112841",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...I might save it for later and just save it to my playlist just so that when I have some more free time I can really, like dig into the video."
+                },
+                {
+                  "block-id": "1743112842",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'll usually like sit down and just scroll through  and see, all right, what looks interesting."
+                },
+                {
+                  "block-id": "1743112843",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And the first thing I see, I just put it on and then I get to watching.\" - P13"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112846",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112845",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "By combining accessibility, emotional resonance, and interactive potential, RVs have significant value for their audience, offering both active participation and passive enjoyment."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
+        },
+        {
+          "title": "A New way to discover new content",
+          "block-id": "1743112847",
+          "type": "subsection",
+          "content": [
+            {
+              "block-id": "1743112850",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112848",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "While the preceding section focused on how viewers  at reaction videos, our interviews also revealed how RVs themselves can  viewers toward new media and/or experiences."
+                },
+                {
+                  "block-id": "1743112849",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We have identified these outbound pathways to discover new content, and in the following subsection, we describe the various pathways that a viewer may take in their consumption of RVs."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112853",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112851",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "The first case involves viewers discovering original content (OC) through their engagement with RVs."
+                },
+                {
+                  "block-id": "1743112852",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This case highlights the role RVs can play as entry points into previously unexplored media."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112857",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112854",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "most likely it will probably have been a movie or like a very new show that I was thinking about watching but didn't."
+                },
+                {
+                  "block-id": "1743112855",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But then one of my favorite YouTubers reacts to it and describes it, and I understand and  they seem to like it."
+                },
+                {
+                  "block-id": "1743112856",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'll  like it,  I might go watch the rest of the series at this point, or I'll go watch the movie or something.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112860",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112858",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Likewise, if the RV is not appealing enough to the viewer, then they may just sidestep the RV and instead watch the OC directly."
+                },
+                {
+                  "block-id": "1743112859",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As P9 puts it,"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112867",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112861",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Uh, the first time I see the video is from a reaction video."
+                },
+                {
+                  "block-id": "1743112862",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Sometimes I might got interested by the reaction video and go to search for the original video to watch if I find the content interesting enough."
+                },
+                {
+                  "block-id": "1743112863",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "That happens when the reaction/creator is not interesting or it's not providing any valuable comments based on the original video."
+                },
+                {
+                  "block-id": "1743112864",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So I would just..."
+                },
+                {
+                  "block-id": "1743112865",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "not watch the reaction video."
+                },
+                {
+                  "block-id": "1743112866",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Instead of that, I watch the original one.\" - P9"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112870",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112868",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Another common pathway occurs when viewers transition from viewing one RV to another."
+                },
+                {
+                  "block-id": "1743112869",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This can be driven by an interest in different reactors' perspectives or reactions to the same original content, or just another RV in general."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112877",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112871",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...seeing people's live reaction over a YouTube video, seeing their reactions and seeing them potentially be interested in trying the game (Tekken 8) out when it comes out, seeing that kind of stuff..."
+                },
+                {
+                  "block-id": "1743112872",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "kind of like..."
+                },
+                {
+                  "block-id": "1743112873",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "brings a smile to my face."
+                },
+                {
+                  "block-id": "1743112874",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Because, you know..."
+                },
+                {
+                  "block-id": "1743112875",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "they're seeing this new thing that they've never seen before, or they just haven't seen in a while, and then seeing their reaction and as a result of that reaction, maybe they want to give it a try and whatnot."
+                },
+                {
+                  "block-id": "1743112876",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So seeing that kind of  makes me want to watch more and more videos related to those topics that I like.\" - P4"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112881",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112878",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In general, participants often follow these outbound routes, leading to the discovery of new content and/or new reactors."
+                },
+                {
+                  "block-id": "1743112879",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Connecting this to how viewers come across RVs, reaction videos display their value in the circulation of content within the wider digital content landscape."
+                },
+                {
+                  "block-id": "1743112880",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "RVs enable viewers to explore, interpret, and share media in rich, community-oriented ways, both intentionally and unintentionally."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
+        },
+        {
+          "title": "RVs reflect viewers' dynamic taste and lives",
+          "block-id": "1743112882",
+          "type": "subsection",
+          "content": [
+            {
+              "block-id": "1743112886",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112883",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As mentioned previously, viewers engage in a wide spectrum of RVs, as well as their corresponding original content."
+                },
+                {
+                  "block-id": "1743112884",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In many cases, the OC that viewers choose to consume via RVs is not static; rather, it evolves over time as personal tastes shift and new cultural trends emerge."
+                },
+                {
+                  "block-id": "1743112885",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Here, we dive into how the kinds of RVs that one watches can reflect their tastes or even life events."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112889",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112887",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants described an evolution in their engagement with RVs as they gained more experience with RVs."
+                },
+                {
+                  "block-id": "1743112888",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For example, P1 said:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112891",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112890",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This observation (coded D46, 'The taste of content in RVs evolve') suggests that early preferences toward more mainstream, easily digestible content can later lead to a desire for more niche commentary as the literacy of viewers' media grows."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112894",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112892",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Several respondents linked changes in their RV consumption to changes in their personal circumstances and maturation."
+                },
+                {
+                  "block-id": "1743112893",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P2 reflected on how her viewing habits changed as time progressed:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112896",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112895",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Interestingly enough, P2 also mentioned that as she grew older, she was consuming less RVs:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112898",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112897",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Keeping in line with the dimension of age, P3 had this to say:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112901",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112899",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "`` Now, some of the old YouTube videos I used to watch, I don't watch them anymore."
+                },
+                {
+                  "block-id": "1743112900",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'm more into this stuff now, and I guess that just goes along with how I'm getting older...my tastes are changing.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112904",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112902",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This sentiment suggests that as viewers mature, their choices become more deliberate."
+                },
+                {
+                  "block-id": "1743112903",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Rather than simply following trends, viewers seek RVs that can provide critical commentary and fresh insights, or merely fit their preferences at that very moment."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112907",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112905",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Viewers also pointed out the significant role of recommendation algorithms in both shaping and strengthening their preferences."
+                },
+                {
+                  "block-id": "1743112906",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "As P4 remarked:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112913",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112908",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``So how how it started for me was, the teens react, kids react and that was like the big thing at the time."
+                },
+                {
+                  "block-id": "1743112909",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So it kind of just showed up on my YouTube algorithm, and then I was like, you know what let me see what this is all about."
+                },
+                {
+                  "block-id": "1743112910",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So I clicked on it one time, and then next thing you know, I get various recommendations of different types of content they react to."
+                },
+                {
+                  "block-id": "1743112911",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And then I just started manually searching up reaction videos geared towards stuff that I like to watch or do."
+                },
+                {
+                  "block-id": "1743112912",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "And then next thing you know, half of my algorithm is just reaction videos, whether it's something they just uploaded or something from like a few years back or whatnot.\" - P4"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112915",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112914",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Similarly, P5 shared the same sentiments about her recommendation algorithms on both YouTube and Snapchat:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112920",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112916",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I don't actively go like looking for them."
+                },
+                {
+                  "block-id": "1743112917",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "They're just recommended to me not only on YouTube but on Snapchat - There's like stories and stuff."
+                },
+                {
+                  "block-id": "1743112918",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's just whatever comes up first."
+                },
+                {
+                  "block-id": "1743112919",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So I think the algorithm has learned about me so I don't have to actively search anything."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112922",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112921",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This notion of algorithms \"learning\" their viewers not only reflects the evolving tastes of the viewer, but also actively reinforces them by continuously curating content that aligns with their current interests."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112925",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112923",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Lastly, participants highlighted how content creators often capitalize on trending content or events that generate a fear of missing out (FOMO) among viewers."
+                },
+                {
+                  "block-id": "1743112924",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Oftentimes, reaction videos become a focal point of engagement during high-profile media releases."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112927",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112926",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "For instance, one participant explicitly referenced how RVs amplify and shape interest around content from the popular music collective Lyrical Lemonade, noting:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112935",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112928",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I feel like some reactors add a level of energy and intrigue to something that wouldn't have it on its own..."
+                },
+                {
+                  "block-id": "1743112929",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "When most Lyrical Lemonade videos come out, every reactor is on that."
+                },
+                {
+                  "block-id": "1743112930",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Even though recently I haven't really liked a lot of their videos..."
+                },
+                {
+                  "block-id": "1743112931",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "sometimes I'll see a reaction and people are praising it to the high heavens..."
+                },
+                {
+                  "block-id": "1743112932",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "it builds hype because it's like a co-sign in a way..."
+                },
+                {
+                  "block-id": "1743112933",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "their co-sign says, 'This is a good thing,' unless they outwardly pan it—and even then, that's still good publicity."
+                },
+                {
+                  "block-id": "1743112934",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "People still go to it to also say, 'Yo, this is trash.' Some people use it to form their opinions as a whole.\" - P6"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112938",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112936",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Similarly, RVs can play a role in increasing a viewer's excitement or curiosity around highly anticipated films."
+                },
+                {
+                  "block-id": "1743112937",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P7 described how her anticipation for a high-profile movie release not only drew them to watching an RV, but ultimately wanting to watch the movie as well:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112943",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112939",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``...The new Hunger Games movie, The Ballad of Songbirds and Snakes, I feel like a lot of people are talking about this movie just because of its high popularity."
+                },
+                {
+                  "block-id": "1743112940",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So, I thought that this video  was very interesting to watch, because it's a celebrity who's very much involved in this movie series, but she's not directly involved with this movie."
+                },
+                {
+                  "block-id": "1743112941",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "So I thought it was a more interesting take of watching her, as she reacts to a different movie from her own series because she is not participating in this movie..."
+                },
+                {
+                  "block-id": "1743112942",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "makes me have more of an interest of seeing that movie in person when the time comes."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112945",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112944",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These quotes illustrate not only how RVs can leverage trending content, but also how effective they can be in shaping or even intensifying viewer interest in cultural phenomena."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
+        },
+        {
+          "title": "Low Barrier to Content Creation",
+          "block-id": "1743112946",
+          "type": "subsection",
+          "content": [
+            {
+              "block-id": "1743112949",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112947",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Finally, several participants mentioned that creating reaction videos often requires less production effort compared to other types of content."
+                },
+                {
+                  "block-id": "1743112948",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Due to the minimal setup required, it is a genre that allows anyone with an opinion the space and ability to potentially go viral."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112952",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112950",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Reactors typically only need a camera overlay, microphone, and basic editing to sync their footage with the original content."
+                },
+                {
+                  "block-id": "1743112951",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Interestingly enough, one participant felt that this ease of creation was \"weak\":"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112957",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112953",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``\"I feel like reaction videos...it's weak content."
+                },
+                {
+                  "block-id": "1743112954",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I'm not going to lie."
+                },
+                {
+                  "block-id": "1743112955",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's like you're almost taking someone else's content and just adding like a bit of a twist to it."
+                },
+                {
+                  "block-id": "1743112956",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I feel like it's not very creative, but I do see the appeal.\" - P1"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112959",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112958",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "However, other participants emphasized that personality and ``good\" commentary is critical to making up for the ``laziness\" within the content:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112962",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112960",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``\"With reaction videos, you don't necessarily need much; they just need to show their personality."
+                },
+                {
+                  "block-id": "1743112961",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Like Berleezy, when he reacts, it's entertaining and thought-provoking, or Dwayne and Jaz, it's just entertaining seeing their facial expressions.\" - P3"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112966",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112963",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "P3 clearly emphasizes personality as the driving force behind RVs rather than extensive production quality."
+                },
+                {
+                  "block-id": "1743112964",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Participants have taken notice of the ``saturation\" of the genre, so there is a further emphasis on content creators being humorous and authentic with their reactions."
+                },
+                {
+                  "block-id": "1743112965",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Take it from P6 who stated:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112973",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112967",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``Reaction videos as a whole has just become the normality on YouTube."
+                },
+                {
+                  "block-id": "1743112968",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I feel like every big YouTuber from old doesn't really put a lot of effort into their stuff anymore, and then  just end up reacting to whatever other creative people do..."
+                },
+                {
+                  "block-id": "1743112969",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "which isn't necessarily a bad thing, because sometimes they actually add good commentary to it."
+                },
+                {
+                  "block-id": "1743112970",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But also, some of them are just getting lazy because they're  past their prime in a way."
+                },
+                {
+                  "block-id": "1743112971",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "It's kind of an oversaturated lane at the moment."
+                },
+                {
+                  "block-id": "1743112972",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "I feel like not a lot of people have the charisma, yet they're still making reaction videos.\" - P6"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112975",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112974",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "One participant went as far as calling RVs ``harmful\" if they have nothing of value to add to the original content:"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112979",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112976",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "``I think that in many ways they, they  can be kind of harmful..."
+                },
+                {
+                  "block-id": "1743112977",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "there  a lot of people that will just kind of put on the video and just of make a crazy face, like when something wild happens and not really have anything interesting to say."
+                },
+                {
+                  "block-id": "1743112978",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "But I think when it's done right it can one, just make for very funny or entertaining videos, and two, it can kind of add a new perspective to this, whatever they might be reacting to in the same way that film critics or music critics .\" - P13"
+                }
+              ]
+            },
+            {
+              "block-id": "1743112982",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112980",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In general, the value of personality over production seems to be a shared sentiment between viewers."
+                },
+                {
+                  "block-id": "1743112981",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Due to the lower production overhead, many participants see reaction videos as a uniquely personality-driven format that not only invites immediate emotional connection but also fosters productive and/or interesting insights on the original content."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112986",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112983",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Our study explores the more nuanced participatory culture surrounding RVs, as well as the driving motivations that viewers exhibit in their engagement with RVs."
+                },
+                {
+                  "block-id": "1743112984",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Whereas a majority of the existing literature in the domain of RVs is centered around creators and their motivations, our study expands upon the more recent, and much fewer, works that have begun to investigate RV viewers."
+                },
+                {
+                  "block-id": "1743112985",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "These newer works have highlighted the need for a deeper investigation in viewer preferences, and our research directly addresses these gaps and more by providing insights into previously underexplored dimensions of RV culture."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112990",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112987",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Our findings suggest that viewers' engagement with RVs is multifaceted in not only their approach but also in their consumption of the media."
+                },
+                {
+                  "block-id": "1743112988",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "From the values derived in their consumption, to consumption pathways, to common participation practices with the content and/or creators, these dimensions not only shape individual viewing experiences, but also highlight the role RVs play within the broader social media ecosystem."
+                },
+                {
+                  "block-id": "1743112989",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "This engagement with RVs not only validates but also enriches our understanding of present-day digital participatory cultures."
+                }
+              ]
+            },
+            {
+              "block-id": "1743112993",
+              "summary": "",
+              "intent": "",
+              "type": "paragraph",
+              "content": [
+                {
+                  "block-id": "1743112991",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "In the following sections, I will  be revisiting our key findings and tying them back to our original research questions."
+                },
+                {
+                  "block-id": "1743112992",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We aim to position our insights within the ever-growing body of existing literature surrounding RVs, as well as to highlight their significance and implications for future research and platform design."
+                }
+              ]
+            }
+          ],
+          "summary": "",
+          "intent": ""
         }
-      ]
-    },
-    {
-      "title": "Discussion",
-      "block-id": "1743034861",
+      ],
       "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": [
-        {
-          "title": "Implications",
-          "block-id": "1743034862",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Comparison to Existing Commercial Tools",
-          "block-id": "1743034863",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Limitations",
-          "block-id": "1743034864",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Future Directions",
-          "block-id": "1743034865",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        }
-      ]
-    },
-    {
-      "title": "Conclusion",
-      "block-id": "1743034866",
-      "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": []
-    },
-    {
-      "title": "Appendix",
-      "block-id": "1743034867",
-      "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": [
-        {
-          "title": "LLM Prompt for Chat Component",
-          "block-id": "1743034868",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Character-Level Provenance Tracing Algorithm",
-          "block-id": "1743034869",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study Task: Email Customization Options",
-          "block-id": "1743034870",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 1: Quality Control",
-          "block-id": "1743034871",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 1: Example Edited Email",
-          "block-id": "1743034872",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 1: Annotation Detail",
-          "block-id": "1743034873",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 1: Chat vs. Comment Conversations",
-          "block-id": "1743034874",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 1: Factual Accuracy Annotation",
-          "block-id": "1743034875",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 1: Component Response Time Analysis",
-          "block-id": "1743034876",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Study 2: Example System-Generated Inaccuracies",
-          "block-id": "1743034877",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        },
-        {
-          "title": "Statistical Significance Analysis of Main Findings",
-          "block-id": "1743034878",
-          "summary": "",
-          "intent": "",
-          "type": "subsection",
-          "content": []
-        }
-      ]
+      "intent": ""
     }
   ],
-  "createdAt": "2025-03-27T00:20:38.164Z",
-  "updatedAt": "2025-03-27T00:20:38.164Z",
+  "createdAt": "2025-03-27T21:52:56.544Z",
+  "updatedAt": "2025-03-27T21:52:56.544Z",
   "version": 1
 }
