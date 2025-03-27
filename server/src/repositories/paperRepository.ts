@@ -43,13 +43,24 @@ export class PaperRepository {
   //   }
   // }
 
-  async updateSentence(blockId: string, content: string, summary: string, intent: string): Promise<void> {
+  async updateSentence(
+    blockId: string,
+    content: string,
+    summary: string,
+    intent: string
+  ): Promise<void> {
     try {
       // Read the current data
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
 
       // Find and update the sentence with matching block-id
-      const updated = this.findAndUpdateSentence(paperData, blockId, content, summary, intent);
+      const updated = this.findAndUpdateSentence(
+        paperData,
+        blockId,
+        content,
+        summary,
+        intent
+      );
 
       if (!updated) {
         throw new Error(`Sentence with block-id ${blockId} not found`);
@@ -102,16 +113,16 @@ export class PaperRepository {
           blockType === "sentence"
             ? ""
             : blockType === "paragraph"
-              ? [emptySentence]
-              : [],
+            ? [emptySentence]
+            : [],
         "block-id": newBlockId, // Assigns a unique block ID using timestamp
         ...(blockType !== "sentence" && {
           title:
             blockType === "section"
               ? "New Section"
               : blockType === "subsection"
-                ? "New Subsection"
-                : "",
+              ? "New Subsection"
+              : "",
         }),
       };
       if (!parentBlockId) {
@@ -136,8 +147,8 @@ export class PaperRepository {
       const prevBlockIndex = !prevBlockId
         ? -1
         : parentBlock.content.findIndex(
-          (block: any) => block["block-id"] === prevBlockId
-        );
+            (block: any) => block["block-id"] === prevBlockId
+          );
       parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
 
       // Write the updated JSON back to the paper file
@@ -210,11 +221,13 @@ export class PaperRepository {
     const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
     const targetBlock = this.findBlockById(paperData, blockId);
     // Assumes target block exists and is not a sentence
-    let result = '';
+    let result = "";
     for (const child of targetBlock.content) {
       result += child[targetKey];
-      if (child[targetKey].endsWith('.')) { result += '.'}
-      result += '';
+      if (child[targetKey].endsWith(".")) {
+        result += ".";
+      }
+      result += "";
     }
     return result;
   }
@@ -358,7 +371,9 @@ export class PaperRepository {
     // If not found at this level, recursively search in the content array
     if (Array.isArray(obj.content)) {
       for (const item of obj.content) {
-        if (this.findAndUpdateSentence(item, blockId, content, summary, intent)) {
+        if (
+          this.findAndUpdateSentence(item, blockId, content, summary, intent)
+        ) {
           return true;
         }
       }

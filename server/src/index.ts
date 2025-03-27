@@ -203,6 +203,9 @@ if (process.env.NODE_ENV === "production") {
 // Start the server
 const start = async () => {
   try {
+    // 데이터 디렉토리 및 기본 파일 생성 확인
+    ensureDataDirectoryExists();
+
     await fastify.listen({ port, host: "0.0.0.0" });
     console.log(`Server is running on port ${port}`);
   } catch (err) {
@@ -210,6 +213,68 @@ const start = async () => {
     process.exit(1);
   }
 };
+
+// 데이터 디렉토리와 기본 파일 존재 확인
+function ensureDataDirectoryExists() {
+  try {
+    // 가능한 데이터 디렉토리 경로들
+    const possibleDataDirs = [
+      path.join(__dirname, "../data"),
+      path.join(process.cwd(), "data"),
+      path.join(process.cwd(), "server/dist/data"),
+    ];
+
+    // 실제 사용할 데이터 경로 선택
+    let dataDir = null;
+    for (const dir of possibleDataDirs) {
+      try {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+          console.log(`Created data directory at: ${dir}`);
+        }
+
+        // 쓰기 권한 테스트
+        const testFile = path.join(dir, ".test");
+        fs.writeFileSync(testFile, "test");
+        fs.unlinkSync(testFile);
+
+        dataDir = dir;
+        console.log(`Using data directory: ${dataDir}`);
+        break;
+      } catch (error) {
+        const err = error as Error;
+        console.warn(`Cannot use directory ${dir}: ${err.message}`);
+      }
+    }
+
+    if (!dataDir) {
+      console.error("Could not find or create a writable data directory!");
+      return;
+    }
+
+    // paper.json 파일 확인 및 생성
+    const paperJsonPath = path.join(dataDir, "paper.json");
+    if (!fs.existsSync(paperJsonPath)) {
+      // 기본 paper.json 생성
+      const defaultPaper = {
+        id: "1",
+        title: "New Paper",
+        authors: [],
+        content: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      fs.writeFileSync(paperJsonPath, JSON.stringify(defaultPaper, null, 2));
+      console.log(`Created default paper.json at: ${paperJsonPath}`);
+    } else {
+      console.log(`Found existing paper.json at: ${paperJsonPath}`);
+    }
+  } catch (error) {
+    const err = error as Error;
+    console.error("Error setting up data directory:", err);
+  }
+}
 
 start();
 
@@ -229,61 +294,3 @@ process.on("SIGTERM", () => {
     process.exit(0);
   });
 });
-
-// Block data processing functions
-function getBlockValue(blockId: string, key: string) {
-  const [secId, subsecId = 0, parId = 0, senId = 0] = blockId
-    .split(".")
-    .map(Number);
-
-  const data = fs.readFileSync(path.join(__dirname, "../data/paper.json"));
-  const obj = JSON.parse(data.toString());
-
-  let toGet = returnTargetBlock(obj, secId, subsecId, parId, senId);
-  return toGet[key];
-}
-
-function updateBlockValue(blockId: string, key: string, valueToUpdate: string) {
-  const [secId, subsecId = 0, parId = 0, senId = 0] = blockId
-    .split(".")
-    .map(Number);
-
-  const dataPath = path.join(__dirname, "../data/paper.json");
-  const data = fs.readFileSync(dataPath);
-  const obj = JSON.parse(data.toString());
-
-  let toUpdate = returnTargetBlock(obj, secId, subsecId, parId, senId);
-  toUpdate[key] = valueToUpdate;
-
-  let updatedData = JSON.stringify(obj);
-  fs.writeFileSync(dataPath, updatedData);
-
-  return;
-}
-
-function returnTargetBlock(
-  obj: any,
-  secId: number,
-  subsecId: number,
-  parId: number,
-  senId: number
-) {
-  let toGet = obj;
-  if (secId == 0) {
-    return toGet;
-  }
-  toGet = toGet["content"][secId - 1];
-  if (subsecId == 0) {
-    return toGet;
-  }
-  toGet = toGet["content"][subsecId - 1];
-  if (parId == 0) {
-    return toGet;
-  }
-  toGet = toGet["content"][parId - 1];
-  if (senId == 0) {
-    return toGet;
-  }
-  toGet = toGet["content"][senId - 1];
-  return toGet;
-}

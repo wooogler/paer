@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "echo 'Rebuilding everything from scratch' && pnpm install && echo 'Building shared package' && pnpm build:shared && echo 'Building client with new settings' && pnpm build:client && echo 'Building server' && pnpm build:server && echo 'Build completed' && echo 'Client dist contents:' && ls -la client/dist"
+    "buildCommand": "echo 'Rebuilding everything from scratch' && pnpm install && echo 'Building shared package' && pnpm build:shared && echo 'Building client with new settings' && pnpm build:client && echo 'Building server' && pnpm build:server && echo 'Ensuring data directory is properly set up' && mkdir -p server/dist/data && mkdir -p data && cp -r server/data/* server/dist/data/ && echo 'Data directory contents:' && ls -la server/dist/data && echo 'Build completed' && echo 'Client dist contents:' && ls -la client/dist"
   },
   "deploy": {
     "numReplicas": 1,
