@@ -17,7 +17,7 @@
     "build:server": "pnpm --filter paer-server run build",
     "build:shared": "pnpm --filter @paer/shared run build",
     "build": "pnpm -r run build",
-    "start": "node server/dist/index.js",
+    "start": "node server/dist/server/src/index.js",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test",
     "clean": "pnpm -r exec rm -rf node_modules && rm -rf node_modules"
