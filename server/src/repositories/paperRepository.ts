@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { Paper, ContentType } from "@paer/shared";
+import { object } from "zod";
 
 export class PaperRepository {
   private readonly filePath: string;
@@ -205,7 +206,24 @@ export class PaperRepository {
     return null;
   }
 
-  private findParentBlockByChildId(obj: any, blockId: string): any {
+  getChildrenValues(blockId: string, targetKey: string) {
+    const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+    const targetBlock = this.findBlockById(paperData, blockId);
+    // Assumes target block exists and is not a sentence
+    let result = '';
+    for (const child of targetBlock.content) {
+      result += child[targetKey];
+      if (child[targetKey].endsWith('.')) { result += '.'}
+      result += '';
+    }
+    return result;
+  }
+
+  findParentBlockByChildId(obj: any, blockId: string): any {
+    if (!obj) {
+      obj = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+    }
+
     // If the object has a content array, search recursively
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
