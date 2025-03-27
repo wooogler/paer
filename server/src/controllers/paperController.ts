@@ -31,7 +31,7 @@ export class PaperController {
   async updateSentence(
     request: FastifyRequest<{ Body: { blockId: string; content: string } }>,
     reply: FastifyReply
-  ): Promise<any> {
+  ): Promise<any> { 
     try {
       const { blockId, content } = request.body;
 
@@ -145,6 +145,9 @@ export class PaperController {
     }
   }
 
+  /**
+   * ask LLM a question
+   */
   async askLLM(
     request: FastifyRequest<{ Body: { text: string } }>,
     reply: FastifyReply
@@ -152,11 +155,16 @@ export class PaperController {
     const { text } = request.body;
 
     try {
-      const response = await this.client.completions.create({
-        model: "text-davinci-003",
-        prompt: text,
-        max_tokens: 100,
+      const response = await this.client.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { 
+            role: "user", 
+            content: text,
+          },
+        ],
       });
+
 
       return reply.send(response);
     } catch (error) {

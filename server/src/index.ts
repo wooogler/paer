@@ -28,6 +28,7 @@ const client = new OpenAI({
 fastify.register(apiRoutes, { prefix: "/api" });
 fastify.register(paperRoutes, { prefix: "/api/papers" });
 
+
 // Add health check endpoint
 fastify.get("/api/health", async (request, reply) => {
   return { status: "ok", message: "Server is running" };

@@ -141,18 +141,27 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // POST /api/openai/askllm
-  fastify.post(
-    "/openai/askllm",
-    async (
-      request: FastifyRequest<{
-        Body: { text: string };
-      }>,
-      reply: FastifyReply
-    ) => {
-      return paperController.askLLM(request, reply);
+// askLLM API
+fastify.post(
+  "/chat/ask",
+  async (
+    request: FastifyRequest<{
+      Body: { text: string };
+    }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      // Call the askLLM function from paperController
+      const result = await paperController.askLLM(request, reply);
+
+      // Send the result back to the client
+      return reply.send({ success: true, result });
+    } catch (error) {
+      console.error("Error in /chat/ask:", error);
+      return reply.status(500).send({ success: false, error: "Failed to process the request" });
     }
-  );
+  }
+);
 
   // PATCH /api/paper/sentence/intent - Update sentence intent
   fastify.patch(
