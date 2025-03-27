@@ -20,18 +20,6 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  fastify.post(
-    "/papers/process",
-    async (
-      request: FastifyRequest<{
-        Body: { content: string };
-      }>,
-      reply: FastifyReply
-    ) => {
-      return paperController.updateWhole(request, reply);
-    }
-  );
-
   // PATCH /api/paper/sentence
   fastify.patch(
     "/paper/sentence",
