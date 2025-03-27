@@ -48,23 +48,65 @@ fastify.get("/api/health", async (request, reply) => {
 
 // Handle static files (production environment)
 console.log(`Current NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`Current directory: ${process.cwd()}`);
+console.log(`Server __dirname: ${__dirname}`);
+console.log(`Railway environment: ${process.env.RAILWAY_ENVIRONMENT}`);
 
 // 프로덕션 환경에서만 정적 파일 제공 (개발 환경에서는 Vite 개발 서버가 처리)
 if (process.env.NODE_ENV === "production") {
   try {
-    // 올바른 클라이언트 빌드 경로 설정
-    const clientDistPath =
-      process.env.RAILWAY_STATIC_URL ||
-      path.resolve(
-        process.env.RAILWAY_ENVIRONMENT
-          ? "/app/client/dist"
-          : path.join(__dirname, "../../client/dist")
-      );
+    // 가능한 여러 클라이언트 빌드 경로를 시도
+    const possibleClientPaths = [
+      // Railway 환경 변수로 지정된 경로
+      process.env.RAILWAY_STATIC_URL,
+      // Railway에서 일반적인 경로
+      "/app/client/dist",
+      // 상대 경로 (Railway 워크스페이스 기준)
+      path.join(process.cwd(), "client/dist"),
+      // 서버 내부 public 폴더 (새로 추가)
+      path.join(process.cwd(), "server/dist/public"),
+      // __dirname 상대 경로에서 서버 내부 public 폴더
+      path.join(__dirname, "../public"),
+      // __dirname 기준 상대 경로
+      path.join(__dirname, "../../../../client/dist"),
+      // 더 깊은 상대 경로
+      path.join(__dirname, "../../../client/dist"),
+      // 표준 상대 경로
+      path.join(__dirname, "../../client/dist"),
+    ].filter((p): p is string => !!p); // undefined 값 제거 및 타입 가드 추가
 
-    console.log(`Checking client dist path: ${clientDistPath}`);
+    console.log("Checking possible client build paths:");
+    possibleClientPaths.forEach((p) => console.log(` - ${p}`));
+
+    // 가능한 경로들 중 존재하는 첫 번째 경로 사용
+    let clientDistPath = null;
+    for (const path of possibleClientPaths) {
+      if (fs.existsSync(path)) {
+        clientDistPath = path;
+        console.log(`Found valid client dist path: ${clientDistPath}`);
+        break;
+      }
+    }
+
+    // 디버깅을 위해 현재 디렉토리 내용 로깅
+    console.log("Current directory contents:");
+    try {
+      const rootDirContents = fs.readdirSync(process.cwd());
+      rootDirContents.forEach((item) => console.log(` - ${item}`));
+
+      if (rootDirContents.includes("client")) {
+        console.log("Client directory contents:");
+        const clientDirContents = fs.readdirSync(
+          path.join(process.cwd(), "client")
+        );
+        clientDirContents.forEach((item) => console.log(` - ${item}`));
+      }
+    } catch (err) {
+      console.error("Error listing directory contents:", err);
+    }
 
     // 디렉토리 존재 확인
-    if (fs.existsSync(clientDistPath)) {
+    if (clientDistPath && fs.existsSync(clientDistPath)) {
       console.log(`Client dist path found: ${clientDistPath}`);
 
       // index.html 파일 확인
@@ -100,15 +142,14 @@ if (process.env.NODE_ENV === "production") {
         return reply.sendFile("index.html");
       });
     } else {
-      console.warn(
-        `Client dist path not found: ${clientDistPath}. Static file serving disabled.`
-      );
+      console.warn(`No valid client dist path found among the checked paths.`);
       // 디렉토리가 존재하지 않는 경우 루트 경로에 대한 응답 추가
       fastify.get("/", async (request, reply) => {
         return {
           error: "Client build not found",
           message:
             "The client build directory was not found. Please check your deployment configuration.",
+          checkedPaths: possibleClientPaths,
         };
       });
     }
