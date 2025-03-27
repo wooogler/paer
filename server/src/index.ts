@@ -255,20 +255,80 @@ function ensureDataDirectoryExists() {
     // paper.json 파일 확인 및 생성
     const paperJsonPath = path.join(dataDir, "paper.json");
     if (!fs.existsSync(paperJsonPath)) {
-      // 기본 paper.json 생성
+      // 기본 paper.json 생성 - Zod 스키마와 완전히 일치하는 구조
       const defaultPaper = {
-        id: "1",
         title: "New Paper",
-        authors: [],
-        content: [],
+        summary: "This is a new paper created automatically",
+        intent: "To provide a starting point for writing",
+        type: "paper",
+        content: [
+          {
+            title: "Introduction",
+            summary: "Introduction to the topic",
+            intent: "To introduce the main topic",
+            type: "section",
+            content: [
+              {
+                summary: "Background information",
+                intent: "To provide context",
+                type: "paragraph",
+                content: [
+                  {
+                    summary: "Initial sentence",
+                    intent: "To begin the document",
+                    type: "sentence",
+                    content: "This is the beginning of your new document.",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        authors: [],
+        "block-id": "0",
       };
 
       fs.writeFileSync(paperJsonPath, JSON.stringify(defaultPaper, null, 2));
       console.log(`Created default paper.json at: ${paperJsonPath}`);
     } else {
       console.log(`Found existing paper.json at: ${paperJsonPath}`);
+
+      // 파일이 존재하지만 필요한 필드가 없는지 확인하고 수정
+      try {
+        const paperData = JSON.parse(fs.readFileSync(paperJsonPath, "utf8"));
+        let modified = false;
+
+        // 필수 필드 확인 및 추가
+        if (!paperData.type) {
+          paperData.type = "paper";
+          modified = true;
+        }
+
+        if (!paperData.intent) {
+          paperData.intent = "To provide a starting point for writing";
+          modified = true;
+        }
+
+        if (!paperData.summary) {
+          paperData.summary = "This is a paper created automatically";
+          modified = true;
+        }
+
+        // 변경사항이 있으면 파일 업데이트
+        if (modified) {
+          fs.writeFileSync(paperJsonPath, JSON.stringify(paperData, null, 2));
+          console.log(
+            `Updated existing paper.json with missing fields at: ${paperJsonPath}`
+          );
+        }
+      } catch (error) {
+        const err = error as Error;
+        console.error(
+          `Error checking/updating existing paper.json: ${err.message}`
+        );
+      }
     }
   } catch (error) {
     const err = error as Error;
