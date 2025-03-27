@@ -1,9 +1,9 @@
-import { FastifyInstance } from 'fastify';
-import { z } from 'zod';
-import { PaperSchema } from '@paer/shared/schemas/paperSchema';
-import { ContentTypeSchemaEnum } from '@paer/shared/schemas/contentSchema';
-import fs from 'fs';
-import path from 'path';
+import { FastifyInstance } from "fastify";
+import { z } from "zod";
+import { PaperSchema } from "@paer/shared/schemas/paperSchema";
+import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
+import fs from "fs";
+import path from "path";
 
 function generateBlockId(baseTimestamp: number, increment: number): string {
   return `${baseTimestamp + increment}`;
@@ -28,51 +28,64 @@ function isPlotOrFigure(line: string): boolean {
     /\\begin{table}/, // LaTeX table environment
     /\\begin{tabular}/, // LaTeX tabular environment
   ];
-  
-  return plotPatterns.some(pattern => pattern.test(line.trim()));
+
+  return plotPatterns.some((pattern) => pattern.test(line.trim()));
 }
 
 function isLatexComment(line: string): boolean {
-  return line.trim().startsWith('%');
+  return line.trim().startsWith("%");
 }
 
 function isLatexCommand(line: string): boolean {
-  return line.trim().startsWith('\\');
+  return line.trim().startsWith("\\");
 }
 
-function detectFileType(content: string): 'latex' | 'markdown' | 'text' {
+function detectFileType(content: string): "latex" | "markdown" | "text" {
   // Check for LaTeX indicators
-  if (content.includes('\\documentclass') || content.includes('\\begin{document}')) {
-    return 'latex';
+  if (
+    content.includes("\\documentclass") ||
+    content.includes("\\begin{document}")
+  ) {
+    return "latex";
   }
-  
+
   // Check for Markdown indicators
-  if (content.includes('# ') || content.includes('## ') || content.includes('### ')) {
-    return 'markdown';
+  if (
+    content.includes("# ") ||
+    content.includes("## ") ||
+    content.includes("### ")
+  ) {
+    return "markdown";
   }
-  
+
   // Default to text
-  return 'text';
+  return "text";
 }
 
-function extractTitle(content: string, fileType: 'latex' | 'markdown' | 'text'): string {
+function extractTitle(
+  content: string,
+  fileType: "latex" | "markdown" | "text"
+): string {
   switch (fileType) {
-    case 'latex':
+    case "latex":
       const latexTitle = content.match(/\\title{(.*?)}/);
-      return latexTitle ? latexTitle[1] : 'Untitled Paper';
-    case 'markdown':
+      return latexTitle ? latexTitle[1] : "Untitled Paper";
+    case "markdown":
       const markdownTitle = content.match(/^#\s+(.+)$/m);
-      return markdownTitle ? markdownTitle[1] : 'Untitled Paper';
-    case 'text':
+      return markdownTitle ? markdownTitle[1] : "Untitled Paper";
+    case "text":
       // For plain text, use the first non-empty line
-      const firstLine = content.split('\n').find(line => line.trim());
-      return firstLine ? firstLine.trim() : 'Untitled Paper';
+      const firstLine = content.split("\n").find((line) => line.trim());
+      return firstLine ? firstLine.trim() : "Untitled Paper";
   }
 }
 
-export function processLatexContent(content: string, baseTimestamp: number): any[] {
+export function processLatexContent(
+  content: string,
+  baseTimestamp: number
+): any[] {
   const fileType = detectFileType(content);
-  const lines = content.split('\n');
+  const lines = content.split("\n");
   const result: any[] = [];
   let currentParagraph: any[] = [];
   let currentSection: any = null;
@@ -83,11 +96,17 @@ export function processLatexContent(content: string, baseTimestamp: number): any
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    if (!trimmedLine || isPlotOrFigure(trimmedLine) || isLatexComment(trimmedLine)) continue;
+    if (
+      !trimmedLine ||
+      isPlotOrFigure(trimmedLine) ||
+      isLatexComment(trimmedLine)
+    )
+      continue;
 
     // Handle section headers based on file type
-    if (fileType === 'latex' && trimmedLine.startsWith('\\section{')) {
-      const title = trimmedLine.match(/\\section{(.*?)}/)?.[1] || 'Untitled Section';
+    if (fileType === "latex" && trimmedLine.startsWith("\\section{")) {
+      const title =
+        trimmedLine.match(/\\section{(.*?)}/)?.[1] || "Untitled Section";
       const blockId = generateBlockId(baseTimestamp, blockIdIncrement++);
 
       if (currentSection) {
@@ -99,25 +118,29 @@ export function processLatexContent(content: string, baseTimestamp: number): any
         summary: "",
         intent: "",
         type: ContentTypeSchemaEnum.Section,
-        content: []
+        content: [],
       };
       sectionIndex++;
-    } else if (fileType === 'latex' && trimmedLine.startsWith('\\subsection{')) {
-      const title = trimmedLine.match(/\\subsection{(.*?)}/)?.[1] || 'Untitled Subsection';
+    } else if (
+      fileType === "latex" &&
+      trimmedLine.startsWith("\\subsection{")
+    ) {
+      const title =
+        trimmedLine.match(/\\subsection{(.*?)}/)?.[1] || "Untitled Subsection";
       const subsection = {
         title,
         "block-id": generateBlockId(baseTimestamp, blockIdIncrement++),
         summary: "",
         intent: "",
         type: ContentTypeSchemaEnum.Subsection,
-        content: []
+        content: [],
       };
       if (currentSection) {
         currentSection.content.push(subsection);
       }
       subsectionIndex++;
-    } else if (fileType === 'markdown' && trimmedLine.startsWith('## ')) {
-      const title = trimmedLine.replace('## ', '').trim();
+    } else if (fileType === "markdown" && trimmedLine.startsWith("## ")) {
+      const title = trimmedLine.replace("## ", "").trim();
       const blockId = generateBlockId(baseTimestamp, blockIdIncrement++);
 
       if (currentSection) {
@@ -129,24 +152,24 @@ export function processLatexContent(content: string, baseTimestamp: number): any
         summary: "",
         intent: "",
         type: ContentTypeSchemaEnum.Section,
-        content: []
+        content: [],
       };
       sectionIndex++;
-    } else if (fileType === 'markdown' && trimmedLine.startsWith('### ')) {
-      const title = trimmedLine.replace('### ', '').trim();
+    } else if (fileType === "markdown" && trimmedLine.startsWith("### ")) {
+      const title = trimmedLine.replace("### ", "").trim();
       const subsection = {
         title,
         "block-id": generateBlockId(baseTimestamp, blockIdIncrement++),
         summary: "",
         intent: "",
         type: ContentTypeSchemaEnum.Subsection,
-        content: []
+        content: [],
       };
       if (currentSection) {
         currentSection.content.push(subsection);
       }
       subsectionIndex++;
-    } else if (fileType === 'text' && trimmedLine.length > 0) {
+    } else if (fileType === "text" && trimmedLine.length > 0) {
       // For plain text, treat each line as a potential section if it's not too long
       if (trimmedLine.length < 100 && !currentSection) {
         const title = trimmedLine;
@@ -161,15 +184,18 @@ export function processLatexContent(content: string, baseTimestamp: number): any
           summary: "",
           intent: "",
           type: ContentTypeSchemaEnum.Section,
-          content: []
+          content: [],
         };
         sectionIndex++;
       } else {
         // Regular content
         if (currentSection) {
           // Add to current section's content
-          if (currentSection.content.length === 0 || 
-              currentSection.content[currentSection.content.length - 1].type === ContentTypeSchemaEnum.Subsection) {
+          if (
+            currentSection.content.length === 0 ||
+            currentSection.content[currentSection.content.length - 1].type ===
+              ContentTypeSchemaEnum.Subsection
+          ) {
             // Start new paragraph
             currentParagraph = [];
             paragraphIndex++;
@@ -177,21 +203,18 @@ export function processLatexContent(content: string, baseTimestamp: number): any
 
           // Split the line into sentences
           const sentences = trimmedLine
-            .replace(/([.!?])\s+/g, '$1|')
-            .split('|')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-          
+            .replace(/([.!?])\s+/g, "$1|")
+            .split("|")
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0);
+
           for (const sentenceText of sentences) {
             const sentence = {
-              "block-id": generateBlockId(
-                baseTimestamp,
-                blockIdIncrement++
-              ),
+              "block-id": generateBlockId(baseTimestamp, blockIdIncrement++),
               summary: "",
               intent: "",
               type: ContentTypeSchemaEnum.Sentence,
-              content: sentenceText.trim()
+              content: sentenceText.trim(),
             };
 
             currentParagraph.push(sentence);
@@ -199,19 +222,21 @@ export function processLatexContent(content: string, baseTimestamp: number): any
 
           // Create a paragraph block for the collected sentences
           const paragraph = {
-            "block-id": generateBlockId(
-              baseTimestamp,
-              blockIdIncrement++
-            ),
+            "block-id": generateBlockId(baseTimestamp, blockIdIncrement++),
             summary: "",
             intent: "",
             type: ContentTypeSchemaEnum.Paragraph,
-            content: currentParagraph
+            content: currentParagraph,
           };
 
-          if (currentSection.content.length > 0 && 
-              currentSection.content[currentSection.content.length - 1].type === ContentTypeSchemaEnum.Subsection) {
-            currentSection.content[currentSection.content.length - 1].content.push(paragraph);
+          if (
+            currentSection.content.length > 0 &&
+            currentSection.content[currentSection.content.length - 1].type ===
+              ContentTypeSchemaEnum.Subsection
+          ) {
+            currentSection.content[
+              currentSection.content.length - 1
+            ].content.push(paragraph);
           } else {
             currentSection.content.push(paragraph);
           }
@@ -231,18 +256,18 @@ export function processLatexContent(content: string, baseTimestamp: number): any
 
 export default async function paperRoutes(fastify: FastifyInstance) {
   // Test endpoint to process our test paper
-  fastify.get('/test', async (request, reply) => {
+  fastify.get("/test", async (request, reply) => {
     try {
       const content = fs.readFileSync(
-        path.join(__dirname, '../../data/main.tex'),
-        'utf-8'
+        path.join(__dirname, "../../data/main.tex"),
+        "utf-8"
       );
-      
+
       const baseTimestamp = Math.floor(Date.now() / 1000);
       const processedContent = processLatexContent(content, baseTimestamp);
 
       const paper = {
-        title: extractTitle(content, 'latex'),
+        title: extractTitle(content, "latex"),
         "block-id": baseTimestamp.toString(),
         summary: "",
         intent: "",
@@ -250,23 +275,24 @@ export default async function paperRoutes(fastify: FastifyInstance) {
         content: processedContent,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        version: 1
+        version: 1,
       };
 
       const validatedPaper = PaperSchema.parse(paper);
-      
+
       // Write the output to a file for inspection
       fs.writeFileSync(
-        path.join(__dirname, '../../data/processed_paper.json'),
+        path.join(__dirname, "../../data/processed_paper.json"),
         JSON.stringify(validatedPaper, null, 2)
       );
 
-      return { success: true, message: 'Test paper processed successfully' };
+      return { success: true, message: "Test paper processed successfully" };
     } catch (error) {
-      console.error('Error processing test paper:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      console.error("Error processing test paper:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
   });
@@ -291,8 +317,13 @@ export default async function paperRoutes(fastify: FastifyInstance) {
         content: processedContent,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        version: 1
+        version: 1,
       };
+
+      fs.writeFileSync(
+        path.join(__dirname, "../../data/processed_paper.json"),
+        JSON.stringify(paper, null, 2)
+      );
 
       return paper;
     } catch (error) {
@@ -315,4 +346,4 @@ export default async function paperRoutes(fastify: FastifyInstance) {
       reply.status(500).send({ error: "Failed to save paper" });
     }
   });
-} 
+}

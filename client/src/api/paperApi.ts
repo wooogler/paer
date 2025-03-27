@@ -169,3 +169,31 @@ export async function deleteBlock(blockId: string): Promise<void> {
     throw new Error("Failed to delete block");
   }
 }
+
+export const processPaperContent = async (content: string) => {
+  try {
+    const response = await api.post("/papers/process", { content });
+    return response.data;
+  } catch (error) {
+    console.error("Error processing paper content:", error);
+    throw error;
+  }
+};
+
+interface ProcessedPaper {
+  title: string;
+  content: string;
+  sections: Array<{
+    title: string;
+    content: string;
+  }>;
+}
+
+export const savePaper = async (paper: ProcessedPaper): Promise<void> => {
+  try {
+    await api.post("/papers", paper);
+  } catch (error) {
+    console.error("Error saving paper:", error);
+    throw error;
+  }
+};

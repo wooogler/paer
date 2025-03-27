@@ -9,11 +9,10 @@ import FileImport from "./FileImport";
 import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
 import { usePaperStore } from "../store/paperStore";
-import { processPaperContent, savePaper } from "../services/fileService";
 import { readChatHistory } from "../utils/chatStorage";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { processPaperContent, savePaper } from "../api/paperApi";
 const Layout: React.FC = () => {
   const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
     useAppStore();
@@ -50,7 +49,7 @@ const Layout: React.FC = () => {
       await savePaper(processedPaper);
       // You might want to show a success message here
     } catch (error) {
-      console.error('Error processing paper:', error);
+      console.error("Error processing paper:", error);
       // You might want to show an error message here
     }
   };
