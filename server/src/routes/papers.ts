@@ -4,6 +4,7 @@ import { PaperSchema } from "@paer/shared/schemas/paperSchema";
 import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import fs from "fs";
 import path from "path";
+import { PaperController } from "src/controllers/paperController";
 
 function generateBlockId(baseTimestamp: number, increment: number): string {
   return `${baseTimestamp + increment}`;
@@ -666,6 +667,7 @@ export function processLatexContent(
 }
 
 export default async function paperRoutes(fastify: FastifyInstance) {
+  const paperController = new PaperController();
   // Test endpoint to process our test paper
   fastify.get("/test", async (request, reply) => {
     try {
@@ -732,11 +734,11 @@ export default async function paperRoutes(fastify: FastifyInstance) {
       };
 
       fs.writeFileSync(
-        path.join(__dirname, "../../data/processed_paper.json"),
+        path.join(__dirname, "../../data/paper.json"),
         JSON.stringify(paper, null, 2)
       );
 
-      return paper;
+      return paperController.updateWhole(request, reply);
     } catch (error) {
       console.error("Error processing paper:", error);
       reply.status(500).send({ error: "Failed to process paper" });
