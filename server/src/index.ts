@@ -122,13 +122,50 @@ if (process.env.NODE_ENV === "production") {
       // 정적 파일 서빙 설정
       fastify.register(import("@fastify/static"), {
         root: clientDistPath,
-        prefix: "/",
-        decorateReply: false, // 이미 등록된 경우 중복 등록 방지
+        prefix: "/assets", // assets 경로로 변경
+        decorateReply: true, // 응답 객체에 sendFile 메서드 장식 활성화
+      });
+
+      // HTML, JS, CSS, 이미지 등 다른 정적 파일에 대한 핸들러 추가
+      fastify.get("/assets/*", async (request, reply) => {
+        const requestedPath = (request.url as string).replace("/assets/", "");
+        const filePath = path.join(clientDistPath, "assets", requestedPath);
+
+        try {
+          if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+            const content = fs.readFileSync(filePath);
+
+            // 파일 확장자에 따른 Content-Type 설정
+            const ext = path.extname(filePath).toLowerCase();
+            if (ext === ".js") reply.type("application/javascript");
+            else if (ext === ".css") reply.type("text/css");
+            else if (ext === ".png") reply.type("image/png");
+            else if (ext === ".jpg" || ext === ".jpeg")
+              reply.type("image/jpeg");
+            else if (ext === ".svg") reply.type("image/svg+xml");
+
+            return reply.send(content);
+          }
+        } catch (err) {
+          console.error(`Error serving static file ${filePath}:`, err);
+        }
+
+        return reply.status(404).send({ error: "File not found" });
       });
 
       // 루트 경로에 대한 명시적 핸들러 추가
       fastify.get("/", async (request, reply) => {
-        return reply.sendFile("index.html");
+        try {
+          // 파일 경로를 직접 읽어서 응답으로 보냄
+          const indexContent = fs.readFileSync(
+            path.join(clientDistPath, "index.html")
+          );
+          reply.type("text/html").send(indexContent);
+        } catch (err) {
+          console.error("Error serving index.html:", err);
+          reply.status(500).send({ error: "Failed to serve index.html" });
+        }
+        return reply;
       });
 
       // SPA를 위한 fallback 라우트 등록
@@ -138,8 +175,18 @@ if (process.env.NODE_ENV === "production") {
           return reply.status(404).send({ error: "Not Found" });
         }
 
-        console.log(`Serving index.html for path: ${request.url}`);
-        return reply.sendFile("index.html");
+        try {
+          console.log(`Serving index.html for path: ${request.url}`);
+          // 파일 경로를 직접 읽어서 응답으로 보냄
+          const indexContent = fs.readFileSync(
+            path.join(clientDistPath, "index.html")
+          );
+          reply.type("text/html").send(indexContent);
+        } catch (err) {
+          console.error(`Error serving index.html for ${request.url}:`, err);
+          reply.status(500).send({ error: "Failed to serve index.html" });
+        }
+        return reply;
       });
     } else {
       console.warn(`No valid client dist path found among the checked paths.`);

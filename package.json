@@ -16,7 +16,7 @@
     "build:client": "pnpm --filter paer-client run build",
     "build:server": "pnpm --filter paer-server run build",
     "build:shared": "pnpm --filter @paer/shared run build",
-    "build": "pnpm build:shared && pnpm build:client && pnpm build:server && echo 'All builds completed' && mkdir -p server/dist/public && cp -r client/dist/* server/dist/public/",
+    "build": "pnpm build:shared && pnpm build:client && pnpm build:server && echo 'All builds completed' && rm -rf server/dist/public && cp -r client/dist server/dist/public",
     "start": "node server/dist/server/src/index.js",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test",
