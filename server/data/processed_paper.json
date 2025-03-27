@@ -1,13 +1,13 @@
 {
   "title": "Beyond the Chat: Interaction, Verification and Auditing Tools To Improve Transparency and Accuracy when Editing Text with an LLM",
-  "block-id": "1743034838",
+  "block-id": "1743107623",
   "summary": "",
   "intent": "",
   "type": "paper",
   "content": [
     {
       "title": "Introduction",
-      "block-id": "1743034838",
+      "block-id": "1743107623",
       "summary": "",
       "intent": "",
       "type": "section",
@@ -15,14 +15,14 @@
     },
     {
       "title": "Related Work",
-      "block-id": "1743034839",
+      "block-id": "1743107624",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "Intelligent Text-Editing Interfaces",
-          "block-id": "1743034840",
+          "block-id": "1743107625",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -30,7 +30,7 @@
         },
         {
           "title": "2020202020",
-          "block-id": "1743034841",
+          "block-id": "1743107626",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -38,7 +38,7 @@
         },
         {
           "title": "Ethical Considerations of Co-writing",
-          "block-id": "1743034842",
+          "block-id": "1743107627",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -46,7 +46,7 @@
         },
         {
           "title": "Text Editing in NLP",
-          "block-id": "1743034843",
+          "block-id": "1743107628",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -54,7 +54,7 @@
         },
         {
           "title": "Information Verification \\& Auditing",
-          "block-id": "1743034844",
+          "block-id": "1743107629",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -64,14 +64,14 @@
     },
     {
       "title": "Survey on Current Text Editing Practices",
-      "block-id": "1743034845",
+      "block-id": "1743107630",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "Survey and Study Participant Recruitment",
-          "block-id": "1743034846",
+          "block-id": "1743107631",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -79,7 +79,7 @@
         },
         {
           "title": "Survey Results",
-          "block-id": "1743034847",
+          "block-id": "1743107632",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -89,14 +89,14 @@
     },
     {
       "title": "InkSync System Components and Interface",
-      "block-id": "1743034848",
+      "block-id": "1743107633",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "InkSync System Components",
-          "block-id": "1743034849",
+          "block-id": "1743107634",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -104,7 +104,7 @@
         },
         {
           "title": "Edit-suggesting Components",
-          "block-id": "1743034850",
+          "block-id": "1743107635",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -112,7 +112,7 @@
         },
         {
           "title": "Warn-Verify-Audit Framework",
-          "block-id": "1743034851",
+          "block-id": "1743107636",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -122,14 +122,14 @@
     },
     {
       "title": "Usability Study 1: Interaction Style Evaluation",
-      "block-id": "1743034852",
+      "block-id": "1743107637",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "Participants",
-          "block-id": "1743034853",
+          "block-id": "1743107638",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -137,7 +137,7 @@
         },
         {
           "title": "Study Procedure",
-          "block-id": "1743034854",
+          "block-id": "1743107639",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -145,7 +145,7 @@
         },
         {
           "title": "Evaluation Methodology and Results",
-          "block-id": "1743034855",
+          "block-id": "1743107640",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -155,14 +155,14 @@
     },
     {
       "title": "Usability Study 2: Warn, Verify and Audit",
-      "block-id": "1743034856",
+      "block-id": "1743107641",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "Participants",
-          "block-id": "1743034857",
+          "block-id": "1743107642",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -170,7 +170,7 @@
         },
         {
           "title": "Modifying the System to Introduce Errors",
-          "block-id": "1743034858",
+          "block-id": "1743107643",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -178,7 +178,7 @@
         },
         {
           "title": "Study Procedure",
-          "block-id": "1743034859",
+          "block-id": "1743107644",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -186,7 +186,7 @@
         },
         {
           "title": "Evaluation Methodology and Results",
-          "block-id": "1743034860",
+          "block-id": "1743107645",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -196,14 +196,14 @@
     },
     {
       "title": "Discussion",
-      "block-id": "1743034861",
+      "block-id": "1743107646",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "Implications",
-          "block-id": "1743034862",
+          "block-id": "1743107647",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -211,7 +211,7 @@
         },
         {
           "title": "Comparison to Existing Commercial Tools",
-          "block-id": "1743034863",
+          "block-id": "1743107648",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -219,7 +219,7 @@
         },
         {
           "title": "Limitations",
-          "block-id": "1743034864",
+          "block-id": "1743107649",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -227,7 +227,7 @@
         },
         {
           "title": "Future Directions",
-          "block-id": "1743034865",
+          "block-id": "1743107650",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -237,7 +237,7 @@
     },
     {
       "title": "Conclusion",
-      "block-id": "1743034866",
+      "block-id": "1743107651",
       "summary": "",
       "intent": "",
       "type": "section",
@@ -245,14 +245,14 @@
     },
     {
       "title": "Appendix",
-      "block-id": "1743034867",
+      "block-id": "1743107652",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "LLM Prompt for Chat Component",
-          "block-id": "1743034868",
+          "block-id": "1743107653",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -260,7 +260,7 @@
         },
         {
           "title": "Character-Level Provenance Tracing Algorithm",
-          "block-id": "1743034869",
+          "block-id": "1743107654",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -268,7 +268,7 @@
         },
         {
           "title": "Study Task: Email Customization Options",
-          "block-id": "1743034870",
+          "block-id": "1743107655",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -276,7 +276,7 @@
         },
         {
           "title": "Study 1: Quality Control",
-          "block-id": "1743034871",
+          "block-id": "1743107656",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -284,7 +284,7 @@
         },
         {
           "title": "Study 1: Example Edited Email",
-          "block-id": "1743034872",
+          "block-id": "1743107657",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -292,7 +292,7 @@
         },
         {
           "title": "Study 1: Annotation Detail",
-          "block-id": "1743034873",
+          "block-id": "1743107658",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -300,7 +300,7 @@
         },
         {
           "title": "Study 1: Chat vs. Comment Conversations",
-          "block-id": "1743034874",
+          "block-id": "1743107659",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -308,7 +308,7 @@
         },
         {
           "title": "Study 1: Factual Accuracy Annotation",
-          "block-id": "1743034875",
+          "block-id": "1743107660",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -316,7 +316,7 @@
         },
         {
           "title": "Study 1: Component Response Time Analysis",
-          "block-id": "1743034876",
+          "block-id": "1743107661",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -324,7 +324,7 @@
         },
         {
           "title": "Study 2: Example System-Generated Inaccuracies",
-          "block-id": "1743034877",
+          "block-id": "1743107662",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -332,7 +332,7 @@
         },
         {
           "title": "Statistical Significance Analysis of Main Findings",
-          "block-id": "1743034878",
+          "block-id": "1743107663",
           "summary": "",
           "intent": "",
           "type": "subsection",
@@ -341,7 +341,7 @@
       ]
     }
   ],
-  "createdAt": "2025-03-27T00:20:38.164Z",
-  "updatedAt": "2025-03-27T00:20:38.164Z",
+  "createdAt": "2025-03-27T20:33:43.875Z",
+  "updatedAt": "2025-03-27T20:33:43.875Z",
   "version": 1
 }

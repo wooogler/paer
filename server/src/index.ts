@@ -7,18 +7,23 @@ import paperRoutes from "./routes/papers";
 import OpenAI from "openai";
 import fs from "fs";
 
+// Load environment variables from .env file in development
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: path.join(__dirname, "../../.env") });
+}
+
 // Create Fastify instance
 const fastify = Fastify({ logger: true });
 const port = Number(process.env.PORT || 3000);
 
 // Middleware setup
 fastify.register(cors, {
-  origin: true, // Allow all origins (for development)
+  origin:
+    process.env.NODE_ENV === "production"
+      ? [process.env.CLIENT_URL || "https://your-frontend-url.railway.app"]
+      : true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 });
-
-// Set path to .env file
-dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -27,7 +32,6 @@ const client = new OpenAI({
 // Register API routes
 fastify.register(apiRoutes, { prefix: "/api" });
 fastify.register(paperRoutes, { prefix: "/api/papers" });
-
 
 // Add health check endpoint
 fastify.get("/api/health", async (request, reply) => {

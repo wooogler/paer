@@ -71,6 +71,43 @@ pnpm build:shared
 pnpm start
 ```
 
+## Deployment to Railway
+
+### Prerequisites
+
+- [Railway account](https://railway.app/)
+- GitHub repository with your code
+
+### Steps to Deploy
+
+1. **Link to GitHub Repository**
+
+   - Go to [Railway Dashboard](https://railway.app/dashboard)
+   - Click "New Project" > "Deploy from GitHub repo"
+   - Select the repository
+
+2. **Configure Environment Variables**
+
+   - In Railway dashboard, go to "Variables" tab
+   - Add the following variables:
+     - `OPENAI_API_KEY` - Your OpenAI API key
+     - `NODE_ENV` - Set to "production"
+     - `PORT` - Leave as is (Railway sets this)
+
+3. **Deployment Settings**
+
+   - Railway will automatically detect and deploy your application
+   - The `railway.json` file in the repository configures the deployment
+
+4. **Domains and URLs**
+
+   - After deployment, Railway will provide a domain
+   - Set this URL as `CLIENT_URL` in your environment variables if needed
+
+5. **Verifying Deployment**
+   - Visit the provided domain to verify your application is running
+   - Check the logs in Railway dashboard for any issues
+
 ## Scripts
 
 - `pnpm dev`: Run development server (frontend + backend)
