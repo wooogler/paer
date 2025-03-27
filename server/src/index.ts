@@ -10,6 +10,14 @@ import fs from "fs";
 // Load environment variables from .env file in development
 if (process.env.NODE_ENV !== "production") {
   dotenv.config({ path: path.join(__dirname, "../../.env") });
+} else {
+  console.log("Running in production mode");
+}
+
+// Railway 배포 환경이면 NODE_ENV를 production으로 강제 설정
+if (process.env.RAILWAY_ENVIRONMENT === "true") {
+  process.env.NODE_ENV = "production";
+  console.log("Detected Railway environment, setting NODE_ENV to production");
 }
 
 // Create Fastify instance
@@ -39,6 +47,9 @@ fastify.get("/api/health", async (request, reply) => {
 });
 
 // Handle static files (production environment)
+console.log(`Current NODE_ENV: ${process.env.NODE_ENV}`);
+
+// 프로덕션 환경에서만 정적 파일 제공 (개발 환경에서는 Vite 개발 서버가 처리)
 if (process.env.NODE_ENV === "production") {
   try {
     // 올바른 클라이언트 빌드 경로 설정
@@ -50,9 +61,21 @@ if (process.env.NODE_ENV === "production") {
           : path.join(__dirname, "../../client/dist")
       );
 
+    console.log(`Checking client dist path: ${clientDistPath}`);
+
     // 디렉토리 존재 확인
     if (fs.existsSync(clientDistPath)) {
       console.log(`Client dist path found: ${clientDistPath}`);
+
+      // index.html 파일 확인
+      const indexHtmlPath = path.join(clientDistPath, "index.html");
+      if (fs.existsSync(indexHtmlPath)) {
+        console.log(`index.html found at: ${indexHtmlPath}`);
+      } else {
+        console.warn(
+          `index.html not found at expected location: ${indexHtmlPath}`
+        );
+      }
 
       // 정적 파일 서빙 설정
       fastify.register(import("@fastify/static"), {
@@ -61,23 +84,47 @@ if (process.env.NODE_ENV === "production") {
         decorateReply: false, // 이미 등록된 경우 중복 등록 방지
       });
 
-      // SPA를 위한 fallback 라우트는 한 번만 등록
+      // 루트 경로에 대한 명시적 핸들러 추가
+      fastify.get("/", async (request, reply) => {
+        return reply.sendFile("index.html");
+      });
+
+      // SPA를 위한 fallback 라우트 등록
       fastify.setNotFoundHandler(async (request, reply) => {
         // API 요청은 여기서 처리하지 않음
         if (request.url.startsWith("/api")) {
           return reply.status(404).send({ error: "Not Found" });
         }
 
+        console.log(`Serving index.html for path: ${request.url}`);
         return reply.sendFile("index.html");
       });
     } else {
       console.warn(
         `Client dist path not found: ${clientDistPath}. Static file serving disabled.`
       );
+      // 디렉토리가 존재하지 않는 경우 루트 경로에 대한 응답 추가
+      fastify.get("/", async (request, reply) => {
+        return {
+          error: "Client build not found",
+          message:
+            "The client build directory was not found. Please check your deployment configuration.",
+        };
+      });
     }
   } catch (err) {
     console.error("Error setting up static file serving:", err);
   }
+} else {
+  console.log("Skipping static file serving setup - not in production mode");
+  // 개발 모드에서도 루트 경로에 대한 응답 제공
+  fastify.get("/", async (request, reply) => {
+    return {
+      status: "development",
+      message:
+        "Server running in development mode. Static files are not served.",
+    };
+  });
 }
 
 // Start the server
