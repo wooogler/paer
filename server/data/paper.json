@@ -21,13 +21,13 @@
           "content": [
             {
               "block-id": "1.1.1",
-              "summary": "Writing is a complex task that requires",
-              "intent": "To explain the complexity of writing",
+              "summary": "Modern writing tools often lack a structural approach, resulting in disorganized documents and reduced clarity. There is a need for intelligent tools that offer context and streamline workflow for professional and academic researchers, but these tools are not commonly available in practice.",
+              "intent": "Shortcoming",
               "type": "paragraph",
               "content": [
                 {
                   "block-id": "1.1.1.1",
-                  "summary": "Modern writing tools lack creativity, resulting in disorganized documents and reduced clarity.",
+                  "summary": "Modern writing tools often lack creativity, resulting in disorganized and unclear documents.",
                   "intent": "Shortcoming",
                   "type": "sentence",
                   "content": "Modern writing tools always lack a creative approach, leading to disorganized documents and reduced clarity."

@@ -1,9 +1,13 @@
 import axios from "axios";
 
-// Set API base URL according to environment variables
+// 개발 환경과 프로덕션 환경에 따라 API 기본 URL 설정
+const isDev =
+  import.meta.env.DEV || import.meta.env.VITE_NODE_ENV === "development";
 const baseURL =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:3000/api" : "/api");
+  (isDev ? "http://localhost:3000/api" : "/api");
+
+console.log("API Base URL:", baseURL);
 
 // Create axios instance
 const api = axios.create({

@@ -95,6 +95,8 @@ pnpm start
      - `PORT` - Leave as is (Railway sets this)
      - `RAILWAY_ENVIRONMENT` - Set to "true" (this helps with paths)
      - `NIXPACKS_NODE_VERSION` - Set to "20" (or your preferred Node.js version)
+     - `VITE_NODE_ENV` - Set to "production"
+     - `VITE_API_URL` - Set to "/api"
 
 3. **Deployment Settings**
 
