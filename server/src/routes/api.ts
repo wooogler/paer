@@ -22,10 +22,15 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
 
   fastify.post(
     "/papers/process",
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{
+        Body: { content: string };
+      }>,
+      reply: FastifyReply
+    ) => {
       return paperController.updateWhole(request, reply);
     }
-  )
+  );
 
   // PATCH /api/paper/sentence
   fastify.patch(
@@ -148,27 +153,29 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-// askLLM API
-fastify.post(
-  "/chat/ask",
-  async (
-    request: FastifyRequest<{
-      Body: { text: string };
-    }>,
-    reply: FastifyReply
-  ) => {
-    try {
-      // Call the askLLM function from paperController
-      const result = await paperController.askLLM(request, reply);
+  // askLLM API
+  fastify.post(
+    "/chat/ask",
+    async (
+      request: FastifyRequest<{
+        Body: { text: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      try {
+        // Call the askLLM function from paperController
+        const result = await paperController.askLLM(request, reply);
 
-      // Send the result back to the client
-      return reply.send({ success: true, result });
-    } catch (error) {
-      console.error("Error in /chat/ask:", error);
-      return reply.status(500).send({ success: false, error: "Failed to process the request" });
+        // Send the result back to the client
+        return reply.send({ success: true, result });
+      } catch (error) {
+        console.error("Error in /chat/ask:", error);
+        return reply
+          .status(500)
+          .send({ success: false, error: "Failed to process the request" });
+      }
     }
-  }
-);
+  );
 
   // PATCH /api/paper/sentence/intent - Update sentence intent
   fastify.patch(
