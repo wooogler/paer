@@ -242,6 +242,27 @@ export class PaperRepository {
     return null;
   }
 
+  findParentBlockIdByChildId(obj: any, blockId: string): any {
+    if (!obj) {
+      obj = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+    }
+
+    // If the object has a content array, search recursively
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      for (const child of obj.content) {
+        // If the child matches the blockId, return the current object as the parent
+        if (child["block-id"] === blockId) {
+          return obj["block-id"];
+        }
+        // Recursively search in the child's content
+        const found = this.findParentBlockByChildId(child, blockId);
+        if (found) {
+          return found["block-id"];
+        }
+      }
+    }
+  }
+
   // Finds the block given the ID
   private getBlockById(root: any, blockId: string, blockType: ContentType) {
     const matchingId = (block: any) => block["block-id"] === blockId;
