@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install && pnpm build:shared && pnpm build:server && find . -name 'index.js'"
+    "buildCommand": "pnpm install && pnpm build:shared && pnpm build:client && pnpm build:server && find . -name 'index.js' | sort"
   },
   "deploy": {
     "numReplicas": 1,

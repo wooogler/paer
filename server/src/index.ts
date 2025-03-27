@@ -40,15 +40,34 @@ fastify.get("/api/health", async (request, reply) => {
 
 // Handle static files (production environment)
 if (process.env.NODE_ENV === "production") {
-  fastify.register(import("@fastify/static"), {
-    root: path.join(__dirname, "../../client/dist"),
-    prefix: "/",
-  });
+  try {
+    // 올바른 클라이언트 빌드 경로 설정
+    const clientDistPath = path.resolve("/app/client/dist");
 
-  fastify.get("*", async (request, reply) => {
-    await reply.sendFile("index.html");
-    return reply;
-  });
+    // 디렉토리 존재 확인
+    if (fs.existsSync(clientDistPath)) {
+      console.log(`Client dist path found: ${clientDistPath}`);
+
+      fastify.register(import("@fastify/static"), {
+        root: clientDistPath,
+        prefix: "/",
+      });
+
+      // 중복 라우트 등록 방지를 위해 라우트 등록 전 확인
+      if (!fastify.hasRoute({ method: "GET", url: "*" })) {
+        fastify.get("*", async (request, reply) => {
+          await reply.sendFile("index.html");
+          return reply;
+        });
+      }
+    } else {
+      console.warn(
+        `Client dist path not found: ${clientDistPath}. Static file serving disabled.`
+      );
+    }
+  } catch (err) {
+    console.error("Error setting up static file serving:", err);
+  }
 }
 
 // Start the server
