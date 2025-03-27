@@ -24,7 +24,13 @@ export class PaperService {
   async updateSentence(blockId: string, content: string): Promise<void> {
     const parentId: string = this.paperRepository.findParentBlockByChildId(null, blockId);
     const contextValue: string = this.paperRepository.getChildrenValues(parentId, "content");
+    this.autoUpdateParentBlock(parentId, contextValue);
     return this.paperRepository.updateSentence(blockId, content, await this.summarizeSentence(content), await this.findIntent(content));
+  }
+
+  async autoUpdateParentBlock(blockId: string, blockContent: string) {
+    this.updateBlock(blockId, "summary", await this.summarizeText(blockContent));
+    this.updateBlock(blockId, "intent", await this.findIntent(blockContent));
   }
 
   async updateWhole(content: string): Promise<void> {
@@ -150,6 +156,27 @@ export class PaperService {
     }
   }
 
+  async summarizeText(text: string): Promise<string> {
+    try {
+      const response = await this.client.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          { 
+            role: "user", 
+            content: `You are a helpful peer reader for academic writing. Extract a summary from a following text. Text: ${text}. Summary: `,
+          },
+        ],
+      });
+
+      const generatedText = response.choices[0].message?.content?.trim() ?? "";
+      return generatedText;
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      console.error("Error generating text with OpenAI:", errorMessage);
+      throw new Error(errorMessage);
+    }
+  }
+
   async findIntent(text: string): Promise<string> {
     try {
       const response = await this.client.chat.completions.create({
@@ -157,7 +184,7 @@ export class PaperService {
         messages: [
           { 
             role: "user", 
-            content: `You are a helpful peer reader for academic writing. Infer a less than 5 words intent from a following sentence. Is it an argument/evidence/reasoning/benefit/shortcoming/explanation/...? Sentence: ${text}. Intent: `,
+            content: `You are a helpful peer reader for academic writing. Infer a less than 5 words intent from a following text. Is it an argument/evidence/reasoning/benefit/shortcoming/explanation/...? Text: ${text}. Intent: `,
           },
         ],
       });

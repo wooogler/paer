@@ -206,7 +206,7 @@ export class PaperRepository {
     return null;
   }
 
-  getChildrenValues(blockId: string, targetKey: string) {
+  getChildrenValues(blockId: string, targetKey: string): string {
     const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
     const targetBlock = this.findBlockById(paperData, blockId);
     // Assumes target block exists and is not a sentence
