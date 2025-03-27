@@ -42,7 +42,6 @@ fastify.get("/api/health", async (request, reply) => {
 if (process.env.NODE_ENV === "production") {
   try {
     // 올바른 클라이언트 빌드 경로 설정
-    // Railway에서는 작업 디렉토리가 /app 이지만, 로컬에서는 상대 경로를 사용할 수 있도록 설정
     const clientDistPath =
       process.env.RAILWAY_STATIC_URL ||
       path.resolve(
@@ -55,18 +54,22 @@ if (process.env.NODE_ENV === "production") {
     if (fs.existsSync(clientDistPath)) {
       console.log(`Client dist path found: ${clientDistPath}`);
 
+      // 정적 파일 서빙 설정
       fastify.register(import("@fastify/static"), {
         root: clientDistPath,
         prefix: "/",
+        decorateReply: false, // 이미 등록된 경우 중복 등록 방지
       });
 
-      // 중복 라우트 등록 방지를 위해 라우트 등록 전 확인
-      if (!fastify.hasRoute({ method: "GET", url: "*" })) {
-        fastify.get("*", async (request, reply) => {
-          await reply.sendFile("index.html");
-          return reply;
-        });
-      }
+      // SPA를 위한 fallback 라우트는 한 번만 등록
+      fastify.setNotFoundHandler(async (request, reply) => {
+        // API 요청은 여기서 처리하지 않음
+        if (request.url.startsWith("/api")) {
+          return reply.status(404).send({ error: "Not Found" });
+        }
+
+        return reply.sendFile("index.html");
+      });
     } else {
       console.warn(
         `Client dist path not found: ${clientDistPath}. Static file serving disabled.`
