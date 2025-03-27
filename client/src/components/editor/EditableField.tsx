@@ -29,7 +29,6 @@ const EditableField: React.FC<EditableFieldProps> = ({
   placeholder,
   icon,
   isHovered,
-  isSentence,
   onKeyDown,
   fontSize,
   fontWeight,

@@ -13,7 +13,7 @@ import {
 } from "../api/paperApi";
 import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
-import { Paper, Content, ContentType } from "@paer/shared";
+import { Paper, ContentType } from "@paer/shared";
 
 // Global variable to store the blockId of the newly added sentence
 let newSentenceBlockId: string | null = null;

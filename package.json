@@ -17,12 +17,13 @@
     "build:server": "pnpm --filter paer-server run build",
     "build:shared": "pnpm --filter @paer/shared run build",
     "build": "pnpm -r run build",
-    "start": "pnpm --filter paer-server run start",
+    "start": "node server/dist/index.js",
     "lint": "pnpm -r run lint",
     "test": "pnpm -r run test",
     "clean": "pnpm -r exec rm -rf node_modules && rm -rf node_modules"
   },
   "devDependencies": {
+    "@railway/cli": "^4.0.0",
     "concurrently": "^8.2.2"
   }
 }

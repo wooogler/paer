@@ -7,18 +7,23 @@ import paperRoutes from "./routes/papers";
 import OpenAI from "openai";
 import fs from "fs";
 
+// Load environment variables from .env file in development
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: path.join(__dirname, "../../.env") });
+}
+
 // Create Fastify instance
 const fastify = Fastify({ logger: true });
 const port = Number(process.env.PORT || 3000);
 
 // Middleware setup
 fastify.register(cors, {
-  origin: true, // Allow all origins (for development)
+  origin:
+    process.env.NODE_ENV === "production"
+      ? [process.env.CLIENT_URL || "https://your-frontend-url.railway.app"]
+      : true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 });
-
-// Set path to .env file
-dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -28,7 +33,6 @@ const client = new OpenAI({
 fastify.register(apiRoutes, { prefix: "/api" });
 fastify.register(paperRoutes, { prefix: "/api/papers" });
 
-
 // Add health check endpoint
 fastify.get("/api/health", async (request, reply) => {
   return { status: "ok", message: "Server is running" };
@@ -36,15 +40,41 @@ fastify.get("/api/health", async (request, reply) => {
 
 // Handle static files (production environment)
 if (process.env.NODE_ENV === "production") {
-  fastify.register(import("@fastify/static"), {
-    root: path.join(__dirname, "../../client/dist"),
-    prefix: "/",
-  });
+  try {
+    // 올바른 클라이언트 빌드 경로 설정
+    // Railway에서는 작업 디렉토리가 /app 이지만, 로컬에서는 상대 경로를 사용할 수 있도록 설정
+    const clientDistPath =
+      process.env.RAILWAY_STATIC_URL ||
+      path.resolve(
+        process.env.RAILWAY_ENVIRONMENT
+          ? "/app/client/dist"
+          : path.join(__dirname, "../../client/dist")
+      );
 
-  fastify.get("*", async (request, reply) => {
-    await reply.sendFile("index.html");
-    return reply;
-  });
+    // 디렉토리 존재 확인
+    if (fs.existsSync(clientDistPath)) {
+      console.log(`Client dist path found: ${clientDistPath}`);
+
+      fastify.register(import("@fastify/static"), {
+        root: clientDistPath,
+        prefix: "/",
+      });
+
+      // 중복 라우트 등록 방지를 위해 라우트 등록 전 확인
+      if (!fastify.hasRoute({ method: "GET", url: "*" })) {
+        fastify.get("*", async (request, reply) => {
+          await reply.sendFile("index.html");
+          return reply;
+        });
+      }
+    } else {
+      console.warn(
+        `Client dist path not found: ${clientDistPath}. Static file serving disabled.`
+      );
+    }
+  } catch (err) {
+    console.error("Error setting up static file serving:", err);
+  }
 }
 
 // Start the server
