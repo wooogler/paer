@@ -2,6 +2,7 @@ import { ContentTypeSchema, Paper, ContentType } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
 import fs from "fs/promises";
 import OpenAI from "openai";
+import { string } from "zod";
 
 export class PaperService {
   private paperRepository: PaperRepository;
@@ -21,7 +22,41 @@ export class PaperService {
   }
 
   async updateSentence(blockId: string, content: string): Promise<void> {
+    const parentId: string | null = this.paperRepository.findParentBlockByChildId(null, blockId);
+    const contextValue: string | null = this.paperRepository.getChildrenValue(parentId, "content");
     return this.paperRepository.updateSentence(blockId, content, await this.summarizeSentence(content), await this.findIntent(content));
+  }
+
+  async updateWhole(content: string): Promise<void> {
+    try {
+      // Fetch the current paper data
+      const paper = await this.paperRepository.getPaper();
+  
+      // Recursive function to update all sentences
+      const updateContentRecursively = async (contentArray: any[]): Promise<void> => {
+        for (const item of contentArray) {
+          if (item.type === "sentence" && item.content) {
+            // Update the sentence content, summary, and intent
+            item.summary = await this.summarizeSentence(item.content);
+            item.intent = await this.findIntent(item.content);
+          }
+  
+          // If the item has nested content, recurse into it
+          if (Array.isArray(item.content)) {
+            await updateContentRecursively(item.content);
+          }
+        }
+      };
+  
+      // Start the recursive update
+      await updateContentRecursively(paper.content);
+  
+      // Save the updated paper back to the repository
+      await this.savePaper(paper);
+    } catch (error) {
+      console.error("Error updating the whole text:", error);
+      throw new Error("Failed to update the whole text");
+    }
   }
 
   async addBlock(
@@ -36,6 +71,17 @@ export class PaperService {
     targetBlockId: string,
     keyToUpdate: string,
     updatedValue: string
+  ): Promise<void> {
+    return this.paperRepository.updateBlock(
+      targetBlockId,
+      keyToUpdate,
+      updatedValue
+    );
+  }
+
+  async updateBlockSummaryandIntent(
+    targetBlockId: string,
+    keyToUpdate: string,
   ): Promise<void> {
     return this.paperRepository.updateBlock(
       targetBlockId,
