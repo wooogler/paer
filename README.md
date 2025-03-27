@@ -1,164 +1,85 @@
-# Paer Project
+# Paer
 
-A monorepo project containing both frontend and backend.
+Paer is a web application for writing and managing academic papers.
 
-## Setup
+## Tech Stack
 
-1. Clone the repository
-2. Install dependencies with `pnpm install`
-3. Copy `.env.example` to `.env` and configure your environment variables
-
-```
-# Copy environment variables
-cp .env.example .env
-```
-
-4. Edit the `.env` file with your configuration
-
-## Environment Variables
-
-All environment variables for both client and server are managed in the root `.env` file:
-
-### Server Variables
-
-- `PORT` - The port the server will run on (default: 3000)
-- `NODE_ENV` - Environment (development, production)
-- `OPENAI_API_KEY` - Your OpenAI API key
-
-### Client Variables
-
-- `VITE_API_URL` - API URL for the client (default: http://localhost:3000/api)
-- `VITE_NODE_ENV` - Client environment
-
-## Development
-
-Start the development server:
-
-```
-pnpm dev
-```
-
-This will start both the client and server in development mode.
+- **Frontend**: React, TypeScript, TailwindCSS, Vite
+- **Backend**: Fastify, TypeScript
+- **Shared**: TypeScript, Zod
+- **Package Manager**: pnpm (workspaces)
+- **AI**: OpenAI API
 
 ## Project Structure
 
 ```
-/
-├── client/         # Frontend React application
-├── server/         # Backend Fastify server
-├── shared/         # Shared types and utilities
-└── .env            # Environment variables for both client and server
+paer/
+├── client/          # React frontend
+├── server/          # Fastify backend
+└── shared/          # Shared types and utilities
 ```
 
-## Installation Method
+## Getting Started
 
-1. Install Dependencies
+### Prerequisites
+
+- Node.js 18 or higher
+- pnpm 8 or higher
+- OpenAI API key
+
+### Installation
 
 ```bash
-# Install dependencies for root package and all subpackages
-npm run install:all
+# Clone the repository
+git clone https://github.com/yourusername/paer.git
+cd paer
 
-# Or install individually
-npm run client:install   # Install client dependencies only
-npm run server:install   # Install server dependencies only
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp server/.env.example server/.env
+# Open server/.env and configure your environment variables
 ```
 
-2. Server Environment Variable Setup
+### Development Server
 
 ```bash
-# In the server directory
-cp .env.example .env
-# Modify the .env file if necessary
+# Run all services (frontend + backend)
+pnpm dev
+
+# Run individual services
+pnpm dev:client    # Frontend only
+pnpm dev:server    # Backend only
 ```
 
-## Running Development Mode
+### Build
 
 ```bash
-# Run client and server simultaneously
-npm run dev
+# Build all packages
+pnpm build
 
-# Or run individually
-npm run dev:client   # Run client only
-npm run dev:server   # Run server only
+# Build individual packages
+pnpm build:client
+pnpm build:server
+pnpm build:shared
 ```
 
-## Build and Production Execution
+### Production
 
 ```bash
-# Build both client and server
-npm run build
-
-# Run server in production mode after build
-npm start
+pnpm start
 ```
 
-## Technology Stack
+## Scripts
 
-### Frontend
+- `pnpm dev`: Run development server (frontend + backend)
+- `pnpm build`: Build all packages
+- `pnpm start`: Run production server
+- `pnpm lint`: Run code linting
+- `pnpm test`: Run tests
+- `pnpm clean`: Remove node_modules
 
-- React
-- TypeScript
-- Vite
-- Zustand (State Management)
-- Tailwind CSS
+## License
 
-### Backend
-
-- Express
-- TypeScript
-- Node.js
-
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
+MIT
