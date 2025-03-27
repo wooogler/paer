@@ -28,7 +28,7 @@ const port = Number(process.env.PORT || 3000);
 fastify.register(cors, {
   origin:
     process.env.NODE_ENV === "production"
-      ? [process.env.CLIENT_URL || "https://your-frontend-url.railway.app"]
+      ? [process.env.CLIENT_URL || "https://paer-production.railway.app"]
       : true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 });
