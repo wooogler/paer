@@ -42,7 +42,14 @@ fastify.get("/api/health", async (request, reply) => {
 if (process.env.NODE_ENV === "production") {
   try {
     // 올바른 클라이언트 빌드 경로 설정
-    const clientDistPath = path.resolve("/app/client/dist");
+    // Railway에서는 작업 디렉토리가 /app 이지만, 로컬에서는 상대 경로를 사용할 수 있도록 설정
+    const clientDistPath =
+      process.env.RAILWAY_STATIC_URL ||
+      path.resolve(
+        process.env.RAILWAY_ENVIRONMENT
+          ? "/app/client/dist"
+          : path.join(__dirname, "../../client/dist")
+      );
 
     // 디렉토리 존재 확인
     if (fs.existsSync(clientDistPath)) {
