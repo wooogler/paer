@@ -2,11 +2,11 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pnpm install && pnpm build:shared && pnpm build:server && ls -la server/dist"
+    "buildCommand": "pnpm install && pnpm build:shared && pnpm build:server && find . -name 'index.js'"
   },
   "deploy": {
     "numReplicas": 1,
-    "startCommand": "ls -la && ls -la server && ls -la server/dist && cd server && node dist/index.js",
+    "startCommand": "cd /app && NODE_ENV=production node $(find server -name 'index.js' | grep -v 'node_modules' | head -1)",
     "sleepApplication": false,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
