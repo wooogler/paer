@@ -120,15 +120,20 @@ if (process.env.NODE_ENV === "production") {
       }
 
       // 정적 파일 서빙 설정
+      console.log(`Setting up static file serving from: ${clientDistPath}`);
+
+      // index.html을 제외한 정적 파일 서빙 (JS, CSS, 이미지 등)
       fastify.register(import("@fastify/static"), {
         root: clientDistPath,
-        prefix: "/assets",
+        prefix: "/", // 루트 경로로 제공하여 모든 자산에 직접 접근 가능
         decorateReply: true,
+        index: false, // index.html은 별도 처리
       });
 
       // 루트 경로에 대한 명시적 핸들러 추가
       fastify.get("/", async (request, reply) => {
         try {
+          console.log("Serving index.html for root path");
           // 파일 경로를 직접 읽어서 응답으로 보냄
           const indexContent = fs.readFileSync(
             path.join(clientDistPath, "index.html")
@@ -145,12 +150,14 @@ if (process.env.NODE_ENV === "production") {
       fastify.setNotFoundHandler(async (request, reply) => {
         // API 요청은 여기서 처리하지 않음
         if (request.url.startsWith("/api")) {
-          return reply.status(404).send({ error: "Not Found" });
+          console.log(`API not found: ${request.url}`);
+          return reply.status(404).send({ error: "API endpoint not found" });
         }
 
-        // /assets로 시작하는 요청도 여기서 처리하지 않음 (이미 @fastify/static에서 처리)
-        if (request.url.startsWith("/assets")) {
-          return reply.status(404).send({ error: "Asset not found" });
+        // 확장자가 있는 파일 요청은 처리하지 않음 (정적 파일이 존재하지 않는 경우)
+        if (path.extname(request.url) !== "") {
+          console.log(`Static file not found: ${request.url}`);
+          return reply.status(404).send({ error: "Static file not found" });
         }
 
         try {

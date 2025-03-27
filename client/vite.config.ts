@@ -25,9 +25,9 @@ export default defineConfig(({ mode }) => {
         transformMixedEsModules: true,
       },
       // 빌드 시 정적 에셋 경로 설정
-      assetsDir: "assets",
-      // 에셋 경로 접두사 (서버의 @fastify/static prefix와 일치해야 함)
-      base: mode === "production" ? "/assets/" : "/",
+      assetsDir: "",
+      // 에셋 경로 접두사
+      base: "/",
       // Generate separate chunks for better caching
       rollupOptions: {
         output: {
