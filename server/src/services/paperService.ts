@@ -22,7 +22,7 @@ export class PaperService {
   }
 
   async updateSentence(blockId: string, content: string): Promise<void> {
-    const parentId: string = this.paperRepository.findParentBlockByChildId(null, blockId);
+    const parentId: string = this.paperRepository.findParentBlockIdByChildId(null, blockId);
     const contextValue: string = this.paperRepository.getChildrenValues(parentId, "content");
     this.autoUpdateParentBlock(parentId, contextValue);
     return this.paperRepository.updateSentence(blockId, content, await this.summarizeSentence(content), await this.findIntent(content));
