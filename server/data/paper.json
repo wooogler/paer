@@ -27,10 +27,10 @@
               "content": [
                 {
                   "block-id": "1.1.1.1",
-                  "summary": "The text highlights a criticism of modern writing tools, suggesting that they often lack a creative approach. This shortcoming can result in disorganized documents and decreased clarity in the writing.",
-                  "intent": "Modern writing tools often miss a creative approach, resulting in disorganized documents and decreased clarity.",
+                  "summary": "Modern writing tools lack creativity, resulting in disorganized documents and reduced clarity.",
+                  "intent": "Shortcoming",
                   "type": "sentence",
-                  "content": "Modern writing tools always lack a creative approach, leading to disorganized documents and reduced clarity. "
+                  "content": "Modern writing tools always lack a creative approach, leading to disorganized documents and reduced clarity."
                 },
                 {
                   "block-id": "1.1.1.2",
