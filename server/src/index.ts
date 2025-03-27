@@ -122,35 +122,8 @@ if (process.env.NODE_ENV === "production") {
       // 정적 파일 서빙 설정
       fastify.register(import("@fastify/static"), {
         root: clientDistPath,
-        prefix: "/assets", // assets 경로로 변경
-        decorateReply: true, // 응답 객체에 sendFile 메서드 장식 활성화
-      });
-
-      // HTML, JS, CSS, 이미지 등 다른 정적 파일에 대한 핸들러 추가
-      fastify.get("/assets/*", async (request, reply) => {
-        const requestedPath = (request.url as string).replace("/assets/", "");
-        const filePath = path.join(clientDistPath, "assets", requestedPath);
-
-        try {
-          if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-            const content = fs.readFileSync(filePath);
-
-            // 파일 확장자에 따른 Content-Type 설정
-            const ext = path.extname(filePath).toLowerCase();
-            if (ext === ".js") reply.type("application/javascript");
-            else if (ext === ".css") reply.type("text/css");
-            else if (ext === ".png") reply.type("image/png");
-            else if (ext === ".jpg" || ext === ".jpeg")
-              reply.type("image/jpeg");
-            else if (ext === ".svg") reply.type("image/svg+xml");
-
-            return reply.send(content);
-          }
-        } catch (err) {
-          console.error(`Error serving static file ${filePath}:`, err);
-        }
-
-        return reply.status(404).send({ error: "File not found" });
+        prefix: "/assets",
+        decorateReply: true,
       });
 
       // 루트 경로에 대한 명시적 핸들러 추가
@@ -175,8 +148,13 @@ if (process.env.NODE_ENV === "production") {
           return reply.status(404).send({ error: "Not Found" });
         }
 
+        // /assets로 시작하는 요청도 여기서 처리하지 않음 (이미 @fastify/static에서 처리)
+        if (request.url.startsWith("/assets")) {
+          return reply.status(404).send({ error: "Asset not found" });
+        }
+
         try {
-          console.log(`Serving index.html for path: ${request.url}`);
+          console.log(`Serving index.html for SPA route: ${request.url}`);
           // 파일 경로를 직접 읽어서 응답으로 보냄
           const indexContent = fs.readFileSync(
             path.join(clientDistPath, "index.html")
