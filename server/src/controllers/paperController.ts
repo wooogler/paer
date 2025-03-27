@@ -101,6 +101,27 @@ export class PaperController {
     }
   }
 
+  async updateWhole(
+    request: FastifyRequest<{
+      Body: {
+        content: string;
+      };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { content } = request.body;
+      // blockType is no longer needed, so using findBlockById
+      await this.paperService.updateWhole(
+        content
+      );
+      return { success: true };
+    } catch (error) {
+      console.error("Error in updateWhole:", error);
+      return reply.code(500).send({ error: "Failed to process imported document" });
+    }
+  }
+
   /**
    * Delete a sentence
    */
