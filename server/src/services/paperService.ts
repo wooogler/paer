@@ -79,17 +79,6 @@ export class PaperService {
     );
   }
 
-  async updateBlockSummaryandIntent(
-    targetBlockId: string,
-    keyToUpdate: string,
-  ): Promise<void> {
-    return this.paperRepository.updateBlock(
-      targetBlockId,
-      keyToUpdate,
-      updatedValue
-    );
-  }
-
   /**
    * Delete a sentence
    * @param blockId ID of the sentence to delete
