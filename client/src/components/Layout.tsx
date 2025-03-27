@@ -47,6 +47,8 @@ const Layout: React.FC = () => {
       const processedPaper = await processPaperContent(content);
       setPaper(processedPaper);
       await savePaper(processedPaper);
+      // 데이터 캐시 무효화하여 UI 업데이트
+      queryClient.invalidateQueries({ queryKey: ["paper"] });
       // You might want to show a success message here
     } catch (error) {
       console.error("Error processing paper:", error);

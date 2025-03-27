@@ -6,6 +6,40 @@ import fs from "fs";
 import path from "path";
 import { PaperController } from "../controllers/paperController";
 
+// 데이터 디렉토리 찾고 생성하는 유틸리티 함수
+function findOrCreateDataDir(): string {
+  // data 디렉토리 경로 설정 (개발/프로덕션 환경 모두 지원)
+  const possibleDataDirs = [
+    path.join(__dirname, "../../data"),
+    path.join(process.cwd(), "data"),
+    path.join(process.cwd(), "server/dist/data"),
+    path.join(process.cwd(), "server/data"),
+  ];
+
+  // 사용 가능한 데이터 디렉토리 찾기
+  for (const dir of possibleDataDirs) {
+    try {
+      // 디렉토리가 존재하지 않으면 생성
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+        console.log(`Created data directory at: ${dir}`);
+      }
+
+      // 쓰기 권한 테스트
+      const testFile = path.join(dir, ".test");
+      fs.writeFileSync(testFile, "test");
+      fs.unlinkSync(testFile);
+
+      console.log(`Using data directory: ${dir}`);
+      return dir;
+    } catch (error) {
+      console.warn(`Cannot use directory ${dir}: ${(error as Error).message}`);
+    }
+  }
+
+  throw new Error("Could not find or create a writable data directory!");
+}
+
 function generateBlockId(baseTimestamp: number, increment: number): string {
   return `${baseTimestamp + increment}`;
 }
@@ -577,18 +611,6 @@ export function processLatexContent(
           };
         }
 
-        // Create default subsection if none exists
-        if (!currentSubsection) {
-          currentSubsection = {
-            title: "Content",
-            "block-id": generateBlockId(baseTimestamp, blockIdIncrement++),
-            type: "subsection",
-            content: [],
-            summary: "",
-            intent: "",
-          };
-        }
-
         // Clean and process the line
         const cleanedLine = cleanLatexContent(trimmedLine);
 
@@ -611,9 +633,14 @@ export function processLatexContent(
           // If we have valid sentences, create a paragraph
           if (sentences.length > 0) {
             currentParagraph = sentences;
-            currentSubsection.content.push(
-              createParagraphBlock(currentParagraph)
-            );
+            const paragraph = createParagraphBlock(currentParagraph);
+
+            // 만약 subsection이 존재하면 subsection에 추가, 없으면 section에 직접 추가
+            if (currentSubsection) {
+              currentSubsection.content.push(paragraph);
+            } else {
+              currentSection.content.push(paragraph);
+            }
           }
         }
       }
@@ -639,11 +666,6 @@ export function processLatexContent(
           currentSection = createSectionBlock("Main Content", []);
         }
 
-        // Create default subsection if none exists
-        if (!currentSubsection) {
-          currentSubsection = createSubsectionBlock("Content", []);
-        }
-
         // Split into sentences
         const sentences = trimmedLine
           .split(/(?<=[.!?])\s+/)
@@ -661,9 +683,14 @@ export function processLatexContent(
         // If we have valid sentences, create a paragraph
         if (sentences.length > 0) {
           currentParagraph = sentences;
-          currentSubsection.content.push(
-            createParagraphBlock(currentParagraph)
-          );
+          const paragraph = createParagraphBlock(currentParagraph);
+
+          // 만약 subsection이 존재하면 subsection에 추가, 없으면 section에 직접 추가
+          if (currentSubsection) {
+            currentSubsection.content.push(paragraph);
+          } else {
+            currentSection.content.push(paragraph);
+          }
         }
       }
     }
@@ -672,11 +699,6 @@ export function processLatexContent(
       // Create default section if none exists
       if (!currentSection) {
         currentSection = createSectionBlock("Main Content", []);
-      }
-
-      // Create default subsection if none exists
-      if (!currentSubsection) {
-        currentSubsection = createSubsectionBlock("Content", []);
       }
 
       // Split into sentences
@@ -696,7 +718,14 @@ export function processLatexContent(
       // If we have valid sentences, create a paragraph
       if (sentences.length > 0) {
         currentParagraph = sentences;
-        currentSubsection.content.push(createParagraphBlock(currentParagraph));
+        const paragraph = createParagraphBlock(currentParagraph);
+
+        // 만약 subsection이 존재하면 subsection에 추가, 없으면 section에 직접 추가
+        if (currentSubsection) {
+          currentSubsection.content.push(paragraph);
+        } else {
+          currentSection.content.push(paragraph);
+        }
       }
     }
   }
@@ -774,12 +803,14 @@ export default async function paperRoutes(fastify: FastifyInstance) {
         version: 1,
       };
 
-      fs.writeFileSync(
-        path.join(__dirname, "../../data/paper.json"),
-        JSON.stringify(paper, null, 2)
-      );
+      // 데이터 디렉토리 찾기
+      const dataDir = findOrCreateDataDir();
+      const paperJsonPath = path.join(dataDir, "paper.json");
+      fs.writeFileSync(paperJsonPath, JSON.stringify(paper, null, 2));
+      console.log(`Saved processed paper to: ${paperJsonPath}`);
 
-      return paperController.updateWhole(request, reply);
+      // 처리된 paper 객체를 직접 반환
+      return reply.send(paper);
     } catch (error) {
       console.error("Error processing paper:", error);
       reply.status(500).send({ error: "Failed to process paper" });
@@ -792,8 +823,13 @@ export default async function paperRoutes(fastify: FastifyInstance) {
   }>("/", async (request, reply) => {
     try {
       const paper = request.body;
-      // Here you would typically save the paper to a database
-      // For now, we'll just return success
+
+      // 데이터 디렉토리 찾기
+      const dataDir = findOrCreateDataDir();
+      const paperJsonPath = path.join(dataDir, "paper.json");
+      fs.writeFileSync(paperJsonPath, JSON.stringify(paper, null, 2));
+      console.log(`Saved paper to: ${paperJsonPath}`);
+
       return { success: true };
     } catch (error) {
       console.error("Error saving paper:", error);

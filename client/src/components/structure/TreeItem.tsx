@@ -51,21 +51,36 @@ const TreeItem: React.FC<TreeItemProps> = ({
   const getDisplayTitle = () => {
     if (content.type === "paragraph") {
       // For paragraphs, show summary in summary mode, otherwise show intent
-      // Match behavior with HierarchyTitle component
-      return displayMode === "summary" ? content.summary : content.intent;
+      // Summary가 비어있을 경우 기본 텍스트 표시
+      if (displayMode === "summary") {
+        return (
+          content.summary || `Paragraph ${path.map((idx) => idx + 1).join(".")}`
+        );
+      } else {
+        return (
+          content.intent || `Paragraph ${path.map((idx) => idx + 1).join(".")}`
+        );
+      }
     }
 
     return (
       content.title ||
-      `${
-        content.type.charAt(0).toUpperCase() + content.type.slice(1)
-      } ${path.join(".")}`
+      `${content.type.charAt(0).toUpperCase() + content.type.slice(1)} ${path
+        .map((idx) => idx + 1)
+        .join(".")}`
     );
   };
 
   // Get the display text based on display mode
   const getDisplayText = () => {
-    return displayMode === "summary" ? content.summary : content.intent;
+    // 비어있는 경우 기본 텍스트 제공
+    const text = displayMode === "summary" ? content.summary : content.intent;
+    return (
+      text ||
+      `${content.type.charAt(0).toUpperCase() + content.type.slice(1)} ${path
+        .map((idx) => idx + 1)
+        .join(".")}`
+    );
   };
 
   return (
