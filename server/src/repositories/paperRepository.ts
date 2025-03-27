@@ -101,16 +101,16 @@ export class PaperRepository {
           blockType === "sentence"
             ? ""
             : blockType === "paragraph"
-            ? [emptySentence]
-            : [],
+              ? [emptySentence]
+              : [],
         "block-id": newBlockId, // Assigns a unique block ID using timestamp
         ...(blockType !== "sentence" && {
           title:
             blockType === "section"
               ? "New Section"
               : blockType === "subsection"
-              ? "New Subsection"
-              : "",
+                ? "New Subsection"
+                : "",
         }),
       };
       if (!parentBlockId) {
@@ -135,8 +135,8 @@ export class PaperRepository {
       const prevBlockIndex = !prevBlockId
         ? -1
         : parentBlock.content.findIndex(
-            (block: any) => block["block-id"] === prevBlockId
-          );
+          (block: any) => block["block-id"] === prevBlockId
+        );
       parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
 
       // Write the updated JSON back to the paper file
@@ -196,6 +196,25 @@ export class PaperRepository {
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
         const found = this.findBlockById(child, blockId);
+        if (found) {
+          return found;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private findParentBlockByChildId(obj: any, blockId: string): any {
+    // If the object has a content array, search recursively
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      for (const child of obj.content) {
+        // If the child matches the blockId, return the current object as the parent
+        if (child["block-id"] === blockId) {
+          return obj;
+        }
+        // Recursively search in the child's content
+        const found = this.findParentBlockByChildId(child, blockId);
         if (found) {
           return found;
         }
