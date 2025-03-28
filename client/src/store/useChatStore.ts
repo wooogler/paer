@@ -7,53 +7,14 @@ interface ChatStore {
   messages: ChatMessage[];
   addMessage: (content: string, role: ChatMessage["role"]) => void;
   clearMessages: () => void;
+  isLoading: boolean;
 }
-
-// AI response generation function
-const generateAIResponse = (userMessage: string): string => {
-  // Simple keyword-based response logic
-  const lowercaseMessage = userMessage.toLowerCase();
-
-  if (lowercaseMessage.includes("hello") || lowercaseMessage.includes("hi")) {
-    return "Hello! How can I help you today?";
-  }
-
-  if (lowercaseMessage.includes("help")) {
-    return "Do you need assistance? Please let me know your questions or requests in detail, and I'll do my best to help.";
-  }
-
-  if (lowercaseMessage.includes("thank")) {
-    return "You're welcome! Feel free to ask if you need anything else.";
-  }
-
-  if (
-    lowercaseMessage.includes("paper") ||
-    lowercaseMessage.includes("document")
-  ) {
-    return "Need help with your document? Let me know what aspect you need assistance with. I can help with structure, content, editing, and more.";
-  }
-
-  if (lowercaseMessage.includes("code")) {
-    return "Do you have questions about code? Please provide more details about the specific language or framework, and I'll try to assist you.";
-  }
-
-  // Default responses
-  const defaultResponses = [
-    `I'll provide an answer about "${userMessage}". Let me know if you need more details.`,
-    `Interesting question! Could you tell me more about "${userMessage}"?`,
-    `Good question. What specific aspect of "${userMessage}" would you like to know more about?`,
-    `I'm thinking about "${userMessage}". Please wait... More specific information would help me provide a more accurate answer.`,
-    `I understand. I may need additional information to answer about "${userMessage}". Is there anything specific you'd like to know?`,
-  ];
-
-  // Randomly select a default response
-  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-};
 
 export const useChatStore = create<ChatStore>((set) => ({
   messages: [],
+  isLoading: false,
 
-  addMessage: (content, role) => {
+  addMessage: async (content, role) => {
     const newMessage: ChatMessage = {
       id: uuidv4(),
       role,
@@ -69,12 +30,30 @@ export const useChatStore = create<ChatStore>((set) => ({
 
     // Auto-respond to user messages
     if (role === "user") {
-      // Delay for typing effect
-      setTimeout(() => {
+      set({ isLoading: true });
+      try {
+        const response = await fetch("/api/chat/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: content }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Failed to get response from LLM");
+        }
+
+        if (!data.result?.choices?.[0]?.message?.content) {
+          throw new Error("Invalid response format from LLM");
+        }
+
         const systemResponse: ChatMessage = {
           id: uuidv4(),
           role: "system",
-          content: generateAIResponse(content),
+          content: data.result.choices[0].message.content,
           timestamp: Date.now(),
         };
 
@@ -83,7 +62,23 @@ export const useChatStore = create<ChatStore>((set) => ({
           writeChatHistory(updatedMessages);
           return { messages: updatedMessages };
         });
-      }, 1000);
+      } catch (error) {
+        console.error("Error getting LLM response:", error);
+        const errorMessage: ChatMessage = {
+          id: uuidv4(),
+          role: "system",
+          content: error instanceof Error ? error.message : "I apologize, but I encountered an error while processing your request. Please try again.",
+          timestamp: Date.now(),
+        };
+
+        set((state) => {
+          const updatedMessages = [...state.messages, errorMessage];
+          writeChatHistory(updatedMessages);
+          return { messages: updatedMessages };
+        });
+      } finally {
+        set({ isLoading: false });
+      }
     }
   },
 

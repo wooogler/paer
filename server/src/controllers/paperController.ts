@@ -186,11 +186,30 @@ export class PaperController {
         ],
       });
 
+      // Extract just the content from the response
+      const content = response.choices[0].message?.content;
+      if (!content) {
+        throw new Error("No response content received from LLM");
+      }
 
-      return reply.send(response);
+      // Return the response in the format expected by the frontend
+      return {
+        success: true,
+        result: {
+          choices: [{
+            message: {
+              content: content
+            }
+          }]
+        }
+      };
     } catch (error) {
+      console.error("Error in askLLM:", error);
       const errorMessage = (error as Error).message;
-      return reply.status(500).send({ error: errorMessage });
+      return reply.status(500).send({ 
+        success: false, 
+        error: errorMessage 
+      });
     }
   }
 

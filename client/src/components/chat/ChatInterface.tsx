@@ -3,7 +3,7 @@ import { useChatStore } from "../../store/useChatStore";
 import ChatMessage from "./ChatMessage";
 
 const ChatInterface: React.FC = () => {
-  const { messages, addMessage } = useChatStore();
+  const { messages, addMessage, isLoading } = useChatStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -31,11 +31,11 @@ const ChatInterface: React.FC = () => {
   }, [messages, scrollToBottom]);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
 
       if (input.trim()) {
-        addMessage(input, "user");
+        await addMessage(input, "user");
         setInput("");
 
         // Keep focus on input field
@@ -78,6 +78,17 @@ const ChatInterface: React.FC = () => {
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
+        {isLoading && (
+          <div className="flex justify-start mb-4">
+            <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none p-3">
+              <div className="flex space-x-2">
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -95,7 +106,8 @@ const ChatInterface: React.FC = () => {
           onKeyDown={handleKeyDown}
           placeholder="Type a message... (Press Enter to send, Shift+Enter for line break)"
           rows={3}
-          className="w-full resize-none border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={isLoading}
+          className="w-full resize-none border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
         />
       </form>
     </div>
