@@ -19,40 +19,12 @@ export class PaperRepository {
     }
   }
 
-<<<<<<< Updated upstream
-  // async updateSentenceContent(blockId: string, content: string): Promise<void> {
-  //   try {
-  //     // Read the current data
-  //     const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
-
-  //     // Find and update the sentence with matching block-id
-  //     const updated = this.findAndUpdateSentence(paperData, blockId, content);
-
-  //     if (!updated) {
-  //       throw new Error(`Sentence with block-id ${blockId} not found`);
-  //     }
-
-  //     // Write the updated data back to the file
-  //     fs.writeFileSync(
-  //       this.filePath,
-  //       JSON.stringify(paperData, null, 2),
-  //       "utf-8"
-  //     );
-  //   } catch (error) {
-  //     console.error("Error updating sentence content:", error);
-  //     throw new Error("Failed to update sentence content");
-  //   }
-  // }
-
   async updateSentence(
     blockId: string,
     content: string,
     summary: string,
     intent: string
   ): Promise<void> {
-=======
-  async updateSentence(blockId: string, content: string, summary: string, intent: string): Promise<void> {
->>>>>>> Stashed changes
     try {
       // Read the current data
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));

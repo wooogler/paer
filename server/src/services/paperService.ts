@@ -21,35 +21,32 @@ export class PaperService {
     return this.paperRepository.getPaper();
   }
 
-<<<<<<< Updated upstream
-  async updateSentence(blockId: string, content: string): Promise<void> {
-    try {
-      // Get current paper data
-      const paper = await this.paperRepository.getPaper();
+  // async updateSentence(blockId: string, content: string): Promise<void> {
+  //   try {
+  //     // Get current paper data
+  //     const paper = await this.paperRepository.getPaper();
 
-      // Update the sentence with new content, summary, and intent
-      await this.paperRepository.updateSentence(
-        blockId,
-        content,
-        await this.summarizeSentence(content),
-        await this.findIntent(content)
-      );
+  //     // Update the sentence with new content, summary, and intent
+  //     await this.paperRepository.updateSentence(
+  //       blockId,
+  //       content,
+  //       await this.summarizeSentence(content),
+  //       await this.findIntent(content)
+  //     );
 
-      // Get the updated paper data after the update
-      const updatedPaper = await this.paperRepository.getPaper();
+  //     // Get the updated paper data after the update
+  //     const updatedPaper = await this.paperRepository.getPaper();
 
-      // Save the updated paper data
-      await this.savePaper(updatedPaper);
-    } catch (error) {
-      console.error("Error updating sentence:", error);
-      throw new Error("Failed to update sentence");
-    }
-=======
+  //     // Save the updated paper data
+  //     await this.savePaper(updatedPaper);
+  //   } catch (error) {
+  //     console.error("Error updating sentence:", error);
+  //     throw new Error("Failed to update sentence");
+  //   }
   async updateSentence(blockId: string): Promise<void> {
     const parentId: string = this.paperRepository.findParentBlockIdByChildId(null, blockId);
     const contextValue: string = this.paperRepository.getChildrenValues(parentId, "content");
     return this.autoUpdateParentBlock(parentId, contextValue);
->>>>>>> Stashed changes
   }
 
   async autoUpdateParentBlock(blockId: string, blockContent: string) {

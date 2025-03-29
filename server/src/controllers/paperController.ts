@@ -39,12 +39,9 @@ export class PaperController {
         return reply.code(400).send({ error: "Missing blockId or content" });
       }
 
-<<<<<<< Updated upstream
       // Get current paper content
       const paper = await this.paperService.getPaper();
-=======
-      await this.paperService.updateSentence(blockId);
->>>>>>> Stashed changes
+      // await this.paperService.updateSentence(blockId);
 
       // Helper function to find and update sentence
       const findAndUpdateSentence = (obj: any): boolean => {
@@ -206,38 +203,8 @@ export class PaperController {
     const { text } = request.body;
 
     try {
-<<<<<<< Updated upstream
-      const response = await this.client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          { 
-            role: "user", 
-            content: text,
-          },
-        ],
-      });
-
-      // Extract just the content from the response
-      const content = response.choices[0].message?.content;
-      if (!content) {
-        throw new Error("No response content received from LLM");
-      }
-
-      // Return the response in the format expected by the frontend
-      return {
-        success: true,
-        result: {
-          choices: [{
-            message: {
-              content: content
-            }
-          }]
-        }
-      };
-=======
       const response = await this.paperService.askLLM(text);
       return reply.send(response);
->>>>>>> Stashed changes
     } catch (error) {
       console.error("Error in askLLM:", error);
       const errorMessage = (error as Error).message;
