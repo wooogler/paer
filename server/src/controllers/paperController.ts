@@ -39,8 +39,12 @@ export class PaperController {
         return reply.code(400).send({ error: "Missing blockId or content" });
       }
 
+<<<<<<< Updated upstream
       // Get current paper content
       const paper = await this.paperService.getPaper();
+=======
+      await this.paperService.updateSentence(blockId);
+>>>>>>> Stashed changes
 
       // Helper function to find and update sentence
       const findAndUpdateSentence = (obj: any): boolean => {
@@ -140,9 +144,7 @@ export class PaperController {
     try {
       const { content } = request.body;
       // blockType is no longer needed, so using findBlockById
-      await this.paperService.updateWhole(
-        content
-      );
+      await this.paperService.updateWhole();
       return { success: true };
     } catch (error) {
       console.error("Error in updateWhole:", error);
@@ -204,6 +206,7 @@ export class PaperController {
     const { text } = request.body;
 
     try {
+<<<<<<< Updated upstream
       const response = await this.client.chat.completions.create({
         model: "gpt-4o",
         messages: [
@@ -231,6 +234,10 @@ export class PaperController {
           }]
         }
       };
+=======
+      const response = await this.paperService.askLLM(text);
+      return reply.send(response);
+>>>>>>> Stashed changes
     } catch (error) {
       console.error("Error in askLLM:", error);
       const errorMessage = (error as Error).message;

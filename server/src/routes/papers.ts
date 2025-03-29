@@ -5,6 +5,7 @@ import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import fs from "fs";
 import path from "path";
 import { PaperController } from "../controllers/paperController";
+<<<<<<< Updated upstream
 
 // 데이터 디렉토리 찾고 생성하는 유틸리티 함수
 function findOrCreateDataDir(): string {
@@ -39,6 +40,8 @@ function findOrCreateDataDir(): string {
 
   throw new Error("Could not find or create a writable data directory!");
 }
+=======
+>>>>>>> Stashed changes
 
 function generateBlockId(baseTimestamp: number, increment: number): string {
   return `${baseTimestamp + increment}`;
@@ -783,8 +786,12 @@ export default async function paperRoutes(fastify: FastifyInstance) {
       fs.writeFileSync(paperJsonPath, JSON.stringify(paper, null, 2));
       console.log(`Saved processed paper to: ${paperJsonPath}`);
 
+<<<<<<< Updated upstream
       // 처리된 paper 객체를 직접 반환
       return reply.send(paper);
+=======
+      return paper;
+>>>>>>> Stashed changes
     } catch (error) {
       console.error("Error processing paper:", error);
       reply.status(500).send({ error: "Failed to process paper" });

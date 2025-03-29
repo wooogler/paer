@@ -19,6 +19,7 @@ export class PaperRepository {
     }
   }
 
+<<<<<<< Updated upstream
   // async updateSentenceContent(blockId: string, content: string): Promise<void> {
   //   try {
   //     // Read the current data
@@ -49,6 +50,9 @@ export class PaperRepository {
     summary: string,
     intent: string
   ): Promise<void> {
+=======
+  async updateSentence(blockId: string, content: string, summary: string, intent: string): Promise<void> {
+>>>>>>> Stashed changes
     try {
       // Read the current data
       const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
@@ -308,48 +312,6 @@ export class PaperRepository {
         return undefined;
     }
   }
-
-  // private findAndUpdateSentence(
-  //   obj: any,
-  //   blockId: string,
-  //   content: string
-  // ): boolean {
-  //   // Check if current object has the matching block-id
-  //   if (obj["block-id"] === blockId) {
-  //     if (obj.type === "sentence") {
-  //       obj.content = content;
-  //       return true;
-  //     }
-  //   }
-
-  //   private findAndUpdateSentence(
-  //     obj: any,
-  //     blockId: string,
-  //     content: string,
-  //     summary: string,
-  //     intent: string
-  //   ): boolean {
-  //     // Check if current object has the matching block-id
-  //     if (obj["block-id"] === blockId) {
-  //       if (obj.type === "sentence") {
-  //         obj.content = content;
-  //         obj.summary = summary;
-  //         obj.intent = intent;
-  //         return true;
-  //       }
-  //     }
-
-  //   // If not found at this level, recursively search in the content array
-  //   if (Array.isArray(obj.content)) {
-  //     for (const item of obj.content) {
-  //       if (this.findAndUpdateSentence(item, blockId, content)) {
-  //         return true;
-  //       }
-  //     }
-  //   }
-
-  //   return false;
-  // }
 
   private findAndUpdateSentence(
     obj: any,

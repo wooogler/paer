@@ -21,6 +21,7 @@ export class PaperService {
     return this.paperRepository.getPaper();
   }
 
+<<<<<<< Updated upstream
   async updateSentence(blockId: string, content: string): Promise<void> {
     try {
       // Get current paper data
@@ -43,6 +44,12 @@ export class PaperService {
       console.error("Error updating sentence:", error);
       throw new Error("Failed to update sentence");
     }
+=======
+  async updateSentence(blockId: string): Promise<void> {
+    const parentId: string = this.paperRepository.findParentBlockIdByChildId(null, blockId);
+    const contextValue: string = this.paperRepository.getChildrenValues(parentId, "content");
+    return this.autoUpdateParentBlock(parentId, contextValue);
+>>>>>>> Stashed changes
   }
 
   async autoUpdateParentBlock(blockId: string, blockContent: string) {
@@ -50,7 +57,7 @@ export class PaperService {
     this.updateBlock(blockId, "intent", await this.findIntent(blockContent));
   }
 
-  async updateWhole(content: string): Promise<void> {
+  async updateWhole(): Promise<void> {
     try {
       // Fetch the current paper data
       const paper = await this.paperRepository.getPaper();
@@ -58,10 +65,11 @@ export class PaperService {
       // Recursive function to update all sentences
       const updateContentRecursively = async (contentArray: any[]): Promise<void> => {
         for (const item of contentArray) {
-          if (item.type === "sentence" && item.content) {
-            // Update the sentence content, summary, and intent
-            item.summary = await this.summarizeSentence(item.content);
-            item.intent = await this.findIntent(item.content);
+          if (item.type === "paragraph" && item.content) {
+            // Update the sentence content, summary, and 
+            const content = this.paperRepository.getChildrenValues(item.id, "content");
+            item.summary = await this.summarizeText(content);
+            item.intent = await this.findIntent(content);
           }
   
           // If the item has nested content, recurse into it
