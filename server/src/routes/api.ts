@@ -25,7 +25,7 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/paper/sentence",
     async (
       request: FastifyRequest<{
-        Body: { blockId: string; content: string };
+        Body: { blockId: string; content: string; summary: string; intent: string };
       }>,
       reply: FastifyReply
     ) => {
@@ -190,6 +190,11 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       return paperController.updateSentenceSummary(request, reply);
     }
   );
+
+  // GET /api/paper/export - Export paper to LaTeX
+  fastify.get("/paper/export", async (request, reply) => {
+    return paperController.exportPaper(request, reply);
+  });
 };
 
 export default apiRoutes;

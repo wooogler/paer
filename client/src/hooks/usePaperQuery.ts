@@ -54,8 +54,7 @@ export function setNewSentenceBlockId(blockId: string | null): void {
 export const useUpdateSentence = () => {
   const queryClient = useQueryClient();
   const setContent = useContentStore((state) => state.setContent);
-  const { selectedContent, selectedPath, setSelectedContent } =
-    useContentStore();
+  const { selectedContent, selectedPath, setSelectedContent } = useContentStore();
 
   return useMutation({
     mutationFn: async ({
@@ -69,25 +68,21 @@ export const useUpdateSentence = () => {
       summary?: string;
       intent?: string;
     }) => {
-      if (content !== undefined) {
-        await updateSentenceContent(blockId, content);
-      }
-      if (summary !== undefined) {
-        await updateSentenceSummary(blockId, summary);
-      }
-      if (intent !== undefined) {
-        await updateSentenceIntent(blockId, intent);
-      }
+      // Make a single API call to update all fields
+      await updateSentenceContent(
+        blockId,
+        content || "",
+        summary || "",
+        intent || ""
+      );
     },
     onSuccess: async () => {
-      // Fetch latest data from server immediately
       try {
+        // Fetch latest data from server immediately
         const newData = await fetchPaper();
 
-        // Cache directly update
+        // Update both cache and state with the new data
         queryClient.setQueryData(["paper"], newData);
-
-        // State directly update
         setContent(newData);
 
         // If current selected content exists, select it again to update UI
@@ -97,16 +92,16 @@ export const useUpdateSentence = () => {
             setSelectedContent(refreshedContent, selectedPath);
           }
         }
+
+        // Invalidate query to ensure all components are updated
+        await queryClient.invalidateQueries({
+          queryKey: ["paper"],
+          exact: true,
+          refetchType: "active",
+        });
       } catch (error) {
         console.error("Failed to fetch updated data:", error);
       }
-
-      // Invalidate query immediately (refresh immediately)
-      queryClient.invalidateQueries({
-        queryKey: ["paper"],
-        exact: true,
-        refetchType: "active",
-      });
     },
   });
 };

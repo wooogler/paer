@@ -18,10 +18,12 @@ export const fetchPaper = async (): Promise<Paper> => {
 // Update a sentence by block-id
 export const updateSentenceContent = async (
   blockId: string,
-  newContent: string
+  content: string,
+  summary: string,
+  intent: string
 ): Promise<void> => {
   try {
-    await api.patch("/paper/sentence", { blockId, content: newContent });
+    await api.patch("/paper/sentence", { blockId, content, summary, intent });
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error updating sentence:", error.message);

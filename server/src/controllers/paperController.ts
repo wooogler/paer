@@ -29,19 +29,47 @@ export class PaperController {
   }
 
   async updateSentence(
-    request: FastifyRequest<{ Body: { blockId: string; content: string } }>,
+    request: FastifyRequest<{ Body: { blockId: string; content: string; summary: string; intent: string } }>,
     reply: FastifyReply
   ): Promise<any> { 
     try {
-      const { blockId, content } = request.body;
+      const { blockId, content, summary, intent } = request.body;
 
       if (!blockId || !content) {
         return reply.code(400).send({ error: "Missing blockId or content" });
       }
 
-      await this.paperService.updateSentence(blockId, content);
+      // Get current paper content
+      const paper = await this.paperService.getPaper();
 
-      return { success: true };
+      // Helper function to find and update sentence
+      const findAndUpdateSentence = (obj: any): boolean => {
+        if (obj["block-id"] === blockId && obj.type === "sentence") {
+          obj.content = content;  // Update with the new content from request
+          obj.summary = summary;  // Update with the new summary from request
+          obj.intent = intent;    // Update with the new intent from request
+          return true;
+        }
+
+        if (Array.isArray(obj.content)) {
+          for (const child of obj.content) {
+            if (findAndUpdateSentence(child)) return true;
+          }
+        }
+
+        return false;
+      };
+
+      // Try to find and update the sentence
+      const found = findAndUpdateSentence(paper);
+      if (!found) {
+        return reply.code(404).send({ error: "Sentence not found" });
+      }
+
+      // Save updated paper
+      await this.paperService.savePaper(paper);
+
+      return reply.send({ success: true });
     } catch (error) {
       console.error("Error in updateSentence:", error);
       return reply
@@ -316,6 +344,34 @@ export class PaperController {
       return reply
         .code(500)
         .send({ error: "Failed to update sentence summary" });
+    }
+  }
+
+  /**
+   * Export paper to LaTeX format
+   */
+  async exportPaper(
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    try {
+      // Get the latest paper data
+      const paper = await this.paperService.getPaper();
+      
+      // Export to LaTeX
+      const latexContent = await this.paperService.exportToLatex(paper);
+      
+      return {
+        success: true,
+        content: latexContent
+      };
+    } catch (error) {
+      console.error("Error exporting paper:", error);
+      const errorMessage = (error as Error).message;
+      return reply.status(500).send({ 
+        success: false, 
+        error: errorMessage 
+      });
     }
   }
 }

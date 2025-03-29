@@ -147,16 +147,18 @@ export const useContentStore = create<ContentState>()(
             return state; // No content found with the given blockId
           }
 
+          // Update the selected content if it matches the blockId
+          const updatedSelectedContent = state.selectedContent?.["block-id"] === blockId
+            ? { ...state.selectedContent, ...result.updatedContent }
+            : state.selectedContent;
+
+          // Update parent contents if needed
+          const updatedParentContents = state.selectedPath ? result.updatedParents : state.parentContents;
+
           return {
             content: newContent,
-            selectedContent:
-              state.selectedContent &&
-              state.selectedContent["block-id"] === blockId
-                ? { ...state.selectedContent, ...updatedContent }
-                : state.selectedContent,
-            parentContents: state.selectedPath
-              ? result.updatedParents
-              : state.parentContents,
+            selectedContent: updatedSelectedContent,
+            parentContents: updatedParentContents,
           };
         }),
 

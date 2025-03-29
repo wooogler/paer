@@ -71,13 +71,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // Update local intent and summary state when content props change
     useEffect(() => {
-      console.log(
-        "Content props changed - intent:",
-        content.intent,
-        "summary:",
-        content.summary
-      );
-
       if (content.intent !== undefined) {
         setLocalIntent(content.intent);
       }
@@ -144,31 +137,43 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Update button handler
     const handleUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
-        // Send update request to server
+        const blockId = content["block-id"] as string;
+        
+        // Send update request to server first
         updateSentenceMutation.mutate({
-          blockId: content["block-id"],
+          blockId,
           content: localValue,
+          summary: localSummary,
+          intent: localIntent,
+        }, {
+          onSuccess: () => {
+            // Update local state after server confirms
+            updateContent(blockId, { 
+              content: localValue,
+              summary: localSummary,
+              intent: localIntent
+            });
+
+            // Also update initial content with current value
+            setInitialContent(localValue);
+
+            // Set focus state to false
+            setIsFocused(false);
+
+            // Remove focus after update
+            if (textareaRef.current) {
+              textareaRef.current.blur();
+            }
+          }
         });
-
-        // Update store
-        updateContent(content["block-id"], { content: localValue });
-
-        // Also update initial content with current value
-        setInitialContent(localValue);
-
-        // Set focus state to false
-        setIsFocused(false);
-
-        // Remove focus after update
-        if (textareaRef.current) {
-          textareaRef.current.blur();
-        }
       }
     }, [
       content.type,
       content["block-id"],
       updateSentenceMutation,
       localValue,
+      localSummary,
+      localIntent,
       updateContent,
     ]);
 
@@ -176,6 +181,8 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const handleCancel = useCallback(() => {
       // Restore to original content
       setLocalValue(initialContent);
+      setLocalSummary(content.summary || "");
+      setLocalIntent(content.intent || "");
 
       // Set focus state to false
       setIsFocused(false);
@@ -184,7 +191,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       if (textareaRef.current) {
         textareaRef.current.blur();
       }
-    }, [initialContent]);
+    }, [initialContent, content.summary, content.intent]);
 
     // Delete handler
     const handleDelete = useCallback(() => {

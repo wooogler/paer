@@ -13,6 +13,8 @@ import { readChatHistory } from "../utils/chatStorage";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
+import { FiDownload } from "react-icons/fi";
+
 const Layout: React.FC = () => {
   const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
     useAppStore();
@@ -56,6 +58,32 @@ const Layout: React.FC = () => {
     }
   };
 
+  // Handle paper export
+  const handleExport = async () => {
+    try {
+      const response = await fetch("/api/paper/export");
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || "Failed to export paper");
+      }
+
+      // Create a blob from the LaTeX content
+      const blob = new Blob([data.content], { type: "text/plain" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "paper.tex";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error exporting paper:", error);
+      // You might want to show an error message to the user here
+    }
+  };
+
   return (
     <div className="flex h-screen w-screen bg-white text-gray-800">
       {isLoading && (
@@ -81,16 +109,15 @@ const Layout: React.FC = () => {
         title="Structure"
         width="30%"
         rightContent={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center space-x-2">
             <FileImport onFileImport={handleFileImport} />
-            <ToggleSwitch
-              checked={displayMode === "intent"}
-              onChange={(checked) =>
-                setDisplayMode(checked ? "intent" : "summary")
-              }
-              leftLabel="Summary"
-              rightLabel="Intent"
-            />
+            <button
+              onClick={handleExport}
+              className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              title="Export Paper"
+            >
+              <FiDownload className="w-5 h-5" />
+            </button>
           </div>
         }
       >

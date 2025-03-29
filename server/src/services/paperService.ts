@@ -1,4 +1,4 @@
-import { ContentTypeSchema, Paper, ContentType } from "@paer/shared";
+import { ContentTypeSchema, Paper, ContentType, Content } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
 import fs from "fs/promises";
 import OpenAI from "openai";
@@ -22,10 +22,27 @@ export class PaperService {
   }
 
   async updateSentence(blockId: string, content: string): Promise<void> {
-    const parentId: string = this.paperRepository.findParentBlockIdByChildId(null, blockId);
-    const contextValue: string = this.paperRepository.getChildrenValues(parentId, "content");
-    this.autoUpdateParentBlock(parentId, contextValue);
-    return this.paperRepository.updateSentence(blockId, content, await this.summarizeSentence(content), await this.findIntent(content));
+    try {
+      // Get current paper data
+      const paper = await this.paperRepository.getPaper();
+
+      // Update the sentence with new content, summary, and intent
+      await this.paperRepository.updateSentence(
+        blockId,
+        content,
+        await this.summarizeSentence(content),
+        await this.findIntent(content)
+      );
+
+      // Get the updated paper data after the update
+      const updatedPaper = await this.paperRepository.getPaper();
+
+      // Save the updated paper data
+      await this.savePaper(updatedPaper);
+    } catch (error) {
+      console.error("Error updating sentence:", error);
+      throw new Error("Failed to update sentence");
+    }
   }
 
   async autoUpdateParentBlock(blockId: string, blockContent: string) {
@@ -196,5 +213,74 @@ export class PaperService {
       console.error("Error generating text with OpenAI:", errorMessage);
       throw new Error(errorMessage);
     }
+  }
+
+  /**
+   * Convert paper JSON back to LaTeX format
+   */
+  async exportToLatex(paper: Paper): Promise<string> {
+    let latexContent = "";
+
+    // Add document class and packages
+    latexContent += "\\documentclass{article}\n";
+    latexContent += "\\usepackage{amsmath}\n";
+    latexContent += "\\usepackage{amssymb}\n";
+    latexContent += "\\usepackage{graphicx}\n\n";
+
+    // Add title
+    latexContent += `\\title{${paper.title}}\n\n`;
+
+    // Add document begin
+    latexContent += "\\begin{document}\n";
+    latexContent += "\\maketitle\n\n";
+
+    // Helper function to process paragraphs
+    const processParagraph = (paragraph: any): string => {
+      if (!paragraph || typeof paragraph === 'string' || !Array.isArray(paragraph.content)) {
+        return '';
+      }
+
+      const sentences = paragraph.content
+        .filter((s: any) => s && typeof s !== 'string' && s.type === "sentence")
+        .map((s: any) => s.content)
+        .join(" ");
+      
+      return sentences ? `${sentences}\n\n` : '';
+    };
+
+    // Process each section
+    for (const section of paper.content) {
+      if (typeof section === 'string') continue;
+      
+      // Add section title
+      latexContent += `\\section{${section.title}}\n\n`;
+
+      // Process content based on type
+      if (section.type === "section" && Array.isArray(section.content)) {
+        for (const item of section.content) {
+          if (typeof item === 'string') continue;
+
+          if (item.type === "subsection") {
+            // Handle subsection
+            latexContent += `\\subsection{${item.title}}\n\n`;
+            
+            // Process paragraphs in subsection
+            if (Array.isArray(item.content)) {
+              for (const paragraph of item.content) {
+                latexContent += processParagraph(paragraph);
+              }
+            }
+          } else if (item.type === "paragraph") {
+            // Handle paragraphs directly in section
+            latexContent += processParagraph(item);
+          }
+        }
+      }
+    }
+
+    // Add document end
+    latexContent += "\\end{document}";
+
+    return latexContent;
   }
 }
