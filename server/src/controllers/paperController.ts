@@ -226,13 +226,13 @@ export class PaperController {
    * ask LLM a question
    */
   async askLLM(
-    request: FastifyRequest<{ Body: { text: string } }>,
+    request: FastifyRequest<{ Body: { text: string; renderedContent?: string } }>,
     reply: FastifyReply
   ) {
-    const { text } = request.body;
+    const { text, renderedContent } = request.body;
 
     try {
-      const response = await this.paperService.askLLM(text);
+      const response = await this.paperService.askLLM(text, renderedContent);
       return reply.send({ 
         success: true, 
         result: response 

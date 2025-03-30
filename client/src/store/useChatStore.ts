@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { ChatMessage } from "../types/chat";
 import { v4 as uuidv4 } from "uuid";
 import { writeChatHistory } from "../utils/chatStorage";
+import { useContentStore } from "./useContentStore";
 
 interface ChatStore {
   messages: ChatMessage[];
@@ -32,12 +33,43 @@ export const useChatStore = create<ChatStore>((set) => ({
     if (role === "user") {
       set({ isLoading: true });
       try {
+        // Get the rendered content from the editor
+        const { selectedContent, parentContents } = useContentStore.getState();
+        let renderedContent = '';
+
+        // Build the rendered content from parent hierarchy and selected content
+        if (parentContents.length > 0) {
+          renderedContent = parentContents
+            .map(content => content.title)
+            .join(' > ');
+          renderedContent += '\n\n';
+        }
+
+        if (selectedContent) {
+          if (selectedContent.title) {
+            renderedContent += `${selectedContent.title}\n\n`;
+          }
+          if (selectedContent.content) {
+            if (Array.isArray(selectedContent.content)) {
+              renderedContent += selectedContent.content
+                .filter(item => item && item.type === 'sentence')
+                .map(item => item.content)
+                .join(' ');
+            } else if (typeof selectedContent.content === 'string') {
+              renderedContent += selectedContent.content;
+            }
+          }
+        }
+
         const response = await fetch("/api/chat/ask", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text: content }),
+          body: JSON.stringify({ 
+            text: content,
+            renderedContent: renderedContent.trim()
+          }),
         });
 
         const data = await response.json();

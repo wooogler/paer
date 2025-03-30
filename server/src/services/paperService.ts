@@ -147,7 +147,7 @@ export class PaperService {
     }
   }
 
-  async askLLM(text: string): Promise<any> {
+  async askLLM(text: string, renderedContent?: string): Promise<any> {
     try {
       // If conversation hasn't been initialized, initialize it
       if (this.conversationHistory.length === 0) {
@@ -159,6 +159,14 @@ export class PaperService {
         role: "user",
         content: text
       });
+
+      // If rendered content is provided, add it as additional context
+      if (renderedContent) {
+        this.conversationHistory.push({
+          role: "system",
+          content: `Here is the currently visible content in the editor:\n\n${renderedContent}\n\nPlease consider this content when providing your response.`
+        });
+      }
 
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
