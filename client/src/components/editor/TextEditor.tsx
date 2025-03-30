@@ -138,34 +138,37 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const handleUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
         const blockId = content["block-id"] as string;
-        
+
         // Send update request to server first
-        updateSentenceMutation.mutate({
-          blockId,
-          content: localValue,
-          summary: localSummary,
-          intent: localIntent,
-        }, {
-          onSuccess: () => {
-            // Update local state after server confirms
-            updateContent(blockId, { 
-              content: localValue,
-              summary: localSummary,
-              intent: localIntent
-            });
+        updateSentenceMutation.mutate(
+          {
+            blockId,
+            content: localValue,
+            summary: localSummary,
+            intent: localIntent,
+          },
+          {
+            onSuccess: () => {
+              // Update local state after server confirms
+              updateContent(blockId, {
+                content: localValue,
+                summary: localSummary,
+                intent: localIntent,
+              });
 
-            // Also update initial content with current value
-            setInitialContent(localValue);
+              // Also update initial content with current value
+              setInitialContent(localValue);
 
-            // Set focus state to false
-            setIsFocused(false);
+              // Set focus state to false
+              setIsFocused(false);
 
-            // Remove focus after update
-            if (textareaRef.current) {
-              textareaRef.current.blur();
-            }
+              // Remove focus after update
+              if (textareaRef.current) {
+                textareaRef.current.blur();
+              }
+            },
           }
-        });
+        );
       }
     }, [
       content.type,
@@ -385,10 +388,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
         <div
           style={{
-            paddingLeft:
-              showHierarchy && (!content.type || content.type !== "sentence")
-                ? `${level * 16 + 16}px`
-                : "0",
+            paddingLeft: showHierarchy ? `${level * 16 + 16}px` : "0",
           }}
         >
           <div

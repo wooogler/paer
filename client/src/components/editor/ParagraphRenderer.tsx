@@ -16,11 +16,10 @@ const ParagraphRenderer: React.FC<ParagraphRendererProps> = React.memo(
     const { selectedContent } = useContentStore();
     const { showHierarchy } = useAppStore();
     const selectedType = selectedContent?.type;
-    const shouldShowTitle =
-      selectedType === "subsection" || selectedType === "paragraph";
+    const shouldShowTitle = !showHierarchy || selectedType !== "paragraph";
 
     return (
-      <div key={path.join("-")}>
+      <div key={path.join("-")} className="border-2">
         {shouldShowTitle && (
           <HierarchyTitle
             content={content}

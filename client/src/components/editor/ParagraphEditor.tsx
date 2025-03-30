@@ -179,6 +179,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
                       ? handleAddLastSentence
                       : undefined
                   }
+                  showHierarchy={showHierarchy}
                 />
               </div>
 
