@@ -19,7 +19,7 @@ const ParagraphRenderer: React.FC<ParagraphRendererProps> = React.memo(
     const shouldShowTitle = !showHierarchy || selectedType !== "paragraph";
 
     return (
-      <div key={path.join("-")} className="border-2">
+      <div key={path.join("-")}>
         {shouldShowTitle && (
           <HierarchyTitle
             content={content}
