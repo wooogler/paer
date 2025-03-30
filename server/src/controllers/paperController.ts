@@ -14,12 +14,38 @@ export class PaperController {
     });
   }
 
+  /**
+   * Retrieves the current paper data from the service layer and validates it against the schema.
+   * This endpoint serves as the main data source for the paper's content structure.
+   * 
+   * @param request - Fastify request object (unused in this function)
+   * @param reply - Fastify reply object for sending responses
+   * @returns The validated paper data structure
+   * @throws {Error} If paper data cannot be retrieved or fails validation
+   * 
+   * @example
+   * // Response structure
+   * {
+   *   title: string,
+   *   content: Array<{
+   *     type: "section" | "subsection" | "paragraph" | "sentence",
+   *     "block-id": string,
+   *     content: string | Array<...>,
+   *     summary?: string,
+   *     intent?: string,
+   *     title?: string
+   *   }>
+   * }
+   */
   async getPaper(request: FastifyRequest, reply: FastifyReply): Promise<any> {
     try {
       const paper = await this.paperService.getPaper();
-
+      
       // Validate data
       const validatedPaper = PaperSchema.parse(paper);
+      
+      await this.paperService.updateSectionSummaries();
+      await this.paperService.clearConversation();
 
       return validatedPaper;
     } catch (error) {
@@ -41,7 +67,6 @@ export class PaperController {
 
       // Get current paper content
       const paper = await this.paperService.getPaper();
-      // await this.paperService.updateSentence(blockId);
 
       // Helper function to find and update sentence
       const findAndUpdateSentence = (obj: any): boolean => {
@@ -63,6 +88,9 @@ export class PaperController {
 
       // Try to find and update the sentence
       const found = findAndUpdateSentence(paper);
+      // Update the parent block
+      await this.paperService.updateSentence(blockId);
+
       if (!found) {
         return reply.code(404).send({ error: "Sentence not found" });
       }
@@ -141,7 +169,8 @@ export class PaperController {
     try {
       const { content } = request.body;
       // blockType is no longer needed, so using findBlockById
-      await this.paperService.updateWhole();
+      // await this.paperService.updateSectionSummaries();
+      console.log("you are in updateWhole controller");
       return { success: true };
     } catch (error) {
       console.error("Error in updateWhole:", error);
@@ -204,7 +233,10 @@ export class PaperController {
 
     try {
       const response = await this.paperService.askLLM(text);
-      return reply.send(response);
+      return reply.send({ 
+        success: true, 
+        result: response 
+      });
     } catch (error) {
       console.error("Error in askLLM:", error);
       const errorMessage = (error as Error).message;

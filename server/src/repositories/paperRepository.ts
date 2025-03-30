@@ -193,19 +193,41 @@ export class PaperRepository {
     return null;
   }
 
+  /**
+   * Retrieves and concatenates values of a specific key from all sentence blocks within a given block.
+   * This function recursively traverses the block structure to find all sentences and concatenates their content.
+   * 
+   * @param blockId - The ID of the parent block whose children's values need to be retrieved
+   * @param targetKey - The key of the property to retrieve from each sentence block (e.g., "content", "summary")
+   * @returns A concatenated string of all sentence values for the specified key
+   */
   getChildrenValues(blockId: string, targetKey: string): string {
     const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
     const targetBlock = this.findBlockById(paperData, blockId);
-    // Assumes target block exists and is not a sentence
     let result = "";
-    for (const child of targetBlock.content) {
-      result += child[targetKey];
-      if (child[targetKey].endsWith(".")) {
-        result += ".";
+
+    // Recursive function to find and concatenate sentence values
+    const findSentenceValues = (block: any): void => {
+      // If this is a sentence, add its value
+      if (block.type === "sentence" && block[targetKey]) {
+        result += block[targetKey];
+        if (block[targetKey].endsWith(".")) {
+          result += ".";
+        }
+        result += " ";
       }
-      result += "";
-    }
-    return result;
+
+      // If block has content, recursively search through it
+      if (block.content && Array.isArray(block.content)) {
+        for (const child of block.content) {
+          findSentenceValues(child);
+        }
+      }
+    };
+
+    // Start the recursive search from the target block
+    findSentenceValues(targetBlock);
+    return result.trim();
   }
 
   findParentBlockByChildId(obj: any, blockId: string): any {
@@ -239,17 +261,19 @@ export class PaperRepository {
     // If the object has a content array, search recursively
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
-        // If the child matches the blockId, return the current object as the parent
+        // If the child matches the blockId, return the current object's block-id
         if (child["block-id"] === blockId) {
           return obj["block-id"];
         }
         // Recursively search in the child's content
-        const found = this.findParentBlockByChildId(child, blockId);
+        const found = this.findParentBlockIdByChildId(child, blockId);
         if (found) {
-          return found["block-id"];
+          return found;
         }
       }
     }
+
+    return null;
   }
 
   // Finds the block given the ID
