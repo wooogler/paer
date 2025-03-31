@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { ChatMessage } from "../types/chat";
 import { v4 as uuidv4 } from "uuid";
-import { writeChatHistory } from "../utils/chatStorage";
 import { useContentStore } from "./useContentStore";
+import * as chatApi from "../api/chatApi";
 
 interface ChatStore {
   messages: ChatMessage[];
@@ -15,6 +15,8 @@ interface ChatStore {
   setFilterBlockId: (blockId: string | null) => void;
   isFilteringEnabled: boolean;
   toggleFiltering: (enabled: boolean) => void;
+  fetchMessages: () => Promise<void>;
+  fetchMessagesByBlockId: (blockId: string) => Promise<void>;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -24,6 +26,29 @@ export const useChatStore = create<ChatStore>()(
       isLoading: false,
       filterBlockId: null,
       isFilteringEnabled: false,
+
+      // 서버에서 메시지 가져오기
+      fetchMessages: async () => {
+        try {
+          const messages = await chatApi.getMessages();
+          set({ messages });
+        } catch (error) {
+          console.error("Failed to fetch messages:", error);
+        }
+      },
+
+      // 특정 블록 ID의 메시지 가져오기
+      fetchMessagesByBlockId: async (blockId: string) => {
+        try {
+          const messages = await chatApi.getMessagesByBlockId(blockId);
+          set({ messages });
+        } catch (error) {
+          console.error(
+            `Failed to fetch messages for blockId ${blockId}:`,
+            error
+          );
+        }
+      },
 
       // 필터링 모드 토글 함수
       toggleFiltering: (enabled) => {
@@ -44,9 +69,10 @@ export const useChatStore = create<ChatStore>()(
       },
 
       // 메시지 배열을 직접 설정하는 함수
-      setMessages: (messages) => {
+      setMessages: async (messages) => {
         set({ messages });
-        writeChatHistory(messages);
+        // 서버에 저장
+        await chatApi.saveMessages(messages);
       },
 
       addMessage: async (content, role) => {
@@ -63,9 +89,11 @@ export const useChatStore = create<ChatStore>()(
 
         set((state) => {
           const updatedMessages = [...state.messages, newMessage];
-          writeChatHistory(updatedMessages);
           return { messages: updatedMessages };
         });
+
+        // 서버에 새 메시지 저장
+        await chatApi.addMessage(newMessage);
 
         // Auto-respond to user messages
         if (role === "user") {
@@ -131,9 +159,11 @@ export const useChatStore = create<ChatStore>()(
 
             set((state) => {
               const updatedMessages = [...state.messages, systemResponse];
-              writeChatHistory(updatedMessages);
               return { messages: updatedMessages };
             });
+
+            // 시스템 응답도 서버에 저장
+            await chatApi.addMessage(systemResponse);
           } catch (error) {
             console.error("Error getting LLM response:", error);
             const errorMessage: ChatMessage = {
@@ -149,18 +179,21 @@ export const useChatStore = create<ChatStore>()(
 
             set((state) => {
               const updatedMessages = [...state.messages, errorMessage];
-              writeChatHistory(updatedMessages);
               return { messages: updatedMessages };
             });
+
+            // 에러 메시지도 서버에 저장
+            await chatApi.addMessage(errorMessage);
           } finally {
             set({ isLoading: false });
           }
         }
       },
 
-      clearMessages: () => {
+      clearMessages: async () => {
         set({ messages: [] });
-        writeChatHistory([]);
+        // 서버에서도 메시지 삭제
+        await chatApi.clearMessages();
       },
     }),
     { name: "Chat Store" }

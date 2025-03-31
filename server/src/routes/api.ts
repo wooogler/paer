@@ -25,7 +25,12 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/paper/sentence",
     async (
       request: FastifyRequest<{
-        Body: { blockId: string; content: string; summary: string; intent: string };
+        Body: {
+          blockId: string;
+          content: string;
+          summary: string;
+          intent: string;
+        };
       }>,
       reply: FastifyReply
     ) => {

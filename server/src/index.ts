@@ -4,6 +4,7 @@ import path from "path";
 import dotenv from "dotenv";
 import apiRoutes from "./routes/api";
 import paperRoutes from "./routes/papers";
+import chatRoutes from "./routes/chat";
 import OpenAI from "openai";
 import fs from "fs";
 
@@ -40,6 +41,7 @@ const client = new OpenAI({
 // Register API routes
 fastify.register(apiRoutes, { prefix: "/api" });
 fastify.register(paperRoutes, { prefix: "/api/papers" });
+fastify.register(chatRoutes, { prefix: "/api/chat" });
 
 // Add health check endpoint
 fastify.get("/api/health", async (request, reply) => {
