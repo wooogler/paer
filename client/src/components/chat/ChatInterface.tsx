@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useChatStore } from "../../store/useChatStore";
 import { useContentStore } from "../../store/useContentStore";
 import ChatMessage from "./ChatMessage";
@@ -6,8 +12,15 @@ import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
 
 const ChatInterface: React.FC = () => {
-  const { messages, addMessage, isLoading, setMessages } = useChatStore();
-  const { selectedContent } = useContentStore();
+  const {
+    messages,
+    addMessage,
+    isLoading,
+    setMessages,
+    filterBlockId,
+    setFilterBlockId,
+  } = useChatStore();
+  const { selectedContent, content: rootContent } = useContentStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -33,6 +46,84 @@ const ChatInterface: React.FC = () => {
     }
   }, [messages.length, setMessages]);
 
+  // 필터링된 메시지 목록 계산
+  const filteredMessages = useMemo(() => {
+    if (!filterBlockId) return messages;
+
+    // 필터링된 blockId에 해당하는 메시지만 가져오기
+    // 재귀적으로 하위 콘텐츠 blockId도 포함
+    const blockIds = new Set<string | undefined>([filterBlockId]);
+
+    // 재귀 함수로 하위 콘텐츠의 blockId 수집
+    const collectChildBlockIds = (content: any) => {
+      if (!content) return;
+
+      // 현재 콘텐츠의 blockId 추가
+      if (content["block-id"]) {
+        blockIds.add(content["block-id"]);
+      }
+
+      // 하위 콘텐츠가 배열인 경우 재귀적으로 처리
+      if (content.content && Array.isArray(content.content)) {
+        content.content.forEach((child: any) => {
+          collectChildBlockIds(child);
+        });
+      }
+    };
+
+    // 필터링된 blockId의 콘텐츠 찾기
+    const findContentByBlockId = (content: any, blockId: string): any => {
+      if (!content) return null;
+
+      // 현재 콘텐츠가 찾는 blockId인지 확인
+      if (content["block-id"] === blockId) {
+        return content;
+      }
+
+      // 하위 콘텐츠 검색
+      if (content.content && Array.isArray(content.content)) {
+        for (const child of content.content) {
+          const found = findContentByBlockId(child, blockId);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    };
+
+    // 루트 콘텐츠에서 필터 blockId 콘텐츠 찾기
+    const filteredContent = findContentByBlockId(rootContent, filterBlockId);
+
+    // 찾은 콘텐츠의 하위 blockId 모두 수집
+    collectChildBlockIds(filteredContent);
+
+    return messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
+  }, [messages, filterBlockId, rootContent]);
+
+  // 필터링된 콘텐츠 정보 가져오기
+  const filteredContentInfo = useMemo(() => {
+    if (!filterBlockId || !rootContent) return null;
+
+    const findContentByBlockId = (content: any, blockId: string): any => {
+      if (!content) return null;
+
+      if (content["block-id"] === blockId) {
+        return content;
+      }
+
+      if (content.content && Array.isArray(content.content)) {
+        for (const child of content.content) {
+          const found = findContentByBlockId(child, blockId);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    };
+
+    return findContentByBlockId(rootContent, filterBlockId);
+  }, [filterBlockId, rootContent]);
+
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,7 +131,7 @@ const ChatInterface: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [filteredMessages, scrollToBottom]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -85,9 +176,45 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
+      {/* 헤더 영역 - 필터링 정보 표시 */}
+      <div className="border-b border-gray-200 p-2 bg-white flex items-center justify-between">
+        <div className="flex items-center">
+          {filterBlockId && (
+            <button
+              onClick={() => setFilterBlockId(null)}
+              className="mr-2 p-1 rounded text-blue-500 hover:bg-blue-50 transition-colors flex items-center"
+              title="Back to all messages"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          <h2 className="font-medium text-gray-700">
+            {filterBlockId
+              ? `Messages for: ${
+                  filteredContentInfo?.title ||
+                  filteredContentInfo?.type ||
+                  "Selected Content"
+                }`
+              : "AI Chat"}
+          </h2>
+        </div>
+      </div>
+
       {/* Message display area */}
       <div className="flex-1 overflow-y-auto p-4 bg-white">
-        {messages.map((message) => (
+        {filteredMessages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
         {isLoading && (

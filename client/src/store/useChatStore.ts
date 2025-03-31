@@ -11,6 +11,8 @@ interface ChatStore {
   setMessages: (messages: ChatMessage[]) => void;
   clearMessages: () => void;
   isLoading: boolean;
+  filterBlockId: string | null;
+  setFilterBlockId: (blockId: string | null) => void;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -18,6 +20,12 @@ export const useChatStore = create<ChatStore>()(
     (set) => ({
       messages: [],
       isLoading: false,
+      filterBlockId: null,
+
+      // 필터 blockId 설정 함수
+      setFilterBlockId: (blockId) => {
+        set({ filterBlockId: blockId });
+      },
 
       // 메시지 배열을 직접 설정하는 함수
       setMessages: (messages) => {

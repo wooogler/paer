@@ -2,6 +2,7 @@ import React, { memo, useMemo } from "react";
 import { useContentStore } from "../../store/useContentStore";
 import { Content } from "@paer/shared";
 import { isSelectableContent } from "../../utils/contentUtils";
+import { useChatStore } from "../../store/useChatStore";
 
 interface TreeItemProps {
   content: Content;
@@ -14,6 +15,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
   ({ content, path, depth, displayMode }) => {
     const { selectedPath, selectedBlockPath, setSelectedBlock } =
       useContentStore();
+    const { setFilterBlockId } = useChatStore();
 
     // 현재 항목이 selectedBlock인지 확인
     const isSelectedBlock = selectedBlockPath?.join(",") === path.join(",");
@@ -27,6 +29,14 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     const handleClick = () => {
       if (isSelectableContent(content.type)) {
         setSelectedBlock(content, path);
+      }
+    };
+
+    // 채팅 필터링 활성화 처리
+    const handleShowMessages = (e: React.MouseEvent) => {
+      e.stopPropagation(); // 부모 요소의 클릭 이벤트 전파 방지
+      if (content["block-id"]) {
+        setFilterBlockId(content["block-id"]);
       }
     };
 
@@ -111,13 +121,38 @@ const TreeItem: React.FC<TreeItemProps> = memo(
         >
           <div className="flex flex-col w-full min-w-0">
             {/* Display the title */}
-            <span
-              className={`break-words ${contentColorClass} ${
-                content.type === "paragraph" ? "" : "font-bold"
-              } ${isSelectedContent ? "text-blue-800" : ""}`}
-            >
-              {displayTitle}
-            </span>
+            <div className="flex justify-between items-center">
+              <span
+                className={`break-words ${contentColorClass} ${
+                  content.type === "paragraph" ? "" : "font-bold"
+                } ${isSelectedContent ? "text-blue-800" : ""}`}
+              >
+                {displayTitle}
+              </span>
+
+              {/* 메시지 아이콘 버튼 - 선택된 항목일 때만 표시 */}
+              {(isSelectedContent || isSelectedBlock) && (
+                <button
+                  onClick={handleShowMessages}
+                  className="ml-2 text-gray-500 hover:text-blue-500 transition-colors p-1 rounded-full hover:bg-blue-50"
+                  title="Show related messages"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
 
             {/* Display summary or intent for non-paragraph types */}
             {content.type !== "paragraph" && (

@@ -3,7 +3,6 @@ import Structure from "./Structure";
 import Editor from "./Editor";
 import Pane from "./layout/Pane";
 import ToggleSwitch from "./ui/ToggleSwitch";
-import Button from "./ui/Button";
 import ChatInterface from "./chat/ChatInterface";
 import FileImport from "./FileImport";
 import { useAppStore } from "../store/useAppStore";
@@ -141,23 +140,7 @@ const Layout: React.FC = () => {
         <Editor />
       </Pane>
 
-      <Pane
-        title="AI Chat"
-        width="25%"
-        isLast
-        rightContent={
-          <Button
-            onChange={(checked) => {
-              if (checked) {
-                const chatHistory = readChatHistory();
-                chatHistory.forEach(({ role, content }) => {
-                  addMessage(content, role);
-                });
-              }
-            }}
-          />
-        }
-      >
+      <Pane title="AI Chat" width="25%" isLast>
         <div className="h-full">
           <ChatInterface />
         </div>
