@@ -18,7 +18,7 @@ const ChatInterface: React.FC = () => {
     isLoading,
     setMessages,
     filterBlockId,
-    setFilterBlockId,
+    isFilteringEnabled,
   } = useChatStore();
   const { selectedContent, content: rootContent } = useContentStore();
   const [input, setInput] = useState("");
@@ -48,7 +48,7 @@ const ChatInterface: React.FC = () => {
 
   // 필터링된 메시지 목록 계산
   const filteredMessages = useMemo(() => {
-    if (!filterBlockId) return messages;
+    if (!isFilteringEnabled || !filterBlockId) return messages;
 
     // 필터링된 blockId에 해당하는 메시지만 가져오기
     // 재귀적으로 하위 콘텐츠 blockId도 포함
@@ -98,31 +98,7 @@ const ChatInterface: React.FC = () => {
     collectChildBlockIds(filteredContent);
 
     return messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
-  }, [messages, filterBlockId, rootContent]);
-
-  // 필터링된 콘텐츠 정보 가져오기
-  const filteredContentInfo = useMemo(() => {
-    if (!filterBlockId || !rootContent) return null;
-
-    const findContentByBlockId = (content: any, blockId: string): any => {
-      if (!content) return null;
-
-      if (content["block-id"] === blockId) {
-        return content;
-      }
-
-      if (content.content && Array.isArray(content.content)) {
-        for (const child of content.content) {
-          const found = findContentByBlockId(child, blockId);
-          if (found) return found;
-        }
-      }
-
-      return null;
-    };
-
-    return findContentByBlockId(rootContent, filterBlockId);
-  }, [filterBlockId, rootContent]);
+  }, [messages, filterBlockId, rootContent, isFilteringEnabled]);
 
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {
@@ -176,42 +152,6 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
-      {/* 헤더 영역 - 필터링 정보 표시 */}
-      <div className="border-b border-gray-200 p-2 bg-white flex items-center justify-between">
-        <div className="flex items-center">
-          {filterBlockId && (
-            <button
-              onClick={() => setFilterBlockId(null)}
-              className="mr-2 p-1 rounded text-blue-500 hover:bg-blue-50 transition-colors flex items-center"
-              title="Back to all messages"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>
-            </button>
-          )}
-          <h2 className="font-medium text-gray-700">
-            {filterBlockId
-              ? `Messages for: ${
-                  filteredContentInfo?.title ||
-                  filteredContentInfo?.type ||
-                  "Selected Content"
-                }`
-              : "AI Chat"}
-          </h2>
-        </div>
-      </div>
-
       {/* Message display area */}
       <div className="flex-1 overflow-y-auto p-4 bg-white">
         {filteredMessages.map((message) => (

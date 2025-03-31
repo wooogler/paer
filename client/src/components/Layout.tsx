@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import Structure from "./Structure";
 import Editor from "./Editor";
 import Pane from "./layout/Pane";
@@ -8,21 +8,54 @@ import FileImport from "./FileImport";
 import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
 import { usePaperStore } from "../store/paperStore";
+import { useContentStore } from "../store/useContentStore";
 import { readChatHistory } from "../utils/chatStorage";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
 import { FiDownload } from "react-icons/fi";
+import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
   const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
     useAppStore();
-  const { addMessage } = useChatStore();
+  const { addMessage, filterBlockId, isFilteringEnabled, toggleFiltering } =
+    useChatStore();
   const { setPaper } = usePaperStore();
+  const { content: rootContent } = useContentStore();
   const queryClient = useQueryClient();
 
   // Fetching data from server using React Query
   const { isLoading, error, refetch } = usePaperQuery();
+
+  // 필터링된 콘텐츠 정보 가져오기
+  const filteredContent = useMemo(() => {
+    if (!filterBlockId || !rootContent) return null;
+
+    const findContentByBlockId = (content: any, blockId: string): any => {
+      if (!content) return null;
+
+      if (content["block-id"] === blockId) {
+        return content;
+      }
+
+      if (content.content && Array.isArray(content.content)) {
+        for (const child of content.content) {
+          const found = findContentByBlockId(child, blockId);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    };
+
+    return findContentByBlockId(rootContent, filterBlockId);
+  }, [filterBlockId, rootContent]);
+
+  // 필터링 토글 처리
+  const handleToggleFiltering = () => {
+    toggleFiltering(!isFilteringEnabled);
+  };
 
   // 페이지 로드 시 데이터 새로고침
   useEffect(() => {
@@ -140,9 +173,76 @@ const Layout: React.FC = () => {
         <Editor />
       </Pane>
 
-      <Pane title="AI Chat" width="25%" isLast>
-        <div className="h-full">
-          <ChatInterface />
+      <Pane
+        title={
+          isFilteringEnabled && filterBlockId ? "Filtered Messages" : "AI Chat"
+        }
+        width="25%"
+        isLast
+        rightContent={
+          <div className="flex items-center space-x-2">
+            {isFilteringEnabled && filterBlockId && (
+              <button
+                onClick={() => toggleFiltering(false)}
+                className="mr-2 p-1 rounded text-blue-500 hover:bg-blue-50 transition-colors flex items-center"
+                title="Back to all messages"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={handleToggleFiltering}
+              className={`p-1.5 rounded-md ${
+                isFilteringEnabled && filterBlockId
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              } transition-colors`}
+              title={
+                isFilteringEnabled && filterBlockId
+                  ? "Show all messages"
+                  : "Filter messages"
+              }
+              disabled={!filterBlockId}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg>
+            </button>
+          </div>
+        }
+      >
+        <div className="h-full flex flex-col">
+          {/* 필터링된 콘텐츠 정보 표시 */}
+          {isFilteringEnabled && filterBlockId && filteredContent && (
+            <div className="border-b border-gray-200">
+              <ContentInfo content={filteredContent} isClickable={true} />
+            </div>
+          )}
+          <div className="flex-1">
+            <ChatInterface />
+          </div>
         </div>
       </Pane>
     </div>

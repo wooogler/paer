@@ -13,6 +13,8 @@ interface ChatStore {
   isLoading: boolean;
   filterBlockId: string | null;
   setFilterBlockId: (blockId: string | null) => void;
+  isFilteringEnabled: boolean;
+  toggleFiltering: (enabled: boolean) => void;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -21,10 +23,24 @@ export const useChatStore = create<ChatStore>()(
       messages: [],
       isLoading: false,
       filterBlockId: null,
+      isFilteringEnabled: false,
+
+      // 필터링 모드 토글 함수
+      toggleFiltering: (enabled) => {
+        set({ isFilteringEnabled: enabled });
+        // 필터링을 해제할 때는 필터 BlockId도 함께 초기화
+        if (!enabled) {
+          set({ filterBlockId: null });
+        }
+      },
 
       // 필터 blockId 설정 함수
       setFilterBlockId: (blockId) => {
-        set({ filterBlockId: blockId });
+        set({
+          filterBlockId: blockId,
+          // blockId가 설정되면 필터링 모드도 자동으로 활성화
+          isFilteringEnabled: blockId !== null,
+        });
       },
 
       // 메시지 배열을 직접 설정하는 함수
