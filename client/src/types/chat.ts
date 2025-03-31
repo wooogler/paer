@@ -5,4 +5,5 @@ export interface ChatMessage {
   role: MessageRole;
   content: string;
   timestamp: number;
+  blockId?: string;
 }

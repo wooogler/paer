@@ -19,11 +19,15 @@ export const useChatStore = create<ChatStore>()(
       isLoading: false,
 
       addMessage: async (content, role) => {
+        // Get the current selected content to save its blockId
+        const { selectedContent } = useContentStore.getState();
+
         const newMessage: ChatMessage = {
           id: uuidv4(),
           role,
           content,
           timestamp: Date.now(),
+          blockId: selectedContent?.["block-id"], // 선택된 콘텐츠의 blockId를 저장
         };
 
         set((state) => {
@@ -91,6 +95,7 @@ export const useChatStore = create<ChatStore>()(
               role: "system",
               content: data.result.choices[0].message.content,
               timestamp: Date.now(),
+              blockId: selectedContent?.["block-id"], // 시스템 응답에도 동일한 blockId 저장
             };
 
             set((state) => {
@@ -108,6 +113,7 @@ export const useChatStore = create<ChatStore>()(
                   ? error.message
                   : "I apologize, but I encountered an error while processing your request. Please try again.",
               timestamp: Date.now(),
+              blockId: selectedContent?.["block-id"], // 에러 메시지에도 동일한 blockId 저장
             };
 
             set((state) => {
