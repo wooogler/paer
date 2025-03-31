@@ -370,6 +370,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         className="relative"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        data-block-id={content["block-id"] || undefined}
       >
         {/* Vertical level indicator lines */}
         <LevelIndicator

@@ -8,6 +8,7 @@ import { useContentStore } from "./useContentStore";
 interface ChatStore {
   messages: ChatMessage[];
   addMessage: (content: string, role: ChatMessage["role"]) => void;
+  setMessages: (messages: ChatMessage[]) => void;
   clearMessages: () => void;
   isLoading: boolean;
 }
@@ -17,6 +18,12 @@ export const useChatStore = create<ChatStore>()(
     (set) => ({
       messages: [],
       isLoading: false,
+
+      // 메시지 배열을 직접 설정하는 함수
+      setMessages: (messages) => {
+        set({ messages });
+        writeChatHistory(messages);
+      },
 
       addMessage: async (content, role) => {
         // Get the current selected content to save its blockId

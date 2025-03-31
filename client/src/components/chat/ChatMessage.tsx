@@ -43,13 +43,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     return (
       <div className="flex w-full mb-4 justify-end">
         <div className="max-w-[80%] p-3 rounded-lg bg-gray-100 text-gray-800">
-          {linkedContent && (
+          {/* 연결된 콘텐츠 정보 표시 - blockId가 있고 해당 콘텐츠가 존재할 때만 */}
+          {hasBlockReference && linkedContent && (
             <div className="mb-1">
               <ContentInfo
                 content={linkedContent}
-                variant="block"
-                showBg={true}
                 lightText={false}
+                isClickable={true}
               />
             </div>
           )}
@@ -68,13 +68,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   // 에이전트 메시지 - 배경 없이 전체 폭을 채움
   return (
     <div className="w-full mb-4 px-4">
-      {linkedContent && (
+      {/* 연결된 콘텐츠 정보 표시 - blockId가 있고 해당 콘텐츠가 존재할 때만 */}
+      {hasBlockReference && linkedContent && (
         <div className="mb-1">
           <ContentInfo
             content={linkedContent}
             variant="block"
             showBg={true}
             lightText={false}
+            isClickable={true}
           />
         </div>
       )}

@@ -115,6 +115,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
         className={`${
           !showHierarchy ? "pt-2 pl-0" : `pl-${level * 4} mb-4`
         } relative`}
+        data-block-id={content["block-id"] || undefined}
       >
         {/* Top add button - before all sentences */}
         <div

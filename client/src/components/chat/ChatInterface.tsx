@@ -3,9 +3,10 @@ import { useChatStore } from "../../store/useChatStore";
 import { useContentStore } from "../../store/useContentStore";
 import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
+import { v4 as uuidv4 } from "uuid";
 
 const ChatInterface: React.FC = () => {
-  const { messages, addMessage, isLoading } = useChatStore();
+  const { messages, addMessage, isLoading, setMessages } = useChatStore();
   const { selectedContent } = useContentStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -17,12 +18,20 @@ const ChatInterface: React.FC = () => {
   useEffect(() => {
     if (messages.length === 0 && !initialMessageRef.current) {
       initialMessageRef.current = true;
-      addMessage(
-        "Hello! Do you need help with writing your document? How can I assist you?",
-        "system"
-      );
+      // 환영 메시지를 blockId 없이 직접 생성
+      const welcomeMessage = {
+        id: uuidv4(),
+        role: "system" as const,
+        content:
+          "Hello! Do you need help with writing your document? How can I assist you?",
+        timestamp: Date.now(),
+        // blockId 없음
+      };
+
+      // setMessages 함수를 통해 직접 추가
+      setMessages([welcomeMessage]);
     }
-  }, [addMessage, messages.length]);
+  }, [messages.length, setMessages]);
 
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {

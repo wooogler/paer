@@ -76,7 +76,10 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
     };
 
     return (
-      <div className={`${config.marginClass} ${!showHierarchy ? "pl-0" : ""}`}>
+      <div
+        className={`${config.marginClass} ${!showHierarchy ? "pl-0" : ""}`}
+        data-block-id={content["block-id"] || undefined}
+      >
         {/* Show title if configured and not top level */}
         {config.showTitle && !isTopLevel && (
           <HierarchyTitle
