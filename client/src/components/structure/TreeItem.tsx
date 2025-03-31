@@ -15,12 +15,16 @@ const TreeItem: React.FC<TreeItemProps> = memo(
   ({ content, path, depth, displayMode }) => {
     const { selectedPath, selectedBlockPath, setSelectedBlock } =
       useContentStore();
-    const { setFilterBlockId } = useChatStore();
+    const { setFilterBlockId, isFilteringEnabled, filterBlockId } =
+      useChatStore();
 
     // 현재 항목이 selectedBlock인지 확인
     const isSelectedBlock = selectedBlockPath?.join(",") === path.join(",");
     // 현재 항목이 selectedContent인지 확인
     const isSelectedContent = selectedPath?.join(",") === path.join(",");
+    // 현재 항목이 필터링된 메시지의 BlockId와 같은지 확인 (active 상태 표시용)
+    const isActiveMessageFilter =
+      content["block-id"] === filterBlockId && isFilteringEnabled;
 
     if (content.type === "sentence") {
       return null;
@@ -32,13 +36,26 @@ const TreeItem: React.FC<TreeItemProps> = memo(
       }
     };
 
-    // 채팅 필터링 활성화 처리
+    // 채팅 필터링 활성화/비활성화 토글 처리
     const handleShowMessages = (e: React.MouseEvent) => {
       e.stopPropagation(); // 부모 요소의 클릭 이벤트 전파 방지
       if (content["block-id"]) {
-        setFilterBlockId(content["block-id"]);
+        if (isActiveMessageFilter) {
+          // 이미 active 상태일 경우, 필터링 해제
+          setFilterBlockId(null);
+        } else {
+          // active 상태가 아닐 경우, 해당 블록으로 필터링
+          setFilterBlockId(content["block-id"]);
+        }
       }
     };
+
+    // 메시지 아이콘 표시 여부 결정
+    // 1. 필터링 모드일 때: 필터링된 아이템의 아이콘만 표시
+    // 2. 필터링 모드가 아닐 때: 선택된 아이템의 아이콘만 표시
+    const shouldShowMessageIcon = isFilteringEnabled
+      ? content["block-id"] === filterBlockId // 필터링 모드: 필터링된 아이템만 아이콘 표시
+      : isSelectedContent || isSelectedBlock; // 일반 모드: 선택된 아이템만 아이콘 표시
 
     // 스타일과 표시 텍스트 메모이제이션
     const { contentColorClass, displayTitle, displayText } = useMemo(() => {
@@ -130,12 +147,20 @@ const TreeItem: React.FC<TreeItemProps> = memo(
                 {displayTitle}
               </span>
 
-              {/* 메시지 아이콘 버튼 - 선택된 항목일 때만 표시 */}
-              {(isSelectedContent || isSelectedBlock) && (
+              {/* 메시지 아이콘 버튼 - 선택된 항목일 때 표시하고, active 상태일 때 파란색으로 표시 */}
+              {shouldShowMessageIcon && (
                 <button
                   onClick={handleShowMessages}
-                  className="ml-2 text-gray-500 hover:text-blue-500 transition-colors p-1 rounded-full hover:bg-blue-50"
-                  title="Show related messages"
+                  className={`ml-2 ${
+                    isActiveMessageFilter
+                      ? "text-blue-500 bg-blue-50"
+                      : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
+                  } transition-colors p-1 rounded-full`}
+                  title={
+                    isActiveMessageFilter
+                      ? "Show all messages"
+                      : "Show related messages"
+                  }
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

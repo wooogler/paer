@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
+import { useChatStore } from "../../store/useChatStore";
 import {
   useUpdateSentence,
   useDeleteSentence,
@@ -37,12 +38,18 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const { updateContent, setSelectedContent, selectedContent } =
       useContentStore();
     const { showHierarchy: appShowHierarchy } = useAppStore();
+    const { filterBlockId, isFilteringEnabled, setFilterBlockId } =
+      useChatStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
 
     // 현재 렌더링되는 문장이 selectedContent인지 확인
     const isSelectedContent =
       selectedContent && content["block-id"] === selectedContent["block-id"];
+
+    // 현재 항목이 필터링된 메시지의 BlockId와 같은지 확인
+    const isActiveMessageFilter =
+      content["block-id"] === filterBlockId && isFilteringEnabled;
 
     // State for textarea
     const [initialContent, setInitialContent] = useState<string>("");
@@ -365,6 +372,19 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       ? "border-blue-600 border-2"
       : borderColorClass;
 
+    // 채팅 필터링 활성화/비활성화 토글 처리
+    const handleShowMessages = useCallback(() => {
+      if (content["block-id"]) {
+        if (isActiveMessageFilter) {
+          // 이미 active 상태일 경우, 필터링 해제
+          setFilterBlockId(null);
+        } else {
+          // active 상태가 아닐 경우, 해당 블록으로 필터링
+          setFilterBlockId(content["block-id"]);
+        }
+      }
+    }, [content["block-id"], isActiveMessageFilter, setFilterBlockId]);
+
     return (
       <div
         className="relative"
@@ -398,8 +418,39 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           <div
             className={`flex flex-col py-1 px-2 rounded-t-lg ${
               isSelectedContent ? "bg-blue-100" : bgColorClass
-            }`}
+            } relative`}
           >
+            {/* 메시지 아이콘 버튼 - 선택된 항목일 때만 표시 */}
+            {isSelectedContent && content["block-id"] && (
+              <button
+                onClick={handleShowMessages}
+                className={`absolute top-1 right-1 z-10 ${
+                  isActiveMessageFilter
+                    ? "text-blue-500 bg-blue-50"
+                    : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
+                } transition-colors p-1 rounded-full mt-6`}
+                title={
+                  isActiveMessageFilter
+                    ? "Show all messages"
+                    : "Show related messages"
+                }
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </button>
+            )}
+
             {/* Summary Field */}
             <EditableField
               value={localSummary}
