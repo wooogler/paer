@@ -1,0 +1,48 @@
+{
+  "title": "New Paper",
+  "summary": "This is a new paper created automatically",
+  "intent": "To provide a starting point for writing",
+  "type": "paper",
+  "content": [
+    {
+      "title": "Introduction",
+      "summary": "Introduction to the topic",
+      "intent": "To introduce the main topic",
+      "type": "section",
+      "content": [
+        {
+          "title": "Background",
+          "summary": "Background information",
+          "intent": "To provide context",
+          "type": "subsection",
+          "content": [
+            {
+              "title": "Social Aspects",
+              "summary": "Social aspects of the topic",
+              "intent": "To provide social context",
+              "type": "subsubsection",
+              "content": [
+                {
+                  "summary": "Initial paragraph",
+                  "intent": "To begin the document",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "summary": "Initial sentence",
+                      "intent": "To begin the document",
+                      "type": "sentence"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "createdAt": "2025-03-31T23:37:49.361Z",
+  "updatedAt": "2025-03-31T23:37:49.362Z",
+  "authors": [],
+  "block-id": "0"
+}

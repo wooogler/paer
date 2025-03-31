@@ -20,9 +20,11 @@ const Pane: React.FC<PaneProps> = ({
       className={`flex flex-col ${isLast ? "" : "border-r border-gray-200"}`}
       style={{ width }}
     >
-      <div className="py-3 px-4 flex justify-between items-center font-bold bg-gray-100 border-b border-gray-200">
+      <div className="h-14 py-3 px-4 flex justify-between items-center font-bold bg-gray-100 border-b border-gray-200">
         <div>{title}</div>
-        {rightContent && <div>{rightContent}</div>}
+        {rightContent && (
+          <div className="flex items-center min-h-[32px]">{rightContent}</div>
+        )}
       </div>
       <div className="flex-1 overflow-auto">{children}</div>
     </div>
