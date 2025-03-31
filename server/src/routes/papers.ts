@@ -85,6 +85,13 @@ function isLatexCommand(line: string): boolean {
   )
     return false;
 
+  // Don't treat abstract environment markers as commands
+  if (
+    lineWithoutComments === "\\begin{abstract}" ||
+    lineWithoutComments === "\\end{abstract}"
+  )
+    return false;
+
   // More general pattern to catch LaTeX commands
   return (
     /^\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/.test(lineWithoutComments) ||
@@ -151,6 +158,13 @@ function isNonPaperContent(line: string): boolean {
 
   // If the line is empty after removing comments, it's not non-paper content
   if (!lineWithoutComments) return false;
+
+  // Don't treat abstract environment markers as non-paper content
+  if (
+    lineWithoutComments === "\\begin{abstract}" ||
+    lineWithoutComments === "\\end{abstract}"
+  )
+    return false;
 
   const nonPaperPatterns = [
     // Conference and submission info
@@ -380,6 +394,7 @@ export function processLatexContent(
   let currentSubsection: any = null;
   let currentSubsubsection: any = null;
   let blockIdIncrement = 0;
+  let inAbstract = false;
 
   // Helper function to create a sentence block
   const createSentenceBlock = (content: string): any => ({
@@ -535,84 +550,74 @@ export function processLatexContent(
     // Clean up the line by removing LaTeX commands but keep the content
     let cleanedLine = lineWithoutComments;
 
-    // If the line contains citations, handle them first
-    if (
-      lineWithoutComments.includes("\\citet") ||
-      lineWithoutComments.includes("\\cite")
-    ) {
-      // First replace citations with [citation] format
-      cleanedLine = lineWithoutComments
-        .replace(/\\citet{(.*?)}/g, (match, citation) => `[${citation}]`) // Replace citet citations with [citation]
-        .replace(/\\cite{(.*?)}/g, (match, citation) => `[${citation}]`) // Replace regular citations with [citation]
-        .replace(/\[@(.*?)\]/g, (match, citation) => `[${citation}]`) // Replace markdown citations with [citation]
-        .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
-        .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
-        .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
-        .replace(/\\label{.*?}/g, "") // Remove labels
-        .replace(/\\ref{.*?}/g, "") // Remove refs
-        .replace(/\{.*?\}/g, "") // Remove curly braces and their content
-        .replace(/\[.*?\]/g, "") // Remove square brackets and their content
-        .trim();
-    } else {
-      // For non-citation lines, clean up LaTeX commands
-      cleanedLine = lineWithoutComments
-        .replace(/\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "") // Remove all LaTeX commands
-        .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
-        .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
-        .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
-        .replace(/\\label{.*?}/g, "") // Remove labels
-        .replace(/\\ref{.*?}/g, "") // Remove refs
-        .replace(/\\newcommand{.*?}{.*?}/g, "") // Remove newcommand definitions
-        .replace(/\\newenvironment{.*?}{.*?}{.*?}/g, "") // Remove newenvironment definitions
-        .replace(/\\acmConference{.*?}/g, "") // Remove ACM conference settings
-        .replace(/\\acmJournal{.*?}/g, "") // Remove ACM journal settings
-        .replace(/\\acmVolume{.*?}/g, "") // Remove ACM volume settings
-        .replace(/\\acmNumber{.*?}/g, "") // Remove ACM number settings
-        .replace(/\\acmPrice{.*?}/g, "") // Remove ACM price settings
-        .replace(/\\acmDOI{.*?}/g, "") // Remove ACM DOI settings
-        .replace(/\\acmISBN{.*?}/g, "") // Remove ACM ISBN settings
-        .replace(/\\acmISSN{.*?}/g, "") // Remove ACM ISSN settings
-        .replace(/\\acmSubmissionID{.*?}/g, "") // Remove ACM submission ID settings
-        .replace(/\\acmArticle{.*?}/g, "") // Remove ACM article settings
-        .replace(/\\acmYear{.*?}/g, "") // Remove ACM year settings
-        .replace(/\\acmMonth{.*?}/g, "") // Remove ACM month settings
-        .replace(/\\acmDay{.*?}/g, "") // Remove ACM day settings
-        .replace(/\\acmDate{.*?}/g, "") // Remove ACM date settings
-        .replace(/\\acmLocation{.*?}/g, "") // Remove ACM location settings
-        .replace(/\\acmCity{.*?}/g, "") // Remove ACM city settings
-        .replace(/\\acmCountry{.*?}/g, "") // Remove ACM country settings
-        .replace(/\\acmState{.*?}/g, "") // Remove ACM state settings
-        .replace(/\\acmRegion{.*?}/g, "") // Remove ACM region settings
-        .replace(/\\acmCategory{.*?}/g, "") // Remove ACM category settings
-        .replace(/\\acmSubject{.*?}/g, "") // Remove ACM subject settings
-        .replace(/\\acmKeywords{.*?}/g, "") // Remove ACM keywords settings
-        .replace(/\\acmTerms{.*?}/g, "") // Remove ACM terms settings
-        .replace(/\\acmFormat{.*?}/g, "") // Remove ACM format settings
-        .replace(/\\acmStyle{.*?}/g, "") // Remove ACM style settings
-        .replace(/\\acmTemplate{.*?}/g, "") // Remove ACM template settings
-        .replace(/\\acmCopyright{.*?}/g, "") // Remove ACM copyright settings
-        .replace(/\\acmPermission{.*?}/g, "") // Remove ACM permission settings
-        .replace(/\\acmNotice{.*?}/g, "") // Remove ACM notice settings
-        .replace(/\\acmReference{.*?}/g, "") // Remove ACM reference settings
-        .replace(/\\acmAbstract{.*?}/g, "") // Remove ACM abstract settings
-        .replace(/\\acmAcknowledgments{.*?}/g, "") // Remove ACM acknowledgments settings
-        .replace(/\\acmBibliography{.*?}/g, "") // Remove ACM bibliography settings
-        .replace(/\\acmAppendix{.*?}/g, "") // Remove ACM appendix settings
-        .replace(/\\acmBooktitle{.*?}/g, "") // Remove ACM booktitle settings
-        .replace(/\\begin{itemize}/g, "") // Remove itemize begin
-        .replace(/\\end{itemize}/g, "") // Remove itemize end
-        .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
-        .replace(/\{.*?\}/g, "") // Remove any remaining curly braces and their content
-        .replace(/\[.*?\]/g, "") // Remove any remaining square brackets and their content
-        .trim();
-    }
+    // First handle citations that we want to preserve
+    cleanedLine = cleanedLine
+      .replace(/\\citet{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace citet citations with [citation:key]
+      .replace(/\\cite{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace regular citations with [citation:key]
+      .replace(/\[@(.*?)\]/g, (match, citation) => `[citation:${citation}]`) // Replace markdown citations with [citation:key]
+      .replace(/~/g, ""); // Remove any tilde characters
+
+    // Then clean up other LaTeX commands
+    cleanedLine = cleanedLine
+      .replace(/\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "") // Remove all LaTeX commands
+      .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
+      .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
+      .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
+      .replace(/\\label{.*?}/g, "") // Remove labels
+      .replace(/\\ref{.*?}/g, "") // Remove refs
+      .replace(/\\newcommand{.*?}{.*?}/g, "") // Remove newcommand definitions
+      .replace(/\\newenvironment{.*?}{.*?}{.*?}/g, "") // Remove newenvironment definitions
+      .replace(/\\acmConference{.*?}/g, "") // Remove ACM conference settings
+      .replace(/\\acmJournal{.*?}/g, "") // Remove ACM journal settings
+      .replace(/\\acmVolume{.*?}/g, "") // Remove ACM volume settings
+      .replace(/\\acmNumber{.*?}/g, "") // Remove ACM number settings
+      .replace(/\\acmPrice{.*?}/g, "") // Remove ACM price settings
+      .replace(/\\acmDOI{.*?}/g, "") // Remove ACM DOI settings
+      .replace(/\\acmISBN{.*?}/g, "") // Remove ACM ISBN settings
+      .replace(/\\acmISSN{.*?}/g, "") // Remove ACM ISSN settings
+      .replace(/\\acmSubmissionID{.*?}/g, "") // Remove ACM submission ID settings
+      .replace(/\\acmArticle{.*?}/g, "") // Remove ACM article settings
+      .replace(/\\acmYear{.*?}/g, "") // Remove ACM year settings
+      .replace(/\\acmMonth{.*?}/g, "") // Remove ACM month settings
+      .replace(/\\acmDay{.*?}/g, "") // Remove ACM day settings
+      .replace(/\\acmDate{.*?}/g, "") // Remove ACM date settings
+      .replace(/\\acmLocation{.*?}/g, "") // Remove ACM location settings
+      .replace(/\\acmCity{.*?}/g, "") // Remove ACM city settings
+      .replace(/\\acmCountry{.*?}/g, "") // Remove ACM country settings
+      .replace(/\\acmState{.*?}/g, "") // Remove ACM state settings
+      .replace(/\\acmRegion{.*?}/g, "") // Remove ACM region settings
+      .replace(/\\acmCategory{.*?}/g, "") // Remove ACM category settings
+      .replace(/\\acmSubject{.*?}/g, "") // Remove ACM subject settings
+      .replace(/\\acmKeywords{.*?}/g, "") // Remove ACM keywords settings
+      .replace(/\\acmTerms{.*?}/g, "") // Remove ACM terms settings
+      .replace(/\\acmFormat{.*?}/g, "") // Remove ACM format settings
+      .replace(/\\acmStyle{.*?}/g, "") // Remove ACM style settings
+      .replace(/\\acmTemplate{.*?}/g, "") // Remove ACM template settings
+      .replace(/\\acmCopyright{.*?}/g, "") // Remove ACM copyright settings
+      .replace(/\\acmPermission{.*?}/g, "") // Remove ACM permission settings
+      .replace(/\\acmNotice{.*?}/g, "") // Remove ACM notice settings
+      .replace(/\\acmReference{.*?}/g, "") // Remove ACM reference settings
+      .replace(/\\acmAbstract{.*?}/g, "") // Remove ACM abstract settings
+      .replace(/\\acmAcknowledgments{.*?}/g, "") // Remove ACM acknowledgments settings
+      .replace(/\\acmBibliography{.*?}/g, "") // Remove ACM bibliography settings
+      .replace(/\\acmAppendix{.*?}/g, "") // Remove ACM appendix settings
+      .replace(/\\acmBooktitle{.*?}/g, "") // Remove ACM booktitle settings
+      .replace(/\\begin{itemize}/g, "") // Remove itemize begin
+      .replace(/\\end{itemize}/g, "") // Remove itemize end
+      .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
+      .replace(/\{.*?\}/g, "") // Remove any remaining curly braces and their content
+      .replace(/\[(?!citation:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation markers
+      .replace(/\[citation:(.*?)\]/g, "[$1]") // Convert citation markers back to simple brackets
+      .trim();
 
     // If the line contains itemize content, preserve it
     if (lineWithoutComments.includes("\\item")) {
       cleanedLine = lineWithoutComments
         .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
         .replace(/\{.*?\}/g, "") // Remove curly braces and their content
-        .replace(/\[.*?\]/g, "") // Remove square brackets and their content
+        .replace(/\[(?!citation:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation markers
+        .replace(/\[citation:(.*?)\]/g, "[$1]") // Convert citation markers back to simple brackets
+        .replace(/~/g, "") // Remove any tilde characters
         .trim();
     }
 
@@ -621,6 +626,18 @@ export function processLatexContent(
 
   for (const line of lines) {
     const trimmedLine = line.trim();
+
+    // Handle abstract environment
+    if (trimmedLine === "\\begin{abstract}") {
+      inAbstract = true;
+      saveCurrentSection();
+      currentSection = createSectionBlock("Abstract", []);
+      continue;
+    } else if (trimmedLine === "\\end{abstract}") {
+      inAbstract = false;
+      saveCurrentSection();
+      continue;
+    }
 
     // Skip empty lines
     if (!trimmedLine) {
@@ -652,6 +669,35 @@ export function processLatexContent(
 
     // Handle section headers
     if (fileType === "latex") {
+      // Skip section headers if we're in the abstract
+      if (inAbstract) {
+        // Clean and process the line
+        const cleanedLine = cleanLatexContent(trimmedLine);
+
+        // Only process if we have content after cleaning
+        if (cleanedLine) {
+          // Split into sentences
+          const sentences = cleanedLine
+            .split(/(?<=[.!?])\s+/)
+            .filter((sentence) => {
+              const cleaned = sentence.trim();
+              return (
+                cleaned.length > 0 &&
+                cleaned.length >= 10 && // Minimum sentence length
+                /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
+                !/^[^a-zA-Z]*$/.test(cleaned)
+              ); // Must not be only special characters
+            })
+            .map((sentence) => createSentenceBlock(sentence.trim()));
+
+          // If we have valid sentences, add them to the current paragraph
+          if (sentences.length > 0) {
+            currentParagraph = currentParagraph.concat(sentences);
+          }
+        }
+        continue;
+      }
+
       // Handle section headers with optional short title
       if (trimmedLine.includes("\\section[")) {
         const match = trimmedLine.match(/\\section\[(.*?)\]\{(.*?)\}/);
