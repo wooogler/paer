@@ -7,6 +7,7 @@ import { string } from "zod";
 type Message = {
   role: "system" | "user" | "assistant";
   content: string;
+  blockId?: string;  // Optional blockId to associate message with a specific block
 };
 
 export class PaperService {
@@ -147,7 +148,7 @@ export class PaperService {
     }
   }
 
-  async askLLM(text: string, renderedContent?: string): Promise<any> {
+  async askLLM(text: string, renderedContent?: string, blockId?: string): Promise<any> {
     try {
       // If conversation hasn't been initialized, initialize it
       if (this.conversationHistory.length === 0) {
@@ -157,14 +158,16 @@ export class PaperService {
       // Add the user's question to the conversation history
       this.conversationHistory.push({
         role: "user",
-        content: text
+        content: text,
+        blockId
       });
 
       // If rendered content is provided, add it as additional context
       if (renderedContent) {
         this.conversationHistory.push({
           role: "system",
-          content: `Here is the currently visible content in the editor:\n\n${renderedContent}\n\nPlease consider this content when providing your response.`
+          content: `Here is the currently visible content in the editor:\n\n${renderedContent}\n\nPlease consider this content when providing your response.`,
+          blockId
         });
       }
 
@@ -177,9 +180,12 @@ export class PaperService {
       if (response.choices[0].message?.content) {
         this.conversationHistory.push({
           role: "assistant",
-          content: response.choices[0].message.content
+          content: response.choices[0].message.content,
+          blockId
         });
       }
+
+      console.log(this.conversationHistory);
 
       return response;
     } catch (error) {

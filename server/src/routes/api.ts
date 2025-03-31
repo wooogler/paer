@@ -146,7 +146,7 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/chat/ask",
     async (
       request: FastifyRequest<{
-        Body: { text: string; renderedContent?: string };
+        Body: { text: string; renderedContent?: string; blockId?: string };
       }>,
       reply: FastifyReply
     ) => {

@@ -60,7 +60,7 @@ export const useChatStore = create<ChatStore>((set) => ({
             }
           }
         }
-
+        
         const response = await fetch("/api/chat/ask", {
           method: "POST",
           headers: {
