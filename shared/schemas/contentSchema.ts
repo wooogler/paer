@@ -5,6 +5,7 @@ export const ContentTypeSchema = z.enum([
   "paper",
   "section",
   "subsection",
+  "subsubsection",
   "paragraph",
   "sentence",
 ]);
@@ -13,6 +14,7 @@ export enum ContentTypeSchemaEnum {
   Paper = "paper",
   Section = "section",
   Subsection = "subsection",
+  Subsubsection = "subsubsection",
   Paragraph = "paragraph",
   Sentence = "sentence",
 }

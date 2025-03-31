@@ -40,6 +40,8 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
         case "section":
           return "subsection";
         case "subsection":
+          return "subsubsection";
+        case "subsubsection":
           return "paragraph";
         case "paragraph":
           return "sentence";
@@ -128,6 +130,7 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
               {/* Add button between blocks */}
               {(isParagraph ||
                 child.type === "subsection" ||
+                child.type === "subsubsection" ||
                 child.type === "section" ||
                 child.type === "sentence") && (
                 <div

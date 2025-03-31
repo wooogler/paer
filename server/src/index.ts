@@ -269,15 +269,30 @@ function ensureDataDirectoryExists() {
             type: "section",
             content: [
               {
+                title: "Background",
                 summary: "Background information",
                 intent: "To provide context",
-                type: "paragraph",
+                type: "subsection",
                 content: [
                   {
-                    summary: "Initial sentence",
-                    intent: "To begin the document",
-                    type: "sentence",
-                    content: "This is the beginning of your new document.",
+                    title: "Social Aspects",
+                    summary: "Social aspects of the topic",
+                    intent: "To provide social context",
+                    type: "subsubsection",
+                    content: [
+                      {
+                        summary: "Initial paragraph",
+                        intent: "To begin the document",
+                        type: "paragraph",
+                        content: [
+                          {
+                            summary: "Initial sentence",
+                            intent: "To begin the document",
+                            type: "sentence",
+                          },
+                        ],
+                      },
+                    ],
                   },
                 ],
               },

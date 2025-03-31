@@ -6,26 +6,28 @@ import ContentRenderer from "./editor/ContentRenderer";
 
 const Editor: React.FC = () => {
   const {
+    selectedBlock,
+    selectedBlockPath,
     selectedContent,
     selectedPath,
     parentContents,
     getContentByPath,
-    setSelectedContent,
+    setSelectedBlock,
   } = useContentStore();
   const { showHierarchy } = useAppStore();
 
   // Effect to restore content for selected path even after page refresh
   useEffect(() => {
     // If path exists but content is missing (after refresh), restore the content
-    if (selectedPath && !selectedContent) {
-      const content = getContentByPath(selectedPath);
+    if (selectedBlockPath && !selectedBlock) {
+      const content = getContentByPath(selectedBlockPath);
       if (content) {
-        setSelectedContent(content, selectedPath);
+        setSelectedBlock(content, selectedBlockPath);
       }
     }
-  }, [selectedPath, selectedContent, getContentByPath, setSelectedContent]);
+  }, [selectedBlockPath, selectedBlock, getContentByPath, setSelectedBlock]);
 
-  if (!selectedContent || !selectedPath) {
+  if (!selectedBlock || !selectedBlockPath) {
     return (
       <div className="p-5 text-center text-gray-500">
         Select a section, subsection, paragraph, or paper to edit
@@ -35,16 +37,23 @@ const Editor: React.FC = () => {
 
   // Only allow editing for paper, section, subsection, and paragraph types
   if (
-    !["paper", "section", "subsection", "paragraph"].includes(
-      selectedContent.type
+    !["paper", "section", "subsection", "subsubsection", "paragraph"].includes(
+      selectedBlock.type
     )
   ) {
     return (
       <div className="p-5 text-center text-gray-500">
-        Only paper, sections, subsections, and paragraphs can be edited
+        Only paper, sections, subsections, subsubsections, and paragraphs can be
+        edited
       </div>
     );
   }
+
+  // selectedContent와 selectedBlock이 다른 경우를 확인
+  const isDifferentSelection =
+    selectedContent &&
+    selectedBlock &&
+    selectedContent["block-id"] !== selectedBlock["block-id"];
 
   return (
     <div className="p-5">
@@ -60,7 +69,7 @@ const Editor: React.FC = () => {
             />
           ))}
           <HierarchyTitle
-            content={selectedContent}
+            content={selectedBlock}
             level={parentContents.length}
             isCurrentSelected={true}
           />
@@ -69,8 +78,8 @@ const Editor: React.FC = () => {
 
       <div className="mt-4">
         <ContentRenderer
-          content={selectedContent}
-          path={selectedPath}
+          content={selectedBlock}
+          path={selectedBlockPath}
           isTopLevel={true}
           level={parentContents.length}
         />

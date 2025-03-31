@@ -70,6 +70,8 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
           return "text-green-600";
         case "subsection":
           return "text-yellow-600";
+        case "subsubsection":
+          return "text-pink-600";
         case "paragraph":
           return "text-gray-600";
         case "sentence":

@@ -17,6 +17,7 @@ const typeConfig: Record<
 > = {
   paragraph: { showTitle: true, marginClass: "" },
   subsection: { showTitle: true, marginClass: "" },
+  subsubsection: { showTitle: true, marginClass: "" },
   section: { showTitle: true, marginClass: "" },
   paper: { showTitle: false, marginClass: "" },
   sentence: { showTitle: false, marginClass: "" },
@@ -41,6 +42,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = React.memo(
     if (
       content.type === "section" ||
       content.type === "subsection" ||
+      content.type === "subsubsection" ||
       content.type === "paper" ||
       (content.content && Array.isArray(content.content))
     ) {

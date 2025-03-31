@@ -13,6 +13,8 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
   onClick,
   isVisible,
   blockType,
+  parentBlockId,
+  prevBlockId,
 }) => {
   // Get button text based on block type
   const getButtonText = (): string => {
@@ -21,6 +23,8 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
         return "Add new section";
       case "subsection":
         return "Add new subsection";
+      case "subsubsection":
+        return "Add new subsubsection";
       case "paragraph":
         return "Add new paragraph";
       case "sentence":
@@ -37,6 +41,8 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
         return "bg-orange-500 hover:bg-orange-600";
       case "subsection":
         return "bg-purple-500 hover:bg-purple-600";
+      case "subsubsection":
+        return "bg-pink-500 hover:bg-pink-600";
       case "paragraph":
         return "bg-green-500 hover:bg-green-600";
       case "sentence":
@@ -65,6 +71,14 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
           summary: "",
           intent: "",
         };
+      case "subsubsection":
+        return {
+          type: "subsubsection" as const,
+          content: [],
+          title: "New Subsubsection",
+          summary: "",
+          intent: "",
+        };
       case "paragraph":
         return {
           type: "paragraph" as const,
@@ -89,14 +103,15 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
   if (!placeholderContent) return null;
 
   return (
-    <div
-      onClick={onClick}
-      className={`w-full ${isVisible ? "opacity-100" : "opacity-0"}`}
-    >
+    <div className={`w-full ${isVisible ? "opacity-100" : "opacity-0"}`}>
       <div className="flex items-center gap-2">
         <div className="flex-1 h2">
-          <div className="relative group h-1 cursor-pointer flex items-center justify-center">
+          <div
+            className="relative group h-1 cursor-pointer flex items-center justify-center"
+            onClick={onClick}
+          >
             <button
+              onClick={onClick}
               className={`${getButtonColor()} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10`}
             >
               {getButtonText()}

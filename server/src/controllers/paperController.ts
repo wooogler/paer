@@ -17,12 +17,12 @@ export class PaperController {
   /**
    * Retrieves the current paper data from the service layer and validates it against the schema.
    * This endpoint serves as the main data source for the paper's content structure.
-   * 
+   *
    * @param request - Fastify request object (unused in this function)
    * @param reply - Fastify reply object for sending responses
    * @returns The validated paper data structure
    * @throws {Error} If paper data cannot be retrieved or fails validation
-   * 
+   *
    * @example
    * // Response structure
    * {
@@ -40,10 +40,11 @@ export class PaperController {
   async getPaper(request: FastifyRequest, reply: FastifyReply): Promise<any> {
     try {
       const paper = await this.paperService.getPaper();
-      
+      console.log("paper", paper);
+
       // Validate data
       const validatedPaper = PaperSchema.parse(paper);
-      
+
       await this.paperService.updateSectionSummaries();
       await this.paperService.clearConversation();
 
@@ -55,9 +56,16 @@ export class PaperController {
   }
 
   async updateSentence(
-    request: FastifyRequest<{ Body: { blockId: string; content: string; summary: string; intent: string } }>,
+    request: FastifyRequest<{
+      Body: {
+        blockId: string;
+        content: string;
+        summary: string;
+        intent: string;
+      };
+    }>,
     reply: FastifyReply
-  ): Promise<any> { 
+  ): Promise<any> {
     try {
       const { blockId, content, summary, intent } = request.body;
 
@@ -71,9 +79,9 @@ export class PaperController {
       // Helper function to find and update sentence
       const findAndUpdateSentence = (obj: any): boolean => {
         if (obj["block-id"] === blockId && obj.type === "sentence") {
-          obj.content = content;  // Update with the new content from request
-          obj.summary = summary;  // Update with the new summary from request
-          obj.intent = intent;    // Update with the new intent from request
+          obj.content = content; // Update with the new content from request
+          obj.summary = summary; // Update with the new summary from request
+          obj.intent = intent; // Update with the new intent from request
           return true;
         }
 
@@ -174,7 +182,9 @@ export class PaperController {
       return { success: true };
     } catch (error) {
       console.error("Error in updateWhole:", error);
-      return reply.code(500).send({ error: "Failed to process imported document" });
+      return reply
+        .code(500)
+        .send({ error: "Failed to process imported document" });
     }
   }
 
@@ -226,23 +236,29 @@ export class PaperController {
    * ask LLM a question
    */
   async askLLM(
-    request: FastifyRequest<{ Body: { text: string; renderedContent?: string; blockId?: string} }>,
+    request: FastifyRequest<{
+      Body: { text: string; renderedContent?: string; blockId?: string };
+    }>,
     reply: FastifyReply
   ) {
     const { text, renderedContent, blockId } = request.body;
 
     try {
-      const response = await this.paperService.askLLM(text, renderedContent, blockId);
-      return reply.send({ 
-        success: true, 
-        result: response 
+      const response = await this.paperService.askLLM(
+        text,
+        renderedContent,
+        blockId
+      );
+      return reply.send({
+        success: true,
+        result: response,
       });
     } catch (error) {
       console.error("Error in askLLM:", error);
       const errorMessage = (error as Error).message;
-      return reply.status(500).send({ 
-        success: false, 
-        error: errorMessage 
+      return reply.status(500).send({
+        success: false,
+        error: errorMessage,
       });
     }
   }
@@ -356,27 +372,24 @@ export class PaperController {
   /**
    * Export paper to LaTeX format
    */
-  async exportPaper(
-    request: FastifyRequest,
-    reply: FastifyReply
-  ) {
+  async exportPaper(request: FastifyRequest, reply: FastifyReply) {
     try {
       // Get the latest paper data
       const paper = await this.paperService.getPaper();
-      
+
       // Export to LaTeX
       const latexContent = await this.paperService.exportToLatex(paper);
-      
+
       return {
         success: true,
-        content: latexContent
+        content: latexContent,
       };
     } catch (error) {
       console.error("Error exporting paper:", error);
       const errorMessage = (error as Error).message;
-      return reply.status(500).send({ 
-        success: false, 
-        error: errorMessage 
+      return reply.status(500).send({
+        success: false,
+        error: errorMessage,
       });
     }
   }

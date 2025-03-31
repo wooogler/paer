@@ -196,7 +196,7 @@ export class PaperRepository {
   /**
    * Retrieves and concatenates values of a specific key from all sentence blocks within a given block.
    * This function recursively traverses the block structure to find all sentences and concatenates their content.
-   * 
+   *
    * @param blockId - The ID of the parent block whose children's values need to be retrieved
    * @param targetKey - The key of the property to retrieve from each sentence block (e.g., "content", "summary")
    * @returns A concatenated string of all sentence values for the specified key
@@ -318,16 +318,18 @@ export class PaperRepository {
   ): boolean {
     // Check if current object has the matching block-id
     if (obj["block-id"] === blockId && obj.type === "sentence") {
-      obj.content = content;  // Update the content
-      obj.summary = summary;  // Update the summary
-      obj.intent = intent;    // Update the intent
+      obj.content = content; // Update the content
+      obj.summary = summary; // Update the summary
+      obj.intent = intent; // Update the intent
       return true;
     }
 
     // If not found at this level, recursively search in the content array
     if (Array.isArray(obj.content)) {
       for (const item of obj.content) {
-        if (this.findAndUpdateSentence(item, blockId, content, summary, intent)) {
+        if (
+          this.findAndUpdateSentence(item, blockId, content, summary, intent)
+        ) {
           return true;
         }
       }

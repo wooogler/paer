@@ -12,7 +12,7 @@ interface ParagraphEditorProps {
 }
 
 const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
-  ({ content, level = 0 }) => {
+  ({ content, path, level = 0 }) => {
     const { showHierarchy } = useAppStore();
     const addBlockMutation = useAddBlock();
 
@@ -34,8 +34,16 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
     // Handle add sentence button click
     const handleAddSentence = useCallback(
       (index: number) => {
+        console.log("handleAddSentence called with index:", index);
+        console.log("content[block-id]:", content["block-id"]);
+
         // If at beginning, pass null as blockId
         if (index === 0) {
+          console.log(
+            "Adding at beginning with parentBlockId:",
+            content["block-id"]
+          );
+
           // Add a new block with sentence type
           addBlockMutation.mutate(
             {
@@ -45,6 +53,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             },
             {
               onSuccess: () => {
+                console.log("Successfully added sentence at beginning");
                 // New sentence will be focused automatically
                 // Managing block-id as a separate state for focus handling
               },
@@ -58,7 +67,12 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
         // Otherwise, get the blockId of the sentence before the insertion point
         const prevSentence = contentArray[index - 1];
 
+        console.log("prevSentence:", prevSentence);
+        console.log("prevSentence[block-id]:", prevSentence["block-id"]);
+
         if (typeof prevSentence !== "string" && prevSentence["block-id"]) {
+          console.log("Adding sentence after", prevSentence["block-id"]);
+
           // Send request to server and update client state
           addBlockMutation.mutate(
             {
@@ -68,12 +82,14 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             },
             {
               onSuccess: () => {
+                console.log("Successfully added sentence after existing one");
                 // New sentence will be focused automatically
                 // Managing block-id as a separate state for focus handling
               },
             }
           );
         } else {
+          console.log("Cannot add sentence - previous sentence has no blockId");
           // Previous sentence has no blockId, cannot add
         }
       },
@@ -104,13 +120,21 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
 
     // Add sentence after the last one
     const handleAddLastSentence = useCallback(() => {
+      console.log("handleAddLastSentence called");
+      console.log("content:", content);
+
       const contentArray = content.content as Content[];
 
       if (contentArray.length > 0) {
         // Get the last sentence
         const lastSentence = contentArray[contentArray.length - 1];
 
+        console.log("lastSentence:", lastSentence);
+        console.log("lastSentence[block-id]:", lastSentence["block-id"]);
+
         if (typeof lastSentence !== "string" && lastSentence["block-id"]) {
+          console.log("Adding sentence after the last one");
+
           // Add a new sentence after the last one
           addBlockMutation.mutate(
             {
@@ -120,6 +144,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             },
             {
               onSuccess: () => {
+                console.log("Successfully added sentence after the last one");
                 // New sentence will be focused automatically
                 // Managing block-id as a separate state for focus handling
               },
@@ -127,6 +152,8 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
           );
         }
       } else {
+        console.log("No sentences, adding at the beginning");
+
         // If there are no sentences, add at the beginning
         addBlockMutation.mutate(
           {
@@ -136,6 +163,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
           },
           {
             onSuccess: () => {
+              console.log("Successfully added first sentence");
               // New sentence will be focused automatically
               // Managing block-id as a separate state for focus handling
             },
@@ -172,6 +200,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
                 <TextEditor
                   content={sentenceContent}
                   level={sentenceLevel}
+                  path={[...path, index]}
                   isLast={index === (content.content?.length || 0) - 1}
                   onNextFocus={() => handleNextFocus(index)}
                   onAddNewSentence={

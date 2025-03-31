@@ -24,6 +24,13 @@ export const getTypeColor = (type: ContentType) => {
         title: "#AA8800",
         main: "#F4B400", // Google Yellow
       };
+    case "subsubsection":
+      return {
+        bg: "#FCE4EC",
+        border: "#E91E63",
+        title: "#C2185B",
+        main: "#E91E63", // Pink
+      };
     case "paragraph":
       return {
         bg: "#FCE8E6",
@@ -57,6 +64,8 @@ export const getSimpleBackgroundColor = (type: ContentType): string => {
       return "#E6F4EA";
     case "subsection":
       return "#FEF7E0";
+    case "subsubsection":
+      return "#FCE4EC";
     case "paragraph":
       return "#FCE8E6";
     case "sentence":
@@ -68,5 +77,11 @@ export const getSimpleBackgroundColor = (type: ContentType): string => {
 
 // Check if content type is selectable
 export const isSelectableContent = (type: ContentType): boolean => {
-  return ["paper", "section", "subsection", "paragraph"].includes(type);
+  return [
+    "paper",
+    "section",
+    "subsection",
+    "subsubsection",
+    "paragraph",
+  ].includes(type);
 };

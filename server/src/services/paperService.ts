@@ -7,7 +7,7 @@ import { string } from "zod";
 type Message = {
   role: "system" | "user" | "assistant";
   content: string;
-  blockId?: string;  // Optional blockId to associate message with a specific block
+  blockId?: string; // Optional blockId to associate message with a specific block
 };
 
 export class PaperService {
@@ -35,14 +35,28 @@ export class PaperService {
   }
 
   async updateSentence(blockId: string): Promise<void> {
-    const parentId: string = this.paperRepository.findParentBlockIdByChildId(null, blockId);
-    const contextValue: string = this.paperRepository.getChildrenValues(parentId, "content");
+    const parentId: string = this.paperRepository.findParentBlockIdByChildId(
+      null,
+      blockId
+    );
+    const contextValue: string = this.paperRepository.getChildrenValues(
+      parentId,
+      "content"
+    );
     return this.autoUpdateParentBlock(parentId, contextValue);
   }
 
   async autoUpdateParentBlock(blockId: string, blockContent: string) {
-    await this.updateBlock(blockId, "summary", await this.summarizeText(blockContent));
-    await this.updateBlock(blockId, "intent", await this.findIntent(blockContent));
+    await this.updateBlock(
+      blockId,
+      "summary",
+      await this.summarizeText(blockContent)
+    );
+    await this.updateBlock(
+      blockId,
+      "intent",
+      await this.findIntent(blockContent)
+    );
   }
 
   async updateWhole(): Promise<void> {
@@ -50,26 +64,39 @@ export class PaperService {
       // Fetch the current paper data
       const paper = await this.paperRepository.getPaper();
       // Recursive function to update all sentences
-      const updateContentRecursively = async (contentArray: any[]): Promise<void> => {
+      const updateContentRecursively = async (
+        contentArray: any[]
+      ): Promise<void> => {
         for (const item of contentArray) {
           if (item.type === "paragraph" && item.content) {
             // Get all sentence contents from the paragraph
-            const content = this.paperRepository.getChildrenValues(item["block-id"], "content");
+            const content = this.paperRepository.getChildrenValues(
+              item["block-id"],
+              "content"
+            );
             // Update the paragraph's summary and intent
-            await this.updateBlock(item["block-id"], "summary", await this.summarizeText(content));
-            await this.updateBlock(item["block-id"], "intent", await this.findIntent(content));
+            await this.updateBlock(
+              item["block-id"],
+              "summary",
+              await this.summarizeText(content)
+            );
+            await this.updateBlock(
+              item["block-id"],
+              "intent",
+              await this.findIntent(content)
+            );
           }
-  
+
           // If the item has nested content, recurse into it
           if (Array.isArray(item.content)) {
             await updateContentRecursively(item.content);
           }
         }
       };
-  
+
       // Start the recursive update
       await updateContentRecursively(paper.content);
-  
+
       // Save the updated paper back to the repository
       await this.savePaper(paper);
     } catch (error) {
@@ -133,14 +160,17 @@ export class PaperService {
   async initializeConversation(): Promise<void> {
     try {
       const paper = await this.paperRepository.getPaper();
-      const paperContent = this.paperRepository.getChildrenValues(paper["block-id"] || "root", "content");
-      
+      const paperContent = this.paperRepository.getChildrenValues(
+        paper["block-id"] || "root",
+        "content"
+      );
+
       // Set up the initial system message with paper context
       this.conversationHistory = [
         {
           role: "system",
-          content: `You are a helpful peer reader for academic writing. Here is the context of the paper you are helping with:\n\n${paperContent}\n\nPlease provide your response based on this context.`
-        }
+          content: `You are a helpful peer reader for academic writing. Here is the context of the paper you are helping with:\n\n${paperContent}\n\nPlease provide your response based on this context.`,
+        },
       ];
     } catch (error) {
       console.error("Error initializing conversation:", error);
@@ -148,7 +178,11 @@ export class PaperService {
     }
   }
 
-  async askLLM(text: string, renderedContent?: string, blockId?: string): Promise<any> {
+  async askLLM(
+    text: string,
+    renderedContent?: string,
+    blockId?: string
+  ): Promise<any> {
     try {
       // If conversation hasn't been initialized, initialize it
       if (this.conversationHistory.length === 0) {
@@ -159,7 +193,7 @@ export class PaperService {
       this.conversationHistory.push({
         role: "user",
         content: text,
-        blockId
+        blockId,
       });
 
       // If rendered content is provided, add it as additional context
@@ -167,7 +201,7 @@ export class PaperService {
         this.conversationHistory.push({
           role: "system",
           content: `Here is the currently visible content in the editor:\n\n${renderedContent}\n\nPlease consider this content when providing your response.`,
-          blockId
+          blockId,
         });
       }
 
@@ -181,7 +215,7 @@ export class PaperService {
         this.conversationHistory.push({
           role: "assistant",
           content: response.choices[0].message.content,
-          blockId
+          blockId,
         });
       }
 
@@ -207,8 +241,8 @@ export class PaperService {
       const response = await this.client.chat.completions.create({
         model: "gpt-4o",
         messages: [
-          { 
-            role: "user", 
+          {
+            role: "user",
             content: `You are a helpful peer reader for academic writing. Extract a summary from a following sentence. Sentence: ${text}. Summary: `,
           },
         ],
@@ -233,8 +267,8 @@ export class PaperService {
       const response = await this.client.chat.completions.create({
         model: "gpt-4o",
         messages: [
-          { 
-            role: "user", 
+          {
+            role: "user",
             content: `You are a helpful peer reader for academic writing. Extract a three sentence summary from a following text. Text: ${text}. Summary: `,
           },
         ],
@@ -260,8 +294,8 @@ export class PaperService {
       const response = await this.client.chat.completions.create({
         model: "gpt-4o",
         messages: [
-          { 
-            role: "user", 
+          {
+            role: "user",
             content: `You are a helpful peer reader for academic writing. Infer a less than 5 words intent from a following text. Is it an argument/evidence/reasoning/benefit/shortcoming/explanation/...? Text: ${text}. Intent: `,
           },
         ],
@@ -298,38 +332,57 @@ export class PaperService {
 
     // Helper function to process paragraphs
     const processParagraph = (paragraph: any): string => {
-      if (!paragraph || typeof paragraph === 'string' || !Array.isArray(paragraph.content)) {
-        return '';
+      if (
+        !paragraph ||
+        typeof paragraph === "string" ||
+        !Array.isArray(paragraph.content)
+      ) {
+        return "";
       }
 
       const sentences = paragraph.content
-        .filter((s: any) => s && typeof s !== 'string' && s.type === "sentence")
+        .filter((s: any) => s && typeof s !== "string" && s.type === "sentence")
         .map((s: any) => s.content)
         .join(" ");
-      
-      return sentences ? `${sentences}\n\n` : '';
+
+      return sentences ? `${sentences}\n\n` : "";
     };
 
     // Process each section
     for (const section of paper.content) {
-      if (typeof section === 'string') continue;
-      
+      if (typeof section === "string") continue;
+
       // Add section title
       latexContent += `\\section{${section.title}}\n\n`;
 
       // Process content based on type
       if (section.type === "section" && Array.isArray(section.content)) {
         for (const item of section.content) {
-          if (typeof item === 'string') continue;
+          if (typeof item === "string") continue;
 
           if (item.type === "subsection") {
             // Handle subsection
             latexContent += `\\subsection{${item.title}}\n\n`;
-            
-            // Process paragraphs in subsection
+
+            // Process paragraphs or subsubsections in subsection
             if (Array.isArray(item.content)) {
-              for (const paragraph of item.content) {
-                latexContent += processParagraph(paragraph);
+              for (const subItem of item.content) {
+                if (typeof subItem === "string") continue;
+
+                if (subItem.type === "subsubsection") {
+                  // Handle subsubsection
+                  latexContent += `\\subsubsection{${subItem.title}}\n\n`;
+
+                  // Process paragraphs in subsubsection
+                  if (Array.isArray(subItem.content)) {
+                    for (const paragraph of subItem.content) {
+                      latexContent += processParagraph(paragraph);
+                    }
+                  }
+                } else if (subItem.type === "paragraph") {
+                  // Handle paragraphs directly in subsection
+                  latexContent += processParagraph(subItem);
+                }
               }
             }
           } else if (item.type === "paragraph") {
@@ -359,8 +412,16 @@ export class PaperService {
       // First, collect all sections and their content
       const collectSections = (contentArray: any[]): void => {
         for (const item of contentArray) {
-          if ((item.type === "section" || item.type === "subsection") && item.content) {
-            const content = this.paperRepository.getChildrenValues(item["block-id"], "content");
+          if (
+            (item.type === "section" ||
+              item.type === "subsection" ||
+              item.type === "subsubsection") &&
+            item.content
+          ) {
+            const content = this.paperRepository.getChildrenValues(
+              item["block-id"],
+              "content"
+            );
             sectionsToUpdate.push({ id: item["block-id"], content });
           }
 
@@ -378,15 +439,23 @@ export class PaperService {
         const batchPromises = batch.map(async ({ id, content }) => {
           // Check cache first
           if (this.summaryCache.has(content) && this.intentCache.has(content)) {
-            await this.updateBlock(id, "summary", this.summaryCache.get(content)!);
-            await this.updateBlock(id, "intent", this.intentCache.get(content)!);
+            await this.updateBlock(
+              id,
+              "summary",
+              this.summaryCache.get(content)!
+            );
+            await this.updateBlock(
+              id,
+              "intent",
+              this.intentCache.get(content)!
+            );
             return;
           }
 
           // If not in cache, make API calls
           const [summary, intent] = await Promise.all([
             this.summarizeText(content),
-            this.findIntent(content)
+            this.findIntent(content),
           ]);
 
           // Update cache

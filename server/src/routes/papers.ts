@@ -74,53 +74,75 @@ function isLatexComment(line: string): boolean {
 function isLatexCommand(line: string): boolean {
   // Remove any LaTeX comments from the line first
   const lineWithoutComments = line.replace(/(?<!\\)%.*$/, "").trim();
-  
+
   // If the line is empty after removing comments, it's not a command
   if (!lineWithoutComments) return false;
 
   // If the line contains \item or \citet, it's not a command (it's content)
-  if (lineWithoutComments.includes("\\item") || lineWithoutComments.includes("\\citet")) return false;
-  
+  if (
+    lineWithoutComments.includes("\\item") ||
+    lineWithoutComments.includes("\\citet")
+  )
+    return false;
+
   // More general pattern to catch LaTeX commands
-  return /^\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/.test(lineWithoutComments) ||
-         // Catch margin and layout settings
-         /^[a-zA-Z]+(?:top|bottom|left|right|inner|outer)margin=\d+pt(?:,)?$/.test(lineWithoutComments) ||
-         // Catch other common layout parameters
-         /^[a-zA-Z]+(?:width|height|depth|size)=\d+pt(?:,)?$/.test(lineWithoutComments) ||
-         // Catch spacing parameters
-         /^[a-zA-Z]+(?:space|skip|vspace|hspace)=\d+pt(?:,)?$/.test(lineWithoutComments) ||
-         // Catch color and style settings
-         /^[a-zA-Z]+(?:color|style|background|linecolor|frametitlebackgroundcolor)=[a-zA-Z]+(?:!?\d+)?(?:,)?$/.test(lineWithoutComments) ||
-         // Catch frame and title settings
-         /^[a-zA-Z]+(?:frame|title|frametitle)=[^,]+(?:,)?$/.test(lineWithoutComments) ||
-         // Catch conference and date settings
-         /^[a-zA-Z]+(?:conference|date|year|month|day)=[^,]+(?:,)?$/.test(lineWithoutComments) ||
-         // Catch ACM-specific settings
-         /^\\acm(?:Conference|Journal|Volume|Number|Price|DOI|ISBN|ISSN|SubmissionID|Article|Year|Month|Day|Date|Location|City|Country|State|Region|Category|Subject|Keywords|Terms|Format|Style|Template|Copyright|Permission|Notice|Reference|Abstract|Acknowledgments|Bibliography|Appendix)/.test(lineWithoutComments) ||
-         // Catch color definitions
-         /^\\definecolor{.*?}{.*?}{.*?}$/.test(lineWithoutComments) ||
-         // Catch any line that's just a LaTeX command with optional arguments
-         /^\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?(?:\s*%)?$/.test(lineWithoutComments) ||
-         // Catch any line that contains an ACM command anywhere
-         /\\acm(?:Conference|Journal|Volume|Number|Price|DOI|ISBN|ISSN|SubmissionID|Article|Year|Month|Day|Date|Location|City|Country|State|Region|Category|Subject|Keywords|Terms|Format|Style|Template|Copyright|Permission|Notice|Reference|Abstract|Acknowledgments|Bibliography|Appendix)/.test(lineWithoutComments) ||
-         // Catch multi-line ACM conference settings
-         /^\\acmConference\[.*?\]{.*?}{.*?}{.*?}$/.test(lineWithoutComments) ||
-         /^\\acmBooktitle{.*?}$/.test(lineWithoutComments) ||
-         // Catch frametitlefont and similar settings
-         /^frametitlefont=.*$/.test(lineWithoutComments) ||
-         // Catch any line that's part of a LaTeX environment definition
-         /^\\newenvironment{.*?}{.*?}{.*?}$/.test(lineWithoutComments) ||
-         // Catch any line that's part of a LaTeX command definition
-         /^\\newcommand{.*?}{.*?}$/.test(lineWithoutComments) ||
-         // Catch environment begin/end markers (but not their content)
-         /^\\begin{(?!itemize).*?}$/.test(lineWithoutComments) ||
-         /^\\end{(?!itemize).*?}$/.test(lineWithoutComments) ||
-         // Catch any line that's a LaTeX setting with optional arguments
-         /^[a-zA-Z]+(?:\[.*?\])?=.*$/.test(lineWithoutComments) ||
-         // Catch any line that's part of a LaTeX environment options
-         /^\[.*?\]$/.test(lineWithoutComments) ||
-         // Catch any line that's a LaTeX setting with a value
-         /^[a-zA-Z]+=.*$/.test(lineWithoutComments);
+  return (
+    /^\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/.test(lineWithoutComments) ||
+    // Catch margin and layout settings
+    /^[a-zA-Z]+(?:top|bottom|left|right|inner|outer)margin=\d+pt(?:,)?$/.test(
+      lineWithoutComments
+    ) ||
+    // Catch other common layout parameters
+    /^[a-zA-Z]+(?:width|height|depth|size)=\d+pt(?:,)?$/.test(
+      lineWithoutComments
+    ) ||
+    // Catch spacing parameters
+    /^[a-zA-Z]+(?:space|skip|vspace|hspace)=\d+pt(?:,)?$/.test(
+      lineWithoutComments
+    ) ||
+    // Catch color and style settings
+    /^[a-zA-Z]+(?:color|style|background|linecolor|frametitlebackgroundcolor)=[a-zA-Z]+(?:!?\d+)?(?:,)?$/.test(
+      lineWithoutComments
+    ) ||
+    // Catch frame and title settings
+    /^[a-zA-Z]+(?:frame|title|frametitle)=[^,]+(?:,)?$/.test(
+      lineWithoutComments
+    ) ||
+    // Catch conference and date settings
+    /^[a-zA-Z]+(?:conference|date|year|month|day)=[^,]+(?:,)?$/.test(
+      lineWithoutComments
+    ) ||
+    // Catch ACM-specific settings
+    /^\\acm(?:Conference|Journal|Volume|Number|Price|DOI|ISBN|ISSN|SubmissionID|Article|Year|Month|Day|Date|Location|City|Country|State|Region|Category|Subject|Keywords|Terms|Format|Style|Template|Copyright|Permission|Notice|Reference|Abstract|Acknowledgments|Bibliography|Appendix)/.test(
+      lineWithoutComments
+    ) ||
+    // Catch color definitions
+    /^\\definecolor{.*?}{.*?}{.*?}$/.test(lineWithoutComments) ||
+    // Catch any line that's just a LaTeX command with optional arguments
+    /^\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?(?:\s*%)?$/.test(lineWithoutComments) ||
+    // Catch any line that contains an ACM command anywhere
+    /\\acm(?:Conference|Journal|Volume|Number|Price|DOI|ISBN|ISSN|SubmissionID|Article|Year|Month|Day|Date|Location|City|Country|State|Region|Category|Subject|Keywords|Terms|Format|Style|Template|Copyright|Permission|Notice|Reference|Abstract|Acknowledgments|Bibliography|Appendix)/.test(
+      lineWithoutComments
+    ) ||
+    // Catch multi-line ACM conference settings
+    /^\\acmConference\[.*?\]{.*?}{.*?}{.*?}$/.test(lineWithoutComments) ||
+    /^\\acmBooktitle{.*?}$/.test(lineWithoutComments) ||
+    // Catch frametitlefont and similar settings
+    /^frametitlefont=.*$/.test(lineWithoutComments) ||
+    // Catch any line that's part of a LaTeX environment definition
+    /^\\newenvironment{.*?}{.*?}{.*?}$/.test(lineWithoutComments) ||
+    // Catch any line that's part of a LaTeX command definition
+    /^\\newcommand{.*?}{.*?}$/.test(lineWithoutComments) ||
+    // Catch environment begin/end markers (but not their content)
+    /^\\begin{(?!itemize).*?}$/.test(lineWithoutComments) ||
+    /^\\end{(?!itemize).*?}$/.test(lineWithoutComments) ||
+    // Catch any line that's a LaTeX setting with optional arguments
+    /^[a-zA-Z]+(?:\[.*?\])?=.*$/.test(lineWithoutComments) ||
+    // Catch any line that's part of a LaTeX environment options
+    /^\[.*?\]$/.test(lineWithoutComments) ||
+    // Catch any line that's a LaTeX setting with a value
+    /^[a-zA-Z]+=.*$/.test(lineWithoutComments)
+  );
 }
 
 function isNonPaperContent(line: string): boolean {
@@ -356,6 +378,7 @@ export function processLatexContent(
   let currentParagraph: any[] = [];
   let currentSection: any = null;
   let currentSubsection: any = null;
+  let currentSubsubsection: any = null;
   let blockIdIncrement = 0;
 
   // Helper function to create a sentence block
@@ -379,25 +402,69 @@ export function processLatexContent(
   // Helper function to save current section if it has content
   const saveCurrentSection = () => {
     if (currentSection) {
-      if (currentSubsection && currentSubsection.content.length > 0) {
-        currentSection.content.push(currentSubsection);
+      if (currentSubsection) {
+        saveCurrentSubsection();
+        // null 값 필터링
+        if (currentSubsection && currentSubsection.content.length > 0) {
+          currentSection.content.push(currentSubsection);
+        }
       }
+      // null 값 필터링
+      if (Array.isArray(currentSection.content)) {
+        currentSection.content = currentSection.content.filter(
+          (item: any) => item !== null
+        );
+      }
+
       if (currentSection.content.length > 0) {
         result.push(currentSection);
       }
       currentSubsection = null;
+      currentSubsubsection = null;
     }
   };
 
   // Helper function to save current subsection if it has content
   const saveCurrentSubsection = () => {
-    if (
-      currentSubsection &&
-      currentSection &&
-      currentSubsection.content.length > 0
-    ) {
-      currentSection.content.push(currentSubsection);
+    if (currentSubsection && currentSection) {
+      // 먼저 현재 subsubsection이 있으면 저장
+      if (currentSubsubsection && currentSubsubsection.content.length > 0) {
+        // null 값 필터링
+        if (Array.isArray(currentSubsubsection.content)) {
+          currentSubsubsection.content = currentSubsubsection.content.filter(
+            (item: any) => item !== null
+          );
+        }
+        currentSubsection.content.push(currentSubsubsection);
+      }
+
+      // null 값 필터링
+      if (Array.isArray(currentSubsection.content)) {
+        currentSubsection.content = currentSubsection.content.filter(
+          (item: any) => item !== null
+        );
+      }
+
+      // 현재 subsection이 내용이 있으면 section에 추가
+      if (currentSubsection.content.length > 0) {
+        currentSection.content.push(currentSubsection);
+      }
+
+      // 초기화
       currentSubsection = null;
+      currentSubsubsection = null;
+    }
+  };
+
+  // Helper function to save current subsubsection if it has content
+  const saveCurrentSubsubsection = () => {
+    if (
+      currentSubsubsection &&
+      currentSubsection &&
+      currentSubsubsection.content.length > 0
+    ) {
+      currentSubsection.content.push(currentSubsubsection);
+      currentSubsubsection = null;
     }
   };
 
@@ -421,6 +488,16 @@ export function processLatexContent(
     content: paragraphs,
   });
 
+  // Helper function to create a subsubsection block
+  const createSubsubsectionBlock = (title: string, paragraphs: any[]): any => ({
+    title: title,
+    "block-id": generateBlockId(baseTimestamp, blockIdIncrement++),
+    summary: "",
+    intent: "",
+    type: "subsubsection",
+    content: paragraphs,
+  });
+
   // Helper function to clean LaTeX content
   const cleanLatexContent = (line: string): string => {
     // First check if the entire line is a comment
@@ -435,16 +512,23 @@ export function processLatexContent(
     if (!lineWithoutComments) return "";
 
     // Skip if it's a LaTeX command or non-paper content
-    if (isLatexCommand(lineWithoutComments) || isNonPaperContent(lineWithoutComments)) {
+    if (
+      isLatexCommand(lineWithoutComments) ||
+      isNonPaperContent(lineWithoutComments)
+    ) {
       return "";
     }
 
     // Skip if the line contains ACM conference information
-    if (lineWithoutComments.includes("\\acmConference") ||
-        lineWithoutComments.includes("\\acmBooktitle") ||
-        lineWithoutComments.includes("conference title from your rights confirmation emai") ||
-        lineWithoutComments.includes("Woodstock") ||
-        lineWithoutComments.includes("June 03--05")) {
+    if (
+      lineWithoutComments.includes("\\acmConference") ||
+      lineWithoutComments.includes("\\acmBooktitle") ||
+      lineWithoutComments.includes(
+        "conference title from your rights confirmation emai"
+      ) ||
+      lineWithoutComments.includes("Woodstock") ||
+      lineWithoutComments.includes("June 03--05")
+    ) {
       return "";
     }
 
@@ -452,80 +536,83 @@ export function processLatexContent(
     let cleanedLine = lineWithoutComments;
 
     // If the line contains citations, handle them first
-    if (lineWithoutComments.includes("\\citet") || lineWithoutComments.includes("\\cite")) {
+    if (
+      lineWithoutComments.includes("\\citet") ||
+      lineWithoutComments.includes("\\cite")
+    ) {
       // First replace citations with [citation] format
       cleanedLine = lineWithoutComments
-        .replace(/\\citet{(.*?)}/g, (match, citation) => `[${citation}]`)  // Replace citet citations with [citation]
-        .replace(/\\cite{(.*?)}/g, (match, citation) => `[${citation}]`)  // Replace regular citations with [citation]
-        .replace(/\[@(.*?)\]/g, (match, citation) => `[${citation}]`)    // Replace markdown citations with [citation]
-        .replace(/\\textbf{(.*?)}/g, "$1")  // Remove textbf formatting
-        .replace(/\\textit{(.*?)}/g, "$1")  // Remove textit formatting
-        .replace(/\\emph{(.*?)}/g, "$1")    // Remove emph formatting
-        .replace(/\\label{.*?}/g, "")       // Remove labels
-        .replace(/\\ref{.*?}/g, "")         // Remove refs
-        .replace(/\{.*?\}/g, "")      // Remove curly braces and their content
-        .replace(/\[.*?\]/g, "")      // Remove square brackets and their content
+        .replace(/\\citet{(.*?)}/g, (match, citation) => `[${citation}]`) // Replace citet citations with [citation]
+        .replace(/\\cite{(.*?)}/g, (match, citation) => `[${citation}]`) // Replace regular citations with [citation]
+        .replace(/\[@(.*?)\]/g, (match, citation) => `[${citation}]`) // Replace markdown citations with [citation]
+        .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
+        .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
+        .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
+        .replace(/\\label{.*?}/g, "") // Remove labels
+        .replace(/\\ref{.*?}/g, "") // Remove refs
+        .replace(/\{.*?\}/g, "") // Remove curly braces and their content
+        .replace(/\[.*?\]/g, "") // Remove square brackets and their content
         .trim();
     } else {
       // For non-citation lines, clean up LaTeX commands
       cleanedLine = lineWithoutComments
-        .replace(/\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "")  // Remove all LaTeX commands
-        .replace(/\\textbf{(.*?)}/g, "$1")  // Remove textbf formatting
-        .replace(/\\textit{(.*?)}/g, "$1")  // Remove textit formatting
-        .replace(/\\emph{(.*?)}/g, "$1")    // Remove emph formatting
-        .replace(/\\label{.*?}/g, "")       // Remove labels
-        .replace(/\\ref{.*?}/g, "")         // Remove refs
-        .replace(/\\newcommand{.*?}{.*?}/g, "")  // Remove newcommand definitions
-        .replace(/\\newenvironment{.*?}{.*?}{.*?}/g, "")  // Remove newenvironment definitions
-        .replace(/\\acmConference{.*?}/g, "")  // Remove ACM conference settings
-        .replace(/\\acmJournal{.*?}/g, "")  // Remove ACM journal settings
-        .replace(/\\acmVolume{.*?}/g, "")  // Remove ACM volume settings
-        .replace(/\\acmNumber{.*?}/g, "")  // Remove ACM number settings
-        .replace(/\\acmPrice{.*?}/g, "")  // Remove ACM price settings
-        .replace(/\\acmDOI{.*?}/g, "")  // Remove ACM DOI settings
-        .replace(/\\acmISBN{.*?}/g, "")  // Remove ACM ISBN settings
-        .replace(/\\acmISSN{.*?}/g, "")  // Remove ACM ISSN settings
-        .replace(/\\acmSubmissionID{.*?}/g, "")  // Remove ACM submission ID settings
-        .replace(/\\acmArticle{.*?}/g, "")  // Remove ACM article settings
-        .replace(/\\acmYear{.*?}/g, "")  // Remove ACM year settings
-        .replace(/\\acmMonth{.*?}/g, "")  // Remove ACM month settings
-        .replace(/\\acmDay{.*?}/g, "")  // Remove ACM day settings
-        .replace(/\\acmDate{.*?}/g, "")  // Remove ACM date settings
-        .replace(/\\acmLocation{.*?}/g, "")  // Remove ACM location settings
-        .replace(/\\acmCity{.*?}/g, "")  // Remove ACM city settings
-        .replace(/\\acmCountry{.*?}/g, "")  // Remove ACM country settings
-        .replace(/\\acmState{.*?}/g, "")  // Remove ACM state settings
-        .replace(/\\acmRegion{.*?}/g, "")  // Remove ACM region settings
-        .replace(/\\acmCategory{.*?}/g, "")  // Remove ACM category settings
-        .replace(/\\acmSubject{.*?}/g, "")  // Remove ACM subject settings
-        .replace(/\\acmKeywords{.*?}/g, "")  // Remove ACM keywords settings
-        .replace(/\\acmTerms{.*?}/g, "")  // Remove ACM terms settings
-        .replace(/\\acmFormat{.*?}/g, "")  // Remove ACM format settings
-        .replace(/\\acmStyle{.*?}/g, "")  // Remove ACM style settings
-        .replace(/\\acmTemplate{.*?}/g, "")  // Remove ACM template settings
-        .replace(/\\acmCopyright{.*?}/g, "")  // Remove ACM copyright settings
-        .replace(/\\acmPermission{.*?}/g, "")  // Remove ACM permission settings
-        .replace(/\\acmNotice{.*?}/g, "")  // Remove ACM notice settings
-        .replace(/\\acmReference{.*?}/g, "")  // Remove ACM reference settings
-        .replace(/\\acmAbstract{.*?}/g, "")  // Remove ACM abstract settings
-        .replace(/\\acmAcknowledgments{.*?}/g, "")  // Remove ACM acknowledgments settings
-        .replace(/\\acmBibliography{.*?}/g, "")  // Remove ACM bibliography settings
-        .replace(/\\acmAppendix{.*?}/g, "")  // Remove ACM appendix settings
-        .replace(/\\acmBooktitle{.*?}/g, "")  // Remove ACM booktitle settings
-        .replace(/\\begin{itemize}/g, "")  // Remove itemize begin
-        .replace(/\\end{itemize}/g, "")    // Remove itemize end
-        .replace(/\\item\s*/g, "• ")       // Replace \item with bullet point
-        .replace(/\{.*?\}/g, "")  // Remove any remaining curly braces and their content
-        .replace(/\[.*?\]/g, "")  // Remove any remaining square brackets and their content
+        .replace(/\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "") // Remove all LaTeX commands
+        .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
+        .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
+        .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
+        .replace(/\\label{.*?}/g, "") // Remove labels
+        .replace(/\\ref{.*?}/g, "") // Remove refs
+        .replace(/\\newcommand{.*?}{.*?}/g, "") // Remove newcommand definitions
+        .replace(/\\newenvironment{.*?}{.*?}{.*?}/g, "") // Remove newenvironment definitions
+        .replace(/\\acmConference{.*?}/g, "") // Remove ACM conference settings
+        .replace(/\\acmJournal{.*?}/g, "") // Remove ACM journal settings
+        .replace(/\\acmVolume{.*?}/g, "") // Remove ACM volume settings
+        .replace(/\\acmNumber{.*?}/g, "") // Remove ACM number settings
+        .replace(/\\acmPrice{.*?}/g, "") // Remove ACM price settings
+        .replace(/\\acmDOI{.*?}/g, "") // Remove ACM DOI settings
+        .replace(/\\acmISBN{.*?}/g, "") // Remove ACM ISBN settings
+        .replace(/\\acmISSN{.*?}/g, "") // Remove ACM ISSN settings
+        .replace(/\\acmSubmissionID{.*?}/g, "") // Remove ACM submission ID settings
+        .replace(/\\acmArticle{.*?}/g, "") // Remove ACM article settings
+        .replace(/\\acmYear{.*?}/g, "") // Remove ACM year settings
+        .replace(/\\acmMonth{.*?}/g, "") // Remove ACM month settings
+        .replace(/\\acmDay{.*?}/g, "") // Remove ACM day settings
+        .replace(/\\acmDate{.*?}/g, "") // Remove ACM date settings
+        .replace(/\\acmLocation{.*?}/g, "") // Remove ACM location settings
+        .replace(/\\acmCity{.*?}/g, "") // Remove ACM city settings
+        .replace(/\\acmCountry{.*?}/g, "") // Remove ACM country settings
+        .replace(/\\acmState{.*?}/g, "") // Remove ACM state settings
+        .replace(/\\acmRegion{.*?}/g, "") // Remove ACM region settings
+        .replace(/\\acmCategory{.*?}/g, "") // Remove ACM category settings
+        .replace(/\\acmSubject{.*?}/g, "") // Remove ACM subject settings
+        .replace(/\\acmKeywords{.*?}/g, "") // Remove ACM keywords settings
+        .replace(/\\acmTerms{.*?}/g, "") // Remove ACM terms settings
+        .replace(/\\acmFormat{.*?}/g, "") // Remove ACM format settings
+        .replace(/\\acmStyle{.*?}/g, "") // Remove ACM style settings
+        .replace(/\\acmTemplate{.*?}/g, "") // Remove ACM template settings
+        .replace(/\\acmCopyright{.*?}/g, "") // Remove ACM copyright settings
+        .replace(/\\acmPermission{.*?}/g, "") // Remove ACM permission settings
+        .replace(/\\acmNotice{.*?}/g, "") // Remove ACM notice settings
+        .replace(/\\acmReference{.*?}/g, "") // Remove ACM reference settings
+        .replace(/\\acmAbstract{.*?}/g, "") // Remove ACM abstract settings
+        .replace(/\\acmAcknowledgments{.*?}/g, "") // Remove ACM acknowledgments settings
+        .replace(/\\acmBibliography{.*?}/g, "") // Remove ACM bibliography settings
+        .replace(/\\acmAppendix{.*?}/g, "") // Remove ACM appendix settings
+        .replace(/\\acmBooktitle{.*?}/g, "") // Remove ACM booktitle settings
+        .replace(/\\begin{itemize}/g, "") // Remove itemize begin
+        .replace(/\\end{itemize}/g, "") // Remove itemize end
+        .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
+        .replace(/\{.*?\}/g, "") // Remove any remaining curly braces and their content
+        .replace(/\[.*?\]/g, "") // Remove any remaining square brackets and their content
         .trim();
     }
 
     // If the line contains itemize content, preserve it
     if (lineWithoutComments.includes("\\item")) {
       cleanedLine = lineWithoutComments
-        .replace(/\\item\s*/g, "• ")  // Replace \item with bullet point
-        .replace(/\{.*?\}/g, "")      // Remove curly braces and their content
-        .replace(/\[.*?\]/g, "")      // Remove square brackets and their content
+        .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
+        .replace(/\{.*?\}/g, "") // Remove curly braces and their content
+        .replace(/\[.*?\]/g, "") // Remove square brackets and their content
         .trim();
     }
 
@@ -534,17 +621,30 @@ export function processLatexContent(
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    
+
     // Skip empty lines
     if (!trimmedLine) {
       // If we have a current paragraph, save it
       if (currentParagraph && currentParagraph.length > 0) {
         const paragraph = createParagraphBlock(currentParagraph);
-        if (currentSubsection) {
-          currentSubsection.content.push(paragraph);
+
+        // 단계별로 확인하여 적절한 위치에 추가
+        if (currentSection) {
+          if (currentSubsection) {
+            if (currentSubsubsection) {
+              currentSubsubsection.content.push(paragraph);
+            } else {
+              currentSubsection.content.push(paragraph);
+            }
+          } else {
+            currentSection.content.push(paragraph);
+          }
         } else {
+          // 만약 아직 섹션이 없다면 기본 섹션 생성
+          currentSection = createSectionBlock("Main Content", []);
           currentSection.content.push(paragraph);
         }
+
         currentParagraph = [];
       }
       continue;
@@ -560,15 +660,18 @@ export function processLatexContent(
           const title = match[2];
           currentSection = createSectionBlock(title, []);
           currentSubsection = null;
+          currentSubsubsection = null;
           currentParagraph = [];
         }
       }
       // Handle regular section headers
       else if (trimmedLine.includes("\\section{")) {
-        const title = trimmedLine.match(/\\section{(.*?)}/)?.[1] || "Untitled Section";
+        const title =
+          trimmedLine.match(/\\section{(.*?)}/)?.[1] || "Untitled Section";
         saveCurrentSection();
         currentSection = createSectionBlock(title, []);
         currentSubsection = null;
+        currentSubsubsection = null;
         currentParagraph = [];
       }
       // Handle subsection headers with optional short title
@@ -578,14 +681,37 @@ export function processLatexContent(
           saveCurrentSubsection();
           const title = match[2];
           currentSubsection = createSubsectionBlock(title, []);
+          currentSubsubsection = null;
           currentParagraph = [];
         }
       }
       // Handle regular subsection headers
       else if (trimmedLine.includes("\\subsection{")) {
-        const title = trimmedLine.match(/\\subsection{(.*?)}/)?.[1] || "Untitled Subsection";
+        const title =
+          trimmedLine.match(/\\subsection{(.*?)}/)?.[1] ||
+          "Untitled Subsection";
         saveCurrentSubsection();
         currentSubsection = createSubsectionBlock(title, []);
+        currentSubsubsection = null;
+        currentParagraph = [];
+      }
+      // Handle subsubsection headers with optional short title
+      else if (trimmedLine.includes("\\subsubsection[")) {
+        const match = trimmedLine.match(/\\subsubsection\[(.*?)\]\{(.*?)\}/);
+        if (match) {
+          saveCurrentSubsubsection();
+          const title = match[2];
+          currentSubsubsection = createSubsubsectionBlock(title, []);
+          currentParagraph = [];
+        }
+      }
+      // Handle regular subsubsection headers
+      else if (trimmedLine.includes("\\subsubsection{")) {
+        const title =
+          trimmedLine.match(/\\subsubsection{(.*?)}/)?.[1] ||
+          "Untitled Subsubsection";
+        saveCurrentSubsubsection();
+        currentSubsubsection = createSubsubsectionBlock(title, []);
         currentParagraph = [];
       }
       // Handle regular content
@@ -603,14 +729,16 @@ export function processLatexContent(
           // Split into sentences
           const sentences = cleanedLine
             .split(/(?<=[.!?])\s+/)
-            .filter(sentence => {
+            .filter((sentence) => {
               const cleaned = sentence.trim();
-              return cleaned.length > 0 && 
-                     cleaned.length >= 10 &&  // Minimum sentence length
-                     /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
-                     !/^[^a-zA-Z]*$/.test(cleaned); // Must not be only special characters
+              return (
+                cleaned.length > 0 &&
+                cleaned.length >= 10 && // Minimum sentence length
+                /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
+                !/^[^a-zA-Z]*$/.test(cleaned)
+              ); // Must not be only special characters
             })
-            .map(sentence => createSentenceBlock(sentence.trim()));
+            .map((sentence) => createSentenceBlock(sentence.trim()));
 
           // If we have valid sentences, add them to the current paragraph
           if (sentences.length > 0) {
@@ -626,11 +754,18 @@ export function processLatexContent(
         const title = trimmedLine.replace("## ", "").trim();
         currentSection = createSectionBlock(title, []);
         currentSubsection = null;
+        currentSubsubsection = null;
         currentParagraph = [];
       } else if (trimmedLine.startsWith("### ")) {
         saveCurrentSubsection();
         const title = trimmedLine.replace("### ", "").trim();
         currentSubsection = createSubsectionBlock(title, []);
+        currentSubsubsection = null;
+        currentParagraph = [];
+      } else if (trimmedLine.startsWith("#### ")) {
+        saveCurrentSubsubsection();
+        const title = trimmedLine.replace("#### ", "").trim();
+        currentSubsubsection = createSubsubsectionBlock(title, []);
         currentParagraph = [];
       }
       // Handle markdown content
@@ -659,10 +794,20 @@ export function processLatexContent(
           currentParagraph = sentences;
           const paragraph = createParagraphBlock(currentParagraph);
 
-          // 만약 subsection이 존재하면 subsection에 추가, 없으면 section에 직접 추가
-          if (currentSubsection) {
-            currentSubsection.content.push(paragraph);
+          // 단계별로 확인하여 적절한 위치에 추가
+          if (currentSection) {
+            if (currentSubsection) {
+              if (currentSubsubsection) {
+                currentSubsubsection.content.push(paragraph);
+              } else {
+                currentSubsection.content.push(paragraph);
+              }
+            } else {
+              currentSection.content.push(paragraph);
+            }
           } else {
+            // 만약 아직 섹션이 없다면 기본 섹션 생성
+            currentSection = createSectionBlock("Main Content", []);
             currentSection.content.push(paragraph);
           }
         }
@@ -694,10 +839,20 @@ export function processLatexContent(
         currentParagraph = sentences;
         const paragraph = createParagraphBlock(currentParagraph);
 
-        // 만약 subsection이 존재하면 subsection에 추가, 없으면 section에 직접 추가
-        if (currentSubsection) {
-          currentSubsection.content.push(paragraph);
+        // 단계별로 확인하여 적절한 위치에 추가
+        if (currentSection) {
+          if (currentSubsection) {
+            if (currentSubsubsection) {
+              currentSubsubsection.content.push(paragraph);
+            } else {
+              currentSubsection.content.push(paragraph);
+            }
+          } else {
+            currentSection.content.push(paragraph);
+          }
         } else {
+          // 만약 아직 섹션이 없다면 기본 섹션 생성
+          currentSection = createSectionBlock("Main Content", []);
           currentSection.content.push(paragraph);
         }
       }
@@ -707,7 +862,46 @@ export function processLatexContent(
   // Save the last section and subsection
   saveCurrentSection();
 
-  return result;
+  // 최종 결과에서 모든 null 값 제거
+  const cleanResult = result.map((section: any) => {
+    if (section && section.content) {
+      // 섹션의 content에서 null 값 제거
+      if (Array.isArray(section.content)) {
+        section.content = section.content.filter((item: any) => item !== null);
+
+        // 서브섹션 처리
+        section.content = section.content.map((subsection: any) => {
+          if (subsection && subsection.content) {
+            // 서브섹션의 content에서 null 값 제거
+            if (Array.isArray(subsection.content)) {
+              subsection.content = subsection.content.filter(
+                (item: any) => item !== null
+              );
+
+              // 서브서브섹션 처리
+              subsection.content = subsection.content.map(
+                (subsubsection: any) => {
+                  if (subsubsection && subsubsection.content) {
+                    // 서브서브섹션의 content에서 null 값 제거
+                    if (Array.isArray(subsubsection.content)) {
+                      subsubsection.content = subsubsection.content.filter(
+                        (item: any) => item !== null
+                      );
+                    }
+                  }
+                  return subsubsection;
+                }
+              );
+            }
+          }
+          return subsection;
+        });
+      }
+    }
+    return section;
+  });
+
+  return cleanResult;
 }
 
 export default async function paperRoutes(fastify: FastifyInstance) {

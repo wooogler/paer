@@ -17,6 +17,7 @@ import LevelIndicator, {
 interface TextEditorProps {
   content: Content;
   level?: number;
+  path?: number[];
   isLast?: boolean;
   showHierarchy?: boolean;
   onNextFocus?: () => void;
@@ -27,15 +28,21 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
   ({
     content,
     level = 0,
+    path = [],
     isLast = false,
     showHierarchy = true,
     onNextFocus,
     onAddNewSentence,
   }) => {
-    const { updateContent } = useContentStore();
+    const { updateContent, setSelectedContent, selectedContent } =
+      useContentStore();
     const { showHierarchy: appShowHierarchy } = useAppStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
+
+    // 현재 렌더링되는 문장이 selectedContent인지 확인
+    const isSelectedContent =
+      selectedContent && content["block-id"] === selectedContent["block-id"];
 
     // State for textarea
     const [initialContent, setInitialContent] = useState<string>("");
@@ -127,7 +134,12 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Add onFocus event handler
     const handleFocus = useCallback(() => {
       setIsFocused(true);
-    }, []);
+
+      // 문장에 포커스가 생기면 selectedContent를 업데이트
+      if (content.type === "sentence" && path.length > 0) {
+        setSelectedContent(content, path);
+      }
+    }, [content, path, setSelectedContent]);
 
     // Add onBlur event handler
     const handleBlur = useCallback(() => {
@@ -362,6 +374,11 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const bgColorClass = getBackgroundColorClass(content.type || "");
     const borderColorClass = getBorderColorClass(content.type || "");
 
+    // selectedContent인 경우 진한 파란색 테두리 스타일
+    const selectedContentBorderStyle = isSelectedContent
+      ? "border-blue-600 border-2"
+      : borderColorClass;
+
     return (
       <div
         className="relative"
@@ -392,7 +409,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           }}
         >
           <div
-            className={`flex flex-col py-1 px-2 rounded-t-lg ${bgColorClass}`}
+            className={`flex flex-col py-1 px-2 rounded-t-lg ${
+              isSelectedContent ? "bg-blue-100" : bgColorClass
+            }`}
           >
             {/* Summary Field */}
             <EditableField
@@ -433,7 +452,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               onFocus={handleFocus}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className={`w-full min-h-[80px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm ${borderColorClass}`}
+              className={`w-full min-h-[80px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm ${selectedContentBorderStyle}`}
             />
 
             {/* Show button when focused (regardless of content changes) */}

@@ -14,11 +14,14 @@ interface ContentState {
   content: Paper;
   selectedContent: Content | null;
   selectedPath: number[] | null;
+  selectedBlock: Content | null;
+  selectedBlockPath: number[] | null;
   parentContents: Content[]; // Parent contents of the selected content
 
   // Actions
   setContent: (content: Paper) => void;
   setSelectedContent: (content: Content | null, path: number[] | null) => void;
+  setSelectedBlock: (content: Content | null, path: number[] | null) => void;
   updateContent: (blockId: string, updatedContent: Partial<Content>) => void;
   addContent: (
     path: number[],
@@ -36,15 +39,27 @@ export const useContentStore = create<ContentState>()(
       content: initialContent,
       selectedContent: null,
       selectedPath: null,
+      selectedBlock: null,
+      selectedBlockPath: null,
       parentContents: [],
 
       // Actions
       setContent: (content) => set({ content }),
 
-      // Set selected content and find parent contents
+      // Set selected content (for chat context) - does not change parent contents
       setSelectedContent: (content, path) => {
+        return set({
+          selectedContent: content,
+          selectedPath: path,
+        });
+      },
+
+      // Set selected block (for editor display) and also set selected content
+      setSelectedBlock: (content, path) => {
         if (!content || !path) {
           return set({
+            selectedBlock: null,
+            selectedBlockPath: null,
             selectedContent: null,
             selectedPath: null,
             parentContents: [],
@@ -73,7 +88,9 @@ export const useContentStore = create<ContentState>()(
         }
 
         return set({
-          selectedContent: content,
+          selectedBlock: content,
+          selectedBlockPath: path,
+          selectedContent: content, // 초기에는 selectedContent도 동일한 값으로 설정
           selectedPath: path,
           parentContents,
         });
@@ -148,12 +165,15 @@ export const useContentStore = create<ContentState>()(
           }
 
           // Update the selected content if it matches the blockId
-          const updatedSelectedContent = state.selectedContent?.["block-id"] === blockId
-            ? { ...state.selectedContent, ...result.updatedContent }
-            : state.selectedContent;
+          const updatedSelectedContent =
+            state.selectedContent?.["block-id"] === blockId
+              ? { ...state.selectedContent, ...result.updatedContent }
+              : state.selectedContent;
 
           // Update parent contents if needed
-          const updatedParentContents = state.selectedPath ? result.updatedParents : state.parentContents;
+          const updatedParentContents = state.selectedPath
+            ? result.updatedParents
+            : state.parentContents;
 
           return {
             content: newContent,
@@ -243,6 +263,8 @@ export const useContentStore = create<ContentState>()(
         // Select only states to store
         selectedContent: state.selectedContent,
         selectedPath: state.selectedPath,
+        selectedBlock: state.selectedBlock,
+        selectedBlockPath: state.selectedBlockPath,
         parentContents: state.parentContents,
       }),
     }

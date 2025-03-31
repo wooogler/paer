@@ -70,7 +70,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
         </div>
       ) : (
         <div className="flex items-center gap-1 flex-1 w-full">
-          <span className={`break-words ${!value ? "text-gray-400" : ""}`}>
+          <span className={`break-words ${!value ? "text-gray-400" : ""} `}>
             {value || placeholder}
           </span>
           {isHovered && (

@@ -16,8 +16,13 @@ const TreeItem: React.FC<TreeItemProps> = ({
   depth,
   displayMode,
 }) => {
-  const { selectedPath, setSelectedContent } = useContentStore();
-  const isSelected = selectedPath?.join(",") === path.join(",");
+  const { selectedPath, selectedBlockPath, setSelectedBlock } =
+    useContentStore();
+
+  // 현재 항목이 selectedBlock인지 확인
+  const isSelectedBlock = selectedBlockPath?.join(",") === path.join(",");
+  // 현재 항목이 selectedContent인지 확인
+  const isSelectedContent = selectedPath?.join(",") === path.join(",");
 
   if (content.type === "sentence") {
     return null;
@@ -25,7 +30,7 @@ const TreeItem: React.FC<TreeItemProps> = ({
 
   const handleClick = () => {
     if (isSelectableContent(content.type)) {
-      setSelectedContent(content, path);
+      setSelectedBlock(content, path);
     }
   };
 
@@ -38,6 +43,8 @@ const TreeItem: React.FC<TreeItemProps> = ({
         return "text-green-600";
       case "subsection":
         return "text-yellow-600";
+      case "subsubsection":
+        return "text-pink-600";
       case "paragraph":
         return "text-gray-600";
       default:
@@ -90,7 +97,9 @@ const TreeItem: React.FC<TreeItemProps> = ({
           isSelectableContent(content.type)
             ? "cursor-pointer opacity-100"
             : "cursor-default opacity-70"
-        } ${isSelected ? "bg-blue-50" : "bg-transparent"}`}
+        } ${isSelectedContent ? "bg-blue-100" : ""} ${
+          isSelectedBlock && !isSelectedContent ? "bg-gray-100" : ""
+        }`}
         style={{ paddingLeft: `${depth * 20}px` }}
         onClick={handleClick}
       >
@@ -99,7 +108,7 @@ const TreeItem: React.FC<TreeItemProps> = ({
           <span
             className={`break-words ${contentColorClass} ${
               content.type === "paragraph" ? "" : "font-bold"
-            }`}
+            } ${isSelectedContent ? "text-blue-800" : ""}`}
           >
             {getDisplayTitle()}
           </span>
