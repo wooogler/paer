@@ -47,12 +47,7 @@ export const useContentStore = create<ContentState>()(
 
         // Actions
         setContent: (content) => {
-          console.log(
-            "[useContentStore] setContent 호출됨",
-            content ? content.type : null
-          );
           set({ content });
-          console.log("[useContentStore] setContent 완료");
         },
 
         // Set selected content (for chat context) - does not change parent contents

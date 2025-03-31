@@ -40,7 +40,6 @@ export class PaperController {
   async getPaper(request: FastifyRequest, reply: FastifyReply): Promise<any> {
     try {
       const paper = await this.paperService.getPaper();
-      console.log("paper", paper);
 
       // Validate data
       const validatedPaper = PaperSchema.parse(paper);

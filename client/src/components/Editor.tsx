@@ -33,7 +33,6 @@ const Editor: React.FC = () => {
         updatedBlock &&
         JSON.stringify(updatedBlock) !== JSON.stringify(selectedBlock)
       ) {
-        console.log("[Editor] 선택된 블록 업데이트:", updatedBlock);
         setSelectedBlock(updatedBlock, selectedBlockPath);
       }
     }, 100);

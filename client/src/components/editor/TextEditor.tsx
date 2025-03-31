@@ -276,13 +276,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Handlers for editable fields
     const handleIntentUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
-        console.log(
-          "Intent update - Before:",
-          content.intent,
-          "New:",
-          localIntent
-        );
-
         updateSentenceMutation.mutate({
           blockId: content["block-id"],
           intent: localIntent,
@@ -301,13 +294,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     const handleSummaryUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
-        console.log(
-          "Summary update - Before:",
-          content.summary,
-          "New:",
-          localSummary
-        );
-
         updateSentenceMutation.mutate({
           blockId: content["block-id"],
           summary: localSummary,

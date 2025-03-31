@@ -20,12 +20,6 @@ const queryClient = new QueryClient({
       onSettled: (data, error, variables, context) => {
         // 모든 mutation이 완료된 후 자동으로 paper 쿼리를 무효화하여 최신 데이터로 갱신
         // 이 설정으로 인해 모든 mutation이 성공/실패 여부와 관계없이 paper 쿼리를 무효화
-        console.log(
-          "[QueryClient] mutation onSettled 호출됨:",
-          data,
-          variables
-        );
-        console.log("[QueryClient] paper 쿼리 무효화 시작");
 
         // 약간의 지연 후 캐시 무효화 (서버 데이터 반영 시간 확보)
         setTimeout(() => {
@@ -34,7 +28,6 @@ const queryClient = new QueryClient({
             queryKey: ["paper"],
             refetchType: "none",
           });
-          console.log("[QueryClient] paper 쿼리 무효화 완료");
         }, 300);
       },
     },
