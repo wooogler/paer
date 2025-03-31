@@ -3,11 +3,14 @@ import api from "../services/api";
 
 // API function definition
 export const fetchPaper = async (): Promise<Paper> => {
+  console.log("[fetchPaper] API 호출 시작");
   try {
     const response = await api.get("/paper");
+    console.log("[fetchPaper] API 호출 성공");
     // Return response data (type validation is handled on the server side)
     return response.data as Paper;
   } catch (error) {
+    console.log("[fetchPaper] API 호출 실패:", error);
     if (error instanceof Error) {
       console.error("Error fetching paper:", error.message);
     }
@@ -82,17 +85,25 @@ export const addBlock = async (
   blockType: ContentType
 ): Promise<string> => {
   try {
+    console.log(
+      `Adding new ${blockType} with parent: ${parentBlockId}, prev: ${prevBlockId}`
+    );
     const response = await api.post("/paper/block", {
       parentBlockId,
       prevBlockId,
       blockType,
     });
-    return response.data.blockId as string;
+
+    const blockId = response.data.blockId as string;
+    console.log(`Successfully added ${blockType} with ID: ${blockId}`);
+    return blockId;
   } catch (error) {
     if (error instanceof Error) {
-      console.error("Error adding block:", error.message);
+      console.error(`Error adding ${blockType}:`, error.message);
+    } else {
+      console.error(`Unknown error adding ${blockType}:`, error);
     }
-    throw new Error("Failed to add new block");
+    throw new Error(`Failed to add new ${blockType}`);
   }
 };
 

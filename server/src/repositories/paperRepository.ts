@@ -108,11 +108,7 @@ export class PaperRepository {
       }
 
       // Finds the parent block; throws an error if not found
-      const parentBlock = this.getBlockById(
-        paperData,
-        parentBlockId,
-        blockType
-      );
+      const parentBlock = this.findBlockById(paperData, parentBlockId);
       if (!parentBlock) {
         throw new Error(
           `Could not find the parent block with block ID ${parentBlockId}`
@@ -286,7 +282,7 @@ export class PaperRepository {
       case "subsection":
         return root.content.find(matchingId);
 
-      case "paragraph":
+      case "subsubsection":
         for (const section of root.content) {
           if (section.content) {
             const match = section.content?.find(matchingId);
@@ -295,11 +291,28 @@ export class PaperRepository {
         }
         return undefined;
 
+      case "paragraph":
+        for (const section of root.content) {
+          if (section.content) {
+            for (const subsection of section.content) {
+              if (subsection.content) {
+                const match = subsection.content?.find(matchingId);
+                if (match) return match;
+              }
+            }
+          }
+        }
+        return undefined;
+
       case "sentence":
         for (const section of root.content) {
           for (const subsection of section.content) {
-            const match = subsection.content.find(matchingId);
-            if (match) return match;
+            for (const subsubsection of subsection.content) {
+              if (subsubsection.content) {
+                const match = subsubsection.content.find(matchingId);
+                if (match) return match;
+              }
+            }
           }
         }
         return undefined;

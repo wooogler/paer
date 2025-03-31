@@ -106,10 +106,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
     <div className={`w-full ${isVisible ? "opacity-100" : "opacity-0"}`}>
       <div className="flex items-center gap-2">
         <div className="flex-1 h2">
-          <div
-            className="relative group h-1 cursor-pointer flex items-center justify-center"
-            onClick={onClick}
-          >
+          <div className="relative group h-1 cursor-pointer flex items-center justify-center">
             <button
               onClick={onClick}
               className={`${getButtonColor()} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10`}

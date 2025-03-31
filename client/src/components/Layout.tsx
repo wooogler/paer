@@ -121,7 +121,10 @@ const Layout: React.FC = () => {
           </div>
         }
       >
-        <Structure displayMode={displayMode} />
+        <React.Fragment>
+          {(console.log("[Layout] Structure 컴포넌트 렌더링"), null)}
+          <Structure displayMode={displayMode} />
+        </React.Fragment>
       </Pane>
 
       <Pane

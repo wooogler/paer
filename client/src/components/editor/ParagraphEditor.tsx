@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Content } from "@paer/shared";
 import { useAppStore } from "../../store/useAppStore";
 import { useAddBlock } from "../../hooks/usePaperQuery";
@@ -19,6 +19,21 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
     const [hoverIndex, setHoverIndex] = useState<number | null>(null);
     // Refs for each textarea in the sentences
     const textEditorsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+    // 컴포넌트가 새 콘텐츠를 받았을 때 로그
+    useEffect(() => {
+      if (content && content.content) {
+        console.log(
+          "[ParagraphEditor] 콘텐츠 업데이트됨:",
+          path.join("."),
+          content
+        );
+        console.log(
+          "[ParagraphEditor] 문장 수:",
+          Array.isArray(content.content) ? content.content.length : 0
+        );
+      }
+    }, [content, path]);
 
     if (!content.content || !Array.isArray(content.content)) {
       return (
@@ -52,8 +67,11 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
               blockType: "sentence",
             },
             {
-              onSuccess: () => {
-                console.log("Successfully added sentence at beginning");
+              onSuccess: (newBlockId) => {
+                console.log(
+                  "Successfully added sentence at beginning with ID:",
+                  newBlockId
+                );
                 // New sentence will be focused automatically
                 // Managing block-id as a separate state for focus handling
               },
@@ -81,8 +99,11 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
               blockType: "sentence",
             },
             {
-              onSuccess: () => {
-                console.log("Successfully added sentence after existing one");
+              onSuccess: (newBlockId) => {
+                console.log(
+                  "Successfully added sentence after existing one with ID:",
+                  newBlockId
+                );
                 // New sentence will be focused automatically
                 // Managing block-id as a separate state for focus handling
               },
@@ -143,8 +164,11 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
               blockType: "sentence",
             },
             {
-              onSuccess: () => {
-                console.log("Successfully added sentence after the last one");
+              onSuccess: (newBlockId) => {
+                console.log(
+                  "Successfully added sentence after the last one with ID:",
+                  newBlockId
+                );
                 // New sentence will be focused automatically
                 // Managing block-id as a separate state for focus handling
               },
@@ -162,8 +186,11 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             blockType: "sentence",
           },
           {
-            onSuccess: () => {
-              console.log("Successfully added first sentence");
+            onSuccess: (newBlockId) => {
+              console.log(
+                "Successfully added first sentence with ID:",
+                newBlockId
+              );
               // New sentence will be focused automatically
               // Managing block-id as a separate state for focus handling
             },
@@ -195,7 +222,7 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
         {/* Render all sentences with add buttons between them */}
         {Array.isArray(content.content) &&
           content.content.map((sentenceContent, index) => (
-            <React.Fragment key={index}>
+            <React.Fragment key={sentenceContent?.["block-id"] || index}>
               <div ref={(el) => (textEditorsRef.current[index] = el)}>
                 <TextEditor
                   content={sentenceContent}
