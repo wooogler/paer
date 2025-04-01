@@ -452,4 +452,20 @@ export class PaperController {
       });
     }
   }
+
+  async updateRenderedSummaries(
+    request: FastifyRequest<{
+      Body: { renderedContent: string; blockId: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { renderedContent, blockId } = request.body;
+      await this.paperService.updateRenderedSummaries(renderedContent, blockId);
+      return reply.send({ success: true });
+    } catch (error) {
+      console.error("Error updating rendered summaries:", error);
+      return reply.status(500).send({ success: false, error: "Failed to update summaries" });
+    }
+  }
 }

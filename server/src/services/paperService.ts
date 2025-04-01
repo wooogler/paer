@@ -504,56 +504,72 @@ export class PaperService {
         throw new Error("Block not found");
       }
 
-      // Helper function to recursively get content from child blocks
-      const getChildContent = (content: string | Content | Content[] | undefined): string => {
-        if (!content) return '';
-        
-        // If content is a string, return it
-        if (typeof content === 'string') {
-          return content;
-        }
-
-        // If content is an array, process each item
-        if (Array.isArray(content)) {
-          return content.map(item => getChildContent(item)).join(' ');
-        }
-        // If content is an object with content property
-        else if ('content' in content) {
-          return getChildContent(content.content);
-        }
-
-        return '';
+      // Helper function to clean content
+      const cleanContent = (content: string): string => {
+        return content
+          .replace(/~\\ref{[^}]*}/g, '') // Remove LaTeX references
+          .replace(/\\cite{[^}]*}/g, '') // Remove LaTeX citations
+          .replace(/\\/g, '') // Remove other LaTeX commands
+          .replace(/\s+/g, ' ') // Normalize whitespace
+          .trim();
       };
 
-      // Helper function to recursively update summaries and intents
-      const updateSummariesAndIntents = async (content: Content): Promise<void> => {
-        // Skip if content is a string or doesn't have a block-id
-        if (typeof content === 'string' || !('block-id' in content) || !content["block-id"]) {
-          return;
+      // Helper function to process content recursively
+      const processContent = (content: Content): string => {
+        if (typeof content === 'string') return cleanContent(content);
+        if (!content || !('content' in content)) return '';
+        
+        if (Array.isArray(content.content)) {
+          return content.content
+            .map(item => processContent(item))
+            .filter(text => text)
+            .join(' ');
+        }
+        
+        return typeof content.content === 'string' ? cleanContent(content.content) : '';
+      };
+
+      // Create a prompt that includes the paper.json snippet
+      const prompt = `You are a helpful peer reader for academic writing. Analyze the following content block from paper.json and fill in all empty summary and intent fields.
+Here is the block from paper.json:
+${JSON.stringify(block, null, 2)}
+
+Please provide your response as a raw JSON object (without any markdown formatting or code blocks) with the same structure as the input, but with all empty summary and intent fields filled in. For each block:
+- Summary should be 20 words or less
+- Intent should be less than 5 words (e.g., argument/evidence/reasoning/benefit/shortcoming/explanation)
+- For content with LaTeX commands or references, focus on the actual text content
+- For chat messages or system messages, provide appropriate summaries and intents
+- Skip any blocks with type "sentence"
+- For blocks with nested content, consider the combined text of all child blocks`;
+
+      // Get summary and intent from LLM
+      const response = await this.client.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const result = JSON.parse(response.choices[0].message?.content?.trim() ?? "{}");
+      
+      // Update all blocks with their new summaries and intents
+      const updateBlockFields = async (content: Content): Promise<void> => {
+        if (typeof content === 'string' || !('block-id' in content)) return;
+        
+        // Skip sentence-level blocks
+        if (content.type === "sentence") return;
+        
+        if (content.summary && content.intent && content["block-id"]) {
+          await this.updateBlock(content["block-id"], "summary", content.summary);
+          await this.updateBlock(content["block-id"], "intent", content.intent);
         }
 
-        // Get content from child blocks
-        const childContent = getChildContent(content);
-
-        // Generate new summary and intent using the child content
-        const summary = await this.summarizeText(childContent);
-        const intent = await this.findIntent(childContent);
-
-        // Update the current block with new summary and intent
-        await this.updateBlock(content["block-id"], "summary", summary);
-        await this.updateBlock(content["block-id"], "intent", intent);
-
-        // Recursively update child blocks if they exist
         if (Array.isArray(content.content)) {
           for (const child of content.content) {
-            await updateSummariesAndIntents(child);
+            await updateBlockFields(child);
           }
         }
       };
 
-      // Start recursive update from the selected block
-      await updateSummariesAndIntents(block);
-
+      await updateBlockFields(result);
       return true;
     } catch (error) {
       console.error("Error updating rendered summaries:", error);

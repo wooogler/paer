@@ -101,9 +101,9 @@ const Editor: React.FC = () => {
         }
       }
 
-      if (!renderedContent.trim()) {
-        throw new Error("No content found to generate summary and intent");
-      }
+      // if (!renderedContent.trim()) {
+      //   throw new Error("No content found to generate summary and intent");
+      // }
 
       // Send the rendered content to the backend to generate new summaries and intents
       const response = await api.post("/paper/update-rendered-summaries", {
