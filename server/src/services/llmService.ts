@@ -37,10 +37,6 @@ export class LLMService {
     blockId?: string
   ): Promise<any> {
     try {
-      if (this.conversationHistory.length === 0) {
-        throw new Error("Conversation not initialized");
-      }
-
       this.conversationHistory.push({
         role: "user",
         content: text,
