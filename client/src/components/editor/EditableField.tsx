@@ -1,4 +1,5 @@
 import React from "react";
+import { ClipLoader } from "react-spinners";
 
 interface EditableFieldProps {
   value: string;
@@ -16,6 +17,7 @@ interface EditableFieldProps {
   fontSize?: string;
   fontWeight?: string;
   extraButton?: React.ReactNode;
+  isLoading?: boolean;
 }
 
 const EditableField: React.FC<EditableFieldProps> = ({
@@ -33,6 +35,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
   fontSize,
   fontWeight,
   extraButton,
+  isLoading = false,
 }) => {
   return (
     <div
@@ -58,14 +61,16 @@ const EditableField: React.FC<EditableFieldProps> = ({
           <button
             onClick={onCancel}
             className="px-2 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 flex-shrink-0"
+            disabled={isLoading}
           >
             Cancel
           </button>
           <button
             onClick={onUpdate}
             className="px-2 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white flex-shrink-0"
+            disabled={isLoading}
           >
-            Update
+            {isLoading ? <ClipLoader size={10} color="#ffffff" /> : "Update"}
           </button>
         </div>
       ) : (

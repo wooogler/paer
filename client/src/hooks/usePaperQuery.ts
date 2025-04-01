@@ -18,6 +18,7 @@ let newSentenceBlockId: string | null = null;
 
 export function usePaperQuery() {
   const setContent = useContentStore((state) => state.setContent);
+  const setLoading = useContentStore((state) => state.setLoading);
 
   const query = useQuery<Paper, Error>({
     queryKey: ["paper"],
@@ -34,7 +35,23 @@ export function usePaperQuery() {
     if (query.data) {
       setContent(query.data);
     }
-  }, [query.data, setContent]);
+    // 로딩 상태 업데이트 - isPending 또는 isLoading 중 하나라도 true이면 로딩 중으로 간주
+    const isCurrentlyLoading =
+      query.isLoading || query.isPending || query.isFetching;
+    setLoading(isCurrentlyLoading);
+
+    // 디버깅용 로그
+    if (isCurrentlyLoading) {
+      console.log("Paper data is loading...");
+    }
+  }, [
+    query.data,
+    query.isLoading,
+    query.isPending,
+    query.isFetching,
+    setContent,
+    setLoading,
+  ]);
 
   return query;
 }

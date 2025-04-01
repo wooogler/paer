@@ -200,6 +200,21 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   fastify.get("/paper/export", async (request, reply) => {
     return paperController.exportPaper(request, reply);
   });
+
+  // POST /api/paper/initialize - Reset paper.json and chat.json to initial state
+  fastify.post("/paper/initialize", async (request, reply) => {
+    try {
+      await paperController.initializeData(request, reply);
+      return { success: true };
+    } catch (error) {
+      console.error("Error initializing data:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  });
 };
 
 export default apiRoutes;

@@ -3,6 +3,7 @@ import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
 import { useChatStore } from "../../store/useChatStore";
+import { ClipLoader } from "react-spinners";
 import {
   useUpdateSentence,
   useDeleteSentence,
@@ -56,6 +57,10 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    // State for loading indicators
+    const isUpdating = updateSentenceMutation.isPending;
+    const isDeleting = deleteSentenceMutation.isPending;
 
     // State for editable fields
     const [editingIntent, setEditingIntent] = useState(false);
@@ -224,6 +229,63 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       updateContent,
     ]);
 
+    // Update with shift+Enter handler (새 문장 추가 또는 다음 문장으로 포커스 이동)
+    const handleUpdateWithNext = useCallback(() => {
+      console.log("handleUpdateWithNext called", content["block-id"]);
+      if (content.type === "sentence" && content["block-id"]) {
+        const blockId = content["block-id"] as string;
+
+        // Send update request to server first
+        console.log("Sending mutation to server");
+        updateSentenceMutation.mutate(
+          {
+            blockId,
+            content: localValue,
+            summary: localSummary,
+            intent: localIntent,
+          },
+          {
+            onSuccess: () => {
+              console.log("Update successful");
+              // Update local state after server confirms
+              updateContent(blockId, {
+                content: localValue,
+                summary: localSummary,
+                intent: localIntent,
+              });
+
+              // Also update initial content with current value
+              setInitialContent(localValue);
+
+              // 업데이트 성공 후 다음 액션 수행
+              // If this is the last sentence, add a new one
+              if (isLast && onAddNewSentence) {
+                onAddNewSentence();
+              }
+              // Otherwise move focus to the next sentence
+              else if (onNextFocus) {
+                onNextFocus();
+              }
+            },
+            onError: (error) => {
+              console.error("Update error:", error);
+            },
+          }
+        );
+      }
+    }, [
+      content.type,
+      content["block-id"],
+      updateSentenceMutation,
+      localValue,
+      localSummary,
+      localIntent,
+      updateContent,
+      isLast,
+      onAddNewSentence,
+      onNextFocus,
+    ]);
+
     // Cancel button handler
     const handleCancel = useCallback(() => {
       // Restore to original content
@@ -261,27 +323,18 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           e.preventDefault(); // Prevent default Enter behavior
           handleUpdate(); // Execute update
 
-          // Remove focus after update
-          if (textareaRef.current) {
-            textareaRef.current.blur();
-          }
+          // 업데이트 중에는 포커스를 유지하고, 성공 콜백에서 처리하도록 제거
+          // if (textareaRef.current) {
+          //   textareaRef.current.blur();
+          // }
         }
 
         // When Shift+Enter is pressed for a sentence
         if (e.key === "Enter" && e.shiftKey && content.type === "sentence") {
           e.preventDefault(); // Prevent default Enter behavior
 
-          // Always update the current content
-          handleUpdate();
-
-          // If this is the last sentence, add a new one
-          if (isLast && onAddNewSentence) {
-            onAddNewSentence();
-          }
-          // Otherwise move focus to the next sentence
-          else if (onNextFocus) {
-            onNextFocus();
-          }
+          // 다음 동작까지 처리하는 별도 함수 호출
+          handleUpdateWithNext();
         }
 
         // When Backspace is pressed in an empty sentence
@@ -296,10 +349,8 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       },
       [
         handleUpdate,
+        handleUpdateWithNext,
         content.type,
-        isLast,
-        onNextFocus,
-        onAddNewSentence,
         localValue,
         handleDelete,
       ]
@@ -308,13 +359,19 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Handlers for editable fields
     const handleIntentUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
-        updateSentenceMutation.mutate({
-          blockId: content["block-id"],
-          intent: localIntent,
-        });
-
-        updateContent(content["block-id"], { intent: localIntent });
-        setEditingIntent(false);
+        const blockId = content["block-id"] as string;
+        updateSentenceMutation.mutate(
+          {
+            blockId,
+            intent: localIntent,
+          },
+          {
+            onSuccess: () => {
+              updateContent(blockId, { intent: localIntent });
+              setEditingIntent(false);
+            },
+          }
+        );
       }
     }, [
       content.type,
@@ -326,13 +383,19 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     const handleSummaryUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
-        updateSentenceMutation.mutate({
-          blockId: content["block-id"],
-          summary: localSummary,
-        });
-
-        updateContent(content["block-id"], { summary: localSummary });
-        setEditingSummary(false);
+        const blockId = content["block-id"] as string;
+        updateSentenceMutation.mutate(
+          {
+            blockId,
+            summary: localSummary,
+          },
+          {
+            onSuccess: () => {
+              updateContent(blockId, { summary: localSummary });
+              setEditingSummary(false);
+            },
+          }
+        );
       }
     }, [
       content.type,
@@ -430,8 +493,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             onClick={handleDelete}
             className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-10"
             title="Delete sentence"
+            disabled={isDeleting}
           >
-            ✕
+            {isDeleting ? <ClipLoader size={10} color="#ffffff" /> : "✕"}
           </button>
         )}
 
@@ -489,6 +553,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               isHovered={isHovered}
               isSentence={content.type === "sentence"}
               onKeyDown={handleSummaryKeyDown}
+              isLoading={isUpdating}
             />
 
             {/* Intent Field */}
@@ -505,6 +570,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               isHovered={isHovered}
               isSentence={content.type === "sentence"}
               onKeyDown={handleIntentKeyDown}
+              isLoading={isUpdating}
             />
           </div>
           <div>
@@ -519,7 +585,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             />
 
             {/* Show button when focused (regardless of content changes) */}
-            {isFocused && content.type === "sentence" && (
+            {(isFocused || isUpdating) && content.type === "sentence" && (
               <div className="flex justify-end gap-2 mb-2">
                 <button
                   type="button"
@@ -530,6 +596,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                     handleCancel();
                   }}
                   className="px-3 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  disabled={isUpdating}
                 >
                   Discard
                 </button>
@@ -542,14 +609,21 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                     handleUpdate();
                   }}
                   className="px-3 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-1"
+                  disabled={isUpdating}
                 >
-                  Update
-                  <span
-                    className="text-xs opacity-80"
-                    title="Press Enter key to update"
-                  >
-                    ⏎
-                  </span>
+                  {isUpdating ? (
+                    <ClipLoader size={12} color="#ffffff" />
+                  ) : (
+                    <>
+                      Update
+                      <span
+                        className="text-xs opacity-80"
+                        title="Press Enter key to update"
+                      >
+                        ⏎
+                      </span>
+                    </>
+                  )}
                 </button>
               </div>
             )}

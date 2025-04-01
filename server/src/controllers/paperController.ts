@@ -1,7 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { PaperService } from "../services/paperService";
 import OpenAI from "openai";
-import { ContentType, PaperSchema } from "@paer/shared";
+import { ContentType, PaperSchema, Paper } from "@paer/shared";
+import * as fs from "fs";
+import * as path from "path";
 
 export class PaperController {
   private paperService: PaperService;
@@ -384,6 +386,96 @@ export class PaperController {
       };
     } catch (error) {
       console.error("Error exporting paper:", error);
+      const errorMessage = (error as Error).message;
+      return reply.status(500).send({
+        success: false,
+        error: errorMessage,
+      });
+    }
+  }
+
+  /**
+   * Initialize data by resetting paper.json and chat.json
+   */
+  async initializeData(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      // Initial template data
+      const initialPaper: Paper = {
+        title: "New Paper",
+        "block-id": Date.now().toString(),
+        summary: "",
+        intent: "",
+        type: "paper",
+        content: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        version: 1,
+      };
+
+      // Initialize paper
+      await this.paperService.savePaper(initialPaper);
+
+      // Initialize chat (using direct file access for now)
+      // Get the base path for the data directory
+      const dataDir = process.env.DATA_DIR || "./data"; // Allow override through environment variable
+      const chatPath = path.resolve(dataDir, "chat.json");
+      console.log("Chat file path:", chatPath);
+
+      // Create data directory if it doesn't exist
+      const dirPath = path.dirname(chatPath);
+      try {
+        await fs.promises.mkdir(dirPath, { recursive: true });
+      } catch (err) {
+        console.log("Directory already exists or could not be created:", err);
+      }
+
+      // Initial chat data - maintains existing format
+      const initialChats = {
+        messages: [
+          {
+            id: "system-welcome-" + Date.now(),
+            role: "system",
+            content:
+              "Hello! Do you need help with writing your document? How can I assist you?",
+            timestamp: Date.now(),
+          },
+        ],
+      };
+
+      // Check if file exists and write
+      try {
+        fs.accessSync(chatPath, fs.constants.F_OK);
+        // Overwrite if file exists
+        fs.writeFileSync(
+          chatPath,
+          JSON.stringify(initialChats, null, 2),
+          "utf-8"
+        );
+        console.log("Chat file initialized successfully");
+      } catch (err) {
+        console.error("Chat file access error:", err);
+        // Create file if it doesn't exist
+        try {
+          fs.writeFileSync(
+            chatPath,
+            JSON.stringify(initialChats, null, 2),
+            "utf-8"
+          );
+          console.log("Chat file created successfully");
+        } catch (writeErr: any) {
+          console.error("Failed to create chat file:", writeErr);
+          throw new Error(
+            "Failed to initialize chat data: " + writeErr.message
+          );
+        }
+      }
+
+      return {
+        success: true,
+        message: "Paper and chat data initialized successfully",
+      };
+    } catch (error) {
+      console.error("Error initializing data:", error);
       const errorMessage = (error as Error).message;
       return reply.status(500).send({
         success: false,

@@ -12,7 +12,7 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
-import { FiDownload } from "react-icons/fi";
+import { FiDownload, FiRefreshCw } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
@@ -23,7 +23,7 @@ const Layout: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Fetching data from server using React Query
-  const { isLoading, error, refetch } = usePaperQuery();
+  const { error, refetch } = usePaperQuery();
 
   // 필터링된 콘텐츠 정보 가져오기
   const filteredContent = useMemo(() => {
@@ -75,15 +75,32 @@ const Layout: React.FC = () => {
 
   const handleFileImport = async (content: string) => {
     try {
+      // 파일 가져오기 시작 시 로딩 상태 설정
+      const { setLoading } = useContentStore.getState();
+      setLoading(true);
+
+      // FileImport 컴포넌트 내부에서도 로딩 상태를 관리합니다
       const processedPaper = await processPaperContent(content);
       setPaper(processedPaper);
       await savePaper(processedPaper);
+
       // 데이터 캐시 무효화하여 UI 업데이트
-      queryClient.invalidateQueries({ queryKey: ["paper"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        refetchType: "active", // 즉시 refetch 수행
+      });
+
+      // 잠시 대기하여 데이터 로딩이 완료될 때까지 로딩 상태 유지
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // You might want to show a success message here
     } catch (error) {
       console.error("Error processing paper:", error);
       // You might want to show an error message here
+    } finally {
+      // 로딩 상태 해제
+      const { setLoading } = useContentStore.getState();
+      setLoading(false);
     }
   };
 
@@ -113,16 +130,94 @@ const Layout: React.FC = () => {
     }
   };
 
+  // Paper and chat initialization function
+  const handleInitialize = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to initialize paper and chat history?"
+      )
+    ) {
+      try {
+        const { setLoading } = useContentStore.getState();
+        setLoading(true);
+
+        // Request to initialize data on server
+        const response = await fetch("/api/paper/initialize", {
+          method: "POST",
+        });
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.error || "Failed to initialize data");
+        }
+
+        // Reset content store
+        const contentStore = useContentStore.getState();
+        if (contentStore) {
+          // Reset selected content/block
+          if (typeof contentStore.setSelectedBlock === "function") {
+            contentStore.setSelectedBlock(null, null);
+          }
+
+          // Reset content data
+          if (typeof contentStore.setContent === "function") {
+            contentStore.setContent({
+              title: "New Paper",
+              summary: "",
+              intent: "",
+              type: "paper",
+              content: [],
+              "block-id": Date.now().toString(),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              version: 1,
+            });
+          }
+        }
+
+        // Reset chat store
+        try {
+          const chatStore = useChatStore.getState();
+          if (chatStore && typeof chatStore.clearMessages === "function") {
+            await chatStore.clearMessages();
+
+            // Manually add initial welcome message
+            if (typeof chatStore.setMessages === "function") {
+              chatStore.setMessages([
+                {
+                  id: "system-welcome-" + Date.now(),
+                  role: "system",
+                  content:
+                    "Hello! Do you need help with writing your document? How can I assist you?",
+                  timestamp: Date.now(),
+                },
+              ]);
+            }
+          }
+        } catch (e) {
+          console.log("Chat store reset failed", e);
+        }
+
+        // Invalidate queries to refresh data without page reload
+        queryClient.invalidateQueries({ queryKey: ["paper"] });
+        queryClient.invalidateQueries({ queryKey: ["chats"] });
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        alert(
+          `Error during initialization: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
+      } finally {
+        const { setLoading } = useContentStore.getState();
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <div className="flex h-screen w-screen bg-white text-gray-800">
-      {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
-            <p className="text-lg font-medium">Loading data...</p>
-          </div>
-        </div>
-      )}
-
+      {/* 전체 화면 로딩 인디케이터는 제거하고 각 컴포넌트에서 처리 */}
       {error && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg text-center">
@@ -147,6 +242,18 @@ const Layout: React.FC = () => {
             >
               <FiDownload className="w-5 h-5" />
             </button>
+            <div className="relative group">
+              <button
+                onClick={handleInitialize}
+                className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                title="Initialize Data"
+              >
+                <FiRefreshCw className="w-5 h-5" />
+              </button>
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                Initialize Data
+              </div>
+            </div>
           </div>
         }
       >

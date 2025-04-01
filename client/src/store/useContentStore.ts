@@ -18,6 +18,7 @@ interface ContentState {
   selectedBlock: Content | null;
   selectedBlockPath: number[] | null;
   parentContents: Content[]; // Parent contents of the selected content
+  isLoading: boolean; // 콘텐츠 로딩 상태
 
   // Actions
   setContent: (content: Paper) => void;
@@ -31,6 +32,7 @@ interface ContentState {
   ) => void;
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
+  setLoading: (isLoading: boolean) => void; // 로딩 상태 설정 함수
 }
 
 export const useContentStore = create<ContentState>()(
@@ -44,10 +46,16 @@ export const useContentStore = create<ContentState>()(
         selectedBlock: null,
         selectedBlockPath: null,
         parentContents: [],
+        isLoading: false,
 
         // Actions
         setContent: (content) => {
           set({ content });
+        },
+
+        // 로딩 상태 설정
+        setLoading: (isLoading) => {
+          set({ isLoading });
         },
 
         // Set selected content (for chat context) - does not change parent contents
