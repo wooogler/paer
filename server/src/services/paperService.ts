@@ -1,7 +1,9 @@
 import { ContentTypeSchema, Paper, ContentType, Content } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
-import fs from "fs/promises";
+import fs from "fs";
 import { LLMService } from "./llmService";
+import path from "path";
+import process from "process";
 
 export class PaperService {
   private paperRepository: PaperRepository;
@@ -60,11 +62,32 @@ export class PaperService {
 
   async savePaper(paper: Paper): Promise<void> {
     try {
-      await fs.writeFile(
-        this.paperPath,
-        JSON.stringify(paper, null, 2),
-        "utf-8"
-      );
+      // PaperRepository와 동일한 파일 경로 사용
+      const repoFilePath = (this.paperRepository as any).filePath;
+
+      // 1. 레포지토리의 filePath가 있으면 우선 사용 (Railway에서 확실하게 동작하는 방식)
+      if (repoFilePath) {
+        console.log(`Saving paper using repository path: ${repoFilePath}`);
+        fs.writeFileSync(repoFilePath, JSON.stringify(paper, null, 2), "utf-8");
+        return;
+      }
+
+      // 2. 레포지토리의 filePath가 없을 경우 상대 경로인지 절대 경로인지 확인
+      let pathToUse = this.paperPath;
+
+      // 상대 경로인 경우 절대 경로로 변환
+      if (!path.isAbsolute(this.paperPath)) {
+        pathToUse = path.resolve(process.cwd(), this.paperPath);
+      }
+
+      // 디렉토리가 존재하는지 확인하고 필요하면 생성
+      const directory = path.dirname(pathToUse);
+      if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+      }
+
+      console.log(`Saving paper to: ${pathToUse}`);
+      fs.writeFileSync(pathToUse, JSON.stringify(paper, null, 2), "utf-8");
     } catch (error) {
       console.error("Error saving paper:", error);
       throw new Error("Failed to save paper");
