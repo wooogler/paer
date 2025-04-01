@@ -29,3 +29,7 @@ dist-ssr
 .env.local
 .env.development
 .env.production
+
+# Server data
+server/data/chat.json
+server/data/paper.json

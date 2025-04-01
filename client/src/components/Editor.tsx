@@ -9,12 +9,9 @@ const Editor: React.FC = () => {
   const {
     selectedBlock,
     selectedBlockPath,
-    selectedContent,
-    selectedPath,
     parentContents,
     getContentByPath,
     setSelectedBlock,
-    content,
   } = useContentStore();
   const { showHierarchy } = useAppStore();
 

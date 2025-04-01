@@ -25,5 +25,9 @@
   "devDependencies": {
     "@railway/cli": "^4.0.0",
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "server": "^1.0.41",
+    "uuid": "^11.1.0"
   }
 }

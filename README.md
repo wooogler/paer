@@ -31,7 +31,7 @@ paer/
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/paer.git
+git clone https://github.com/wooogler/paer.git
 cd paer
 
 # Install dependencies

@@ -45,7 +45,6 @@ export class PaperController {
       const validatedPaper = PaperSchema.parse(paper);
 
       await this.paperService.updateSectionSummaries();
-      await this.paperService.clearConversation();
 
       return validatedPaper;
     } catch (error) {

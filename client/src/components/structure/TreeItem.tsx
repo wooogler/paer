@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from "react";
 import { useContentStore } from "../../store/useContentStore";
-import { Content } from "@paer/shared";
-import { isSelectableContent } from "../../utils/contentUtils";
+import { Content, ContentType } from "@paer/shared";
+import { isSelectableContent, getTypeColor } from "../../utils/contentUtils";
 import { useChatStore } from "../../store/useChatStore";
 
 interface TreeItemProps {
@@ -61,20 +61,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     const { contentColorClass, displayTitle, displayText } = useMemo(() => {
       // Get color class based on content type
       const getColorClass = () => {
-        switch (content.type) {
-          case "paper":
-            return "text-blue-600";
-          case "section":
-            return "text-green-600";
-          case "subsection":
-            return "text-yellow-600";
-          case "subsubsection":
-            return "text-pink-600";
-          case "paragraph":
-            return "text-gray-600";
-          default:
-            return "text-gray-600";
-        }
+        return getTypeColor(content.type as ContentType).main;
       };
 
       // Determine how to display the title

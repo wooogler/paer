@@ -9,7 +9,6 @@ import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
 import { usePaperStore } from "../store/paperStore";
 import { useContentStore } from "../store/useContentStore";
-import { readChatHistory } from "../utils/chatStorage";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
@@ -17,10 +16,8 @@ import { FiDownload } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
-  const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
-    useAppStore();
-  const { addMessage, filterBlockId, isFilteringEnabled, toggleFiltering } =
-    useChatStore();
+  const { displayMode, showHierarchy, setShowHierarchy } = useAppStore();
+  const { filterBlockId, isFilteringEnabled, toggleFiltering } = useChatStore();
   const { setPaper } = usePaperStore();
   const { content: rootContent } = useContentStore();
   const queryClient = useQueryClient();

@@ -3,6 +3,7 @@ import { Content, ContentType } from "@paer/shared";
 import EditableField from "./EditableField";
 import DeleteBlockButton from "./DeleteBlockButton";
 import LevelLines from "./LevelLines";
+import { getTypeColor } from "../../utils/contentUtils";
 import {
   useUpdateBlockIntent,
   useUpdateBlockSummary,
@@ -63,22 +64,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
 
     // Get icon color class based on content type
     const iconColorClass = useMemo(() => {
-      switch (content.type) {
-        case "paper":
-          return "text-blue-600";
-        case "section":
-          return "text-green-600";
-        case "subsection":
-          return "text-yellow-600";
-        case "subsubsection":
-          return "text-pink-600";
-        case "paragraph":
-          return "text-gray-600";
-        case "sentence":
-          return "text-purple-600";
-        default:
-          return "text-gray-600";
-      }
+      return getTypeColor(content.type as ContentType).main;
     }, [content.type]);
 
     // Determine title size based on hierarchy level

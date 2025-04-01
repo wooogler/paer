@@ -19,6 +19,7 @@ const ChatInterface: React.FC = () => {
     setMessages,
     filterBlockId,
     isFilteringEnabled,
+    fetchMessages,
   } = useChatStore();
   const { selectedContent, content: rootContent } = useContentStore();
   const [input, setInput] = useState("");
@@ -26,10 +27,25 @@ const ChatInterface: React.FC = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const initialMessageRef = useRef(false);
   const isComposing = useRef(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
-  // Display welcome message on first load (only once)
+  // 메시지 로드하기
   useEffect(() => {
-    if (messages.length === 0 && !initialMessageRef.current) {
+    const loadMessages = async () => {
+      await fetchMessages();
+      setIsLoadingMessages(false);
+    };
+
+    loadMessages();
+  }, [fetchMessages]);
+
+  // Display welcome message only after loading messages from server
+  useEffect(() => {
+    if (
+      !isLoadingMessages &&
+      messages.length === 0 &&
+      !initialMessageRef.current
+    ) {
       initialMessageRef.current = true;
       // 환영 메시지를 blockId 없이 직접 생성
       const welcomeMessage = {
@@ -44,7 +60,7 @@ const ChatInterface: React.FC = () => {
       // setMessages 함수를 통해 직접 추가
       setMessages([welcomeMessage]);
     }
-  }, [messages.length, setMessages]);
+  }, [isLoadingMessages, messages.length, setMessages]);
 
   // 필터링된 메시지 목록 계산
   const filteredMessages = useMemo(() => {

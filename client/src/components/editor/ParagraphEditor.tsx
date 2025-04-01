@@ -126,8 +126,6 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
             onClick={() => handleAddSentence(0)}
             isVisible={hoverIndex === -1}
             blockType="sentence"
-            parentBlockId={content["block-id"] || null}
-            prevBlockId={null}
           />
         </div>
 
@@ -160,12 +158,6 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
                   onClick={() => handleAddSentence(index + 1)}
                   isVisible={hoverIndex === index}
                   blockType="sentence"
-                  parentBlockId={content["block-id"] || null}
-                  prevBlockId={
-                    typeof sentenceContent !== "string"
-                      ? (sentenceContent["block-id"] as string) || null
-                      : null
-                  }
                 />
               </div>
             </React.Fragment>

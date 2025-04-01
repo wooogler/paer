@@ -1,10 +1,7 @@
 import React from "react";
-import { Content } from "@paer/shared";
-import {
-  getColorClass,
-  getBackgroundColorClass,
-} from "../editor/LevelIndicator";
+import { Content, ContentType } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
+import { getTypeColor } from "../../utils/contentUtils";
 
 interface ContentInfoProps {
   content: Content | null;
@@ -26,7 +23,7 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
     content.type.charAt(0).toUpperCase() + content.type.slice(1);
 
   // 타입에 따른 색상 클래스 가져오기
-  const colorClass = getColorClass(content.type);
+  const colorClass = getTypeColor(content.type as ContentType).main;
 
   // 콘텐츠 타입에 따라 표시할 텍스트 결정
   let contentTitle = "No title";
