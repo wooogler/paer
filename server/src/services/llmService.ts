@@ -190,11 +190,11 @@ Here is the block from paper.json:
 ${JSON.stringify(orderedBlock, null, 2)}
 
 Please provide your response as a raw JSON object (without any markdown formatting or code blocks) with the same structure as the input, but with all empty summary and intent fields filled in. For each block:
-- Summary should be 20 words or less
-- Intent should be less than 5 words (e.g., argument/evidence/reasoning/benefit/shortcoming/explanation)
+- Summary should be 20 words or less, capturing the main content
+- Intent should reflect the writer's purpose and rhetorical strategy
 - For content with LaTeX commands or references, focus on the actual text content
 - For chat messages or system messages, provide appropriate summaries and intents
-- For sentence blocks, provide short 5-10 word summaries and 1-3 word intents
+- For sentence blocks, provide short 5-10 word summaries and clear intent statements
 - For blocks with nested content, consider the combined text of all child blocks`;
 
       console.log("OpenAI API에 보내는 프롬프트:", prompt);

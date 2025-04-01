@@ -1,81 +1,81 @@
 {
   "title": "CHOIR: Chat-based Helper for Organizational Intelligence Repository",
-  "block-id": "1743511613",
+  "block-id": "1743517528",
   "summary": "This is a paper created automatically",
   "intent": "To provide a starting point for writing",
   "type": "paper",
   "content": [
     {
       "title": "Abstract",
-      "block-id": "1743511614",
+      "block-id": "1743517529",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
-          "block-id": "1743511624",
-          "summary": "This section discusses the challenges of knowledge management in organizations and introduces CHOIR as a solution.",
-          "intent": "overview",
+          "block-id": "1743517539",
+          "summary": "",
+          "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511615",
+              "block-id": "1743517530",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "Modern organizations frequently rely on chat-based platforms (e.g., Slack, Microsoft Teams, and Discord) for day-to-day communication and decision-making."
             },
             {
-              "block-id": "1743511616",
+              "block-id": "1743517531",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "As conversations evolve, organizational knowledge can get buried, prompting repeated searches and discussions."
             },
             {
-              "block-id": "1743511617",
+              "block-id": "1743517532",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "While maintaining shared documents, such as Wiki articles for the organization, offers a partial solution, it requires manual and timely efforts to keep it up to date, and it may not effectively preserve the social and contextual aspect of prior discussions."
             },
             {
-              "block-id": "1743511618",
+              "block-id": "1743517533",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "Moreover, reaching a consensus on document updates with relevant stakeholders can be time-consuming and complex."
             },
             {
-              "block-id": "1743511619",
+              "block-id": "1743517534",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "To address these challenges, we introduce CHOIR (Chat-based Helper for Organizational Intelligence Repository), a chatbot that integrates seamlessly with chat platforms."
             },
             {
-              "block-id": "1743511620",
+              "block-id": "1743517535",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "CHOIR automatically identifies and proposes edits to related documents, initiates discussions with relevant team members, and preserves contextual revision histories."
             },
             {
-              "block-id": "1743511621",
+              "block-id": "1743517536",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "By embedding knowledge management directly into chat environments and leveraging LLMs, CHOIR simplifies manual updates and supports consensus-driven editing based on maintained context with revision histories."
             },
             {
-              "block-id": "1743511622",
+              "block-id": "1743517537",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "We plan to design, deploy, and evaluate CHOIR in the context of maintaining an organizational memory for a research lab."
             },
             {
-              "block-id": "1743511623",
+              "block-id": "1743517538",
               "summary": "",
               "intent": "",
               "type": "sentence",
@@ -87,40 +87,40 @@
     },
     {
       "title": "Introduction",
-      "block-id": "1743511625",
+      "block-id": "1743517540",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
-          "block-id": "1743511630",
-          "summary": "Group chat services enhance communication but can lead to lost information and repeated discussions.",
-          "intent": "summary",
+          "block-id": "1743517545",
+          "summary": "",
+          "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511626",
+              "block-id": "1743517541",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "In modern organizations, group chat services such as Slack, Microsoft Teams, and Discord foster communication among members and facilitate collaboration and decision-making~\\cite{handel2002chat, zhang2018making}."
             },
             {
-              "block-id": "1743511627",
+              "block-id": "1743517542",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "These platforms support channel-based communication and direct messaging, enabling smooth information exchange among teams or individuals when solving problems~\\cite{wang2022group}."
             },
             {
-              "block-id": "1743511628",
+              "block-id": "1743517543",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "However, shared information or knowledge, which can benefit the organization if well maintained, can get easily buried in new messages~\\cite{zhang2018making} in a dynamic and fast-paced chat environment~\\cite{cameron2005unintended}."
             },
             {
-              "block-id": "1743511629",
+              "block-id": "1743517544",
               "summary": "",
               "intent": "",
               "type": "sentence",
@@ -129,120 +129,120 @@
           ]
         },
         {
-          "block-id": "1743511638",
-          "summary": "The paragraph discusses organizational memory, knowledge management systems, and their limitations.",
-          "intent": "overview",
+          "block-id": "1743517553",
+          "summary": "",
+          "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511631",
-              "summary": "CSCW researchers focus on organizational memory challenges.",
-              "intent": "explanation",
+              "block-id": "1743517546",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Researchers in CSCW have addressed the challenge of maintaining knowledge that emerges from an organization, which is described as organizational memory~\\cite{ackerman2004organizational, ackerman2013sharing}."
             },
             {
-              "block-id": "1743511632",
-              "summary": "Organizational memory stores knowledge for future decisions.",
-              "intent": "definition",
+              "block-id": "1743517547",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Organizational memory refers to the knowledge stored in an organization regarding decision-making stimulus and outcomes, which can be reused to inform future decisions~\\cite{walsh2009organizational}."
             },
             {
-              "block-id": "1743511633",
-              "summary": "Research explores repository systems for knowledge management.",
-              "intent": "evidence",
+              "block-id": "1743517548",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "The line of research has examined how repository systems can help members of an organization to store and retrieve knowledge~\\cite{ackerman1990answer, stein1995actualizing, burke1997question, pipek2003pruning, halverson2004behind, schaffert2006ikewiki, grudin2010wikis}."
             },
             {
-              "block-id": "1743511634",
-              "summary": "AnswerGarden helped users access organizational memory.",
-              "intent": "example",
+              "block-id": "1743517549",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "AnswerGarden was one of the early systems that allowed users to explore the tree of organizational memory to find the information they needed; if the information was missing, they could email relevant experts to expand the tree~\\cite{ackerman1990answer}."
             },
             {
-              "block-id": "1743511635",
-              "summary": "Wiki systems are studied for knowledge sharing.",
-              "intent": "evidence",
+              "block-id": "1743517550",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Other scholars have also studied wiki systems as another means to store and share knowledge within companies~\\cite{schaffert2006ikewiki,grudin2010wikis}."
             },
             {
-              "block-id": "1743511636",
-              "summary": "Cloud services enhance organizational knowledge sharing.",
-              "intent": "benefit",
+              "block-id": "1743517551",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Recently, with the rising popularity of cloud-based repository services like Google Drive and Dropbox, organizations can more easily maintain and share knowledge base online~\\cite{saratchandra2022role}."
             },
             {
-              "block-id": "1743511637",
-              "summary": "Knowledge repositories lack social context.",
-              "intent": "shortcoming",
+              "block-id": "1743517552",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Despite this convenience, the omission of social relationships, and the risk of losing rich context once it is converted into documents remains fundamental limitations for knowledge repositories~\\cite."
             }
           ]
         },
         {
-          "block-id": "1743511645",
-          "summary": "LLMs enhance knowledge integration and dialogue management in organizational settings.",
-          "intent": "overview",
+          "block-id": "1743517560",
+          "summary": "",
+          "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511639",
-              "summary": "LLMs can surpass repository model limitations.",
-              "intent": "explanation",
+              "block-id": "1743517554",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Recent advances in LLMs have the potential to overcome the limitations of repository-based models."
             },
             {
-              "block-id": "1743511640",
-              "summary": "LLMs summarize and integrate insights from texts.",
-              "intent": "benefit",
+              "block-id": "1743517555",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "They can summarize key insights from lengthy texts, such as news articles~\\cite, group dialogues~\\cite{asthana2023summaries, tian2024dialogue}, and then integrate those insights into existing material through chat interactions~\\cite."
             },
             {
-              "block-id": "1743511641",
-              "summary": "LLMs can moderate and guide dialogues.",
-              "intent": "benefit",
+              "block-id": "1743517556",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "They can also serve as moderators~\\cite or debaters~\\cite that interpret and guide the flow of dialogue among individuals."
             },
             {
-              "block-id": "1743511642",
-              "summary": "RAG solutions use LLMs for context-aware answers.",
-              "intent": "explanation",
+              "block-id": "1743517557",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "RAG-based solutions rely on an LLM's ability to provide context-aware answers rooted in existing documents~\\cite, and various organizations have already adopted them~\\cite."
             },
             {
-              "block-id": "1743511643",
-              "summary": "Designed a chat-based helper for knowledge capture.",
-              "intent": "explanation",
+              "block-id": "1743517558",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "Leveraging LLM's advanced capabilities, we designed  (Chat-based Helper for Organizational Intelligence Repository) to seamlessly capture knowledge within group chats, foster collaborative organizational memory, and provide contextually relevant responses to users."
             },
             {
-              "block-id": "1743511644",
-              "summary": "Three design goals for the project are outlined.",
-              "intent": "explanation",
+              "block-id": "1743517559",
+              "summary": "",
+              "intent": "",
               "type": "sentence",
               "content": "We have three design goals as follows: \\cite{zhang2024benchmarking,asthana2023summaries,tian2024dialogue,laban2024beyond,bhatia2024moderating,chiang2024enhancing,lewis2020retrieval,khangarotCouncilPostRAG}"
             }
           ]
         },
         {
-          "block-id": "1743511647",
+          "block-id": "1743517562",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511646",
+              "block-id": "1743517561",
               "summary": "",
               "intent": "",
               "type": "sentence",
@@ -251,20 +251,20 @@
           ]
         },
         {
-          "block-id": "1743511650",
+          "block-id": "1743517565",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511648",
+              "block-id": "1743517563",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "• : How does chatbot-driven document update automation reduce management effort (e.g., time or cognitive load) while fostering user contributions in collaborative document tasks?}"
             },
             {
-              "block-id": "1743511649",
+              "block-id": "1743517564",
               "summary": "",
               "intent": "",
               "type": "sentence",
@@ -276,305 +276,272 @@
     },
     {
       "title": "System Design",
-      "block-id": "1743511651",
+      "block-id": "1743517566",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
           "title": "Design Goals",
-          "block-id": "1743511652",
-          "summary": "",
-          "intent": "",
+          "block-id": "1743517567",
+          "summary": "This section outlines the design goals for improving document management and organizational memory.",
+          "intent": "To present the overarching design objectives of the system.",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743511655",
-              "summary": "",
-              "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743511653",
-                  "summary": "",
-                  "intent": "",
                   "type": "sentence",
-                  "content": "Prior research highlights the challenges of traditional repository models such as the difficulty of continuous maintenance, the limited reflection of social relationships, and the potential loss of rich context remain~\\cite."
+                  "content": "Prior research highlights the challenges of traditional repository models such as the difficulty of continuous maintenance, the limited reflection of social relationships, and the potential loss of rich context remain~\\cite.",
+                  "summary": "Traditional repository models face maintenance and context challenges.",
+                  "intent": "To outline existing issues with traditional models."
                 },
                 {
-                  "block-id": "1743511654",
-                  "summary": "",
-                  "intent": "",
                   "type": "sentence",
-                  "content": "We show how our system's design seeks to overcome these issues by 1) bridging conversations with persistent documentation, 2) encourging discussion among stakeholders, and 3) preserving document's context with revision histories. \\cite{ackerman2013sharing}"
+                  "content": "We show how our system's design seeks to overcome these issues by 1) bridging conversations with persistent documentation, 2) encouraging discussion among stakeholders, and 3) preserving document's context with revision histories. \\cite{ackerman2013sharing}",
+                  "summary": "Our system addresses these challenges through design strategies.",
+                  "intent": "To present the system's design solutions."
                 }
-              ]
+              ],
+              "summary": "This section discusses design goals addressing repository model challenges.",
+              "intent": "To outline the design goals of the system."
             },
             {
+              "type": "subsubsection",
               "title": "Facilitate the document update process by bridging conversations and persistent documentation",
-              "block-id": "1743511656",
-              "summary": "",
-              "intent": "",
-              "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743511660",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511657",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Our system is designed to capture knowledge and information on demand, leveraging conversations into persistent documents, thereby ensuring that organizational memory is easily and reliably maintained."
+                      "content": "Our system is designed to capture knowledge and information on demand, leveraging conversations into persistent documents, thereby ensuring that organizational memory is easily and reliably maintained.",
+                      "summary": "The system captures knowledge through conversations.",
+                      "intent": "To explain how the system maintains organizational memory."
                     },
                     {
-                      "block-id": "1743511658",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "A study on early groupware adoption found that organizations struggled to motivate members to contribute to share information, highlighting the importance of reward systems for contributions~\\cite."
+                      "content": "A study on early groupware adoption found that organizations struggled to motivate members to contribute to share information, highlighting the importance of reward systems for contributions~\\cite.",
+                      "summary": "Motivating contributions is crucial for effective knowledge sharing.",
+                      "intent": "To emphasize the need for incentives in knowledge sharing."
                     },
                     {
-                      "block-id": "1743511659",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "One reason is that continuously updating organizational memory requires manual efforts to keep it up-to-date. \\cite{orlikowski1992learning}"
+                      "content": "One reason is that continuously updating organizational memory requires manual efforts to keep it up-to-date. \\cite{orlikowski1992learning}",
+                      "summary": "Manual updates hinder effective organizational memory maintenance.",
+                      "intent": "To identify challenges in maintaining organizational memory."
                     }
-                  ]
+                  ],
+                  "summary": "The system aims to enhance document updates through conversation.",
+                  "intent": "To discuss the importance of bridging conversations and documentation."
                 },
                 {
-                  "block-id": "1743511667",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511661",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Research collectively has highlighted the importance of bridging conversations and persistent documentation to better facilitate the continuous update and management of organizational knowledge."
+                      "content": "Research collectively has highlighted the importance of bridging conversations and persistent documentation to better facilitate the continuous update and management of organizational knowledge.",
+                      "summary": "Bridging conversations and documentation aids knowledge management.",
+                      "intent": "To reinforce the need for integrated knowledge systems."
                     },
                     {
-                      "block-id": "1743511662",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Conversations among members can be excellent material for building organizational memory."
+                      "content": "Conversations among members can be excellent material for building organizational memory.",
+                      "summary": "Member conversations contribute to organizational memory.",
+                      "intent": "To highlight the value of conversations in knowledge building."
                     },
                     {
-                      "block-id": "1743511663",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "One early system, Answer Garden, actively used email to broaden its stored knowledge~\\cite."
+                      "content": "One early system, Answer Garden, actively used email to broaden its stored knowledge~\\cite.",
+                      "summary": "Answer Garden utilized email for knowledge expansion.",
+                      "intent": "To provide an example of effective knowledge capture."
                     },
                     {
-                      "block-id": "1743511664",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Even in Wikipedia—an online form of organizational memory—contributors share opinions about edits via article talk pages~\\cite{kittur2008harnessing, schneider2011understanding}."
+                      "content": "Even in Wikipedia—an online form of organizational memory—contributors share opinions about edits via article talk pages~\\cite{kittur2008harnessing, schneider2011understanding}.",
+                      "summary": "Wikipedia contributors discuss edits to enhance knowledge.",
+                      "intent": "To illustrate collaborative knowledge management in practice."
                     },
                     {
-                      "block-id": "1743511665",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "There has also been extensive research on systems that capture and organize important conversation details~\\cite."
+                      "content": "There has also been extensive research on systems that capture and organize important conversation details~\\cite.",
+                      "summary": "Research supports systems that organize conversation details.",
+                      "intent": "To reference existing studies on conversation capture."
                     },
                     {
-                      "block-id": "1743511666",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "To that end, we will facilitate members to update their organizational memory using conversations. \\cite{ackerman1990answer,kittur2008harnessing,schneider2011understanding,nam2007arkose,zhang2017wikum,zhang2018making}"
+                      "content": "To that end, we will facilitate members to update their organizational memory using conversations. \\cite{ackerman1990answer,kittur2008harnessing,schneider2011understanding,nam2007arkose,zhang2017wikum,zhang2018making}",
+                      "summary": "The system will enable updates through conversations.",
+                      "intent": "To outline the system's functionality for memory updates."
                     }
-                  ]
+                  ],
+                  "summary": "Research supports bridging conversations with documentation for knowledge management.",
+                  "intent": "To emphasize the importance of integrating conversations in knowledge systems."
                 }
-              ]
+              ],
+              "summary": "This section discusses facilitating document updates through conversation integration.",
+              "intent": "To explain how the system enhances document update processes."
             },
             {
+              "type": "subsubsection",
               "title": "Encourage Discussion within a group-chat environment among Stakeholders for Document Updates",
-              "block-id": "1743511669",
-              "summary": "",
-              "intent": "",
-              "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743511677",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511670",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "CHOIR is designed to foster instant and context-sensitive collaboration by providing a communication channel where users can instantly discuss information tied directly to the document content."
+                      "content": "CHOIR is designed to foster instant and context-sensitive collaboration by providing a communication channel where users can instantly discuss information tied directly to the document content.",
+                      "summary": "CHOIR enables real-time collaboration on document content.",
+                      "intent": "To describe the collaborative features of the system."
                     },
                     {
-                      "block-id": "1743511671",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Only using a repository for organizational memory often fails to capture social contexts, such as the rationale behind the changes, the author's expertise, the reliability of the information, and whether it is officially confirmed~\\cite."
+                      "content": "Only using a repository for organizational memory often fails to capture social contexts, such as the rationale behind the changes, the author's expertise, the reliability of the information, and whether it is officially confirmed~\\cite.",
+                      "summary": "Repositories alone miss important social context.",
+                      "intent": "To highlight limitations of traditional repositories."
                     },
                     {
-                      "block-id": "1743511672",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "In contrast, a group chat environment, such as Slack, contains rich information about the suggested changes and allows members to share and verify it immediately."
+                      "content": "In contrast, a group chat environment, such as Slack, contains rich information about the suggested changes and allows members to share and verify it immediately.",
+                      "summary": "Group chats provide rich context for document changes.",
+                      "intent": "To illustrate the advantages of chat environments."
                     },
                     {
-                      "block-id": "1743511673",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "For example, users can directly ask relevant experts about a document's information and better understand its context for specific situations."
+                      "content": "For example, users can directly ask relevant experts about a document's information and better understand its context for specific situations.",
+                      "summary": "Users can consult experts for contextual understanding.",
+                      "intent": "To emphasize the benefits of expert interaction."
                     },
                     {
-                      "block-id": "1743511674",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Such a conversation also helps mitigate conflicts among contributors and fosters a more cooperative culture."
+                      "content": "Such a conversation also helps mitigate conflicts among contributors and fosters a more cooperative culture.",
+                      "summary": "Conversations reduce conflicts and promote cooperation.",
+                      "intent": "To explain the social benefits of discussion."
                     },
                     {
-                      "block-id": "1743511675",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "On Wikipedia, for instance, new editors often see their contributions reverted without clear reasons, which discourages them~\\cite, but help from experienced editors significantly improves newcomer retention~\\cite."
+                      "content": "On Wikipedia, for instance, new editors often see their contributions reverted without clear reasons, which discourages them~\\cite, but help from experienced editors significantly improves newcomer retention~\\cite.",
+                      "summary": "Support from experienced editors aids newcomer retention.",
+                      "intent": "To provide evidence of the importance of guidance."
                     },
                     {
-                      "block-id": "1743511676",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Based on these previous findings, we designed our system to prompt conversation around documents so that users can account for the social context and receive assistance with document updates. \\cite{ackerman2013sharing,halfaker2011don,morgan2013tea}"
+                      "content": "Based on these previous findings, we designed our system to prompt conversation around documents so that users can account for the social context and receive assistance with document updates. \\cite{ackerman2013sharing,halfaker2011don,morgan2013tea}",
+                      "summary": "The system encourages discussions for better document updates.",
+                      "intent": "To outline the system's design based on research findings."
                     }
-                  ]
+                  ],
+                  "summary": "The system promotes discussions for effective document updates in a group chat environment.",
+                  "intent": "To explain how the system encourages stakeholder interaction."
                 }
-              ]
+              ],
+              "summary": "This section discusses encouraging discussions for document updates in a chat environment.",
+              "intent": "To highlight the importance of social interaction in document management."
             },
             {
-              "title": "Help users grasp the document's evolving context by highlighting version histories",
-              "block-id": "1743511678",
-              "summary": "",
-              "intent": "",
               "type": "subsubsection",
+              "title": "Help users grasp the document's evolving context by highlighting version histories",
               "content": [
                 {
-                  "block-id": "1743511686",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511679",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "We design the system to preserve and showcase both version history and conversation logs, enabling users to more easily understand the evolving context behind each document update."
+                      "content": "We design the system to preserve and showcase both version history and conversation logs, enabling users to more easily understand the evolving context behind each document update.",
+                      "summary": "The system preserves version histories and conversation logs.",
+                      "intent": "To explain how the system aids context understanding."
                     },
                     {
-                      "block-id": "1743511680",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "When adding new information to organizational memory, authors often omit details that can contextualize the changes~\\cite."
+                      "content": "When adding new information to organizational memory, authors often omit details that can contextualize the changes~\\cite.",
+                      "summary": "Authors frequently omit contextual details in updates.",
+                      "intent": "To identify a common issue in document updates."
                     },
                     {
-                      "block-id": "1743511681",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Such context may include social context, the source of the information, or the circumstances under which decisions were made."
+                      "content": "Such context may include social context, the source of the information, or the circumstances under which decisions were made.",
+                      "summary": "Context includes social factors and decision circumstances.",
+                      "intent": "To clarify what constitutes important context."
                     },
                     {
-                      "block-id": "1743511682",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "While decontextualizing the information can make it compact and thus easy to reuse in the future, retaining certain contextual details can be advantageous when they become crucial for specific decision-making scenarios~\\cite."
+                      "content": "While decontextualizing the information can make it compact and thus easy to reuse in the future, retaining certain contextual details can be advantageous when they become crucial for specific decision-making scenarios~\\cite.",
+                      "summary": "Retaining context aids future decision-making.",
+                      "intent": "To argue for the importance of context retention."
                     },
                     {
-                      "block-id": "1743511683",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "In this regard, preserving conversation logs and the version history from the document updating process can be highly effective for capturing the document's evolving context."
+                      "content": "In this regard, preserving conversation logs and the version history from the document updating process can be highly effective for capturing the document's evolving context.",
+                      "summary": "Preserving logs and histories captures evolving context.",
+                      "intent": "To emphasize the effectiveness of context preservation."
                     },
                     {
-                      "block-id": "1743511684",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Consequently, we designed our system to store these revision histories as contextual information when updating documents. \\cite{ackerman1999organizational,young2006don}"
+                      "content": "Consequently, we designed our system to store these revision histories as contextual information when updating documents. \\cite{ackerman1999organizational,young2006don}",
+                      "summary": "The system stores revision histories for context.",
+                      "intent": "To explain the system's functionality for context storage."
                     },
                     {
-                      "block-id": "1743511685",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "We will present this information to ensure that users can readily understand the context behind the knowledge contained in the document."
+                      "content": "We will present this information to ensure that users can readily understand the context behind the knowledge contained in the document.",
+                      "summary": "Users will access context information easily.",
+                      "intent": "To assure users of accessible contextual information."
                     }
-                  ]
+                  ],
+                  "summary": "The system highlights version histories to aid understanding of document context.",
+                  "intent": "To explain how the system supports context comprehension."
                 }
-              ]
+              ],
+              "summary": "This section discusses highlighting version histories for understanding document context.",
+              "intent": "To emphasize the importance of context in document updates."
             }
           ]
         },
         {
           "title": "System Features",
-          "block-id": "1743511687",
+          "block-id": "1743517602",
           "summary": "",
           "intent": "",
           "type": "subsection",
           "content": [
             {
               "title": "Chatbot-driven document update",
-              "block-id": "1743511688",
-              "summary": "",
-              "intent": "",
+              "block-id": "1743517603",
+              "summary": "This section describes the process of using CHOIR for document updates.",
+              "intent": "To explain the functionality and workflow of the CHOIR system for knowledge management.",
               "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743511693",
-                  "summary": "",
-                  "intent": "",
+                  "block-id": "1743517608",
+                  "summary": "CHOIR enables users to store knowledge and update documents through an interactive workflow.",
+                  "intent": "To provide an overview of how CHOIR facilitates document updates based on user interactions.",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511689",
+                      "block-id": "1743517604",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "In Figure~\\ref{fig:system_flowchart}, when a  wishes to store knowledge from a channel message, they can invoke CHOIR by mentioning it in either a new message or a thread reply."
                     },
                     {
-                      "block-id": "1743511690",
+                      "block-id": "1743517605",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "CHOIR then interacts with the user to suggest how to update the relevant document in the repository."
                     },
                     {
-                      "block-id": "1743511691",
+                      "block-id": "1743517606",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "The workflow is as follows: 1) The user selects one of the previously shown messages that contain the information they want to save. 2) As shown in Figure~\\ref{fig:system_pipeline}, CHOIR retrieves the most relevant document from the repository. 3) CHOIR uses LLM prompting to edit the retrieved document based on the selected message."
                     },
                     {
-                      "block-id": "1743511692",
+                      "block-id": "1743517607",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -586,33 +553,33 @@
             },
             {
               "title": "Initiating discussion around documents",
-              "block-id": "1743511694",
+              "block-id": "1743517609",
               "summary": "",
               "intent": "",
               "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743511698",
+                  "block-id": "1743517613",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511695",
+                      "block-id": "1743517610",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "In Figure~\\ref{fig:system_flowchart}, CHOIR can also host a conversation by instantly bringing the  and a  (the person with permission to update the repository) together."
                     },
                     {
-                      "block-id": "1743511696",
+                      "block-id": "1743517611",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "When starting this conversation, CHOIR explains what update has been proposed and provides context from the revision message, as seen in Figure~\\ref, ensuring both the  and  have sufficient information to begin discussing the update."
                     },
                     {
-                      "block-id": "1743511697",
+                      "block-id": "1743517612",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -621,34 +588,34 @@
                   ]
                 },
                 {
-                  "block-id": "1743511703",
+                  "block-id": "1743517618",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511699",
+                      "block-id": "1743517614",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "CHOIR can similarly host instant conversations when a  asks it a question."
                     },
                     {
-                      "block-id": "1743511700",
+                      "block-id": "1743517615",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "A user can direct-message CHOIR with a query, and CHOIR will respond based on documents in the repository."
                     },
                     {
-                      "block-id": "1743511701",
+                      "block-id": "1743517616",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "If the user finds the answer insufficient, CHOIR can invite both the  and a  to a conversation."
                     },
                     {
-                      "block-id": "1743511702",
+                      "block-id": "1743517617",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -660,54 +627,54 @@
             },
             {
               "title": "Contextual revision history",
-              "block-id": "1743511704",
+              "block-id": "1743517619",
               "summary": "",
               "intent": "",
               "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743511711",
+                  "block-id": "1743517626",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511705",
+                      "block-id": "1743517620",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "When CHOIR updates a document, it saves the user-selected messages as as part of the revision history, thereby capturing important context."
                     },
                     {
-                      "block-id": "1743511706",
+                      "block-id": "1743517621",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "These messages can include information about events at the time of the update, the source of the content, or the person involved in the conversation."
                     },
                     {
-                      "block-id": "1743511707",
+                      "block-id": "1743517622",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "CHOIR also uses LLM prompting to summarize this contextual information and present it during the hosted conversation, making it readily available for all participants."
                     },
                     {
-                      "block-id": "1743511708",
+                      "block-id": "1743517623",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "For example, in Figure ~\\ref, Andy is not a  and was not initially invited to the conversation, but Prof."
                     },
                     {
-                      "block-id": "1743511709",
+                      "block-id": "1743517624",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "Lee can invite Andy to gather his opinion on Adnan's proposed update."
                     },
                     {
-                      "block-id": "1743511710",
+                      "block-id": "1743517625",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -716,13 +683,13 @@
                   ]
                 },
                 {
-                  "block-id": "1743511713",
+                  "block-id": "1743517628",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511712",
+                      "block-id": "1743517627",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -731,20 +698,20 @@
                   ]
                 },
                 {
-                  "block-id": "1743511716",
+                  "block-id": "1743517631",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511714",
+                      "block-id": "1743517629",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "CHOIR: @Adnan requested CHOIR to edit the document."
                     },
                     {
-                      "block-id": "1743511715",
+                      "block-id": "1743517630",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -753,13 +720,13 @@
                   ]
                 },
                 {
-                  "block-id": "1743511718",
+                  "block-id": "1743517633",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511717",
+                      "block-id": "1743517632",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -768,20 +735,20 @@
                   ]
                 },
                 {
-                  "block-id": "1743511721",
+                  "block-id": "1743517636",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511719",
+                      "block-id": "1743517634",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "@Caleb: True."
                     },
                     {
-                      "block-id": "1743511720",
+                      "block-id": "1743517635",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -790,13 +757,13 @@
                   ]
                 },
                 {
-                  "block-id": "1743511723",
+                  "block-id": "1743517638",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511722",
+                      "block-id": "1743517637",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -805,13 +772,13 @@
                   ]
                 },
                 {
-                  "block-id": "1743511725",
-                  "summary": "",
-                  "intent": "",
+                  "block-id": "1743517640",
+                  "summary": "Decision on paper submission planned one month before deadline.",
+                  "intent": "To establish a timeline for making a submission decision.",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511724",
+                      "block-id": "1743517639",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -820,13 +787,13 @@
                   ]
                 },
                 {
-                  "block-id": "1743511727",
+                  "block-id": "1743517642",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511726",
+                      "block-id": "1743517641",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -835,76 +802,76 @@
                   ]
                 },
                 {
-                  "block-id": "1743511738",
+                  "block-id": "1743517653",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511728",
+                      "block-id": "1743517643",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "Document Updates Suggestion"
                     },
                     {
-                      "block-id": "1743511729",
+                      "block-id": "1743517644",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "File: echolabs-policy.md"
                     },
                     {
-                      "block-id": "1743511730",
+                      "block-id": "1743517645",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "## Paper and Talk Writing"
                     },
                     {
-                      "block-id": "1743511731",
+                      "block-id": "1743517646",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "* We aim for a go/no-go decision threeto monthssubmit beforea the paper isor due.not one month before the deadline."
                     },
                     {
-                      "block-id": "1743511732",
+                      "block-id": "1743517647",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "That's typically the time when the main work should be complete (code complete for technique papers, near-final prototype deployed to target users for design studies, experiment run for evaluation papers)."
                     },
                     {
-                      "block-id": "1743511733",
+                      "block-id": "1743517648",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "There may still be some analysis to do, like computational benchmarks or parameter tuning, but by this milestone you should be turning most of your energy into writing it up."
                     },
                     {
-                      "block-id": "1743511734",
+                      "block-id": "1743517649",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "Most first-time authors are surprised by how long it takes to do this phase well."
                     },
                     {
-                      "block-id": "1743511735",
+                      "block-id": "1743517650",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "This timeline might sound insanely long to you at first glance."
                     },
                     {
-                      "block-id": "1743511736",
+                      "block-id": "1743517651",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
                       "content": "But explaining your ideas clearly in writing in fact takes an immense amount of time."
                     },
                     {
-                      "block-id": "1743511737",
+                      "block-id": "1743517652",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -913,13 +880,13 @@
                   ]
                 },
                 {
-                  "block-id": "1743511740",
+                  "block-id": "1743517655",
                   "summary": "",
                   "intent": "",
                   "type": "paragraph",
                   "content": [
                     {
-                      "block-id": "1743511739",
+                      "block-id": "1743517654",
                       "summary": "",
                       "intent": "",
                       "type": "sentence",
@@ -933,61 +900,61 @@
         },
         {
           "title": "System Implementation",
-          "block-id": "1743511741",
+          "block-id": "1743517656",
           "summary": "",
           "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743511749",
+              "block-id": "1743517664",
               "summary": "",
               "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743511742",
+                  "block-id": "1743517657",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "The CHOIR server is built using Slack Bolt~\\cite and Block Kit~\\cite frameworks, and it uses the GitHub REST API~\\cite to read and update files in a GitHub repository."
                 },
                 {
-                  "block-id": "1743511743",
+                  "block-id": "1743517658",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "The knowledge in the GitHub repository is stored as markdown files, which members can directly view and edit through an integrated Gitbook~\\cite."
                 },
                 {
-                  "block-id": "1743511744",
+                  "block-id": "1743517659",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "CHOIR parses the markdown files and stores them as LangChain~\\cite Document objects every time the repository is updated."
                 },
                 {
-                  "block-id": "1743511745",
+                  "block-id": "1743517660",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "These stored objects are then used for document updates or for searching relevant documents to answer user queries, based on vector embeddings."
                 },
                 {
-                  "block-id": "1743511746",
+                  "block-id": "1743517661",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "When updating a document, CHOIR includes the messages used in the document as metadata in the commit message and pushes it to the GitHub repository."
                 },
                 {
-                  "block-id": "1743511747",
+                  "block-id": "1743517662",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "Later, when CHOIR needs to retrieve a file to update, it uses the  command to fetch the commit messages."
                 },
                 {
-                  "block-id": "1743511748",
+                  "block-id": "1743517663",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
@@ -1001,26 +968,26 @@
     },
     {
       "title": "Future Plan",
-      "block-id": "1743511750",
+      "block-id": "1743517665",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
-          "block-id": "1743511753",
+          "block-id": "1743517668",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743511751",
+              "block-id": "1743517666",
               "summary": "",
               "intent": "",
               "type": "sentence",
               "content": "In our future work, we will conduct a formative study to uncover current practices and challenges in organizational memory management and revisit our design goals by incorporating real-world practices."
             },
             {
-              "block-id": "1743511752",
+              "block-id": "1743517667",
               "summary": "",
               "intent": "",
               "type": "sentence",
@@ -1030,47 +997,47 @@
         },
         {
           "title": "Formative Study",
-          "block-id": "1743511754",
+          "block-id": "1743517669",
           "summary": "",
           "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743511760",
+              "block-id": "1743517675",
               "summary": "",
               "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743511755",
+                  "block-id": "1743517670",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "We plan to begin with a formative study that will help us gain a detailed understanding of how members manage their organizational memory and the challenges they face."
                 },
                 {
-                  "block-id": "1743511756",
+                  "block-id": "1743517671",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "We have chosen a university research lab as our target because labs often experience frequent member turnover, depend on regular communication, and are more accessible for interviews and observations than corporations."
                 },
                 {
-                  "block-id": "1743511757",
+                  "block-id": "1743517672",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "In these labs, we will interview students or supervisors to learn about the types of documents they create, the individuals or roles responsible for maintaining them, and how they update and use these documents in their daily workflows."
                 },
                 {
-                  "block-id": "1743511758",
+                  "block-id": "1743517673",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "We will also explore any difficulties they encounter during the document management process."
                 },
                 {
-                  "block-id": "1743511759",
+                  "block-id": "1743517674",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
@@ -1082,47 +1049,47 @@
         },
         {
           "title": "System Evaluation: Field Study",
-          "block-id": "1743511761",
+          "block-id": "1743517676",
           "summary": "",
           "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743511767",
+              "block-id": "1743517682",
               "summary": "",
               "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743511762",
+                  "block-id": "1743517677",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "After refining the system, we will conduct a field study to evaluate CHOIR in the actual research lab environment and address our research questions."
                 },
                 {
-                  "block-id": "1743511763",
+                  "block-id": "1743517678",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "During the study, lab members will deploy CHOIR in their Slack workspaces for document management and updates."
                 },
                 {
-                  "block-id": "1743511764",
+                  "block-id": "1743517679",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "We will monitor the usage logs to see how participants engage with CHOIR, tracking aspects like the frequency of chatbot interactions, the types of tasks performed, and how effectively it supports collaboration for maintaining organizational memory."
                 },
                 {
-                  "block-id": "1743511765",
+                  "block-id": "1743517680",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
                   "content": "Additionally, we will investigate their experience compared to their existing practice of organizational memory, if any."
                 },
                 {
-                  "block-id": "1743511766",
+                  "block-id": "1743517681",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
@@ -1135,7 +1102,7 @@
       ]
     }
   ],
-  "createdAt": "2025-04-01T12:46:53.063Z",
-  "updatedAt": "2025-04-01T12:46:53.063Z",
+  "createdAt": "2025-04-01T14:25:28.838Z",
+  "updatedAt": "2025-04-01T14:25:28.838Z",
   "version": 1
 }

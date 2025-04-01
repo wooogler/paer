@@ -348,46 +348,39 @@ export class PaperService {
 
       const result = await this.llmService.updateRenderedSummaries(block);
 
-      // Update all blocks with their new summaries and intents
-      const updateBlockFields = async (content: Content): Promise<void> => {
-        if (typeof content === "string" || !("block-id" in content)) return;
+      // Get the paper and directly replace the target block with the LLM result
+      const paper = await this.paperRepository.getPaper();
 
-        if (content.summary && content.intent && content["block-id"]) {
-          await this.updateBlock(
-            content["block-id"],
-            "summary",
-            content.summary
-          );
-          await this.updateBlock(content["block-id"], "intent", content.intent);
+      // Replace the block in the paper structure with the LLM result
+      const replaceBlock = (content: any): boolean => {
+        if (typeof content === "string") return false;
+
+        // If this is the target block, replace it
+        if (content["block-id"] === blockId) {
+          Object.assign(content, result.apiResponse.parsedResult);
+          return true;
         }
 
+        // Otherwise check children
         if (Array.isArray(content.content)) {
-          for (const child of content.content) {
-            // Check if child is a sentence and has summary and intent
-            if (
-              typeof child !== "string" &&
-              child.type === "sentence" &&
-              child["block-id"] &&
-              child.summary &&
-              child.intent
-            ) {
-              await this.updateBlock(
-                child["block-id"],
-                "summary",
-                child.summary
-              );
-              await this.updateBlock(child["block-id"], "intent", child.intent);
+          for (let i = 0; i < content.content.length; i++) {
+            if (content.content[i] && typeof content.content[i] !== "string") {
+              if (replaceBlock(content.content[i])) {
+                return true;
+              }
             }
-            // Continue recursive processing
-            await updateBlockFields(child);
           }
         }
+
+        return false;
       };
 
-      await updateBlockFields(result.apiResponse.parsedResult);
+      // Start replacement from the root
+      if (paper) {
+        replaceBlock(paper);
+      }
 
       // Save the updated paper
-      const paper = await this.paperRepository.getPaper();
       await this.savePaper(paper);
 
       return result;
