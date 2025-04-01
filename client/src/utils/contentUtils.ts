@@ -1,77 +1,57 @@
 import { ContentType } from "@paer/shared";
 
-// Colors by content type
+// Colors by content type (Tailwind classes)
 export const getTypeColor = (type: ContentType) => {
   switch (type) {
     case "paper":
       return {
-        bg: "#E8F0FE",
-        border: "#4285F4",
-        title: "#1A73E8",
-        main: "#4285F4", // Google Blue
+        bg: "bg-indigo-50",
+        border: "border-indigo-300",
+        title: "text-indigo-600",
+        main: "text-indigo-500",
       };
     case "section":
       return {
-        bg: "#E6F4EA",
-        border: "#0F9D58",
-        title: "#137333",
-        main: "#0F9D58", // Google Green
+        bg: "bg-emerald-50",
+        border: "border-emerald-300",
+        title: "text-emerald-600",
+        main: "text-emerald-500",
       };
     case "subsection":
       return {
-        bg: "#FEF7E0",
-        border: "#F4B400",
-        title: "#AA8800",
-        main: "#F4B400", // Google Yellow
+        bg: "bg-amber-50",
+        border: "border-amber-300",
+        title: "text-amber-600",
+        main: "text-amber-500",
       };
     case "subsubsection":
       return {
-        bg: "#FCE4EC",
-        border: "#E91E63",
-        title: "#C2185B",
-        main: "#E91E63", // Pink
+        bg: "bg-sky-50",
+        border: "border-sky-300",
+        title: "text-sky-600",
+        main: "text-sky-500",
       };
     case "paragraph":
       return {
-        bg: "#FCE8E6",
-        border: "#DB4437",
-        title: "#B31412",
-        main: "#DB4437", // Google Red
+        bg: "bg-rose-50",
+        border: "border-rose-300",
+        title: "text-rose-600",
+        main: "text-rose-500",
       };
     case "sentence":
       return {
-        bg: "#F3E8FD",
-        border: "#673AB7",
-        title: "#5B2C9F",
-        main: "#673AB7", // Purple
+        bg: "bg-gray-50",
+        border: "border-gray-300",
+        title: "text-gray-600",
+        main: "text-gray-500",
       };
     default:
       return {
-        bg: "#F1F3F4",
-        border: "#9AA0A6",
-        title: "#5F6368",
-        main: "#757575", // Gray
+        bg: "bg-gray-100",
+        border: "border-gray-300",
+        title: "text-gray-600",
+        main: "text-gray-500",
       };
-  }
-};
-
-// Simple background color for editor
-export const getSimpleBackgroundColor = (type: ContentType): string => {
-  switch (type) {
-    case "paper":
-      return "#E8F0FE";
-    case "section":
-      return "#E6F4EA";
-    case "subsection":
-      return "#FEF7E0";
-    case "subsubsection":
-      return "#FCE4EC";
-    case "paragraph":
-      return "#FCE8E6";
-    case "sentence":
-      return "#F3E8FD";
-    default:
-      return "#F1F3F4";
   }
 };
 
