@@ -363,12 +363,33 @@ export class PaperService {
 
         if (Array.isArray(content.content)) {
           for (const child of content.content) {
+            // Check if child is a sentence and has summary and intent
+            if (
+              typeof child !== "string" &&
+              child.type === "sentence" &&
+              child["block-id"] &&
+              child.summary &&
+              child.intent
+            ) {
+              await this.updateBlock(
+                child["block-id"],
+                "summary",
+                child.summary
+              );
+              await this.updateBlock(child["block-id"], "intent", child.intent);
+            }
+            // Continue recursive processing
             await updateBlockFields(child);
           }
         }
       };
 
       await updateBlockFields(result.apiResponse.parsedResult);
+
+      // Save the updated paper
+      const paper = await this.paperRepository.getPaper();
+      await this.savePaper(paper);
+
       return result;
     } catch (error) {
       console.error("Error updating rendered summaries:", error);

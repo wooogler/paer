@@ -13,10 +13,10 @@ interface ParagraphRendererProps {
 
 const ParagraphRenderer: React.FC<ParagraphRendererProps> = React.memo(
   ({ content, path, level }) => {
-    const { selectedContent } = useContentStore();
+    const { selectedBlock } = useContentStore();
     const { showHierarchy } = useAppStore();
-    const selectedType = selectedContent?.type;
-    const shouldShowTitle = !showHierarchy || selectedType !== "paragraph";
+    const selectedType = selectedBlock?.type;
+    const shouldShowTitle = selectedType !== "paragraph";
 
     return (
       <div

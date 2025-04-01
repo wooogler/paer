@@ -12,7 +12,7 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
-import { FiDownload, FiRefreshCw } from "react-icons/fi";
+import { FiDownload, FiRefreshCw, FiTrash2 } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
@@ -245,10 +245,10 @@ const Layout: React.FC = () => {
             <div className="relative group">
               <button
                 onClick={handleInitialize}
-                className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                title="Initialize Data"
+                className="p-2 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                title="Initialize Data (Clear Everything)"
               >
-                <FiRefreshCw className="w-5 h-5" />
+                <FiTrash2 className="w-5 h-5" />
               </button>
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
                 Initialize Data

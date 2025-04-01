@@ -14,8 +14,8 @@
       "content": [
         {
           "block-id": "1743511624",
-          "summary": "",
-          "intent": "",
+          "summary": "This section discusses the challenges of knowledge management in organizations and introduces CHOIR as a solution.",
+          "intent": "overview",
           "type": "paragraph",
           "content": [
             {
@@ -187,49 +187,49 @@
         },
         {
           "block-id": "1743511645",
-          "summary": "",
-          "intent": "",
+          "summary": "LLMs enhance knowledge integration and dialogue management in organizational settings.",
+          "intent": "overview",
           "type": "paragraph",
           "content": [
             {
               "block-id": "1743511639",
-              "summary": "",
-              "intent": "",
+              "summary": "LLMs can surpass repository model limitations.",
+              "intent": "explanation",
               "type": "sentence",
               "content": "Recent advances in LLMs have the potential to overcome the limitations of repository-based models."
             },
             {
               "block-id": "1743511640",
-              "summary": "",
-              "intent": "",
+              "summary": "LLMs summarize and integrate insights from texts.",
+              "intent": "benefit",
               "type": "sentence",
               "content": "They can summarize key insights from lengthy texts, such as news articles~\\cite, group dialogues~\\cite{asthana2023summaries, tian2024dialogue}, and then integrate those insights into existing material through chat interactions~\\cite."
             },
             {
               "block-id": "1743511641",
-              "summary": "",
-              "intent": "",
+              "summary": "LLMs can moderate and guide dialogues.",
+              "intent": "benefit",
               "type": "sentence",
               "content": "They can also serve as moderators~\\cite or debaters~\\cite that interpret and guide the flow of dialogue among individuals."
             },
             {
               "block-id": "1743511642",
-              "summary": "",
-              "intent": "",
+              "summary": "RAG solutions use LLMs for context-aware answers.",
+              "intent": "explanation",
               "type": "sentence",
               "content": "RAG-based solutions rely on an LLM's ability to provide context-aware answers rooted in existing documents~\\cite, and various organizations have already adopted them~\\cite."
             },
             {
               "block-id": "1743511643",
-              "summary": "",
-              "intent": "",
+              "summary": "Designed a chat-based helper for knowledge capture.",
+              "intent": "explanation",
               "type": "sentence",
               "content": "Leveraging LLM's advanced capabilities, we designed  (Chat-based Helper for Organizational Intelligence Repository) to seamlessly capture knowledge within group chats, foster collaborative organizational memory, and provide contextually relevant responses to users."
             },
             {
               "block-id": "1743511644",
-              "summary": "",
-              "intent": "",
+              "summary": "Three design goals for the project are outlined.",
+              "intent": "explanation",
               "type": "sentence",
               "content": "We have three design goals as follows: \\cite{zhang2024benchmarking,asthana2023summaries,tian2024dialogue,laban2024beyond,bhatia2024moderating,chiang2024enhancing,lewis2020retrieval,khangarotCouncilPostRAG}"
             }

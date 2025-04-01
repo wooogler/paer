@@ -10,6 +10,8 @@ import {
 } from "../hooks/usePaperQuery";
 import api from "../services/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { FiRefreshCw } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 const Editor: React.FC = () => {
   const {
@@ -139,10 +141,10 @@ const Editor: React.FC = () => {
         exact: true,
       });
 
-      alert("Summary and intent updated successfully!");
+      toast.success("Summary and intent updated successfully!");
     } catch (error) {
       console.error("Error updating summaries:", error);
-      alert(
+      toast.error(
         error instanceof Error ? error.message : "Failed to update summaries"
       );
     } finally {
@@ -181,10 +183,11 @@ const Editor: React.FC = () => {
     // 실제 에디터 UI 반환
     return (
       <div className="p-5">
-        {/* Parent hierarchy information */}
-        {showHierarchy && (
-          <div className="mb-4">
-            {parentContents.map((content, index) => (
+        {/* 계층 구조 정보 및 업데이트 버튼 */}
+        <div className="mb-4">
+          {/* 상위 계층 구조는 showHierarchy가 true일 때만 표시 */}
+          {showHierarchy &&
+            parentContents.map((content, index) => (
               <HierarchyTitle
                 key={index}
                 content={content}
@@ -192,26 +195,31 @@ const Editor: React.FC = () => {
                 isCurrentSelected={false}
               />
             ))}
-            <HierarchyTitle
-              content={selectedBlock}
-              level={parentContents.length}
-              isCurrentSelected={true}
-            />
-          </div>
-        )}
 
-        {/* Add Update Summaries button */}
-        {selectedBlock && selectedBlock["block-id"] && (
-          <div className="mb-4">
-            <button
-              onClick={handleUpdateSummaries}
-              disabled={isUpdating}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {isUpdating ? "Updating..." : "Update Summaries"}
-            </button>
+          {/* 선택된 블록과 업데이트 버튼은 항상 표시 */}
+          <div className="flex items-center">
+            <div className="flex-grow">
+              <HierarchyTitle
+                content={selectedBlock}
+                level={parentContents.length}
+                isCurrentSelected={true}
+                renderLines={showHierarchy}
+              />
+            </div>
+            {selectedBlock && selectedBlock["block-id"] && (
+              <button
+                onClick={handleUpdateSummaries}
+                disabled={isUpdating}
+                className="ml-2 p-2 text-blue-500 hover:text-blue-600 rounded-full hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Update Summaries and Intents"
+              >
+                <FiRefreshCw
+                  className={`w-5 h-5 ${isUpdating ? "animate-spin" : ""}`}
+                />
+              </button>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="mt-4">
           <ContentRenderer
