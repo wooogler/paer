@@ -73,8 +73,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         <div className="mb-1">
           <ContentInfo
             content={linkedContent}
-            variant="block"
-            showBg={true}
             lightText={false}
             isClickable={true}
           />

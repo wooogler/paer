@@ -16,16 +16,8 @@ import { FiDownload } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
-  const { displayMode, setDisplayMode, showHierarchy, setShowHierarchy } =
-    useAppStore();
-  const {
-    addMessage,
-    filterBlockId,
-    isFilteringEnabled,
-    toggleFiltering,
-    setMessages,
-    fetchMessages,
-  } = useChatStore();
+  const { displayMode, showHierarchy, setShowHierarchy } = useAppStore();
+  const { filterBlockId, isFilteringEnabled, toggleFiltering } = useChatStore();
   const { setPaper } = usePaperStore();
   const { content: rootContent } = useContentStore();
   const queryClient = useQueryClient();

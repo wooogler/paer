@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
       retry: 1,
     },
     mutations: {
-      onSettled: (data, error, variables, context) => {
+      onSettled: (_data, _error, _variables, _context) => {
         // 모든 mutation이 완료된 후 자동으로 paper 쿼리를 무효화하여 최신 데이터로 갱신
         // 이 설정으로 인해 모든 mutation이 성공/실패 여부와 관계없이 paper 쿼리를 무효화
 

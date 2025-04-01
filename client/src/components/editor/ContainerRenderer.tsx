@@ -99,8 +99,6 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
             onClick={() => handleAddBlock(-1)}
             isVisible={hoverIndex === -1}
             blockType={getNextBlockType()}
-            parentBlockId={content["block-id"] || null}
-            prevBlockId={null}
           />
         </div>
 
@@ -145,12 +143,6 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
                     onClick={() => handleAddBlock(index)}
                     isVisible={hoverIndex === index}
                     blockType={getNextBlockType()}
-                    parentBlockId={content["block-id"] || null}
-                    prevBlockId={
-                      typeof child !== "string"
-                        ? (child["block-id"] as string) || null
-                        : null
-                    }
                   />
                 </div>
               )}

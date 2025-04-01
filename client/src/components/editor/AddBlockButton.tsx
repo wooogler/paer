@@ -6,16 +6,12 @@ interface AddBlockButtonProps {
   onClick: () => void;
   isVisible: boolean;
   blockType: ContentType;
-  parentBlockId: string | null;
-  prevBlockId: string | null;
 }
 
 const AddBlockButton: React.FC<AddBlockButtonProps> = ({
   onClick,
   isVisible,
   blockType,
-  parentBlockId,
-  prevBlockId,
 }) => {
   // Get button text based on block type
   const getButtonText = (): string => {

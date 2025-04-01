@@ -2,8 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchPaper,
   updateSentenceContent,
-  updateSentenceIntent,
-  updateSentenceSummary,
   deleteSentence,
   addBlock,
   updateBlockIntent,
@@ -320,7 +318,7 @@ export function useAddBlock() {
     }) => {
       return await addBlock(parentBlockId, prevBlockId, blockType);
     },
-    onSuccess: async (newBlockId) => {
+    onSuccess: async (_) => {
       try {
         // 중요: 서버에서 새 데이터를 가져오기 전에 잠시 대기
         // 이는 서버가 데이터베이스에 변경사항을 저장하고 반영할 시간을 확보합니다
