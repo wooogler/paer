@@ -3,6 +3,7 @@ import { PaperRepository } from "../repositories/paperRepository";
 import fs from "fs/promises";
 import OpenAI from "openai";
 import { string } from "zod";
+import path from "path";
 
 type Message = {
   role: "system" | "user" | "assistant";
@@ -21,7 +22,11 @@ export class PaperService {
 
   constructor(paperPath: string) {
     this.paperRepository = new PaperRepository();
-    this.paperPath = paperPath;
+
+    // Allow configuring data directory through environment variables
+    const dataDir = process.env.DATA_DIR || "./data";
+    this.paperPath = path.resolve(dataDir, "paper.json");
+
     this.client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
