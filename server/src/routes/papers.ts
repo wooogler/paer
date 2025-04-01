@@ -550,21 +550,27 @@ export function processLatexContent(
     // Clean up the line by removing LaTeX commands but keep the content
     let cleanedLine = lineWithoutComments;
 
-    // First handle citations that we want to preserve
-    cleanedLine = cleanedLine
-      .replace(/\\citet{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace citet citations with [citation:key]
-      .replace(/\\cite{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace regular citations with [citation:key]
-      .replace(/\[@(.*?)\]/g, (match, citation) => `[citation:${citation}]`) // Replace markdown citations with [citation:key]
-      .replace(/~/g, ""); // Remove any tilde characters
+    // First handle citations and refs that we want to preserve
+    if (fileType === "latex") {
+      // For LaTeX files, preserve the original commands and tilde
+      cleanedLine = cleanedLine;
+    } else {
+      // For non-LaTeX files, convert to bracket format
+      cleanedLine = cleanedLine
+        .replace(/\\citet{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace citet citations with [citation:key]
+        .replace(/\\cite{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace regular citations with [citation:key]
+        .replace(/\[@(.*?)\]/g, (match, citation) => `[citation:${citation}]`) // Replace markdown citations with [citation:key]
+        .replace(/\\ref{(.*?)}/g, (match, ref) => `[ref:${ref}]`) // Replace refs with [ref:key]
+        .replace(/~/g, ""); // Remove any tilde characters
+    }
 
     // Then clean up other LaTeX commands
     cleanedLine = cleanedLine
-      .replace(/\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "") // Remove all LaTeX commands
+      .replace(/\\(?!(cite|ref|citet|begin|end|item|itemize|figure|table|verbatim|lstlisting))[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "") // Remove all LaTeX commands except preserved ones
       .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
       .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
       .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
       .replace(/\\label{.*?}/g, "") // Remove labels
-      .replace(/\\ref{.*?}/g, "") // Remove refs
       .replace(/\\newcommand{.*?}{.*?}/g, "") // Remove newcommand definitions
       .replace(/\\newenvironment{.*?}{.*?}{.*?}/g, "") // Remove newenvironment definitions
       .replace(/\\acmConference{.*?}/g, "") // Remove ACM conference settings
@@ -605,19 +611,20 @@ export function processLatexContent(
       .replace(/\\begin{itemize}/g, "") // Remove itemize begin
       .replace(/\\end{itemize}/g, "") // Remove itemize end
       .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
-      .replace(/\{.*?\}/g, "") // Remove any remaining curly braces and their content
-      .replace(/\[(?!citation:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation markers
+      .replace(/\{(?!.*\\cite|.*\\ref|.*\\citet).*?\}/g, "") // Remove curly braces and their content, except for citations and refs
+      .replace(/\[(?!citation:|ref:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation and ref markers
       .replace(/\[citation:(.*?)\]/g, "[$1]") // Convert citation markers back to simple brackets
+      .replace(/\[ref:(.*?)\]/g, "[$1]") // Convert ref markers back to simple brackets
       .trim();
 
     // If the line contains itemize content, preserve it
     if (lineWithoutComments.includes("\\item")) {
       cleanedLine = lineWithoutComments
         .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
-        .replace(/\{.*?\}/g, "") // Remove curly braces and their content
-        .replace(/\[(?!citation:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation markers
+        .replace(/\{(?!.*\\cite|.*\\ref|.*\\citet).*?\}/g, "") // Remove curly braces and their content, except for citations and refs
+        .replace(/\[(?!citation:|ref:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation and ref markers
         .replace(/\[citation:(.*?)\]/g, "[$1]") // Convert citation markers back to simple brackets
-        .replace(/~/g, "") // Remove any tilde characters
+        .replace(/\[ref:(.*?)\]/g, "[$1]") // Convert ref markers back to simple brackets
         .trim();
     }
 
@@ -678,15 +685,15 @@ export function processLatexContent(
         if (cleanedLine) {
           // Split into sentences
           const sentences = cleanedLine
-            .split(/(?<=[.!?])\s+/)
+            .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
             .filter((sentence) => {
               const cleaned = sentence.trim();
               return (
                 cleaned.length > 0 &&
                 cleaned.length >= 10 && // Minimum sentence length
                 /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
-                !/^[^a-zA-Z]*$/.test(cleaned)
-              ); // Must not be only special characters
+                !/^[^a-zA-Z]*$/.test(cleaned) // Must not be only special characters
+              );
             })
             .map((sentence) => createSentenceBlock(sentence.trim()));
 
@@ -774,15 +781,15 @@ export function processLatexContent(
         if (cleanedLine) {
           // Split into sentences
           const sentences = cleanedLine
-            .split(/(?<=[.!?])\s+/)
+            .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
             .filter((sentence) => {
               const cleaned = sentence.trim();
               return (
                 cleaned.length > 0 &&
                 cleaned.length >= 10 && // Minimum sentence length
                 /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
-                !/^[^a-zA-Z]*$/.test(cleaned)
-              ); // Must not be only special characters
+                !/^[^a-zA-Z]*$/.test(cleaned) // Must not be only special characters
+              );
             })
             .map((sentence) => createSentenceBlock(sentence.trim()));
 
@@ -823,15 +830,15 @@ export function processLatexContent(
 
         // Split into sentences
         const sentences = trimmedLine
-          .split(/(?<=[.!?])\s+/)
+          .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
           .filter((sentence) => {
             const cleaned = sentence.trim();
             return (
               cleaned.length > 0 &&
               cleaned.length >= 10 && // Minimum sentence length
               /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
-              !/^[^a-zA-Z]*$/.test(cleaned)
-            ); // Must not be only special characters
+              !/^[^a-zA-Z]*$/.test(cleaned) // Must not be only special characters
+            );
           })
           .map((sentence) => createSentenceBlock(sentence.trim()));
 
@@ -868,15 +875,15 @@ export function processLatexContent(
 
       // Split into sentences
       const sentences = trimmedLine
-        .split(/(?<=[.!?])\s+/)
+        .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
         .filter((sentence) => {
           const cleaned = sentence.trim();
           return (
             cleaned.length > 0 &&
             cleaned.length >= 10 && // Minimum sentence length
             /[a-zA-Z]/.test(cleaned) && // Must contain at least one letter
-            !/^[^a-zA-Z]*$/.test(cleaned)
-          ); // Must not be only special characters
+            !/^[^a-zA-Z]*$/.test(cleaned) // Must not be only special characters
+          );
         })
         .map((sentence) => createSentenceBlock(sentence.trim()));
 
