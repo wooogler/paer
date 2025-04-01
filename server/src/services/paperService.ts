@@ -243,7 +243,29 @@ export class PaperService {
 
         // If this is the target block, replace it
         if (content["block-id"] === blockId) {
-          Object.assign(content, result.apiResponse.parsedResult);
+          // 원래 block-id를 보존하면서 다른 속성만 업데이트
+          const originalBlockId = content["block-id"];
+
+          // block-id가 없는 경우 원래 block-id를 사용
+          const parsedResult = result.apiResponse.parsedResult;
+
+          // 결과에 block-id가 없으면 원래 block-id를 추가
+          if (!parsedResult["block-id"]) {
+            console.log(
+              `LLM 응답에 block-id가 없어서 원래 ID(${originalBlockId})를 사용합니다.`
+            );
+          }
+
+          // Object.assign 대신 각 속성을 개별적으로 복사하면서 block-id는 유지
+          Object.keys(parsedResult).forEach((key) => {
+            if (key !== "block-id") {
+              content[key] = parsedResult[key];
+            }
+          });
+
+          // block-id 명시적으로 보존
+          content["block-id"] = originalBlockId;
+
           return true;
         }
 

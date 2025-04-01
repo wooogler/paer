@@ -93,11 +93,11 @@ export class LLMService {
         // Define the order of properties
         const propertyOrder = [
           "type",
+          "block-id",
           "title",
           "content",
           "summary",
           "intent",
-          "block-id",
         ];
 
         // Add properties in the specified order
