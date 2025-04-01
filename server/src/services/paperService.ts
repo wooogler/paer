@@ -7,7 +7,6 @@ export class PaperService {
   private paperRepository: PaperRepository;
   private paperPath: string;
   private llmService: LLMService;
-  private batchSize: number = 5; // Process 5 items at a time
 
   constructor(paperPath: string) {
     this.paperRepository = new PaperRepository();
@@ -42,44 +41,6 @@ export class PaperService {
       "intent",
       await this.llmService.findIntent(blockContent)
     );
-  }
-
-  async updateWhole(): Promise<void> {
-    try {
-      const paper = await this.paperRepository.getPaper();
-      const updateContentRecursively = async (
-        contentArray: any[]
-      ): Promise<void> => {
-        for (const item of contentArray) {
-          if (item.type === "paragraph" && item.content) {
-            const content = this.paperRepository.getChildrenValues(
-              item["block-id"],
-              "content"
-            );
-            await this.updateBlock(
-              item["block-id"],
-              "summary",
-              await this.llmService.summarizeText(content)
-            );
-            await this.updateBlock(
-              item["block-id"],
-              "intent",
-              await this.llmService.findIntent(content)
-            );
-          }
-
-          if (Array.isArray(item.content)) {
-            await updateContentRecursively(item.content);
-          }
-        }
-      };
-
-      await updateContentRecursively(paper.content);
-      await this.savePaper(paper);
-    } catch (error) {
-      console.error("Error updating the whole text:", error);
-      throw new Error("Failed to update the whole text");
-    }
   }
 
   async addBlock(
@@ -154,25 +115,6 @@ export class PaperService {
     blockId?: string
   ): Promise<any> {
     return this.llmService.askLLM(text, renderedContent, blockId);
-  }
-
-  /**
-   * Clear the conversation history
-   */
-  clearConversation(): void {
-    this.llmService.clearConversation();
-  }
-
-  async summarizeSentence(text: string): Promise<string> {
-    return this.llmService.summarizeSentence(text);
-  }
-
-  async summarizeText(text: string): Promise<string> {
-    return this.llmService.summarizeText(text);
-  }
-
-  async findIntent(text: string): Promise<string> {
-    return this.llmService.findIntent(text);
   }
 
   /**
@@ -261,64 +203,6 @@ export class PaperService {
     latexContent += "\\end{document}";
 
     return latexContent;
-  }
-
-  /**
-   * Updates summaries and intents for all sections and subsections in the paper.
-   * This function recursively traverses the paper structure and updates the summary
-   * and intent of each section and subsection based on their children's content.
-   */
-  async updateSectionSummaries(): Promise<void> {
-    try {
-      const paper = await this.paperRepository.getPaper();
-      const sectionsToUpdate: Array<{ id: string; content: string }> = [];
-
-      // First, collect all sections and their content
-      const collectSections = (contentArray: any[]): void => {
-        for (const item of contentArray) {
-          if (
-            (item.type === "section" ||
-              item.type === "subsection" ||
-              item.type === "subsubsection") &&
-            item.content
-          ) {
-            const content = this.paperRepository.getChildrenValues(
-              item["block-id"],
-              "content"
-            );
-            sectionsToUpdate.push({ id: item["block-id"], content });
-          }
-
-          if (Array.isArray(item.content)) {
-            collectSections(item.content);
-          }
-        }
-      };
-
-      collectSections(paper.content);
-
-      // Process sections in batches
-      for (let i = 0; i < sectionsToUpdate.length; i += this.batchSize) {
-        const batch = sectionsToUpdate.slice(i, i + this.batchSize);
-        const batchPromises = batch.map(async ({ id, content }) => {
-          const [summary, intent] = await Promise.all([
-            this.llmService.summarizeText(content),
-            this.llmService.findIntent(content),
-          ]);
-
-          await this.updateBlock(id, "summary", summary);
-          await this.updateBlock(id, "intent", intent);
-        });
-
-        // Wait for all items in the batch to complete
-        await Promise.all(batchPromises);
-      }
-
-      await this.savePaper(paper);
-    } catch (error) {
-      console.error("Error updating section summaries:", error);
-      throw new Error("Failed to update section summaries");
-    }
   }
 
   private async findBlockById(blockId: string): Promise<Content | null> {
