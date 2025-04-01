@@ -1,10 +1,10 @@
 {
   "messages": [
     {
-      "id": "510a849b-0f9b-49ac-a502-d3cd52d45518",
+      "id": "system-welcome-1743475284195",
       "role": "system",
       "content": "Hello! Do you need help with writing your document? How can I assist you?",
-      "timestamp": 1743474213516
+      "timestamp": 1743475284195
     }
   ]
 }

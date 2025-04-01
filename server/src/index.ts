@@ -206,7 +206,7 @@ if (process.env.NODE_ENV === "production") {
 const start = async () => {
   try {
     // 데이터 디렉토리 및 기본 파일 생성 확인
-    ensureDataDirectoryExists();
+    await ensureDataDirectoryExists();
 
     await fastify.listen({ port, host: "0.0.0.0" });
     console.log(`Server is running on port ${port}`);
@@ -217,107 +217,33 @@ const start = async () => {
 };
 
 // 데이터 디렉토리와 기본 파일 존재 확인
-function ensureDataDirectoryExists() {
+async function ensureDataDirectoryExists() {
+  // Import the file utilities
+  const { ensureDataDirectoryExists: ensureDir, initializePaperJson } =
+    await import("./utils/fileUtils");
+
   try {
-    // 가능한 데이터 디렉토리 경로들
-    const possibleDataDirs = [
-      path.join(__dirname, "../data"),
-      path.join(process.cwd(), "data"),
-      path.join(process.cwd(), "server/dist/data"),
-    ];
-
-    // 실제 사용할 데이터 경로 선택
-    let dataDir = null;
-    for (const dir of possibleDataDirs) {
-      try {
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-          console.log(`Created data directory at: ${dir}`);
-        }
-
-        // 쓰기 권한 테스트
-        const testFile = path.join(dir, ".test");
-        fs.writeFileSync(testFile, "test");
-        fs.unlinkSync(testFile);
-
-        dataDir = dir;
-        console.log(`Using data directory: ${dataDir}`);
-        break;
-      } catch (error) {
-        const err = error as Error;
-        console.warn(`Cannot use directory ${dir}: ${err.message}`);
-      }
-    }
-
+    // Ensure the data directory exists
+    const dataDir = ensureDir();
     if (!dataDir) {
       console.error("Could not find or create a writable data directory!");
       return;
     }
 
-    // paper.json 파일 확인 및 생성
+    // Check if paper.json exists, and create it if it doesn't
     const paperJsonPath = path.join(dataDir, "paper.json");
     if (!fs.existsSync(paperJsonPath)) {
-      // 기본 paper.json 생성 - Zod 스키마와 완전히 일치하는 구조
-      const defaultPaper = {
-        title: "New Paper",
-        summary: "This is a new paper created automatically",
-        intent: "To provide a starting point for writing",
-        type: "paper",
-        content: [
-          {
-            title: "Introduction",
-            summary: "Introduction to the topic",
-            intent: "To introduce the main topic",
-            type: "section",
-            content: [
-              {
-                title: "Background",
-                summary: "Background information",
-                intent: "To provide context",
-                type: "subsection",
-                content: [
-                  {
-                    title: "Social Aspects",
-                    summary: "Social aspects of the topic",
-                    intent: "To provide social context",
-                    type: "subsubsection",
-                    content: [
-                      {
-                        summary: "Initial paragraph",
-                        intent: "To begin the document",
-                        type: "paragraph",
-                        content: [
-                          {
-                            summary: "Initial sentence",
-                            intent: "To begin the document",
-                            type: "sentence",
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        authors: [],
-        "block-id": "0",
-      };
-
-      fs.writeFileSync(paperJsonPath, JSON.stringify(defaultPaper, null, 2));
-      console.log(`Created default paper.json at: ${paperJsonPath}`);
+      // Use the utility function to create the default paper
+      initializePaperJson(dataDir);
     } else {
       console.log(`Found existing paper.json at: ${paperJsonPath}`);
 
-      // 파일이 존재하지만 필요한 필드가 없는지 확인하고 수정
+      // Check and update existing file if needed
       try {
         const paperData = JSON.parse(fs.readFileSync(paperJsonPath, "utf8"));
         let modified = false;
 
-        // 필수 필드 확인 및 추가
+        // Check required fields and add them if missing
         if (!paperData.type) {
           paperData.type = "paper";
           modified = true;
@@ -333,7 +259,7 @@ function ensureDataDirectoryExists() {
           modified = true;
         }
 
-        // 변경사항이 있으면 파일 업데이트
+        // Update the file if changes were made
         if (modified) {
           fs.writeFileSync(paperJsonPath, JSON.stringify(paperData, null, 2));
           console.log(
