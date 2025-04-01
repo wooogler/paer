@@ -1,33 +1,18 @@
 import { ContentTypeSchema, Paper, ContentType, Content } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
 import fs from "fs/promises";
-import OpenAI from "openai";
-import { string } from "zod";
-
-type Message = {
-  role: "system" | "user" | "assistant";
-  content: string;
-  blockId?: string; // Optional blockId to associate message with a specific block
-};
+import { LLMService } from "./llmService";
 
 export class PaperService {
   private paperRepository: PaperRepository;
   private paperPath: string;
-  private client: OpenAI;
-  private summaryCache: Map<string, string>;
-  private intentCache: Map<string, string>;
+  private llmService: LLMService;
   private batchSize: number = 5; // Process 5 items at a time
-  private conversationHistory: Message[];
 
   constructor(paperPath: string) {
     this.paperRepository = new PaperRepository();
     this.paperPath = paperPath;
-    this.client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    this.summaryCache = new Map();
-    this.intentCache = new Map();
-    this.conversationHistory = [];
+    this.llmService = new LLMService();
   }
 
   async getPaper(): Promise<Paper> {
@@ -50,54 +35,46 @@ export class PaperService {
     await this.updateBlock(
       blockId,
       "summary",
-      await this.summarizeText(blockContent)
+      await this.llmService.summarizeText(blockContent)
     );
     await this.updateBlock(
       blockId,
       "intent",
-      await this.findIntent(blockContent)
+      await this.llmService.findIntent(blockContent)
     );
   }
 
   async updateWhole(): Promise<void> {
     try {
-      // Fetch the current paper data
       const paper = await this.paperRepository.getPaper();
-      // Recursive function to update all sentences
       const updateContentRecursively = async (
         contentArray: any[]
       ): Promise<void> => {
         for (const item of contentArray) {
           if (item.type === "paragraph" && item.content) {
-            // Get all sentence contents from the paragraph
             const content = this.paperRepository.getChildrenValues(
               item["block-id"],
               "content"
             );
-            // Update the paragraph's summary and intent
             await this.updateBlock(
               item["block-id"],
               "summary",
-              await this.summarizeText(content)
+              await this.llmService.summarizeText(content)
             );
             await this.updateBlock(
               item["block-id"],
               "intent",
-              await this.findIntent(content)
+              await this.llmService.findIntent(content)
             );
           }
 
-          // If the item has nested content, recurse into it
           if (Array.isArray(item.content)) {
             await updateContentRecursively(item.content);
           }
         }
       };
 
-      // Start the recursive update
       await updateContentRecursively(paper.content);
-
-      // Save the updated paper back to the repository
       await this.savePaper(paper);
     } catch (error) {
       console.error("Error updating the whole text:", error);
@@ -164,14 +141,7 @@ export class PaperService {
         paper["block-id"] || "root",
         "content"
       );
-
-      // Set up the initial system message with paper context
-      this.conversationHistory = [
-        {
-          role: "system",
-          content: `You are a helpful peer reader for academic writing. Here is the context of the paper you are helping with:\n\n${paperContent}\n\nPlease provide your response based on this context.`,
-        },
-      ];
+      await this.llmService.initializeConversation(paperContent);
     } catch (error) {
       console.error("Error initializing conversation:", error);
       throw new Error("Failed to initialize conversation");
@@ -183,132 +153,26 @@ export class PaperService {
     renderedContent?: string,
     blockId?: string
   ): Promise<any> {
-    try {
-      // If conversation hasn't been initialized, initialize it
-      if (this.conversationHistory.length === 0) {
-        await this.initializeConversation();
-      }
-
-      // Add the user's question to the conversation history
-      this.conversationHistory.push({
-        role: "user",
-        content: text,
-        blockId,
-      });
-
-      // If rendered content is provided, add it as additional context
-      if (renderedContent) {
-        this.conversationHistory.push({
-          role: "system",
-          content: `Here is the currently visible content in the editor:\n\n${renderedContent}\n\nPlease consider this content when providing your response.`,
-          blockId,
-        });
-      }
-
-      const response = await this.client.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: this.conversationHistory,
-      });
-
-      // Add the assistant's response to the conversation history
-      if (response.choices[0].message?.content) {
-        this.conversationHistory.push({
-          role: "assistant",
-          content: response.choices[0].message.content,
-          blockId,
-        });
-      }
-
-      console.log(this.conversationHistory);
-
-      return response;
-    } catch (error) {
-      const errorMessage = (error as Error).message;
-      console.error("Error generating text with OpenAI:", errorMessage);
-      throw new Error(errorMessage);
-    }
+    return this.llmService.askLLM(text, renderedContent, blockId);
   }
 
   /**
    * Clear the conversation history
    */
   clearConversation(): void {
-    this.conversationHistory = [];
+    this.llmService.clearConversation();
   }
 
   async summarizeSentence(text: string): Promise<string> {
-    try {
-      const response = await this.client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: `You are a helpful peer reader for academic writing. Extract a summary from a following sentence. Sentence: ${text}. Summary: `,
-          },
-        ],
-      });
-
-      const generatedText = response.choices[0].message?.content?.trim() ?? "";
-      return generatedText;
-    } catch (error) {
-      const errorMessage = (error as Error).message;
-      console.error("Error generating text with OpenAI:", errorMessage);
-      throw new Error(errorMessage);
-    }
+    return this.llmService.summarizeSentence(text);
   }
 
   async summarizeText(text: string): Promise<string> {
-    // Check cache first
-    if (this.summaryCache.has(text)) {
-      return this.summaryCache.get(text)!;
-    }
-
-    try {
-      const response = await this.client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: `You are a helpful peer reader for academic writing. Extract a 20 words summary from a following text. Text: ${text}. Summary: `,
-          },
-        ],
-      });
-
-      const generatedText = response.choices[0].message?.content?.trim() ?? "";
-      this.summaryCache.set(text, generatedText);
-      return generatedText;
-    } catch (error) {
-      const errorMessage = (error as Error).message;
-      console.error("Error generating text with OpenAI:", errorMessage);
-      throw new Error(errorMessage);
-    }
+    return this.llmService.summarizeText(text);
   }
 
   async findIntent(text: string): Promise<string> {
-    // Check cache first
-    if (this.intentCache.has(text)) {
-      return this.intentCache.get(text)!;
-    }
-
-    try {
-      const response = await this.client.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: `You are a helpful peer reader for academic writing. Infer a less than 5 words intent from a following text. Is it an argument/evidence/reasoning/benefit/shortcoming/explanation/...? Text: ${text}. Intent: `,
-          },
-        ],
-      });
-
-      const generatedText = response.choices[0].message?.content?.trim() ?? "";
-      this.intentCache.set(text, generatedText);
-      return generatedText;
-    } catch (error) {
-      const errorMessage = (error as Error).message;
-      console.error("Error generating text with OpenAI:", errorMessage);
-      throw new Error(errorMessage);
-    }
+    return this.llmService.findIntent(text);
   }
 
   /**
@@ -437,32 +301,11 @@ export class PaperService {
       for (let i = 0; i < sectionsToUpdate.length; i += this.batchSize) {
         const batch = sectionsToUpdate.slice(i, i + this.batchSize);
         const batchPromises = batch.map(async ({ id, content }) => {
-          // Check cache first
-          if (this.summaryCache.has(content) && this.intentCache.has(content)) {
-            await this.updateBlock(
-              id,
-              "summary",
-              this.summaryCache.get(content)!
-            );
-            await this.updateBlock(
-              id,
-              "intent",
-              this.intentCache.get(content)!
-            );
-            return;
-          }
-
-          // If not in cache, make API calls
           const [summary, intent] = await Promise.all([
-            this.summarizeText(content),
-            this.findIntent(content),
+            this.llmService.summarizeText(content),
+            this.llmService.findIntent(content),
           ]);
 
-          // Update cache
-          this.summaryCache.set(content, summary);
-          this.intentCache.set(content, intent);
-
-          // Update the block
           await this.updateBlock(id, "summary", summary);
           await this.updateBlock(id, "intent", intent);
         });
@@ -498,42 +341,23 @@ export class PaperService {
 
   async updateRenderedSummaries(renderedContent: string, blockId: string) {
     try {
-      // Get the block to update
       const block = await this.findBlockById(blockId);
       if (!block) {
         throw new Error("Block not found");
       }
 
-      // Create a prompt that includes the paper.json snippet
-      const prompt = `You are a helpful peer reader for academic writing. Analyze the following content block from paper.json and fill in all empty summary and intent fields.
-Here is the block from paper.json:
-${JSON.stringify(block, null, 2)}
+      const result = await this.llmService.updateRenderedSummaries(block);
 
-Please provide your response as a raw JSON object (without any markdown formatting or code blocks) with the same structure as the input, but with all empty summary and intent fields filled in. For each block:
-- Summary should be 20 words or less
-- Intent should be less than 5 words (e.g., argument/evidence/reasoning/benefit/shortcoming/explanation)
-- For content with LaTeX commands or references, focus on the actual text content
-- For chat messages or system messages, provide appropriate summaries and intents
-- Skip any blocks with type "sentence"
-- For blocks with nested content, consider the combined text of all child blocks`;
-
-      // Get summary and intent from LLM
-      const response = await this.client.chat.completions.create({
-        model: "gpt-3.5-turbo", // Faster model
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      const result = JSON.parse(response.choices[0].message?.content?.trim() ?? "{}");
-      
       // Update all blocks with their new summaries and intents
       const updateBlockFields = async (content: Content): Promise<void> => {
-        if (typeof content === 'string' || !('block-id' in content)) return;
-        
-        // Skip sentence-level blocks
-        if (content.type === "sentence") return;
-        
+        if (typeof content === "string" || !("block-id" in content)) return;
+
         if (content.summary && content.intent && content["block-id"]) {
-          await this.updateBlock(content["block-id"], "summary", content.summary);
+          await this.updateBlock(
+            content["block-id"],
+            "summary",
+            content.summary
+          );
           await this.updateBlock(content["block-id"], "intent", content.intent);
         }
 
@@ -544,8 +368,8 @@ Please provide your response as a raw JSON object (without any markdown formatti
         }
       };
 
-      await updateBlockFields(result);
-      return true;
+      await updateBlockFields(result.apiResponse.parsedResult);
+      return result;
     } catch (error) {
       console.error("Error updating rendered summaries:", error);
       throw error;

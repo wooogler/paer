@@ -1,19 +1,15 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { PaperService } from "../services/paperService";
-import OpenAI from "openai";
+import { LLMService } from "../services/llmService";
 import { ContentType, PaperSchema, Paper } from "@paer/shared";
-import * as fs from "fs";
-import * as path from "path";
+import { PaperService } from "../services/paperService";
 
 export class PaperController {
   private paperService: PaperService;
-  private client: OpenAI;
+  private llmService: LLMService;
 
   constructor() {
     this.paperService = new PaperService("./data/paper.json");
-    this.client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    this.llmService = new LLMService();
   }
 
   /**
@@ -45,7 +41,6 @@ export class PaperController {
 
       // Validate data
       const validatedPaper = PaperSchema.parse(paper);
-
 
       return validatedPaper;
     } catch (error) {
@@ -243,7 +238,7 @@ export class PaperController {
     const { text, renderedContent, blockId } = request.body;
 
     try {
-      const response = await this.paperService.askLLM(
+      const response = await this.llmService.askLLM(
         text,
         renderedContent,
         blockId
@@ -461,11 +456,16 @@ export class PaperController {
   ) {
     try {
       const { renderedContent, blockId } = request.body;
-      await this.paperService.updateRenderedSummaries(renderedContent, blockId);
-      return reply.send({ success: true });
+      const result = await this.paperService.updateRenderedSummaries(
+        renderedContent,
+        blockId
+      );
+      return reply.send({ success: true, apiResponse: result });
     } catch (error) {
       console.error("Error updating rendered summaries:", error);
-      return reply.status(500).send({ success: false, error: "Failed to update summaries" });
+      return reply
+        .status(500)
+        .send({ success: false, error: "Failed to update summaries" });
     }
   }
 }

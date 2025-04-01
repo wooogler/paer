@@ -23,24 +23,24 @@ export type ContentType = z.infer<typeof ContentTypeSchema>;
 
 // Define Content interface for better type safety
 export interface Content {
+  type: ContentType;
   title?: string;
+  content?: string | Content[];
   summary: string;
   intent: string;
-  type: ContentType;
-  content?: string | Content[];
   "block-id"?: string;
 }
 
 // Define recursive content schema
 export const ContentSchema: z.ZodType<Content> = z.lazy(() =>
   z.object({
-    title: z.string().optional(),
-    summary: z.string(),
-    intent: z.string(),
     type: ContentTypeSchema,
+    title: z.string().optional(),
     content: z
       .union([z.string(), z.array(z.lazy(() => ContentSchema))])
       .optional(),
+    summary: z.string(),
+    intent: z.string(),
     "block-id": z.string().optional(),
   })
 );

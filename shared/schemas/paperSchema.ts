@@ -4,9 +4,9 @@ import { Content, ContentSchema } from "./contentSchema";
 // Define Paper interface for better type safety
 export interface Paper extends Omit<Content, "content"> {
   title: string; // title is required for Paper (not optional)
-  type: "paper";
   content: Content[];
   // Paper specific properties
+  type: "paper";
   createdAt?: string;
   updatedAt?: string;
   version?: number;

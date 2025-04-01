@@ -3,8 +3,13 @@ import { useContentStore } from "../store/useContentStore";
 import { useAppStore } from "../store/useAppStore";
 import HierarchyTitle from "./editor/HierarchyTitle";
 import ContentRenderer from "./editor/ContentRenderer";
-import { usePaperQuery, useUpdateBlockSummary, useUpdateBlockIntent } from "../hooks/usePaperQuery";
+import {
+  usePaperQuery,
+  useUpdateBlockSummary,
+  useUpdateBlockIntent,
+} from "../hooks/usePaperQuery";
 import api from "../services/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Editor: React.FC = () => {
   const {
@@ -18,6 +23,7 @@ const Editor: React.FC = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const updateBlockSummary = useUpdateBlockSummary();
   const updateBlockIntent = useUpdateBlockIntent();
+  const queryClient = useQueryClient();
 
   // 중요: paper 데이터의 변경을 직접 구독
   const { data: paperData } = usePaperQuery();
@@ -67,9 +73,13 @@ const Editor: React.FC = () => {
     setIsUpdating(true);
     try {
       // Get the rendered content based on block type
-      let renderedContent = '';
-      
-      if (selectedBlock.type === "paper" || selectedBlock.type === "section" || selectedBlock.type === "subsection") {
+      let renderedContent = "";
+
+      if (
+        selectedBlock.type === "paper" ||
+        selectedBlock.type === "section" ||
+        selectedBlock.type === "subsection"
+      ) {
         // For paper, section, and subsection, get all child content
         if (Array.isArray(selectedBlock.content)) {
           renderedContent = selectedBlock.content
@@ -108,17 +118,33 @@ const Editor: React.FC = () => {
       // Send the rendered content to the backend to generate new summaries and intents
       const response = await api.post("/paper/update-rendered-summaries", {
         renderedContent: renderedContent.trim(),
-        blockId: selectedBlock["block-id"]
+        blockId: selectedBlock["block-id"],
       });
+
+      console.log("OpenAI API 요청 결과:", response.data);
 
       if (!response.data.success) {
         throw new Error(response.data.error || "Failed to update summaries");
       }
 
+      // 데이터 갱신을 위해 쿼리 무효화 및 리패치
+      await queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+      });
+
+      // 최신 데이터 가져오기
+      await queryClient.refetchQueries({
+        queryKey: ["paper"],
+        exact: true,
+      });
+
       alert("Summary and intent updated successfully!");
     } catch (error) {
       console.error("Error updating summaries:", error);
-      alert(error instanceof Error ? error.message : "Failed to update summaries");
+      alert(
+        error instanceof Error ? error.message : "Failed to update summaries"
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -197,7 +223,13 @@ const Editor: React.FC = () => {
         </div>
       </div>
     );
-  }, [selectedBlock, selectedBlockPath, showHierarchy, parentContents, isUpdating]);
+  }, [
+    selectedBlock,
+    selectedBlockPath,
+    showHierarchy,
+    parentContents,
+    isUpdating,
+  ]);
 
   return renderContent;
 };
