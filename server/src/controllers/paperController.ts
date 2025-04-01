@@ -46,7 +46,6 @@ export class PaperController {
       // Validate data
       const validatedPaper = PaperSchema.parse(paper);
 
-      await this.paperService.updateSectionSummaries();
 
       return validatedPaper;
     } catch (error) {

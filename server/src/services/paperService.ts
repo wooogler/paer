@@ -269,7 +269,7 @@ export class PaperService {
         messages: [
           {
             role: "user",
-            content: `You are a helpful peer reader for academic writing. Extract a three sentence summary from a following text. Text: ${text}. Summary: `,
+            content: `You are a helpful peer reader for academic writing. Extract a 20 words summary from a following text. Text: ${text}. Summary: `,
           },
         ],
       });
@@ -475,6 +475,89 @@ export class PaperService {
     } catch (error) {
       console.error("Error updating section summaries:", error);
       throw new Error("Failed to update section summaries");
+    }
+  }
+
+  private async findBlockById(blockId: string): Promise<Content | null> {
+    const paper = await this.paperRepository.getPaper();
+    if (!paper) return null;
+
+    const findBlock = (content: Content): Content | null => {
+      if (content["block-id"] === blockId) return content;
+      if (Array.isArray(content.content)) {
+        for (const child of content.content) {
+          const found = findBlock(child);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    return findBlock(paper);
+  }
+
+  async updateRenderedSummaries(renderedContent: string, blockId: string) {
+    try {
+      // Get the block to update
+      const block = await this.findBlockById(blockId);
+      if (!block) {
+        throw new Error("Block not found");
+      }
+
+      // Helper function to recursively get content from child blocks
+      const getChildContent = (content: string | Content | Content[] | undefined): string => {
+        if (!content) return '';
+        
+        // If content is a string, return it
+        if (typeof content === 'string') {
+          return content;
+        }
+
+        // If content is an array, process each item
+        if (Array.isArray(content)) {
+          return content.map(item => getChildContent(item)).join(' ');
+        }
+        // If content is an object with content property
+        else if ('content' in content) {
+          return getChildContent(content.content);
+        }
+
+        return '';
+      };
+
+      // Helper function to recursively update summaries and intents
+      const updateSummariesAndIntents = async (content: Content): Promise<void> => {
+        // Skip if content is a string or doesn't have a block-id
+        if (typeof content === 'string' || !('block-id' in content) || !content["block-id"]) {
+          return;
+        }
+
+        // Get content from child blocks
+        const childContent = getChildContent(content);
+
+        // Generate new summary and intent using the child content
+        const summary = await this.summarizeText(childContent);
+        const intent = await this.findIntent(childContent);
+
+        // Update the current block with new summary and intent
+        await this.updateBlock(content["block-id"], "summary", summary);
+        await this.updateBlock(content["block-id"], "intent", intent);
+
+        // Recursively update child blocks if they exist
+        if (Array.isArray(content.content)) {
+          for (const child of content.content) {
+            await updateSummariesAndIntents(child);
+          }
+        }
+      };
+
+      // Start recursive update from the selected block
+      await updateSummariesAndIntents(block);
+
+      return true;
+    } catch (error) {
+      console.error("Error updating rendered summaries:", error);
+      throw error;
     }
   }
 }

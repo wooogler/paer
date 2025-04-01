@@ -215,6 +215,19 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       };
     }
   });
+
+  // POST /api/paper/update-rendered-summaries - Update summaries and intents for rendered content
+  fastify.post(
+    "/paper/update-rendered-summaries",
+    async (
+      request: FastifyRequest<{
+        Body: { renderedContent: string; blockId: string };
+      }>,
+      reply: FastifyReply
+    ) => {
+      return paperController.updateRenderedSummaries(request, reply);
+    }
+  );
 };
 
 export default apiRoutes;
