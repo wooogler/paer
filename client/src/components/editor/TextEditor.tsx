@@ -149,16 +149,31 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     }, [content, path, setSelectedContent]);
 
     // Add onBlur event handler
-    const handleBlur = useCallback(() => {
-      setIsFocused(false);
-    }, []);
+    const handleBlur = useCallback(
+      (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        // 버튼 클릭을 방해하지 않도록 이벤트 타겟 확인
+        const relatedTarget = e.relatedTarget as HTMLElement | null;
+        // 포커스가 버튼으로 이동한 경우에는 포커스 상태 유지
+        if (
+          relatedTarget &&
+          (relatedTarget.tagName === "BUTTON" ||
+            relatedTarget.closest("button"))
+        ) {
+          return;
+        }
+        setIsFocused(false);
+      },
+      []
+    );
 
     // Update button handler
     const handleUpdate = useCallback(() => {
+      console.log("handleUpdate called", content["block-id"]);
       if (content.type === "sentence" && content["block-id"]) {
         const blockId = content["block-id"] as string;
 
         // Send update request to server first
+        console.log("Sending mutation to server");
         updateSentenceMutation.mutate(
           {
             blockId,
@@ -168,6 +183,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           },
           {
             onSuccess: () => {
+              console.log("Update successful");
               // Update local state after server confirms
               updateContent(blockId, {
                 content: localValue,
@@ -186,7 +202,16 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                 textareaRef.current.blur();
               }
             },
+            onError: (error) => {
+              console.error("Update error:", error);
+            },
           }
+        );
+      } else {
+        console.log(
+          "Not a sentence or no block-id",
+          content.type,
+          content["block-id"]
         );
       }
     }, [
@@ -497,13 +522,25 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             {isFocused && content.type === "sentence" && (
               <div className="flex justify-end gap-2 mb-2">
                 <button
-                  onClick={handleCancel}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation(); // 이벤트 버블링 방지
+                    e.preventDefault();
+                    console.log("Cancel button clicked");
+                    handleCancel();
+                  }}
                   className="px-3 py-1 text-xs rounded bg-gray-100 hover:bg-gray-200 text-gray-700"
                 >
                   Discard
                 </button>
                 <button
-                  onClick={handleUpdate}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation(); // 이벤트 버블링 방지
+                    e.preventDefault();
+                    console.log("Update button clicked");
+                    handleUpdate();
+                  }}
                   className="px-3 py-1 text-xs rounded bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-1"
                 >
                   Update

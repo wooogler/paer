@@ -92,9 +92,18 @@ function isLatexCommand(line: string): boolean {
   )
     return false;
 
+  // More generalized filter for XML tags that shouldn't be in the paper text
+  if (/^<\/?[a-zA-Z0-9_]+>/.test(lineWithoutComments)) {
+    return true;
+  }
+
   // More general pattern to catch LaTeX commands
   return (
     /^\\[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/.test(lineWithoutComments) ||
+    // Classification commands
+    /^\\ccsdesc/.test(lineWithoutComments) ||
+    /^\\begin{CCSXML}/.test(lineWithoutComments) ||
+    /^\\end{CCSXML}/.test(lineWithoutComments) ||
     // Catch margin and layout settings
     /^[a-zA-Z]+(?:top|bottom|left|right|inner|outer)margin=\d+pt(?:,)?$/.test(
       lineWithoutComments
@@ -166,7 +175,24 @@ function isNonPaperContent(line: string): boolean {
   )
     return false;
 
+  // General pattern for XML tags and LaTeX classification/metadata commands
+  if (
+    // Any XML tag
+    /^<\/?[a-zA-Z0-9_]+>/.test(lineWithoutComments) ||
+    // Any CCS or classification description
+    /^\\ccsdesc/.test(lineWithoutComments) ||
+    // Any ACM command
+    /^\\acm[A-Z][a-zA-Z]*/i.test(lineWithoutComments)
+  ) {
+    return true;
+  }
+
   const nonPaperPatterns = [
+    // More generalized patterns for XML and classification content
+    /^<\/?[a-zA-Z0-9_]+>/i, // Any XML tag open or close
+    /^\\ccsdesc/i, // Any CCS descriptor
+    /^\\acm[A-Z][a-zA-Z]*/i, // Any ACM command
+
     // Conference and submission info
     /^Submitted to/i,
     /^In proceedings of/i,
@@ -387,6 +413,17 @@ export function processLatexContent(
   baseTimestamp: number
 ): any[] {
   const fileType = detectFileType(content);
+
+  // Pre-process content to remove multi-line XML blocks and LaTeX environments
+  // This helps handle cases where these tags span multiple lines
+  content = content
+    // Remove LaTeX environments that aren't part of the paper content
+    .replace(/\\begin{CCSXML}[\s\S]*?\\end{CCSXML}/g, "")
+    // More generalized approach to remove XML blocks with any tag name
+    .replace(/<([a-zA-Z0-9_]+)>[\s\S]*?<\/\1>/g, "")
+    // Remove LaTeX classification commands
+    .replace(/\\ccsdesc\[.*?\]{.*?}/g, "");
+
   const lines = content.split("\n");
   const result: any[] = [];
   let currentParagraph: any[] = [];
@@ -552,80 +589,254 @@ export function processLatexContent(
 
     // First handle citations and refs that we want to preserve
     if (fileType === "latex") {
-      // For LaTeX files, preserve the original commands and tilde
-      cleanedLine = cleanedLine;
-    } else {
-      // For non-LaTeX files, convert to bracket format
+      // For LaTeX files, preserve original citation commands with curly braces format
       cleanedLine = cleanedLine
-        .replace(/\\citet{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace citet citations with [citation:key]
-        .replace(/\\cite{(.*?)}/g, (match, citation) => `[citation:${citation}]`) // Replace regular citations with [citation:key]
-        .replace(/\[@(.*?)\]/g, (match, citation) => `[citation:${citation}]`) // Replace markdown citations with [citation:key]
-        .replace(/\\ref{(.*?)}/g, (match, ref) => `[ref:${ref}]`) // Replace refs with [ref:key]
+        .replace(
+          /\\citet\s*{(.*?)}/g,
+          (match, citation) => `\\citet{${citation}}`
+        ) // Preserve citet citations
+        .replace(
+          /\\cite\s*{(.*?)}/g,
+          (match, citation) => `\\cite{${citation}}`
+        ) // Preserve regular citations
+        .replace(
+          /\\citep\s*{(.*?)}/g,
+          (match, citation) => `\\citep{${citation}}`
+        ) // Preserve citep citations
+        .replace(
+          /\\citealp\s*{(.*?)}/g,
+          (match, citation) => `\\citealp{${citation}}`
+        ) // Preserve citealp citations
+        .replace(
+          /\\citeauthor\s*{(.*?)}/g,
+          (match, citation) => `\\citeauthor{${citation}}`
+        ) // Preserve citeauthor citations
+        .replace(
+          /\\citeyear\s*{(.*?)}/g,
+          (match, citation) => `\\citeyear{${citation}}`
+        ); // Preserve citeyear citations
+    } else {
+      // For non-LaTeX files
+      cleanedLine = cleanedLine
+        .replace(
+          /\\citet\s*{(.*?)}/g,
+          (match, citation) => `\\citet{${citation}}`
+        ) // Preserve citet citations
+        .replace(
+          /\\cite\s*{(.*?)}/g,
+          (match, citation) => `\\cite{${citation}}`
+        ) // Preserve regular citations
+        .replace(/\[@(.*?)\]/g, (match, citation) => `{${citation}}`) // Convert markdown citations to braces
+        .replace(/\\ref\s*{(.*?)}/g, (match, ref) => `\\ref{${ref}}`) // Preserve refs
         .replace(/~/g, ""); // Remove any tilde characters
     }
 
     // Then clean up other LaTeX commands
     cleanedLine = cleanedLine
-      .replace(/\\(?!(cite|ref|citet|begin|end|item|itemize|figure|table|verbatim|lstlisting))[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g, "") // Remove all LaTeX commands except preserved ones
+      .replace(
+        /\\(?!(cite|citet|citep|citealp|citeauthor|citeyear|ref|begin|end|item|itemize|figure|table|verbatim|lstlisting))[a-zA-Z]+(?:\[.*?\])?(?:{.*?})?/g,
+        ""
+      ) // Remove all LaTeX commands except preserved ones
       .replace(/\\textbf{(.*?)}/g, "$1") // Remove textbf formatting
       .replace(/\\textit{(.*?)}/g, "$1") // Remove textit formatting
       .replace(/\\emph{(.*?)}/g, "$1") // Remove emph formatting
       .replace(/\\label{.*?}/g, "") // Remove labels
       .replace(/\\newcommand{.*?}{.*?}/g, "") // Remove newcommand definitions
       .replace(/\\newenvironment{.*?}{.*?}{.*?}/g, "") // Remove newenvironment definitions
-      .replace(/\\acmConference{.*?}/g, "") // Remove ACM conference settings
-      .replace(/\\acmJournal{.*?}/g, "") // Remove ACM journal settings
-      .replace(/\\acmVolume{.*?}/g, "") // Remove ACM volume settings
-      .replace(/\\acmNumber{.*?}/g, "") // Remove ACM number settings
-      .replace(/\\acmPrice{.*?}/g, "") // Remove ACM price settings
-      .replace(/\\acmDOI{.*?}/g, "") // Remove ACM DOI settings
-      .replace(/\\acmISBN{.*?}/g, "") // Remove ACM ISBN settings
-      .replace(/\\acmISSN{.*?}/g, "") // Remove ACM ISSN settings
-      .replace(/\\acmSubmissionID{.*?}/g, "") // Remove ACM submission ID settings
-      .replace(/\\acmArticle{.*?}/g, "") // Remove ACM article settings
-      .replace(/\\acmYear{.*?}/g, "") // Remove ACM year settings
-      .replace(/\\acmMonth{.*?}/g, "") // Remove ACM month settings
-      .replace(/\\acmDay{.*?}/g, "") // Remove ACM day settings
-      .replace(/\\acmDate{.*?}/g, "") // Remove ACM date settings
-      .replace(/\\acmLocation{.*?}/g, "") // Remove ACM location settings
-      .replace(/\\acmCity{.*?}/g, "") // Remove ACM city settings
-      .replace(/\\acmCountry{.*?}/g, "") // Remove ACM country settings
-      .replace(/\\acmState{.*?}/g, "") // Remove ACM state settings
-      .replace(/\\acmRegion{.*?}/g, "") // Remove ACM region settings
-      .replace(/\\acmCategory{.*?}/g, "") // Remove ACM category settings
-      .replace(/\\acmSubject{.*?}/g, "") // Remove ACM subject settings
-      .replace(/\\acmKeywords{.*?}/g, "") // Remove ACM keywords settings
-      .replace(/\\acmTerms{.*?}/g, "") // Remove ACM terms settings
-      .replace(/\\acmFormat{.*?}/g, "") // Remove ACM format settings
-      .replace(/\\acmStyle{.*?}/g, "") // Remove ACM style settings
-      .replace(/\\acmTemplate{.*?}/g, "") // Remove ACM template settings
-      .replace(/\\acmCopyright{.*?}/g, "") // Remove ACM copyright settings
-      .replace(/\\acmPermission{.*?}/g, "") // Remove ACM permission settings
-      .replace(/\\acmNotice{.*?}/g, "") // Remove ACM notice settings
-      .replace(/\\acmReference{.*?}/g, "") // Remove ACM reference settings
-      .replace(/\\acmAbstract{.*?}/g, "") // Remove ACM abstract settings
-      .replace(/\\acmAcknowledgments{.*?}/g, "") // Remove ACM acknowledgments settings
-      .replace(/\\acmBibliography{.*?}/g, "") // Remove ACM bibliography settings
-      .replace(/\\acmAppendix{.*?}/g, "") // Remove ACM appendix settings
-      .replace(/\\acmBooktitle{.*?}/g, "") // Remove ACM booktitle settings
+      // Generalized approach to remove XML blocks with any tag name
+      .replace(/<([a-zA-Z0-9_]+)>.*?<\/\1>/gs, "")
+      // Generalized approach to remove self-closing XML tags
+      .replace(/<[a-zA-Z0-9_]+\s*\/>/g, "")
+      // Remove LaTeX classification commands
+      .replace(/\\ccsdesc\[.*?\]{.*?}/g, "")
+      // Remove ACM conference settings with a more generalized pattern
+      .replace(/\\acm[A-Z][a-zA-Z]*{.*?}/g, "") // Matches all \acmXyz{...} commands
       .replace(/\\begin{itemize}/g, "") // Remove itemize begin
       .replace(/\\end{itemize}/g, "") // Remove itemize end
       .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
-      .replace(/\{(?!.*\\cite|.*\\ref|.*\\citet).*?\}/g, "") // Remove curly braces and their content, except for citations and refs
-      .replace(/\[(?!citation:|ref:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation and ref markers
-      .replace(/\[citation:(.*?)\]/g, "[$1]") // Convert citation markers back to simple brackets
-      .replace(/\[ref:(.*?)\]/g, "[$1]") // Convert ref markers back to simple brackets
+      .replace(/\{(?!.*?\\cite|.*?\\ref|.*?\\citet).*?\}/g, "") // Remove curly braces and their content, except for citations and refs
+      .replace(/\[(?!.*?citation:|.*?ref:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation and ref markers
+      .replace(/\[citation:(.*?)\]/g, "{$1}") // Convert citation markers to curly braces
+      .replace(/\[ref:(.*?)\]/g, "{$1}") // Convert ref markers to curly braces
       .trim();
+
+    // Make sure citations at end of paragraphs are preserved by checking if any were removed during cleanup
+    const originalCitations = [];
+    let match;
+
+    // Find all citations in the original line
+    const citationRegex =
+      /\\cite\s*{([^}]+)}|\\citet\s*{([^}]+)}|\\citep\s*{([^}]+)}|\\citealp\s*{([^}]+)}|\\citeauthor\s*{([^}]+)}|\\citeyear\s*{([^}]+)}|\[@([^\]]+)\]/g;
+    while ((match = citationRegex.exec(lineWithoutComments)) !== null) {
+      const citationString =
+        match[1] ||
+        match[2] ||
+        match[3] ||
+        match[4] ||
+        match[5] ||
+        match[6] ||
+        match[7];
+      // Handle multiple citations separated by commas in a single \cite command
+      const citations = citationString.split(",").map((c) => c.trim());
+      originalCitations.push(...citations);
+    }
+
+    // Check if all original citations are in the cleaned line
+    if (originalCitations.length > 0) {
+      // Create proper citation format for all citations
+      const allCitationsPresent = originalCitations.every((citation) => {
+        // Check for individual citation
+        const individualPresent =
+          cleanedLine.includes(`\\cite{${citation}}`) ||
+          cleanedLine.includes(`\\citet{${citation}}`) ||
+          cleanedLine.includes(`\\citep{${citation}}`) ||
+          cleanedLine.includes(`\\citealp{${citation}}`) ||
+          cleanedLine.includes(`\\citeauthor{${citation}}`) ||
+          cleanedLine.includes(`\\citeyear{${citation}}`);
+
+        if (individualPresent) return true;
+
+        // Check for citation as part of a multi-citation command
+        // Look for patterns like \cite{key1,key2,key3} where our citation is one of the keys
+        const multiCiteRegex = /\\cite\{([^}]+)\}/g;
+        let multiMatch;
+        while ((multiMatch = multiCiteRegex.exec(cleanedLine)) !== null) {
+          const citationKeys = multiMatch[1].split(",").map((k) => k.trim());
+          if (citationKeys.includes(citation)) return true;
+        }
+
+        // Same for other citation types
+        const otherCiteTypes = [
+          "\\citet",
+          "\\citep",
+          "\\citealp",
+          "\\citeauthor",
+          "\\citeyear",
+        ];
+        for (const citeType of otherCiteTypes) {
+          const typeRegex = new RegExp(`${citeType}\\{([^}]+)\\}`, "g");
+          let typeMatch;
+          while ((typeMatch = typeRegex.exec(cleanedLine)) !== null) {
+            const citationKeys = typeMatch[1].split(",").map((k) => k.trim());
+            if (citationKeys.includes(citation)) return true;
+          }
+        }
+
+        return false;
+      });
+
+      // If any citations are missing, add all of them at the end in proper format
+      if (!allCitationsPresent) {
+        // Remove any partial citations that might have been added incorrectly
+        originalCitations.forEach((citation) => {
+          cleanedLine = cleanedLine.replace(`[${citation}]`, "");
+          cleanedLine = cleanedLine.replace(`{${citation}}`, "");
+        });
+
+        // Add all citations in proper format with \cite command
+        if (originalCitations.length === 1) {
+          cleanedLine = `${cleanedLine} \\cite{${originalCitations[0]}}`;
+        } else {
+          // For multiple citations, use \cite{cite1,cite2,cite3} format
+          cleanedLine = `${cleanedLine} \\cite{${originalCitations.join(",")}}`;
+        }
+      }
+    }
 
     // If the line contains itemize content, preserve it
     if (lineWithoutComments.includes("\\item")) {
       cleanedLine = lineWithoutComments
         .replace(/\\item\s*/g, "• ") // Replace \item with bullet point
-        .replace(/\{(?!.*\\cite|.*\\ref|.*\\citet).*?\}/g, "") // Remove curly braces and their content, except for citations and refs
-        .replace(/\[(?!citation:|ref:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation and ref markers
-        .replace(/\[citation:(.*?)\]/g, "[$1]") // Convert citation markers back to simple brackets
-        .replace(/\[ref:(.*?)\]/g, "[$1]") // Convert ref markers back to simple brackets
+        .replace(/\{(?!.*?\\cite|.*?\\ref|.*?\\citet).*?\}/g, "") // Remove curly braces and their content, except for citations and refs
+        .replace(/\[(?!.*?citation:|.*?ref:).*?\]/g, "") // Remove any remaining square brackets and their content, except citation and ref markers
+        .replace(/\[citation:(.*?)\]/g, "{$1}") // Convert citation markers to curly braces
+        .replace(/\[ref:(.*?)\]/g, "{$1}") // Convert ref markers to curly braces
         .trim();
+
+      // Also handle citations in itemized lists the same way
+      const itemCitations = [];
+      let itemMatch;
+
+      // Find all citations in the original itemized line
+      const itemCitationRegex =
+        /\\cite\s*{([^}]+)}|\\citet\s*{([^}]+)}|\\citep\s*{([^}]+)}|\\citealp\s*{([^}]+)}|\\citeauthor\s*{([^}]+)}|\\citeyear\s*{([^}]+)}|\[@([^\]]+)\]/g;
+      while (
+        (itemMatch = itemCitationRegex.exec(lineWithoutComments)) !== null
+      ) {
+        const citationString =
+          itemMatch[1] ||
+          itemMatch[2] ||
+          itemMatch[3] ||
+          itemMatch[4] ||
+          itemMatch[5] ||
+          itemMatch[6] ||
+          itemMatch[7];
+        // Handle multiple citations separated by commas in a single \cite command
+        const citations = citationString.split(",").map((c) => c.trim());
+        itemCitations.push(...citations);
+      }
+
+      // Check if all original citations are in the cleaned line
+      if (itemCitations.length > 0) {
+        // Create proper citation format for all citations
+        const allItemCitationsPresent = itemCitations.every((citation) => {
+          // Check for individual citation
+          const individualPresent =
+            cleanedLine.includes(`\\cite{${citation}}`) ||
+            cleanedLine.includes(`\\citet{${citation}}`) ||
+            cleanedLine.includes(`\\citep{${citation}}`) ||
+            cleanedLine.includes(`\\citealp{${citation}}`) ||
+            cleanedLine.includes(`\\citeauthor{${citation}}`) ||
+            cleanedLine.includes(`\\citeyear{${citation}}`);
+
+          if (individualPresent) return true;
+
+          // Check for citation as part of a multi-citation command
+          // Look for patterns like \cite{key1,key2,key3} where our citation is one of the keys
+          const multiCiteRegex = /\\cite\{([^}]+)\}/g;
+          let multiMatch;
+          while ((multiMatch = multiCiteRegex.exec(cleanedLine)) !== null) {
+            const citationKeys = multiMatch[1].split(",").map((k) => k.trim());
+            if (citationKeys.includes(citation)) return true;
+          }
+
+          // Same for other citation types
+          const otherCiteTypes = [
+            "\\citet",
+            "\\citep",
+            "\\citealp",
+            "\\citeauthor",
+            "\\citeyear",
+          ];
+          for (const citeType of otherCiteTypes) {
+            const typeRegex = new RegExp(`${citeType}\\{([^}]+)\\}`, "g");
+            let typeMatch;
+            while ((typeMatch = typeRegex.exec(cleanedLine)) !== null) {
+              const citationKeys = typeMatch[1].split(",").map((k) => k.trim());
+              if (citationKeys.includes(citation)) return true;
+            }
+          }
+
+          return false;
+        });
+
+        // If any citations are missing, add all of them at the end in proper format
+        if (!allItemCitationsPresent) {
+          // Remove any partial citations that might have been added incorrectly
+          itemCitations.forEach((citation) => {
+            cleanedLine = cleanedLine.replace(`[${citation}]`, "");
+            cleanedLine = cleanedLine.replace(`{${citation}}`, "");
+          });
+
+          // Add all citations in proper format with \cite command
+          if (itemCitations.length === 1) {
+            cleanedLine = `${cleanedLine} \\cite{${itemCitations[0]}}`;
+          } else {
+            // For multiple citations, use \cite{cite1,cite2,cite3} format
+            cleanedLine = `${cleanedLine} \\cite{${itemCitations.join(",")}}`;
+          }
+        }
+      }
     }
 
     return cleanedLine;
@@ -683,9 +894,9 @@ export function processLatexContent(
 
         // Only process if we have content after cleaning
         if (cleanedLine) {
-          // Split into sentences
+          // Split into sentences - carefully handling citations
           const sentences = cleanedLine
-            .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
+            .split(/(?<=[.!?])\s+(?=[A-Z])/g) // Only split at punctuation followed by space and capital letter
             .filter((sentence) => {
               const cleaned = sentence.trim();
               return (
@@ -779,9 +990,9 @@ export function processLatexContent(
 
         // Only process if we have content after cleaning
         if (cleanedLine) {
-          // Split into sentences
+          // Split into sentences - carefully handling citations
           const sentences = cleanedLine
-            .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
+            .split(/(?<=[.!?])\s+(?=[A-Z])/g) // Only split at punctuation followed by space and capital letter
             .filter((sentence) => {
               const cleaned = sentence.trim();
               return (
@@ -828,9 +1039,9 @@ export function processLatexContent(
           currentSection = createSectionBlock("Main Content", []);
         }
 
-        // Split into sentences
+        // Split into sentences - carefully handling citations
         const sentences = trimmedLine
-          .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
+          .split(/(?<=[.!?])\s+(?=[A-Z])/g) // Only split at punctuation followed by space and capital letter
           .filter((sentence) => {
             const cleaned = sentence.trim();
             return (
@@ -873,9 +1084,9 @@ export function processLatexContent(
         currentSection = createSectionBlock("Main Content", []);
       }
 
-      // Split into sentences
+      // Split into sentences - carefully handling citations
       const sentences = trimmedLine
-        .split(/(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\s*(?=\\cite|\\citet|\\ref)/g) // Split at punctuation followed by space and capital letter OR citation/ref
+        .split(/(?<=[.!?])\s+(?=[A-Z])/g) // Only split at punctuation followed by space and capital letter
         .filter((sentence) => {
           const cleaned = sentence.trim();
           return (
