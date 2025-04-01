@@ -504,31 +504,6 @@ export class PaperService {
         throw new Error("Block not found");
       }
 
-      // Helper function to clean content
-      const cleanContent = (content: string): string => {
-        return content
-          .replace(/~\\ref{[^}]*}/g, '') // Remove LaTeX references
-          .replace(/\\cite{[^}]*}/g, '') // Remove LaTeX citations
-          .replace(/\\/g, '') // Remove other LaTeX commands
-          .replace(/\s+/g, ' ') // Normalize whitespace
-          .trim();
-      };
-
-      // Helper function to process content recursively
-      const processContent = (content: Content): string => {
-        if (typeof content === 'string') return cleanContent(content);
-        if (!content || !('content' in content)) return '';
-        
-        if (Array.isArray(content.content)) {
-          return content.content
-            .map(item => processContent(item))
-            .filter(text => text)
-            .join(' ');
-        }
-        
-        return typeof content.content === 'string' ? cleanContent(content.content) : '';
-      };
-
       // Create a prompt that includes the paper.json snippet
       const prompt = `You are a helpful peer reader for academic writing. Analyze the following content block from paper.json and fill in all empty summary and intent fields.
 Here is the block from paper.json:
@@ -544,7 +519,7 @@ Please provide your response as a raw JSON object (without any markdown formatti
 
       // Get summary and intent from LLM
       const response = await this.client.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-3.5-turbo", // Faster model
         messages: [{ role: "user", content: prompt }],
       });
 

@@ -1,139 +1,85 @@
 {
-  "title": "Understanding technology use of minimalists",
-  "block-id": "1743486076",
-  "summary": "",
-  "intent": "",
+  "title": "CHOIR: Chat-based Helper for Organizational Intelligence Repository",
+  "block-id": "1743486906",
+  "summary": "This is a paper created automatically",
+  "intent": "To provide a starting point for writing",
   "type": "paper",
   "content": [
     {
       "title": "Abstract",
-      "block-id": "1743486077",
+      "block-id": "1743486907",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
-          "block-id": "1743486083",
+          "block-id": "1743486917",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486078",
+              "block-id": "1743486908",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "Minimalism has become a widely recognized concept, frequently discussed and promoted by internet influencers for its positive impact on personal well-being and its role in fostering a sustainable lifestyle."
+              "content": "Modern organizations frequently rely on chat-based platforms (e.g., Slack, Microsoft Teams, and Discord) for day-to-day communication and decision-making."
             },
             {
-              "block-id": "1743486079",
+              "block-id": "1743486909",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "While the minimalist lifestyle has grown in popularity, the nuanced relationship between minimalism and technology remains underexplored."
+              "content": "As conversations evolve, organizational knowledge can get buried, prompting repeated searches and discussions."
             },
             {
-              "block-id": "1743486080",
+              "block-id": "1743486910",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "This paper aims to address this research gap by conducting a contextual inquiry with 12 participants who self-identify as minimalists."
+              "content": "While maintaining shared documents, such as Wiki articles for the organization, offers a partial solution, it requires manual and timely efforts to keep it up to date, and it may not effectively preserve the social and contextual aspect of prior discussions."
             },
             {
-              "block-id": "1743486081",
+              "block-id": "1743486911",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "The primary objective is to investigate two key questions: (i) how minimalists use or avoid using technology to sustain their minimalist lifestyle, and (ii) how their minimalist approach influences or correlates with their management of digital data."
+              "content": "Moreover, reaching a consensus on document updates with relevant stakeholders can be time-consuming and complex."
             },
             {
-              "block-id": "1743486082",
+              "block-id": "1743486912",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "The findings reveal..."
-            }
-          ]
-        },
-        {
-          "block-id": "1743486085",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486084",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Your, Paper}"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Abstract",
-      "block-id": "1743486077",
-      "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": [
-        {
-          "block-id": "1743486083",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486078",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Minimalism has become a widely recognized concept, frequently discussed and promoted by internet influencers for its positive impact on personal well-being and its role in fostering a sustainable lifestyle."
+              "content": "To address these challenges, we introduce CHOIR (Chat-based Helper for Organizational Intelligence Repository), a chatbot that integrates seamlessly with chat platforms."
             },
             {
-              "block-id": "1743486079",
+              "block-id": "1743486913",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "While the minimalist lifestyle has grown in popularity, the nuanced relationship between minimalism and technology remains underexplored."
+              "content": "CHOIR automatically identifies and proposes edits to related documents, initiates discussions with relevant team members, and preserves contextual revision histories."
             },
             {
-              "block-id": "1743486080",
+              "block-id": "1743486914",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "This paper aims to address this research gap by conducting a contextual inquiry with 12 participants who self-identify as minimalists."
+              "content": "By embedding knowledge management directly into chat environments and leveraging LLMs, CHOIR simplifies manual updates and supports consensus-driven editing based on maintained context with revision histories."
             },
             {
-              "block-id": "1743486081",
+              "block-id": "1743486915",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "The primary objective is to investigate two key questions: (i) how minimalists use or avoid using technology to sustain their minimalist lifestyle, and (ii) how their minimalist approach influences or correlates with their management of digital data."
+              "content": "We plan to design, deploy, and evaluate CHOIR in the context of maintaining an organizational memory for a research lab."
             },
             {
-              "block-id": "1743486082",
+              "block-id": "1743486916",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "The findings reveal..."
-            }
-          ]
-        },
-        {
-          "block-id": "1743486085",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486084",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Your, Paper}"
+              "content": "We describe the chatbot's motivation, design, and early implementation to show how CHOIR streamlines collaborative document management."
             }
           ]
         }
@@ -141,2520 +87,911 @@
     },
     {
       "title": "Introduction",
-      "block-id": "1743486086",
+      "block-id": "1743486918",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
-          "block-id": "1743486092",
+          "block-id": "1743486923",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486087",
+              "block-id": "1743486919",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "In recent decades, consumption growth has often outpaced technological advancements in mitigating the environmental impact coming out of X."
+              "content": "In modern organizations, group chat services such as Slack, Microsoft Teams, and Discord foster communication among members and facilitate collaboration and decision-making~\\cite{handel2002chat, zhang2018making}."
             },
             {
-              "block-id": "1743486088",
+              "block-id": "1743486920",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "Researchers have identified that rapid economic growth and increased energy consumption significantly contribute to CO$_2$ emissions."
+              "content": "These platforms support channel-based communication and direct messaging, enabling smooth information exchange among teams or individuals when solving problems~\\cite{wang2022group}."
             },
             {
-              "block-id": "1743486089",
+              "block-id": "1743486921",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "It is evident that the pursuit of affluence instigated unsustainable trends, and the environmental degradation from human activity will fundamentally change the essential life-sustaining function of the Earth (Scientists' Warning of Affluence, Carbon Dioxide (CO$_2$) Emissions, and Economic Growth)."
+              "content": "However, shared information or knowledge, which can benefit the organization if well maintained, can get easily buried in new messages~\\cite{zhang2018making} in a dynamic and fast-paced chat environment~\\cite{cameron2005unintended}."
             },
             {
-              "block-id": "1743486090",
+              "block-id": "1743486922",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "The harm caused by the consumerism culture is not limited to environmental issues."
-            },
-            {
-              "block-id": "1743486091",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Studies show that individuals with strong materialistic values often pursue goals that may lead to poorer well-being (Consumerism and Its Discontents)."
+              "content": "As a result, users often fail to utilize existing knowledge in similar problem-solving situations or end up searching through past conversations and repeating discussions that have already taken place~\\cite."
             }
           ]
         },
         {
-          "block-id": "1743486107",
+          "block-id": "1743486931",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486093",
+              "block-id": "1743486924",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "As the discontent towards consumerism culture grew, some developed an alternative lifestyle to break the chain of perpetual consumption of goods."
+              "content": "Researchers in CSCW have addressed the challenge of maintaining knowledge that emerges from an organization, which is described as organizational memory~\\cite{ackerman2004organizational, ackerman2013sharing}."
             },
             {
-              "block-id": "1743486094",
+              "block-id": "1743486925",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "People turned towards  as an answer to the ills of consumerism."
+              "content": "Organizational memory refers to the knowledge stored in an organization regarding decision-making stimulus and outcomes, which can be reused to inform future decisions~\\cite{walsh2009organizational}."
             },
             {
-              "block-id": "1743486095",
+              "block-id": "1743486926",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "Minimalism rejects established ideals of maximal consumption and advocates cutting down on consumption (The US Minimalist Movement, Against Accumulation)."
+              "content": "The line of research has examined how repository systems can help members of an organization to store and retrieve knowledge~\\cite{ackerman1990answer, stein1995actualizing, burke1997question, pipek2003pruning, halverson2004behind, schaffert2006ikewiki, grudin2010wikis}."
             },
             {
-              "block-id": "1743486096",
+              "block-id": "1743486927",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "To that end, minimalists follow certain practices, according to Martin-Woodhead et al. ~\\cite: \\cite{Woodhead2022}"
+              "content": "AnswerGarden was one of the early systems that allowed users to explore the tree of organizational memory to find the information they needed; if the information was missing, they could email relevant experts to expand the tree~\\cite{ackerman1990answer}."
             },
             {
-              "block-id": "1743486097",
+              "block-id": "1743486928",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "• They actively limit their purchases, buying only what is necessary."
+              "content": "Other scholars have also studied wiki systems as another means to store and share knowledge within companies~\\cite{schaffert2006ikewiki,grudin2010wikis}."
             },
             {
-              "block-id": "1743486098",
+              "block-id": "1743486929",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "• They repair, repurpose, and extend the lifespan of their belongings."
+              "content": "Recently, with the rising popularity of cloud-based repository services like Google Drive and Dropbox, organizations can more easily maintain and share knowledge base online~\\cite{saratchandra2022role}."
             },
             {
-              "block-id": "1743486099",
+              "block-id": "1743486930",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "• They engage in conscious consumption, avoiding impulsive purchases."
-            },
-            {
-              "block-id": "1743486100",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "• They prioritize quality over quantity, ensuring longer-lasting items and reducing overall demand for new products."
-            },
-            {
-              "block-id": "1743486101",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "• Some minimalists make a conscious effort to source their goods sustainably and ethically."
-            },
-            {
-              "block-id": "1743486102",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "The motivation behind the minimalist lifestyle varies~\\cite."
-            },
-            {
-              "block-id": "1743486103",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Some are deeply motivated by environmental and ethical concerns. \\cite{Woodhead2022}"
-            },
-            {
-              "block-id": "1743486104",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "The minimalist lifestyle works as a mediator between biospheric and altruistic values and behavioral intentions~\\cite. \\cite{Druică2023}"
-            },
-            {
-              "block-id": "1743486105",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Others see sustainability as a positive by-product of their effort to declutter their space and focus on core values that they care about for their well-being."
-            },
-            {
-              "block-id": "1743486106",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Through the minimalist lifestyle, practitioners fulfill their need to gain control over their lives ~\\cite. \\cite{Lloyd2020}"
+              "content": "Despite this convenience, the omission of social relationships, and the risk of losing rich context once it is converted into documents remains fundamental limitations for knowledge repositories~\\cite."
             }
           ]
         },
         {
-          "block-id": "1743486110",
+          "block-id": "1743486938",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486108",
+              "block-id": "1743486932",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "Regardless of their motivation practitioners of a minimalist lifestyle resulted in increased life satisfaction and minimized environmental impact."
+              "content": "Recent advances in LLMs have the potential to overcome the limitations of repository-based models."
             },
             {
-              "block-id": "1743486109",
+              "block-id": "1743486933",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "Lifestyle minimalism provided an alternative to those who wanted to escape from the conventional culture of consumerism."
+              "content": "They can summarize key insights from lengthy texts, such as news articles~\\cite, group dialogues~\\cite{asthana2023summaries, tian2024dialogue}, and then integrate those insights into existing material through chat interactions~\\cite."
+            },
+            {
+              "block-id": "1743486934",
+              "summary": "",
+              "intent": "",
+              "type": "sentence",
+              "content": "They can also serve as moderators~\\cite or debaters~\\cite that interpret and guide the flow of dialogue among individuals."
+            },
+            {
+              "block-id": "1743486935",
+              "summary": "",
+              "intent": "",
+              "type": "sentence",
+              "content": "RAG-based solutions rely on an LLM's ability to provide context-aware answers rooted in existing documents~\\cite, and various organizations have already adopted them~\\cite."
+            },
+            {
+              "block-id": "1743486936",
+              "summary": "",
+              "intent": "",
+              "type": "sentence",
+              "content": "Leveraging LLM's advanced capabilities, we designed  (Chat-based Helper for Organizational Intelligence Repository) to seamlessly capture knowledge within group chats, foster collaborative organizational memory, and provide contextually relevant responses to users."
+            },
+            {
+              "block-id": "1743486937",
+              "summary": "",
+              "intent": "",
+              "type": "sentence",
+              "content": "We have three design goals as follows: \\cite{zhang2024benchmarking,asthana2023summaries,tian2024dialogue,laban2024beyond,bhatia2024moderating,chiang2024enhancing,lewis2020retrieval,khangarotCouncilPostRAG}"
             }
           ]
         },
         {
-          "block-id": "1743486121",
+          "block-id": "1743486940",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486111",
+              "block-id": "1743486939",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "However, minimalist interaction with their technology is yet to be explored within HCI."
-            },
-            {
-              "block-id": "1743486112",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Most studies that mention the words minimalism or minimalist used the terms as a design principle for UI design."
-            },
-            {
-              "block-id": "1743486113",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "In some cases the word is used as a substitute for words such as simplification or contraction."
-            },
-            {
-              "block-id": "1743486114",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "There were a few papers that studied minimalism as a lifestyle."
-            },
-            {
-              "block-id": "1743486115",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "However, these papers are"
-            },
-            {
-              "block-id": "1743486116",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "The term was coined by Cal Newport in his book, and according to him, digital minimalism is a philosophy that helps you question what digital communication tools (and behaviors surrounding these tools) add the most value to your life."
-            },
-            {
-              "block-id": "1743486117",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Digital minimalism motivates the minimization of distraction and the optimization of practitioners' digital tool usage."
-            },
-            {
-              "block-id": "1743486118",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Both lifestyle minimalism and digital minimalism aim to remove any clutter in life to focus on what is meaningful, and as Cal Newport explains in his blog, digital minimalism is influenced by the minimalist lifestyle."
-            },
-            {
-              "block-id": "1743486119",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "However, it is uncertain whether lifestyle minimalism leads to digital minimalism or vice versa."
-            },
-            {
-              "block-id": "1743486120",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "The study of technology use behavior being influenced by their beliefs or customs is not anything new, but lifestyle minimalists' technology usage behavior has not been studied."
+              "content": "We are currently developing CHOIR as a Slack application and aim to explore the following research questions:"
             }
           ]
         },
         {
-          "block-id": "1743486128",
+          "block-id": "1743486943",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486122",
+              "block-id": "1743486941",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "Understanding the behaviors of this subculture—one that actively rejects growth-oriented consumerism—could inspire innovative approaches to technology design (Transfer Scenarios: Grounding Innovation with Marginal Practices, ACM CHI 2007)."
+              "content": "• : How does chatbot-driven document update automation reduce management effort (e.g., time or cognitive load) while fostering user contributions in collaborative document tasks?}"
             },
             {
-              "block-id": "1743486123",
+              "block-id": "1743486942",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "This study aims to address two key research questions:"
-            },
-            {
-              "block-id": "1743486124",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "• How do minimalists use—or choose not to use—technology to sustain their minimalist lifestyle?"
-            },
-            {
-              "block-id": "1743486125",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "• How does their minimalist approach influence or correlate with the way they manage digital data?"
-            },
-            {
-              "block-id": "1743486126",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "To answer these questions, we conducted interviews with 24 self-identified minimalists, recruiting participants from both local communities and online minimalist groups."
-            },
-            {
-              "block-id": "1743486127",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Through qualitative analysis of the interview data, we identified key patterns in their technology use and digital management strategies...(Not done)"
-            }
-          ]
-        },
-        {
-          "block-id": "1743486130",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486129",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "This paper makes"
-            }
-          ]
-        },
-        {
-          "block-id": "1743486133",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486131",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "The study results contribute to the HCI literature by advancing our understanding of the relationship between those who maintain a minimal lifestyle and their use of technologies."
-            },
-            {
-              "block-id": "1743486132",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "We discuss the implications of the findings in how designers can use technology for a sustainable lifestyle and gain insights on how we can develop interventions that can regulate users' consumption."
+              "content": "• : How does initiating discussion around documents via a chatbot influence how team members discuss and negotiate document changes, and what challenges and opportunities emerge for integrating those updates?}"
             }
           ]
         }
       ]
     },
     {
-      "title": "Related Work",
-      "block-id": "1743486134",
-      "summary": "Discusses existing literature on minimalism and its impact on consumption, behavior, and technology.",
-      "intent": "explanation",
+      "title": "System Design",
+      "block-id": "1743486944",
+      "summary": "",
+      "intent": "",
       "type": "section",
       "content": [
         {
-          "title": "What is Minimalism?",
-          "block-id": "1743486135",
-          "summary": "Explores definitions and dimensions of minimalism in lifestyle and consumer culture.",
-          "intent": "explanation",
+          "title": "Design Goals",
+          "block-id": "1743486945",
+          "summary": "",
+          "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743486225",
-              "summary": "Examines how different works delineate the concept and practices of minimalism.",
-              "intent": "explanation",
+              "block-id": "1743486948",
+              "summary": "",
+              "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743486136",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: Minimalism resist and promote capitalist cultures of growth, and few alternation is needed for the minimalism to be truly de-growth centered."
-                },
-                {
-                  "block-id": "1743486137",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: Lifestyle minimalism implicitly rejects maximization of consumption and/or labor productivity."
-                },
-                {
-                  "block-id": "1743486138",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "It advocates ethics of simplicity and idleness, and renounces full time labor and busyness."
-                },
-                {
-                  "block-id": "1743486139",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also all narratives of lifestyle minimalism suggest specific techniques of cutting down consumption and busyness."
-                },
-                {
-                  "block-id": "1743486140",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalist lifestyle narrative follows existing anti-consumption and voluntary simplicity."
-                },
-                {
-                  "block-id": "1743486141",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "At the same time it fails to be entirely degrowth oriented because narratives encourage different form of consumption and productivity, and the narratives do not give clear indication on how to deal with the commodities to be discarded."
-                },
-                {
-                  "block-id": "1743486142",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: The paper talks about what lifestyle minimalism is, which is useful for our introduction but not so sure about related work."
-                },
-                {
-                  "block-id": "1743486143",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: The paper defines character of consumer minimalism."
-                },
-                {
-                  "block-id": "1743486144",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "With the finding the author creates Minimalist Consumer Scale (MCS) to measure the construct verifies its validity."
-                },
-                {
-                  "block-id": "1743486145",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: Minimalism in consumer culture has not been well-defined."
-                },
-                {
-                  "block-id": "1743486146",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The author used grounded theory methodologies to identify three key dimensions (number of possessions, sparse aesthetic, and mindfully curated consumption) and generated scale items for assessing the extent to which people value minimalism."
-                },
-                {
-                  "block-id": "1743486147",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "This effort defines consumer minimalism and extends research on related constructs (voluntary simplicity, frugality, etc...)."
-                },
-                {
-                  "block-id": "1743486148",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, the study has practical usage, increasing number of brands endorse minimalist aesthetics and values, and to them this study can be used to predict minimalist consumer's behavior."
-                },
-                {
-                  "block-id": "1743486149",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: The paper defined consumer minimalism and more importantly it presented a scale that can be used to measure a person's consumer minimalism level."
-                },
-                {
-                  "block-id": "1743486150",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: In an iterative analysis process, we uncovered a spectrum of tendencies that drive preservation strategies, with two extremes: hoarding (where participants accumulated large amounts of data, even if considered of little value) and minimalism (where they kept as little as possible, regularly cleaning their data)."
-                },
-                {
-                  "block-id": "1743486151",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: The paper explores digital data preservation tendencies/ The authors identify a spectrum of data preservation tendencies, with hoarding and minimalism at the extremes."
-                },
-                {
-                  "block-id": "1743486152",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Hoarding is characterized by the tendency to accumulate large amounts of digital data, rarely deleting anything."
-                },
-                {
-                  "block-id": "1743486153",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Participants often kept data even if they considered it to have no value."
-                },
-                {
-                  "block-id": "1743486154",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The authors identified emotional and practical factors contributing to hoarding behaviors."
-                },
-                {
-                  "block-id": "1743486155",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Emotionally, hoarding is a response to the fear of forgetting and letting go of the past."
-                },
-                {
-                  "block-id": "1743486156",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Practically, participants sometimes felt obligated to keep data for work or other external requirements."
-                },
-                {
-                  "block-id": "1743486157",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Participants who tended to hoard data reported challenges in keeping up with their data, knowing what they had, and remembering where they stored it."
-                },
-                {
-                  "block-id": "1743486158",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalism, in contrast, involves keeping a small amount of data, using preventive and reactive strategies to limit data accumulation."
-                },
-                {
-                  "block-id": "1743486159",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalists described their approach as a way to be in control of their data and their lives, but the authors also found underlying anxieties associated with minimalism."
-                },
-                {
-                  "block-id": "1743486160",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalists reported worries about running out of space and concerns about the costs of keeping data, leading to a sense of detachment from their digital possessions"
-                },
-                {
-                  "block-id": "1743486161",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - They note that  both hoarding and minimalism can function as strategies for identity construction, helping people understand themselves in relation to their data and others."
-                },
-                {
-                  "block-id": "1743486162",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also technology plays a role in shaping data preservation behaviors."
-                },
-                {
-                  "block-id": "1743486163",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The (non)consumption practices of UK minimalists (Journal of Consumer Culture 2022)}"
-                },
-                {
-                  "block-id": "1743486164",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: Minimalism is a lifestyle that involves voluntarily reducing consumption and limiting possessions to a minimum."
-                },
-                {
-                  "block-id": "1743486165",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "This practice makes place for the important (potentially immaterial) things that adds meaning and value to one's life."
-                },
-                {
-                  "block-id": "1743486166",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The study interviews minimalists in UK and reveals the minimalist practice sustainable (non)consumption through their practice."
-                },
-                {
-                  "block-id": "1743486167",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: Regardless of motivation the minimalist (non)consumption practice five Rs current in environmental discourse (recycle, repair, reuse, reduce, and refuse) and can be viewed as sustainable in outcome, of not always in intent."
-                },
-                {
-                  "block-id": "1743486168",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalism sits within broader lifestyle-orientated consumer movements that challenges consumer culture."
-                },
-                {
-                  "block-id": "1743486169",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Most similar lifestyle movement is voluntary simplicity movement."
-                },
-                {
-                  "block-id": "1743486170",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: The research defines consumer minimalism and develops 12-item minimalist consumer scale to measure the construct."
-                },
-                {
-                  "block-id": "1743486171",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The scale is divided into three dimensions number of possession, sparse aesthetic, and curated consumption."
-                },
-                {
-                  "block-id": "1743486172",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: Minimalism is commonly expressed through consumption in various ways (monochromatic outfit, decluttering, etc..)."
-                },
-                {
-                  "block-id": "1743486173",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Consumer minimalism is also closely relation with materialism, voluntary simplicity, frugality, green consumption, product retention tendencies, preferences of experiences over possessions, fashion orientation, and desire for distinction making it hard to define."
-                },
-                {
-                  "block-id": "1743486174",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "To define what consumer minimalism three dimensions are identified."
-                },
-                {
-                  "block-id": "1743486175",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "These dimensions are constructed by gathering data through books and survey results (both lay consumers and members of online minimalist groups)."
-                },
-                {
-                  "block-id": "1743486176",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The gathered data is then coded which resulted in three core dimensions  (number of possessions, sparse aesthetic, and curated consumption). *Spare aesthetic was a preference for a sparse and uncluttered aesthetic.* In this paper motivation of minimalism is not always sustainable."
-                },
-                {
-                  "block-id": "1743486177",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, minimalism does not always mean anti-materialism."
-                },
-                {
-                  "block-id": "1743486178",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "After defining dimensions and clarifying the relationship between consumer minimalism and other construct the paper created 12 items to reflect the dimensions."
-                },
-                {
-                  "block-id": "1743486179",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The scale with three dimensions and 12 items (four in each dimension) are then tested and confirmed its reliability."
-                },
-                {
-                  "block-id": "1743486180",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Result of the test showed positive correlation with green consumption and VS and nagative correlation with materialism and product retention tendency."
-                },
-                {
-                  "block-id": "1743486181",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, the team conducted a survey with a minimalist, and resulted in a high scoring."
-                },
-                {
-                  "block-id": "1743486182",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: Interesting how they defined the minimalism as an independent construct to vs and green c."
-                },
-                {
-                  "block-id": "1743486183",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Good scale to use."
-                },
-                {
-                  "block-id": "1743486184",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: Followers of voluntary simplicity seek satisfaction in non-material ways."
-                },
-                {
-                  "block-id": "1743486185",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper created a scale to measure VS."
-                },
-                {
-                  "block-id": "1743486186",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The scale was developed by intervieweing 16 simplifiers and tested on 423 participants."
-                },
-                {
-                  "block-id": "1743486187",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The final scale has 21-items."
-                },
-                {
-                  "block-id": "1743486188",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Voluntary simplicity(VS) is the choice and does appear to be associated with increased life satisfaction."
-                },
-                {
-                  "block-id": "1743486189",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "It is also associated with lower environmental impact."
-                },
-                {
-                  "block-id": "1743486190",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "VS can promote both personal well-being and sustainability."
-                },
-                {
-                  "block-id": "1743486191",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, a way to measure VS is outdated, so new scale is created by the authors."
-                },
-                {
-                  "block-id": "1743486192",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "They interviewed 16 VSer and came up with six broad categories (frugality, time, pragmatism, self-sufficiency, sustainability, and social connection)."
-                },
-                {
-                  "block-id": "1743486193",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "After creating items according to the 6 broad categories, the validity or redundancy of the items are checked."
-                },
-                {
-                  "block-id": "1743486194",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Finally, 21 items are chosen from original 67, and they are categorized into 6 dimensions (resource, procurement, self-sufficiency, beneficence, material simplicity, and work/life preference)."
-                },
-                {
-                  "block-id": "1743486195",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: Well planned and structured scale, it covers different character of minimalist."
-                },
-                {
-                  "block-id": "1743486196",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Cuz consumer minimalism does not talk about sustainability."
-                },
-                {
-                  "block-id": "1743486197",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• **Digital Minimalism as a Leading Limitation of Media Communications in the Heyday of Digital Culture**"
-                },
-                {
-                  "block-id": "1743486198",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: People rejects digitalization."
-                },
-                {
-                  "block-id": "1743486199",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Restriction of digital use is digital diet and temporary rejection of digital life is digital detox."
-                },
-                {
-                  "block-id": "1743486200",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "At the extreme there is a media asceticism withdrawing one from digital environment entirely."
-                },
-                {
-                  "block-id": "1743486201",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: Idea of digital minimalism explores the possibilities to control and filter information flows from online."
-                },
-                {
-                  "block-id": "1743486202",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Three types of digital minimalism are digital diet, digital detox, and media asceticism."
-                },
-                {
-                  "block-id": "1743486203",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: not very useful, but explains types of digital minimalism methods."
-                },
-                {
-                  "block-id": "1743486204",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: Self-tacking technology help users understand about themselves."
-                },
-                {
-                  "block-id": "1743486205",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Most of these devices inform users about their lives by autonomously generating data about highly constrained topics."
-                },
-                {
-                  "block-id": "1743486206",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Recent studies started to explore more flexible, manual self tracking systems This paper compares value between minimalism and flexibility."
-                },
-                {
-                  "block-id": "1743486207",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The they collected data indicate that low-burden experience logging systems which focus on the creation of symbolically-rich, self-defined data can support self-awareness, reflection and regulation at opportune moments."
-                },
-                {
-                  "block-id": "1743486208",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: The article uses the word minimalism to describe design considerations for personal informatics (PI) technologies1."
-                },
-                {
-                  "block-id": "1743486209",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "It emphasizes simplicity and ease-of-use to reduce the workload of logging, managing, and reviewing data, which can frustrate users and lead them to abandon self-tracking."
-                },
-                {
-                  "block-id": "1743486210",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Specific examples of minimalist PI systems mentioned in the paper include:"
-                },
-                {
-                  "block-id": "1743486211",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - SnAPP: A system using a physical button to record positive or less positive moments."
-                },
-                {
-                  "block-id": "1743486212",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - SleepTight: An application designed to support sleep quality, with a version allowing data input directly from the Android home screen."
-                },
-                {
-                  "block-id": "1743486213",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• The paper also explores how minimalist logging, when combined with expressive media, can support experiential logging."
-                },
-                {
-                  "block-id": "1743486214",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The goal is to design systems that minimize the effort required to log experiences in a flexible manner, supporting self-awareness, reflection, and regulation."
-                },
-                {
-                  "block-id": "1743486215",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The Chromatize app, which is discussed in the article, was created to explore minimalist design features."
-                },
-                {
-                  "block-id": "1743486216",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "One of the design principles for Chromatize was to minimize the burden of manual tracking."
-                },
-                {
-                  "block-id": "1743486217",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Main idea: Use of digital devices came with harms."
-                },
-                {
-                  "block-id": "1743486218",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The reliance over the digital devices diminishes autonomy."
-                },
-                {
-                  "block-id": "1743486219",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Thus, the obligation to foster autonomy urges us to be a digital minimalist."
-                },
-                {
-                  "block-id": "1743486220",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper suggests that we have moral duty to be a digital minimalist."
-                },
-                {
-                  "block-id": "1743486221",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - Summary: Digital devices are designed to be addictive, referencing the \"Hooked\" model, which uses triggers, actions, variable rewards, and investments to create habits."
-                },
-                {
-                  "block-id": "1743486222",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Digital minimalism pushes us to be intentional with our use of technology."
-                },
-                {
-                  "block-id": "1743486223",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "To protect rational agency we are morally obligated to pursue digital minimalist."
-                },
-                {
-                  "block-id": "1743486224",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• - My thought: It uses Cal Newport's definition of digital minimalist."
+                  "block-id": "1743486946",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "Prior research highlights the challenges of traditional repository models such as the difficulty of continuous maintenance, the limited reflection of social relationships, and the potential loss of rich context remain~\\cite."
+                },
+                {
+                  "block-id": "1743486947",
+                  "summary": "",
+                  "intent": "",
+                  "type": "sentence",
+                  "content": "We show how our system's design seeks to overcome these issues by 1) bridging conversations with persistent documentation, 2) encourging discussion among stakeholders, and 3) preserving document's context with revision histories. \\cite{ackerman2013sharing}"
+                }
+              ]
+            },
+            {
+              "title": "Facilitate the document update process by bridging conversations and persistent documentation",
+              "block-id": "1743486949",
+              "summary": "",
+              "intent": "",
+              "type": "subsubsection",
+              "content": [
+                {
+                  "block-id": "1743486953",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486950",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Our system is designed to capture knowledge and information on demand, leveraging conversations into persistent documents, thereby ensuring that organizational memory is easily and reliably maintained."
+                    },
+                    {
+                      "block-id": "1743486951",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "A study on early groupware adoption found that organizations struggled to motivate members to contribute to share information, highlighting the importance of reward systems for contributions~\\cite."
+                    },
+                    {
+                      "block-id": "1743486952",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "One reason is that continuously updating organizational memory requires manual efforts to keep it up-to-date. \\cite{orlikowski1992learning}"
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743486960",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486954",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Research collectively has highlighted the importance of bridging conversations and persistent documentation to better facilitate the continuous update and management of organizational knowledge."
+                    },
+                    {
+                      "block-id": "1743486955",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Conversations among members can be excellent material for building organizational memory."
+                    },
+                    {
+                      "block-id": "1743486956",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "One early system, Answer Garden, actively used email to broaden its stored knowledge~\\cite."
+                    },
+                    {
+                      "block-id": "1743486957",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Even in Wikipedia—an online form of organizational memory—contributors share opinions about edits via article talk pages~\\cite{kittur2008harnessing, schneider2011understanding}."
+                    },
+                    {
+                      "block-id": "1743486958",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "There has also been extensive research on systems that capture and organize important conversation details~\\cite."
+                    },
+                    {
+                      "block-id": "1743486959",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "To that end, we will facilitate members to update their organizational memory using conversations. \\cite{ackerman1990answer,kittur2008harnessing,schneider2011understanding,nam2007arkose,zhang2017wikum,zhang2018making}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Encourage Discussion within a group-chat environment among Stakeholders for Document Updates",
+              "block-id": "1743486962",
+              "summary": "",
+              "intent": "",
+              "type": "subsubsection",
+              "content": [
+                {
+                  "block-id": "1743486970",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486963",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "CHOIR is designed to foster instant and context-sensitive collaboration by providing a communication channel where users can instantly discuss information tied directly to the document content."
+                    },
+                    {
+                      "block-id": "1743486964",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Only using a repository for organizational memory often fails to capture social contexts, such as the rationale behind the changes, the author's expertise, the reliability of the information, and whether it is officially confirmed~\\cite."
+                    },
+                    {
+                      "block-id": "1743486965",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "In contrast, a group chat environment, such as Slack, contains rich information about the suggested changes and allows members to share and verify it immediately."
+                    },
+                    {
+                      "block-id": "1743486966",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "For example, users can directly ask relevant experts about a document's information and better understand its context for specific situations."
+                    },
+                    {
+                      "block-id": "1743486967",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Such a conversation also helps mitigate conflicts among contributors and fosters a more cooperative culture."
+                    },
+                    {
+                      "block-id": "1743486968",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "On Wikipedia, for instance, new editors often see their contributions reverted without clear reasons, which discourages them~\\cite, but help from experienced editors significantly improves newcomer retention~\\cite."
+                    },
+                    {
+                      "block-id": "1743486969",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Based on these previous findings, we designed our system to prompt conversation around documents so that users can account for the social context and receive assistance with document updates. \\cite{ackerman2013sharing,halfaker2011don,morgan2013tea}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Help users grasp the document's evolving context by highlighting version histories",
+              "block-id": "1743486971",
+              "summary": "",
+              "intent": "",
+              "type": "subsubsection",
+              "content": [
+                {
+                  "block-id": "1743486979",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486972",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "We design the system to preserve and showcase both version history and conversation logs, enabling users to more easily understand the evolving context behind each document update."
+                    },
+                    {
+                      "block-id": "1743486973",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "When adding new information to organizational memory, authors often omit details that can contextualize the changes~\\cite."
+                    },
+                    {
+                      "block-id": "1743486974",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Such context may include social context, the source of the information, or the circumstances under which decisions were made."
+                    },
+                    {
+                      "block-id": "1743486975",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "While decontextualizing the information can make it compact and thus easy to reuse in the future, retaining certain contextual details can be advantageous when they become crucial for specific decision-making scenarios~\\cite."
+                    },
+                    {
+                      "block-id": "1743486976",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "In this regard, preserving conversation logs and the version history from the document updating process can be highly effective for capturing the document's evolving context."
+                    },
+                    {
+                      "block-id": "1743486977",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Consequently, we designed our system to store these revision histories as contextual information when updating documents. \\cite{ackerman1999organizational,young2006don}"
+                    },
+                    {
+                      "block-id": "1743486978",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "We will present this information to ensure that users can readily understand the context behind the knowledge contained in the document."
+                    }
+                  ]
                 }
               ]
             }
           ]
         },
         {
-          "title": "Unconventional value's effect on technology use",
-          "block-id": "1743486268",
-          "summary": "Discusses religious values shaping sustainable behavior and technology use.",
-          "intent": "explanation",
+          "title": "System Features",
+          "block-id": "1743486980",
+          "summary": "Overview of system capabilities",
+          "intent": "description",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743486418",
-              "summary": "Analyzes Catholic and subcultural values in sustainable behavior and technology.",
-              "intent": "explanation",
-              "type": "paragraph",
+              "title": "Chatbot-driven document update",
+              "block-id": "1743486981",
+              "summary": "Updating documents through chatbot interactions",
+              "intent": "process",
+              "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743486269",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: Value beyond the scientific rationality that motivates people to care for ecological limits can suggest a new way to motivate sustainable behavior."
-                },
-                {
-                  "block-id": "1743486270",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: The study interviewed at Catholic organizations."
-                },
-                {
-                  "block-id": "1743486271",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The finding showed limits-aware perspective embedded in the faith plays practically in the interviewee's everyday work and decision-making."
-                },
-                {
-                  "block-id": "1743486272",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Finally, the paper discusses digital tech's role in advancing care for limits with religious value supporting sustainability."
-                },
-                {
-                  "block-id": "1743486273",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper answers the following questions: *how does the Catholic motivation to care for limits differ from motivation grounded in the scientific understanding of ecological limits?* *how does Catholic Ecospirituality manifest in practice, and how could tech support this manifestation?* The author also assesses how technology supports or hinders the operationalization of Catholic Ecospirituality."
-                },
-                {
-                  "block-id": "1743486274",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The increasing focus on sustainability laid the foundation for Ecospirituality to become more integral to Catholicism."
-                },
-                {
-                  "block-id": "1743486275",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Many different ideologies are used to invoke sustainable behavior, but using religion as a motivator for sustainable living has more room to explore."
-                },
-                {
-                  "block-id": "1743486276",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "For the research, 14 people who follow Catholic principles were interviewed."
-                },
-                {
-                  "block-id": "1743486277",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The author identified common themes."
-                },
-                {
-                  "block-id": "1743486278",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "First, the ecological limits and the need to turn towards more sustainable living are mandatory values prescribed in Catholicism."
-                },
-                {
-                  "block-id": "1743486279",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Second, nature is intrinsically good."
-                },
-                {
-                  "block-id": "1743486280",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Third, science is not the opposite of faith."
-                },
-                {
-                  "block-id": "1743486281",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The promotions for sustainable movement are organized through both top-down and bottom-up."
-                },
-                {
-                  "block-id": "1743486282",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Originally, technology was not viewed as an essential tool for sustainability initiatives."
-                },
-                {
-                  "block-id": "1743486283",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, the technology helped them connect with and understand the concerns that were not immediately visible to them."
-                },
-                {
-                  "block-id": "1743486284",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "With all the benefits of the technology, there are limitations."
-                },
-                {
-                  "block-id": "1743486285",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "While the technology enables global connections, it also replaces in-person connections."
-                },
-                {
-                  "block-id": "1743486286",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• My thought: It mostly talks about how Catholic values persuade believers to join sustainable behavior."
-                },
-                {
-                  "block-id": "1743486287",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, it lacks the observation of how these believers use technology to practice Ecospirituality."
-                },
-                {
-                  "block-id": "1743486288",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: Subcultures suggest alternative ways of understanding objects and spaces in the home."
-                },
-                {
-                  "block-id": "1743486289",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: Subculture is any group of people who have practices that are outside but not necessarily in opposition to the mainstream."
-                },
-                {
-                  "block-id": "1743486290",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "According to the author, subculture can provide alternative values and practices that could generate different perspectives or design approaches pertinent to a more general sphere."
-                },
-                {
-                  "block-id": "1743486291",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Important part: The work-in-progress section talks about the author's latest work on self-identified minimalists."
-                },
-                {
-                  "block-id": "1743486292",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Despite the many motivations and variations in incorporating minimalism into daily life, all seem to share a central practice: re-evaluating what we possess and eventually having less."
-                },
-                {
-                  "block-id": "1743486293",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "An interesting perspective of minimalists with regard to space is empty space is to be lived-in, visible, and interactive."
-                },
-                {
-                  "block-id": "1743486294",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: The author claims that a holistic view of sustainability is crucial to a deeper understanding of how to design ICT to support sustainability."
-                },
-                {
-                  "block-id": "1743486295",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: Current Sustainable HCI (SHCI) should expand its definition of sustainability."
-                },
-                {
-                  "block-id": "1743486296",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Current SHCI focus on shaping individual choices to reduce consumption can rely on guilt around consumption as a (de-)motivating factor."
-                },
-                {
-                  "block-id": "1743486297",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, the author tries to associate sustainability with a higher quality of life."
-                },
-                {
-                  "block-id": "1743486298",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper observes families who chose to live a simple life."
-                },
-                {
-                  "block-id": "1743486299",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "By analyzing how practices are shaped on the ground, we have a better chance of finding effective levers of intervention. 11 families who practice Voluntary Simplicity (VS) are interviewed at their house (19 adults with M:9 and F:10 with 16 children ranging from 14 months - 14 yrs), which lasted about 1.5-3hrs."
-                },
-                {
-                  "block-id": "1743486300",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "They are from a liberal college town with a strong sustainability-oriented ethos."
-                },
-                {
-                  "block-id": "1743486301",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The author used snowball sampling (Neighbors, church members, etc..)."
-                },
-                {
-                  "block-id": "1743486302",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The interviewees do not all belong to the same group or all know each other, and the author did not recruit families through the voluntary simplicity movement, nor did the author use a description of simple living when recruiting."
-                },
-                {
-                  "block-id": "1743486303",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Instead, the author asked potential participants if they try to live simply out of concern for the environment and for their own quality of life."
-                },
-                {
-                  "block-id": "1743486304",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The families were all Caucasian and middle class (ca ultural category with values tied to having a college education, and, importantly, having social and cultural capital.) The motivation behind the VS for these families varied (ex."
-                },
-                {
-                  "block-id": "1743486305",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Religion, Health, and less stressful life)."
-                },
-                {
-                  "block-id": "1743486306",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "In terms of ICT, they all had at least one PC (secondhand or provided from work) and phone (cheap pre-paid)."
-                },
-                {
-                  "block-id": "1743486307",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Six had tablets and recent smart phone."
-                },
-                {
-                  "block-id": "1743486308",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "None had cable TV but some used streaming service."
-                },
-                {
-                  "block-id": "1743486309",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, screen based media wasn't as popular among them."
-                },
-                {
-                  "block-id": "1743486310",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "According to these families sustainability affects all aspects of life."
-                },
-                {
-                  "block-id": "1743486311",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Instead of focusing on better or more they focus on being enough."
-                },
-                {
-                  "block-id": "1743486312",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, ICT discourage their attempt by raising the standard of life, and the information provided by ICT is vast and it is hard for the families to say enough."
-                },
-                {
-                  "block-id": "1743486313",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, this does not mean that sustainable lifestyle requires rigorous optimization process according to the families."
-                },
-                {
-                  "block-id": "1743486314",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "After all sustainability is in all aspect of their life, so enjoying their practice and making a necessary compromise is important."
-                },
-                {
-                  "block-id": "1743486315",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "For successful VS all the family member must be on same page."
-                },
-                {
-                  "block-id": "1743486316",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "On top of that they must face some of the issues caused by their choice to go against grain."
-                },
-                {
-                  "block-id": "1743486317",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "ICTs are now pervasive, and not using one costs them a lot."
-                },
-                {
-                  "block-id": "1743486318",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "So they explain ICT as double edged sword, it is useful but also hinders their effort of living satiable life."
-                },
-                {
-                  "block-id": "1743486319",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• My thought: The paper talks a lot about people's perspective of technology and the methodology the author used is very similar to mine."
-                },
-                {
-                  "block-id": "1743486320",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "But the demographic maybe different to mine."
-                },
-                {
-                  "block-id": "1743486321",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, mine is not contextual inquiry."
-                },
-                {
-                  "block-id": "1743486322",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Hopefully I can cover more diverse group of people."
-                },
-                {
-                  "block-id": "1743486323",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: Many persuasive technology only focuses on criticism."
-                },
-                {
-                  "block-id": "1743486324",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Hence it fails to draw inspiration from religious value (Islamic value in this case)."
-                },
-                {
-                  "block-id": "1743486325",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper discuss how religious value can help design for sustainable living."
-                },
-                {
-                  "block-id": "1743486326",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: The paper emphasizes limitation of modern and rational approaches to sustainability."
-                },
-                {
-                  "block-id": "1743486327",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Instead emphasizing the role of religious and spiritual motivations in shaping sustainable habits."
-                },
-                {
-                  "block-id": "1743486328",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper explores capability of religious motivation through interview."
-                },
-                {
-                  "block-id": "1743486329",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Islamic value motivates actions benefitting others, including environment."
-                },
-                {
-                  "block-id": "1743486330",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, it encourages simple living and through religious restriction and controls can nurture sustainable habit."
-                },
-                {
-                  "block-id": "1743486331",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Rhetoric of sustainability is based on pleasing sacred(?)."
-                },
-                {
-                  "block-id": "1743486332",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "In conclusion faith-based motivations can lead to more effective persuasive technologies and a deeper understanding of sustainable practices."
-                },
-                {
-                  "block-id": "1743486333",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• My thought: I thought the paper would talk about how Muslims views technology, but it focused on different aspects of Islamic value that can be used as persuasive technology."
-                },
-                {
-                  "block-id": "1743486334",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: The paper introduce idea of porous boundary, which may open new design spaces in the development of novel technologies for the home."
-                },
-                {
-                  "block-id": "1743486335",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Porosity makes us think about connection between objects and their values as we do boundary practices for the home."
-                },
-                {
-                  "block-id": "1743486336",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: The author claims minimalist values and lifestyle, which is sensitive to objects and values, can offer an insight into design spaces."
-                },
-                {
-                  "block-id": "1743486337",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper did 19 months of ethnographic work studying minimalists."
-                },
-                {
-                  "block-id": "1743486338",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The research makes 3 contributions."
-                },
-                {
-                  "block-id": "1743486339",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "First, empirical account of the minimalist subculture."
-                },
-                {
-                  "block-id": "1743486340",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Second, alternative concept of the home as one with a porous boundary that acknowledges the interaction and the “leaks” (intended or not) between the home and the outside."
-                },
-                {
-                  "block-id": "1743486341",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Third, how porous boundaries suggest alternative design spaces for the home."
-                },
-                {
-                  "block-id": "1743486342",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "For the informants, home is where they practice minimalism."
-                },
-                {
-                  "block-id": "1743486343",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "As they go deeper into the minimalist lifestyle, value of the object increased and through careful considerations they built a new relationship between objects and themselves."
-                },
-                {
-                  "block-id": "1743486344",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "In addition to objects, participants also became aware of empty space."
-                },
-                {
-                  "block-id": "1743486345",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "They started to appreciate empty spaces."
-                },
-                {
-                  "block-id": "1743486346",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "They utilize their house to demonstrate their practice and to pique other people's interest."
-                },
-                {
-                  "block-id": "1743486347",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalists have their own ways of organizing and curating their house, but lot of times they must negotiate with the environment around them."
-                },
-                {
-                  "block-id": "1743486348",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The interaction they do with outside world makes their home porous."
-                },
-                {
-                  "block-id": "1743486349",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalist sometimes negotiate with the circumstance."
-                },
-                {
-                  "block-id": "1743486350",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, unwanted object can work as a reminder to avoid purchasing more items."
-                },
-                {
-                  "block-id": "1743486351",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "This was a case for object coming into the minimalists' environment, but the conflict also occur when they are donating objects."
-                },
-                {
-                  "block-id": "1743486352",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Donation helps them declutter their life but it can do clutter other person's house."
-                },
-                {
-                  "block-id": "1743486353",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalists can assert their value outside of their home as well."
-                },
-                {
-                  "block-id": "1743486354",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Inconclusion home boundary is situated between the inside and outside home."
-                },
-                {
-                  "block-id": "1743486355",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "This line is also a conceptual line."
-                },
-                {
-                  "block-id": "1743486356",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The boundary is named porous boundary, inspired from the biological cell with its semi-permeable membrane."
-                },
-                {
-                  "block-id": "1743486357",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Unlike blurred boundary porous boundary acknowledges the work to maintain border."
-                },
-                {
-                  "block-id": "1743486358",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Porous boundary requires value negotiation and compromise in order to accept an object into a space."
-                },
-                {
-                  "block-id": "1743486359",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• My thought: The paper studied minimalist to criticize a static view about home."
-                },
-                {
-                  "block-id": "1743486360",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Many researchers overly simplify home as a place of stability and relaxation."
-                },
-                {
-                  "block-id": "1743486361",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, the author considers home as a place of constant change and conflict."
-                },
-                {
-                  "block-id": "1743486362",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "As an example minimalists constantly declutter their home and sometimes accept objects into their home to keep protect their relationship with others."
-                },
-                {
-                  "block-id": "1743486363",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "I believe the negotiation process explained in this paper will greatly influence their perception of technology."
-                },
-                {
-                  "block-id": "1743486364",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, this paper fails to answer the technology's role in the negotiation process, which maybe answered in my study"
-                },
-                {
-                  "block-id": "1743486365",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: One way of framing this book is to think of it as a de Certeauian investigation of the practices of everyday Internet life."
-                },
-                {
-                  "block-id": "1743486366",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The paper is interested in how people maintain a sense of agency and identity in the midst of powerful institutional forces that are invested in normative behavior (and consumption)."
-                },
-                {
-                  "block-id": "1743486367",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea I am interested in: The paper studies how technology is used or influences communities formed around counterculture."
-                },
-                {
-                  "block-id": "1743486368",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The author points out how technology is not inherently good nor bad, but it is designed to serve some group of people better."
-                },
-                {
-                  "block-id": "1743486369",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, that does not stop outsiders from utilizing its capability."
-                },
-                {
-                  "block-id": "1743486370",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Interesting quotes: Mainstream heteronormative values are baked into the design of tools and technologies, and appropriations encompass the practices and adaptations that reclaim, rework, or subvert original designs."
-                },
-                {
-                  "block-id": "1743486371",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "This tactic allowed performers to circumvent Facebook’s rules requiring."
-                },
-                {
-                  "block-id": "1743486372",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The obvious conflict here is that commitment to one kind of alterity does no way means that someone is free from other kinds of prejudice,..."
-                },
-                {
-                  "block-id": "1743486373",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "I see devices and platforms as woven together in networks of people and spaces but as unevenly distributed, serving some people better than others."
-                },
-                {
-                  "block-id": "1743486374",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: Transfer scenarios is a method developed to support the design of innovative interactive tech."
-                },
-                {
-                  "block-id": "1743486375",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "It uses marginal practices to encourage a changed mindset throughout the design process."
-                },
-                {
-                  "block-id": "1743486376",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: Technical progress should be coupled with a holistic view of tech use."
-                },
-                {
-                  "block-id": "1743486377",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "For a new idea to become an innovation, it must contribute to a transformation in a community."
-                },
-                {
-                  "block-id": "1743486378",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "To achieve innovation support both idea generation and studies, and transfer scenarios is a method suggested by the author to develop novel interactive tech."
-                },
-                {
-                  "block-id": "1743486379",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The method involves a process called *marginal practice*."
-                },
-                {
-                  "block-id": "1743486380",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Practitioners are involved to provide underlying human interest and qualities of interaction, relevant for the design outcome."
-                },
-                {
-                  "block-id": "1743486381",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The author mapped innovation space using invention and inquiry."
-                },
-                {
-                  "block-id": "1743486382",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Invention being creation of something new, and inquiry meaning act of giving attention to other people."
-                },
-                {
-                  "block-id": "1743486383",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Invention without inquiry can be limited by lack of novelty or design not grounded in any real human interests or needs."
-                },
-                {
-                  "block-id": "1743486384",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Inquiry without invention only provides understanding of what is already out there rather than providing novel design."
-                },
-                {
-                  "block-id": "1743486385",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "To achieve Grounded Innovation combining technical and conceptual novelty with a thorough awareness in user needs and interests are necessary."
-                },
-                {
-                  "block-id": "1743486386",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "However, most users similar concerns and see similar possibilities, but practitioners of marginal practices see novel possibilities."
-                },
-                {
-                  "block-id": "1743486387",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The marginal practice can become a central practice."
-                },
-                {
-                  "block-id": "1743486388",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Transferring marginal practice into design is called Transfer Scenario."
-                },
-                {
-                  "block-id": "1743486389",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Learn about the technology: exploring and learning about the general properties of the technology."
-                },
-                {
-                  "block-id": "1743486390",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Match the technology with a marginal practice: investigate potential marginal practices and decide for one."
-                },
-                {
-                  "block-id": "1743486391",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The practice does not have to involve future users of the technology, but should be chosen to match its properties and the intended design."
-                },
-                {
-                  "block-id": "1743486392",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Members of the practice should engage in activities that are meaningful for them, preferable different from the general style or the potential users’ current perspective of doing things."
-                },
-                {
-                  "block-id": "1743486393",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Their specific practice should illustrate underlying human motivations and interests, which are carried out in an alternative way, but still can inform a meaningful design."
-                },
-                {
-                  "block-id": "1743486394",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Investigate needs and interactions: investigating the human activities in the chosen marginal practice."
-                },
-                {
-                  "block-id": "1743486395",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Analyze and Transfer Data to Initial Design: analyzing data, such as transcribed interviews or videos, to transfer the findings into design."
-                },
-                {
-                  "block-id": "1743486396",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Detailed Design and Technology development"
-                },
-                {
-                  "block-id": "1743486397",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• My thought: This paper is a great way to explain why I am doing this research and how the findings can be used."
-                },
-                {
-                  "block-id": "1743486398",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Main idea: Qualitative study of American Orthodox Jewish families' use of home automation for religious purposes."
-                },
-                {
-                  "block-id": "1743486399",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "These users offer insight into real-life, long term experience with home automation tech."
-                },
-                {
-                  "block-id": "1743486400",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "• Summary: Orthodox Jewish families have been using home automation technology for decades and case study of them will provide a valuable insight into real-life long-term experiences with the use of home automation and use of technology for religious purpose."
-                },
-                {
-                  "block-id": "1743486401",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "During Sabbath 39 activities are prohibited including turning electrical devices."
-                },
-                {
-                  "block-id": "1743486402",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "According to the families, technology and information undermines the Sabbath experience."
-                },
-                {
-                  "block-id": "1743486403",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "They feel liberated and can focus on nurturing the relationship with their family and friends."
-                },
-                {
-                  "block-id": "1743486404",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Even though the use of electrical devices is prohibited during the Sabbath, setting a timer before Sabbath so certain action happens during Sabbath is alright."
-                },
-                {
-                  "block-id": "1743486405",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "For this reason the families owned some kind of home automation system for their comfort."
-                },
-                {
-                  "block-id": "1743486406",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Some of the systems costs lot of money, but almost all households expressed that they will continue to use the technology as an religious observance."
-                },
-                {
-                  "block-id": "1743486407",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Most of them got the system to use during Sabbath, and once the system is installed they have started to use the system for different purpose as well."
-                },
-                {
-                  "block-id": "1743486408",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Technology plays an interesting role during the Sabbath."
-                },
-                {
-                  "block-id": "1743486409",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Interestingly, families used technology to free themselves from technology e.g. turning the light on using the system."
-                },
-                {
-                  "block-id": "1743486410",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The technology subtly enhanced the Sabbath experience."
-                },
-                {
-                  "block-id": "1743486411",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The reliance or inability to interfere meant surrender of control making this religious."
-                },
-                {
-                  "block-id": "1743486412",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The automation and prep work for automation became a religious custom."
-                },
-                {
-                  "block-id": "1743486413",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The automation shaped the routines, expected behaviors, and social relations of family life."
-                },
-                {
-                  "block-id": "1743486414",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The automation provided cues as to what actions are expected."
-                },
-                {
-                  "block-id": "1743486415",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also, participants gave meaning to actions taken by the automation system and automation was strongly associated with caretaking, anticipation, and guidance."
-                },
-                {
-                  "block-id": "1743486416",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Some design implications for the broader population are drawn: surrender of control as a design resource, support for long-term goals and lifestyles, and respite from technology."
-                },
-                {
-                  "block-id": "1743486417",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Design findings are (1) externally mandated respite for strictly bounded periods of time is one viable model and (2) respite designed at the level of the community may be more effective than individual respite."
+                  "block-id": "1743486986",
+                  "summary": "User interacts with CHOIR for updating documents",
+                  "intent": "interaction",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486982",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "In Figure~\\ref{fig:system_flowchart}, when a  wishes to store knowledge from a channel message, they can invoke CHOIR by mentioning it in either a new message or a thread reply."
+                    },
+                    {
+                      "block-id": "1743486983",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "CHOIR then interacts with the user to suggest how to update the relevant document in the repository."
+                    },
+                    {
+                      "block-id": "1743486984",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "The workflow is as follows: 1) The user selects one of the previously shown messages that contain the information they want to save. 2) As shown in Figure~\\ref{fig:system_pipeline}, CHOIR retrieves the most relevant document from the repository. 3) CHOIR uses LLM prompting to edit the retrieved document based on the selected message."
+                    },
+                    {
+                      "block-id": "1743486985",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "If the  is not satisfied with the proposed update, they can press a button to see the next suggestion or create a new document altogether (Figure~\\ref)."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Initiating discussion around documents",
+              "block-id": "1743486987",
+              "summary": "Facilitating discussions on document changes",
+              "intent": "facilitation",
+              "type": "subsubsection",
+              "content": [
+                {
+                  "block-id": "1743486991",
+                  "summary": "CHOIR initiating conversations between users",
+                  "intent": "communication",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486988",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "In Figure~\\ref{fig:system_flowchart}, CHOIR can also host a conversation by instantly bringing the  and a  (the person with permission to update the repository) together."
+                    },
+                    {
+                      "block-id": "1743486989",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "When starting this conversation, CHOIR explains what update has been proposed and provides context from the revision message, as seen in Figure~\\ref, ensuring both the  and  have sufficient information to begin discussing the update."
+                    },
+                    {
+                      "block-id": "1743486990",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "After the discussion, the  can approve or reject the proposed change."
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743486996",
+                  "summary": "Instant conversations based on user queries",
+                  "intent": "interaction",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486992",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "CHOIR can similarly host instant conversations when a  asks it a question."
+                    },
+                    {
+                      "block-id": "1743486993",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "A user can direct-message CHOIR with a query, and CHOIR will respond based on documents in the repository."
+                    },
+                    {
+                      "block-id": "1743486994",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "If the user finds the answer insufficient, CHOIR can invite both the  and a  to a conversation."
+                    },
+                    {
+                      "block-id": "1743486995",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "In this chat, the  can clarify the answer, and the user can choose to update the document through CHOIR if necessary."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "Contextual revision history",
+              "block-id": "1743486997",
+              "summary": "Capturing context in document revisions",
+              "intent": "contextualization",
+              "type": "subsubsection",
+              "content": [
+                {
+                  "block-id": "1743487004",
+                  "summary": "Saving user-selected messages for context preservation",
+                  "intent": "preservation",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743486998",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "When CHOIR updates a document, it saves the user-selected messages as as part of the revision history, thereby capturing important context."
+                    },
+                    {
+                      "block-id": "1743486999",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "These messages can include information about events at the time of the update, the source of the content, or the person involved in the conversation."
+                    },
+                    {
+                      "block-id": "1743487000",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "CHOIR also uses LLM prompting to summarize this contextual information and present it during the hosted conversation, making it readily available for all participants."
+                    },
+                    {
+                      "block-id": "1743487001",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "For example, in Figure ~\\ref, Andy is not a  and was not initially invited to the conversation, but Prof."
+                    },
+                    {
+                      "block-id": "1743487002",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Lee can invite Andy to gather his opinion on Adnan's proposed update."
+                    },
+                    {
+                      "block-id": "1743487003",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "This allows for more comprehensive collaboration and discussion around document changes."
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487006",
+                  "summary": "Adnan requesting decision deadline updates",
+                  "intent": "request",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487005",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Adnan: @CHOIR We aim for a decision to submit a paper or not one month before the deadline."
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487009",
+                  "summary": "Editing request made by Adnan",
+                  "intent": "request",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487007",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "CHOIR: @Adnan requested CHOIR to edit the document."
+                    },
+                    {
+                      "block-id": "1743487008",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Only visible to you"
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487011",
+                  "summary": "Selecting messages for saving",
+                  "intent": "selection",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487010",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Select Messages to Save"
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487014",
+                  "summary": "Discussion on decision timeline",
+                  "intent": "discussion",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487012",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "@Caleb: True."
+                    },
+                    {
+                      "block-id": "1743487013",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "How about deciding whether to submit or not a month ahead?"
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487016",
+                  "summary": "Agreement with decision timeline suggestion",
+                  "intent": "agreement",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487015",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "@Adnan: Yeah, that sounds safer."
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487018",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487017",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "@Adnan: @CHOIR We aim for a decision to submit a paper or not one month before the deadline."
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487020",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487019",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Only visible to you"
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487031",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487021",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Document Updates Suggestion"
+                    },
+                    {
+                      "block-id": "1743487022",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "File: echolabs-policy.md"
+                    },
+                    {
+                      "block-id": "1743487023",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "## Paper and Talk Writing"
+                    },
+                    {
+                      "block-id": "1743487024",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "* We aim for a go/no-go decision threeto monthssubmit beforea the paper isor due.not one month before the deadline."
+                    },
+                    {
+                      "block-id": "1743487025",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "That's typically the time when the main work should be complete (code complete for technique papers, near-final prototype deployed to target users for design studies, experiment run for evaluation papers)."
+                    },
+                    {
+                      "block-id": "1743487026",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "There may still be some analysis to do, like computational benchmarks or parameter tuning, but by this milestone you should be turning most of your energy into writing it up."
+                    },
+                    {
+                      "block-id": "1743487027",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Most first-time authors are surprised by how long it takes to do this phase well."
+                    },
+                    {
+                      "block-id": "1743487028",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "This timeline might sound insanely long to you at first glance."
+                    },
+                    {
+                      "block-id": "1743487029",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "But explaining your ideas clearly in writing in fact takes an immense amount of time."
+                    },
+                    {
+                      "block-id": "1743487030",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "The process I describe below is designed to achieve high-quality papers; our typical hit rate is far better than the global acceptance  rate of 25"
+                    }
+                  ]
+                },
+                {
+                  "block-id": "1743487033",
+                  "summary": "",
+                  "intent": "",
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "block-id": "1743487032",
+                      "summary": "",
+                      "intent": "",
+                      "type": "sentence",
+                      "content": "Two buttons with Start Discussion and Next Suggestion"
+                    }
+                  ]
                 }
               ]
             }
           ]
         },
         {
-          "title": "What is Minimalism?",
-          "block-id": "1743486419",
-          "summary": "Delivers an overview of lifestyle and digital minimalism concepts and motivations.",
-          "intent": "explanation",
+          "title": "System Implementation",
+          "block-id": "1743487034",
+          "summary": "",
+          "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743486432",
-              "summary": "Explains minimalism in art and lifestyle with a focus on reducing consumption.",
-              "intent": "explanation",
+              "block-id": "1743487042",
+              "summary": "",
+              "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743486420",
+                  "block-id": "1743487035",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "The term Minimalism appeared in the mid-1960s to describe an art movement across multiple domains such as sculpture, architecture, and composition."
+                  "content": "The CHOIR server is built using Slack Bolt~\\cite and Block Kit~\\cite frameworks, and it uses the GitHub REST API~\\cite to read and update files in a GitHub repository."
                 },
                 {
-                  "block-id": "1743486421",
+                  "block-id": "1743487036",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "The movement is defined by its radically reductive stylistic innovations \\cite. \\cite{strickland_minimalismorigins_2000}"
+                  "content": "The knowledge in the GitHub repository is stored as markdown files, which members can directly view and edit through an integrated Gitbook~\\cite."
                 },
                 {
-                  "block-id": "1743486422",
+                  "block-id": "1743487037",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Lifestyle Minimalism shares similarities with the art movement by focusing on reducing any unneeded aspects of life \\cite. \\cite{Woodhead2022}"
+                  "content": "CHOIR parses the markdown files and stores them as LangChain~\\cite Document objects every time the repository is updated."
                 },
                 {
-                  "block-id": "1743486423",
+                  "block-id": "1743487038",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "However, lifestyle minimalism is not clearly defined, and the term is closely related to ideas like Voluntary Simplicity (VS), green consumerism, and frugality."
+                  "content": "These stored objects are then used for document updates or for searching relevant documents to answer user queries, based on vector embeddings."
                 },
                 {
-                  "block-id": "1743486424",
+                  "block-id": "1743487039",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "In particular, VS is often used interchangeably with lifestyle minimalism ."
+                  "content": "When updating a document, CHOIR includes the messages used in the document as metadata in the commit message and pushes it to the GitHub repository."
                 },
                 {
-                  "block-id": "1743486425",
+                  "block-id": "1743487040",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "These lifestyles share common ground by focusing on reducing consumption (both physical and digital) to the bare minimum."
+                  "content": "Later, when CHOIR needs to retrieve a file to update, it uses the  command to fetch the commit messages."
                 },
                 {
-                  "block-id": "1743486426",
+                  "block-id": "1743487041",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Since they have a similar focus, the practices of minimal lifestyle share commonalities."
-                },
-                {
-                  "block-id": "1743486427",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Woodhead et al. claim that lifestyle minimalists achieve their goals by practicing  one or more of the following: actively buying less, using up and maintaining existing possessions, practicing highly intentional and considered consumption, and  acquiring ethically and sustainably sourced products \\cite. \\cite{Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486428",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Buying less is presented as frugality by VS and frugality groups \\cite. \\cite{richDevelopmentVoluntarySimplicity2020}"
-                },
-                {
-                  "block-id": "1743486429",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Within lifestyle minimalism, intentional consumption is divided into practicality-centered consumption and aesthetic consistency \\cite. \\cite{wilsonConsumerMinimalism2022,Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486430",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "A focus on the practicality of consumed goods is also displayed by VS groups \\cite. \\cite{wilsonConsumerMinimalism2022}"
-                },
-                {
-                  "block-id": "1743486431",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The way these practices are implemented heavily depends on the practitioners' motivations."
-                }
-              ]
-            },
-            {
-              "block-id": "1743486443",
-              "summary": "Discusses varied motivations behind lifestyle minimalism.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486433",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The motivation behind lifestyle minimalism varies, but it can largely categorized into two types."
-                },
-                {
-                  "block-id": "1743486434",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Some are motivated by personal well-being, whereas others focus on environmental and ethical concerns \\cite. \\cite{Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486435",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Many minimalists claim their lifestyle has increased emotional well-being, making them feel happier and more fulfilled, experiencing less stress and anxiety, and achieving a sense of inner peace \\cite. \\cite{kang_minimalism_2021}"
-                },
-                {
-                  "block-id": "1743486436",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Reducing both clutter and the mental energy needed to manage possessions provides practitioners with mental space, allowing them to focus on values important to them ."
-                },
-                {
-                  "block-id": "1743486437",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Some studies note that decluttering gives minimalists a chance to identify what brings them joy, which then becomes a guideline for their consumption behavior \\cite. \\cite{Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486438",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Many practitioners of minimalism claim it fosters a sense of autonomy, freedom, and liberation by reducing reliance on material possessions \\cite. \\cite{kang_minimalism_2021}"
-                },
-                {
-                  "block-id": "1743486439",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "It also enables greater financial freedom and control by reducing excessive purchases \\cite. \\cite{Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486440",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Additionally, many minimalists are motivated by a desire to reduce their environmental impact by consuming less and adopting ethical consumption \\cite. \\cite{Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486441",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Often times they become aware of the environmental toll of a consumer culture, which can lead them to intentionally reduce their consumption to lessen their impact on the planet \\cite. \\cite{meissner_against_2019}"
-                },
-                {
-                  "block-id": "1743486442",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Environmental concerns may not be the primary motivator to some minimalists, but their practice -such as buying less, reusing items, and focusing on durability of product- often times lead to inherently sustainable outcomes \\cite. \\cite{Woodhead2022}"
-                }
-              ]
-            },
-            {
-              "block-id": "1743486454",
-              "summary": "Examines digital minimalism and its forms.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486444",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Digital minimalism can be understood as the practice of consciously and intentionally limiting use of digital technologies, media, and minimize amount of digital data \\cite. \\cite{skivkoDigitalMinimalismLeading2020,vitaleHoardingMinimalismTendencies2018a}"
-                },
-                {
-                  "block-id": "1743486445",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Similar to lifestyle minimalism it involves minimizing the usage of digital technology to a bare minimum, and according to Skivko et al. there are several forms of digital minimalism:"
-                },
-                {
-                  "block-id": "1743486446",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "(i) Digital diet is a reduction of digital media consumption for a specific reason and a limited period."
-                },
-                {
-                  "block-id": "1743486447",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "(ii) Digital detox is a temporary escape from information overload, and it typically lasts longer than digital diet."
-                },
-                {
-                  "block-id": "1743486448",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "(iii) Media asceticism is the most radical from, involving a complete or near-complete denial of digital technology use."
-                },
-                {
-                  "block-id": "1743486449",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Different forms of digital minimalism focuses on controlling and reducing the flow of information, and they seek to enhance focus and productivity \\cite. \\cite{skivkoDigitalMinimalismLeading2020}"
-                },
-                {
-                  "block-id": "1743486450",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Digital minimalist also highlights the value of live communication as a social value that opposes the development and spread of digital relationships \\cite. \\cite{skivkoDigitalMinimalismLeading2020}"
-                },
-                {
-                  "block-id": "1743486451",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Additionally, digital minimalism tries to declutter their digital data through preventive measures (limiting data acquisition) and reactive strategies (regularly deleting data) \\cite. \\cite{vitaleHoardingMinimalismTendencies2018a}"
-                },
-                {
-                  "block-id": "1743486452",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "These measures correspond to the practices shown by the lifestyle minimalist further backing the similarity between the two idea."
-                },
-                {
-                  "block-id": "1743486453",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Many minimalist communities seek to extend their boundary beyond the consumption space and to the digital space as well \\cite. \\cite{wilsonConsumerMinimalism2022}"
-                }
-              ]
-            },
-            {
-              "block-id": "1743486456",
-              "summary": "Introduces HCI-related minimalist concepts.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486455",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "In the field of HCI the word \"minimalism\" is used to explain following ideas:"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "title": "Minimalism as a Promoter of Sustainable behavior",
-          "block-id": "1743486457",
-          "summary": "Explores minimalism's role in encouraging sustainable consumption practices.",
-          "intent": "explanation",
-          "type": "subsection",
-          "content": [
-            {
-              "block-id": "1743486464",
-              "summary": "Discusses how minimalists promote sustainability through mindful consumption.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486458",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Lifestyle minimalism involves a deliberate reduction of their possessions, and the practitioners of minimalism engage in sustainable consumption by buying less \\cite. \\cite{cheon_value_2018,cheon_staged_2018,zappavigna_organised_2019,Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486459",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Additionally, their consumption behavior is about being mindful and intentional about their choice \\cite. \\cite{wilsonConsumerMinimalism2022}"
-                },
-                {
-                  "block-id": "1743486460",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "When purchasing a product they are inclined to choose items that are durable and long-lasting to reduce the disposal and need to purchase substitute for the item \\cite \\cite{Woodhead2022}"
-                },
-                {
-                  "block-id": "1743486461",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "According to a study by Cheon et. al., when the minimalists design their space they see empty space as an object to curate rather than a place that needs to be filled."
-                },
-                {
-                  "block-id": "1743486462",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "They value the absence of artifacts, and this idea prevents minimalists from purchasing an object, which can disrupt the space they meticulously designed \\cite. \\cite{cheon_value_2018}"
-                },
-                {
-                  "block-id": "1743486463",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "As minimalists' possessions are thoughtfully and intentionally selected, which works as a fail safe or a guideline to prolong their practice of buying less."
-                }
-              ]
-            },
-            {
-              "block-id": "1743486472",
-              "summary": "Explores minimalism's emotional benefits and impact on anti-consumption.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486465",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalism presents paradigm in consumer behavior based on the principle of a sustainable lifestyle."
-                },
-                {
-                  "block-id": "1743486466",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "It discouraging consumption and focuses on being satisfied with current possessions."
-                },
-                {
-                  "block-id": "1743486467",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Addition to the guidance, minimalism provides compensations that encourages anti-consumption behavior."
-                },
-                {
-                  "block-id": "1743486468",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Many online communities that promotes minimalism testify its effects on emotional well-being."
-                },
-                {
-                  "block-id": "1743486469",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "According to a study by Kang et. al., minimalism is positively associated with sustained life satisfaction."
-                },
-                {
-                  "block-id": "1743486470",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "While being negatively associated with depression."
-                },
-                {
-                  "block-id": "1743486471",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalism's association with a positive mental well-being is another factor that insures longevity of the lifestyle."
-                }
-              ]
-            },
-            {
-              "block-id": "1743486480",
-              "summary": "Considers minimalism as a stylish, appealing way of promoting sustainability.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486473",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalism in addition to its ability to prolong sustainable lifestyle by providing guideline and benefit is being used to advertise sustainable lifestyle."
-                },
-                {
-                  "block-id": "1743486474",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalism is a form of brand of voluntary simplicity in western culture \\cite. \\cite{martin-woodhead_minimalism_2017}"
-                },
-                {
-                  "block-id": "1743486475",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Minimalist fashion is a minimalist lifestyle movement, that uses minimalism as a stylish way to re-interpretate ideas such as frugality or voluntary simplicity \\cite. \\cite{martin-woodhead_minimalism_2017}"
-                },
-                {
-                  "block-id": "1743486476",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Also it makes reduced consumption more appealing and less like deprivation."
-                },
-                {
-                  "block-id": "1743486477",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "The promotion of lifestyle minimalism as an appealing lifestyle is also shown in declutter vlogs on Youtube."
-                },
-                {
-                  "block-id": "1743486478",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "In the vlogs the influencers practice decluttering activities, and as a result they express feeling of relief and personal transformation\\cite. \\cite{zappavigna_organised_2019}"
-                },
-                {
-                  "block-id": "1743486479",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Overall, minimalism has potential to re-brand sustainable lifestyle into more stylish and appealing to the wider audience."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "title": "Unconventional Values Influencing Technology Adoption and Usage Behavior",
-          "block-id": "1743486481",
-          "summary": "Explores cultural context's role in technology perception.",
-          "intent": "explanation",
-          "type": "subsection",
-          "content": [
-            {
-              "block-id": "1743486483",
-              "summary": "Examines how context influences technological use.",
-              "intent": "explanation",
-              "type": "paragraph",
-              "content": [
-                {
-                  "block-id": "1743486482",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Something about how technology is influenced by the context of where it is being used."
+                  "content": "The messages in these commit messages are used to provide context for updates in the instant conversation. \\cite{bolt,blockkit,githubapi,gitbook,langchain}"
                 }
               ]
             }
@@ -2663,302 +1000,142 @@
       ]
     },
     {
-      "title": "Method",
-      "block-id": "1743486484",
+      "title": "Future Plan",
+      "block-id": "1743487043",
       "summary": "",
       "intent": "",
       "type": "section",
       "content": [
         {
-          "block-id": "1743486486",
+          "block-id": "1743487046",
           "summary": "",
           "intent": "",
           "type": "paragraph",
           "content": [
             {
-              "block-id": "1743486485",
+              "block-id": "1743487044",
               "summary": "",
               "intent": "",
               "type": "sentence",
-              "content": "To Robert, for the bagels and explaining CMYK and color spaces."
+              "content": "In our future work, we will conduct a formative study to uncover current practices and challenges in organizational memory management and revisit our design goals by incorporating real-world practices."
+            },
+            {
+              "block-id": "1743487045",
+              "summary": "",
+              "intent": "",
+              "type": "sentence",
+              "content": "After finishing the system development, we will deploy our system for a field study to evaluate CHOIR in a real-world setting."
             }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Research Methods",
-      "block-id": "1743486487",
-      "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": [
+        },
         {
-          "title": "Part One",
-          "block-id": "1743486488",
+          "title": "Formative Study",
+          "block-id": "1743487047",
           "summary": "",
           "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743486498",
+              "block-id": "1743487053",
               "summary": "",
               "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743486489",
+                  "block-id": "1743487048",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                  "content": "We plan to begin with a formative study that will help us gain a detailed understanding of how members manage their organizational memory and the challenges they face."
                 },
                 {
-                  "block-id": "1743486490",
+                  "block-id": "1743487049",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "malesuada, quam in pulvinar varius, metus nunc fermentum urna, id"
+                  "content": "We have chosen a university research lab as our target because labs often experience frequent member turnover, depend on regular communication, and are more accessible for interviews and observations than corporations."
                 },
                 {
-                  "block-id": "1743486491",
+                  "block-id": "1743487050",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "sollicitudin purus odio sit amet enim."
+                  "content": "In these labs, we will interview students or supervisors to learn about the types of documents they create, the individuals or roles responsible for maintaining them, and how they update and use these documents in their daily workflows."
                 },
                 {
-                  "block-id": "1743486492",
+                  "block-id": "1743487051",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Aliquam ullamcorper eu ipsum"
+                  "content": "We will also explore any difficulties they encounter during the document management process."
                 },
                 {
-                  "block-id": "1743486493",
+                  "block-id": "1743487052",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "vel mollis."
-                },
-                {
-                  "block-id": "1743486494",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Curabitur quis dictum nisl."
-                },
-                {
-                  "block-id": "1743486495",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Phasellus vel semper risus, et"
-                },
-                {
-                  "block-id": "1743486496",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "lacinia dolor."
-                },
-                {
-                  "block-id": "1743486497",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Integer ultricies commodo sem nec semper."
+                  "content": "By analyzing the interview data, we aim to refine CHOIR's design goals to align more closely with the real-world needs of our participants and add features that directly address the challenges they report."
                 }
               ]
             }
           ]
         },
         {
-          "title": "Part Two",
-          "block-id": "1743486499",
+          "title": "System Evaluation: Field Study",
+          "block-id": "1743487054",
           "summary": "",
           "intent": "",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743486508",
+              "block-id": "1743487060",
               "summary": "",
               "intent": "",
               "type": "paragraph",
               "content": [
                 {
-                  "block-id": "1743486500",
+                  "block-id": "1743487055",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Etiam commodo feugiat nisl pulvinar pellentesque."
+                  "content": "After refining the system, we will conduct a field study to evaluate CHOIR in the actual research lab environment and address our research questions."
                 },
                 {
-                  "block-id": "1743486501",
+                  "block-id": "1743487056",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Etiam auctor sodales"
+                  "content": "During the study, lab members will deploy CHOIR in their Slack workspaces for document management and updates."
                 },
                 {
-                  "block-id": "1743486502",
+                  "block-id": "1743487057",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "ligula, non varius nibh pulvinar semper."
+                  "content": "We will monitor the usage logs to see how participants engage with CHOIR, tracking aspects like the frequency of chatbot interactions, the types of tasks performed, and how effectively it supports collaboration for maintaining organizational memory."
                 },
                 {
-                  "block-id": "1743486503",
+                  "block-id": "1743487058",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "Suspendisse nec lectus non"
+                  "content": "Additionally, we will investigate their experience compared to their existing practice of organizational memory, if any."
                 },
                 {
-                  "block-id": "1743486504",
+                  "block-id": "1743487059",
                   "summary": "",
                   "intent": "",
                   "type": "sentence",
-                  "content": "ipsum convallis congue hendrerit vitae sapien."
-                },
-                {
-                  "block-id": "1743486505",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Donec at laoreet"
-                },
-                {
-                  "block-id": "1743486506",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Vivamus non purus placerat, scelerisque diam eu, cursus"
-                },
-                {
-                  "block-id": "1743486507",
-                  "summary": "",
-                  "intent": "",
-                  "type": "sentence",
-                  "content": "Etiam aliquam tortor auctor efficitur mattis."
+                  "content": "Through this comparison, we can assess the impact of CHOIR on existing workflows, document quality, and overall collaborative practices."
                 }
               ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Online Resources",
-      "block-id": "1743486509",
-      "summary": "",
-      "intent": "",
-      "type": "section",
-      "content": [
-        {
-          "block-id": "1743486518",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486510",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Nam id fermentum dui."
-            },
-            {
-              "block-id": "1743486511",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Suspendisse sagittis tortor a nulla mollis, in"
-            },
-            {
-              "block-id": "1743486512",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "pulvinar ex pretium."
-            },
-            {
-              "block-id": "1743486513",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Sed interdum orci quis metus euismod, et sagittis"
-            },
-            {
-              "block-id": "1743486514",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "enim maximus."
-            },
-            {
-              "block-id": "1743486515",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Vestibulum gravida massa ut felis suscipit"
-            },
-            {
-              "block-id": "1743486516",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Quisque mattis elit a risus ultrices commodo venenatis eget"
-            },
-            {
-              "block-id": "1743486517",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Etiam sagittis eleifend elementum."
-            }
-          ]
-        },
-        {
-          "block-id": "1743486523",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
-          "content": [
-            {
-              "block-id": "1743486519",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Nam interdum magna at lectus dignissim, ac dignissim lorem"
-            },
-            {
-              "block-id": "1743486520",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Maecenas eu arcu ac neque placerat aliquam."
-            },
-            {
-              "block-id": "1743486521",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Nunc pulvinar"
-            },
-            {
-              "block-id": "1743486522",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "massa et mattis lacinia."
             }
           ]
         }
       ]
     }
   ],
-  "createdAt": "2025-04-01T05:41:16.393Z",
-  "updatedAt": "2025-04-01T05:41:16.393Z",
+  "createdAt": "2025-04-01T05:55:06.819Z",
+  "updatedAt": "2025-04-01T05:55:06.819Z",
   "version": 1
 }
