@@ -399,9 +399,6 @@ export class PaperController {
    */
   async initializeData(request: FastifyRequest, reply: FastifyReply) {
     try {
-      // Get the base path for the data directory
-      const dataDir = process.env.DATA_DIR || "./data"; // Allow override through environment variable
-
       // Initial template data
       const initialPaper: Paper = {
         title: "New Paper",
@@ -415,47 +412,22 @@ export class PaperController {
         version: 1,
       };
 
+      // Initialize paper
+      await this.paperService.savePaper(initialPaper);
+
+      // Initialize chat (using direct file access for now)
+      // Get the base path for the data directory
+      const dataDir = process.env.DATA_DIR || "./data"; // Allow override through environment variable
+      const chatPath = path.resolve(dataDir, "chat.json");
+      console.log("Chat file path:", chatPath);
+
       // Create data directory if it doesn't exist
+      const dirPath = path.dirname(chatPath);
       try {
-        await fs.promises.mkdir(path.resolve(dataDir), { recursive: true });
+        await fs.promises.mkdir(dirPath, { recursive: true });
       } catch (err) {
         console.log("Directory already exists or could not be created:", err);
       }
-
-      // Initialize paper - using direct file system access to ensure consistency with chat
-      const paperPath = path.resolve(dataDir, "paper.json");
-      console.log("Paper file path:", paperPath);
-
-      try {
-        fs.accessSync(paperPath, fs.constants.F_OK);
-        // Overwrite if file exists
-        fs.writeFileSync(
-          paperPath,
-          JSON.stringify(initialPaper, null, 2),
-          "utf-8"
-        );
-        console.log("Paper file initialized successfully");
-      } catch (err) {
-        console.error("Paper file access error:", err);
-        // Create file if it doesn't exist
-        try {
-          fs.writeFileSync(
-            paperPath,
-            JSON.stringify(initialPaper, null, 2),
-            "utf-8"
-          );
-          console.log("Paper file created successfully");
-        } catch (writeErr: any) {
-          console.error("Failed to create paper file:", writeErr);
-          throw new Error(
-            "Failed to initialize paper data: " + writeErr.message
-          );
-        }
-      }
-
-      // Initialize chat (using direct file access for now)
-      const chatPath = path.resolve(dataDir, "chat.json");
-      console.log("Chat file path:", chatPath);
 
       // Initial chat data - maintains existing format
       const initialChats = {

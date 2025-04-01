@@ -7,45 +7,7 @@ export class PaperRepository {
   private readonly filePath: string;
 
   constructor() {
-    // Allow configuring data directory through environment variables
-    const dataDir = process.env.DATA_DIR || "./data";
-    this.filePath = path.resolve(dataDir, "paper.json");
-
-    // Ensure data directory exists
-    try {
-      fs.mkdirSync(path.dirname(this.filePath), { recursive: true });
-    } catch (err) {
-      // Ignore if directory already exists
-      if (!fs.existsSync(path.dirname(this.filePath))) {
-        console.error("Failed to create data directory:", err);
-      }
-    }
-
-    // Create empty paper file if it doesn't exist
-    if (!fs.existsSync(this.filePath)) {
-      const initialPaper: Paper = {
-        title: "New Paper",
-        "block-id": Date.now().toString(),
-        summary: "",
-        intent: "",
-        type: "paper",
-        content: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        version: 1,
-      };
-
-      try {
-        fs.writeFileSync(
-          this.filePath,
-          JSON.stringify(initialPaper, null, 2),
-          "utf-8"
-        );
-        console.log("Created initial paper.json file at:", this.filePath);
-      } catch (error) {
-        console.error("Failed to create initial paper.json file:", error);
-      }
-    }
+    this.filePath = path.join(__dirname, "../../data/paper.json");
   }
 
   async getPaper(): Promise<Paper> {
@@ -53,7 +15,7 @@ export class PaperRepository {
       const data = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
       return data;
     } catch (error) {
-      throw new Error("Failed to read paper data from: " + this.filePath);
+      throw new Error("Failed to read paper data");
     }
   }
 
