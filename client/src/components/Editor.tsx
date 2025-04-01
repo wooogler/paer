@@ -3,11 +3,7 @@ import { useContentStore } from "../store/useContentStore";
 import { useAppStore } from "../store/useAppStore";
 import HierarchyTitle from "./editor/HierarchyTitle";
 import ContentRenderer from "./editor/ContentRenderer";
-import {
-  usePaperQuery,
-  useUpdateBlockSummary,
-  useUpdateBlockIntent,
-} from "../hooks/usePaperQuery";
+import { usePaperQuery } from "../hooks/usePaperQuery";
 import api from "../services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { FiRefreshCw } from "react-icons/fi";
@@ -23,8 +19,6 @@ const Editor: React.FC = () => {
   } = useContentStore();
   const { showHierarchy } = useAppStore();
   const [isUpdating, setIsUpdating] = useState(false);
-  const updateBlockSummary = useUpdateBlockSummary();
-  const updateBlockIntent = useUpdateBlockIntent();
   const queryClient = useQueryClient();
 
   // 중요: paper 데이터의 변경을 직접 구독

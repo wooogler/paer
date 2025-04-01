@@ -12,7 +12,7 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
-import { FiDownload, FiRefreshCw, FiTrash2 } from "react-icons/fi";
+import { FiDownload, FiTrash2 } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {

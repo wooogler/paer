@@ -33,10 +33,10 @@ export const getTypeColor = (type: ContentType) => {
       };
     case "paragraph":
       return {
-        bg: "bg-slate-50",
-        border: "border-slate-300",
-        title: "text-slate-700",
-        main: "text-slate-600",
+        bg: "bg-stone-50",
+        border: "border-stone-300",
+        title: "text-stone-700",
+        main: "text-stone-600",
       };
     case "sentence":
       return {
