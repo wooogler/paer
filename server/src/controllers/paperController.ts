@@ -90,15 +90,13 @@ export class PaperController {
 
       // Try to find and update the sentence
       const found = findAndUpdateSentence(paper);
+      await this.paperService.savePaper(paper);
       // Update the parent block
-      await this.paperService.updateSentence(blockId);
+      await this.paperService.updateSentenceMetadata(blockId);
 
       if (!found) {
         return reply.code(404).send({ error: "Sentence not found" });
       }
-
-      // Save updated paper
-      await this.paperService.savePaper(paper);
 
       return reply.send({ success: true });
     } catch (error) {

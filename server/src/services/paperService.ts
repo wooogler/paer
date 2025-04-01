@@ -18,29 +18,8 @@ export class PaperService {
     return this.paperRepository.getPaper();
   }
 
-  async updateSentence(blockId: string): Promise<void> {
-    const parentId: string = this.paperRepository.findParentBlockIdByChildId(
-      null,
-      blockId
-    );
-    const contextValue: string = this.paperRepository.getChildrenValues(
-      parentId,
-      "content"
-    );
-    return this.autoUpdateParentBlock(parentId, contextValue);
-  }
-
-  async autoUpdateParentBlock(blockId: string, blockContent: string) {
-    await this.updateBlock(
-      blockId,
-      "summary",
-      await this.llmService.summarizeText(blockContent)
-    );
-    await this.updateBlock(
-      blockId,
-      "intent",
-      await this.llmService.findIntent(blockContent)
-    );
+  async updateSentenceMetadata(blockId: string): Promise<void> {
+    return;
   }
 
   async addBlock(
