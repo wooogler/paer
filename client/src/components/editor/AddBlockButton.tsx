@@ -1,6 +1,6 @@
 import React from "react";
 import { Content, ContentType } from "@paer/shared";
-import { getTypeColor } from "../../utils/contentUtils";
+import { getButtonColor } from "../../utils/contentUtils";
 
 interface AddBlockButtonProps {
   onClick: () => void;
@@ -28,25 +28,6 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
         return "Add new sentence";
       default:
         return "Add new block";
-    }
-  };
-
-  // 버튼 색상 가져오기 - Tailwind 클래스 매핑 추가
-  const getButtonColor = (): string => {
-    // 각 타입에 따른 배경색 직접 매핑
-    switch (blockType) {
-      case "section":
-        return "bg-emerald-500 hover:bg-emerald-600";
-      case "subsection":
-        return "bg-amber-500 hover:bg-amber-600";
-      case "subsubsection":
-        return "bg-sky-500 hover:bg-sky-600";
-      case "paragraph":
-        return "bg-stone-500 hover:bg-stone-600";
-      case "sentence":
-        return "bg-gray-500 hover:bg-gray-600";
-      default:
-        return "bg-blue-500 hover:bg-blue-600";
     }
   };
 
@@ -107,7 +88,9 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
           <div className="relative group h-1 cursor-pointer flex items-center justify-center">
             <button
               onClick={onClick}
-              className={`${getButtonColor()} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 shadow-md`}
+              className={`${getButtonColor(
+                blockType
+              )} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 shadow-md`}
             >
               {getButtonText()}
             </button>

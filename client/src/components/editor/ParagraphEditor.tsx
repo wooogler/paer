@@ -4,7 +4,7 @@ import { useAppStore } from "../../store/useAppStore";
 import { useAddBlock } from "../../hooks/usePaperQuery";
 import TextEditor from "./TextEditor";
 import AddBlockButton from "./AddBlockButton";
-import { getTypeColor } from "../../utils/contentUtils";
+import { getHoverBackgroundColor } from "../../utils/contentUtils";
 
 interface ParagraphEditorProps {
   content: Content;
@@ -111,11 +111,6 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
       }
     }, [addBlockMutation, content]);
 
-    // 배경색 가져오기 - 항상 문장을 추가하므로 sentence 타입 색상 사용
-    const getHoverBackgroundColor = (): string => {
-      return "bg-gray-100"; // sentence 타입의 bg 색상
-    };
-
     return (
       <div
         className={`${
@@ -127,7 +122,9 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
         <div
           onMouseEnter={() => setHoverIndex(-1)}
           onMouseLeave={() => setHoverIndex(null)}
-          className={`${hoverIndex === -1 ? getHoverBackgroundColor() : ""}`}
+          className={`${
+            hoverIndex === -1 ? getHoverBackgroundColor("sentence") : ""
+          }`}
         >
           <AddBlockButton
             onClick={() => handleAddSentence(0)}
@@ -161,7 +158,9 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
                 onMouseEnter={() => setHoverIndex(index)}
                 onMouseLeave={() => setHoverIndex(null)}
                 className={`${
-                  hoverIndex === index ? getHoverBackgroundColor() : ""
+                  hoverIndex === index
+                    ? getHoverBackgroundColor("sentence")
+                    : ""
                 }`}
               >
                 <AddBlockButton
