@@ -17,7 +17,13 @@ import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
   const { displayMode, showHierarchy, setShowHierarchy } = useAppStore();
-  const { filterBlockId, isFilteringEnabled, toggleFiltering } = useChatStore();
+  const {
+    filterBlockId,
+    isFilteringEnabled,
+    toggleFiltering,
+    isChatVisible,
+    toggleChatVisibility,
+  } = useChatStore();
   const { setPaper } = usePaperStore();
   const { content: rootContent } = useContentStore();
   const queryClient = useQueryClient();
@@ -231,7 +237,7 @@ const Layout: React.FC = () => {
 
       <Pane
         title="Structure"
-        width="30%"
+        width="20%"
         rightContent={
           <div className="flex items-center space-x-2">
             <FileImport onFileImport={handleFileImport} />
@@ -264,66 +270,28 @@ const Layout: React.FC = () => {
 
       <Pane
         title="Editor"
-        width="45%"
-        rightContent={
-          <ToggleSwitch
-            checked={showHierarchy}
-            onChange={setShowHierarchy}
-            leftLabel="Sentence Only"
-            rightLabel="Show Hierarchy"
-          />
-        }
-      >
-        <Editor />
-      </Pane>
-
-      <Pane
-        title={
-          isFilteringEnabled && filterBlockId ? "Filtered Messages" : "AI Chat"
-        }
-        width="25%"
-        isLast
+        width={isChatVisible ? "55%" : "80%"}
         rightContent={
           <div className="flex items-center space-x-2">
-            {isFilteringEnabled && filterBlockId && (
-              <button
-                onClick={() => toggleFiltering(false)}
-                className="mr-2 p-1 rounded text-blue-500 hover:bg-blue-50 transition-colors flex items-center"
-                title="Back to all messages"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-              </button>
-            )}
+            <ToggleSwitch
+              checked={showHierarchy}
+              onChange={setShowHierarchy}
+              leftLabel="Sentence Only"
+              rightLabel="Show Hierarchy"
+            />
             <button
-              onClick={handleToggleFiltering}
-              className={`p-1.5 rounded-md ${
-                isFilteringEnabled && filterBlockId
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              onClick={toggleChatVisibility}
+              className={`ml-2 p-1.5 rounded ${
+                isChatVisible
+                  ? "text-blue-600 bg-blue-50 hover:bg-blue-100"
+                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
               } transition-colors`}
-              title={
-                isFilteringEnabled && filterBlockId
-                  ? "Show all messages"
-                  : "Filter messages"
-              }
-              disabled={!filterBlockId}
+              title={isChatVisible ? "Hide AI Chat" : "Show AI Chat"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -331,24 +299,91 @@ const Layout: React.FC = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
             </button>
           </div>
         }
       >
-        <div className="h-full flex flex-col">
-          {/* 필터링된 콘텐츠 정보 표시 */}
-          {isFilteringEnabled && filterBlockId && filteredContent && (
-            <div className="border-b border-gray-200">
-              <ContentInfo content={filteredContent} isClickable={true} />
-            </div>
-          )}
-          <div className="flex-1">
-            <ChatInterface />
-          </div>
-        </div>
+        <Editor />
       </Pane>
+
+      {isChatVisible && (
+        <Pane
+          title={
+            isFilteringEnabled && filterBlockId
+              ? "Filtered Messages"
+              : "AI Chat"
+          }
+          width="25%"
+          isLast
+          rightContent={
+            <div className="flex items-center space-x-2">
+              {isFilteringEnabled && filterBlockId && (
+                <button
+                  onClick={() => toggleFiltering(false)}
+                  className="mr-2 p-1 rounded text-blue-500 hover:bg-blue-50 transition-colors flex items-center"
+                  title="Back to all messages"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={handleToggleFiltering}
+                className={`p-1.5 rounded-md ${
+                  isFilteringEnabled && filterBlockId
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                } transition-colors`}
+                title={
+                  isFilteringEnabled && filterBlockId
+                    ? "Show all messages"
+                    : "Filter messages"
+                }
+                disabled={!filterBlockId}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+              </button>
+            </div>
+          }
+        >
+          <div className="h-full flex flex-col">
+            {/* 필터링된 콘텐츠 정보 표시 */}
+            {isFilteringEnabled && filterBlockId && filteredContent && (
+              <div className="border-b border-gray-200">
+                <ContentInfo content={filteredContent} isClickable={true} />
+              </div>
+            )}
+            <div className="flex-1">
+              <ChatInterface />
+            </div>
+          </div>
+        </Pane>
+      )}
     </div>
   );
 };

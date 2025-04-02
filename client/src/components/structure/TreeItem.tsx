@@ -127,9 +127,14 @@ const TreeItem: React.FC<TreeItemProps> = memo(
             {/* Display the title */}
             <div className="flex justify-between items-center">
               <span
-                className={`break-words ${contentColorClass} ${
-                  content.type === "paragraph" ? "" : "font-bold"
-                } ${isSelectedContent ? "text-blue-800" : ""}`}
+                className={`${contentColorClass} ${
+                  content.type === "paragraph"
+                    ? "text-xs" // paragraph 타입의 경우 더 작은 폰트 사이즈 적용
+                    : "text-sm font-bold"
+                } ${isSelectedContent ? "text-blue-800" : ""} ${
+                  isSelectedContent ? "" : "truncate"
+                }`}
+                title={isSelectedContent ? "" : displayTitle}
               >
                 {displayTitle}
               </span>
@@ -138,7 +143,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
               {shouldShowMessageIcon && (
                 <button
                   onClick={handleShowMessages}
-                  className={`ml-2 ${
+                  className={`ml-2 flex-shrink-0 ${
                     isActiveMessageFilter
                       ? "text-blue-500 bg-blue-50"
                       : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
@@ -168,7 +173,12 @@ const TreeItem: React.FC<TreeItemProps> = memo(
 
             {/* Display summary or intent for non-paragraph types */}
             {content.type !== "paragraph" && (
-              <span className="text-gray-600 text-sm break-words">
+              <span
+                className={`text-gray-600 text-xs ${
+                  isSelectedContent ? "break-words" : "truncate block"
+                }`}
+                title={isSelectedContent ? "" : displayText}
+              >
                 {displayText}
               </span>
             )}

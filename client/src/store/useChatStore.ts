@@ -17,6 +17,9 @@ interface ChatStore {
   toggleFiltering: (enabled: boolean) => void;
   fetchMessages: () => Promise<void>;
   fetchMessagesByBlockId: (blockId: string) => Promise<void>;
+  // 챗 UI의 가시성 상태
+  isChatVisible: boolean;
+  toggleChatVisibility: () => void;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -26,6 +29,13 @@ export const useChatStore = create<ChatStore>()(
       isLoading: false,
       filterBlockId: null,
       isFilteringEnabled: false,
+      // 기본적으로 챗 UI는 보이는 상태로 설정
+      isChatVisible: true,
+
+      // 챗 UI 가시성 토글 함수
+      toggleChatVisibility: () => {
+        set((state) => ({ isChatVisible: !state.isChatVisible }));
+      },
 
       // 서버에서 메시지 가져오기
       fetchMessages: async () => {

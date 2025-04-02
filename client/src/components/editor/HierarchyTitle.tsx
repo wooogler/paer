@@ -263,7 +263,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
           inputRef={inputRef}
           placeholder={placeholder}
           isHovered={isHovered}
-          isSentence={true}
+          isSentence={false}
           onKeyDown={onKeyDown}
           {...extraProps}
         />

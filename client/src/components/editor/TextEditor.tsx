@@ -517,7 +517,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                   isActiveMessageFilter
                     ? "text-blue-500 bg-blue-50"
                     : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
-                } transition-colors p-1 rounded-full mt-6`}
+                } transition-colors p-1 rounded-full mr-4`}
                 title={
                   isActiveMessageFilter
                     ? "Show all messages"
@@ -540,38 +540,42 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               </button>
             )}
 
-            {/* Summary Field */}
-            <EditableField
-              value={localSummary}
-              onChange={setLocalSummary}
-              onUpdate={handleSummaryUpdate}
-              onCancel={handleSummaryCancel}
-              isEditing={editingSummary}
-              setIsEditing={setEditingSummary}
-              inputRef={summaryInputRef}
-              placeholder="Enter summary"
-              isHovered={isHovered}
-              isSentence={content.type === "sentence"}
-              onKeyDown={handleSummaryKeyDown}
-              isLoading={isUpdating}
-            />
+            {/* Summary Field - sentence 타입이 아닐 경우에만 표시 */}
+            {content.type !== "sentence" && (
+              <EditableField
+                value={localSummary}
+                onChange={setLocalSummary}
+                onUpdate={handleSummaryUpdate}
+                onCancel={handleSummaryCancel}
+                isEditing={editingSummary}
+                setIsEditing={setEditingSummary}
+                inputRef={summaryInputRef}
+                placeholder="Enter summary"
+                isHovered={isHovered}
+                isSentence={false}
+                onKeyDown={handleSummaryKeyDown}
+                isLoading={isUpdating}
+              />
+            )}
 
-            {/* Intent Field */}
-            <EditableField
-              value={localIntent}
-              onChange={setLocalIntent}
-              onUpdate={handleIntentUpdate}
-              onCancel={handleIntentCancel}
-              isEditing={editingIntent}
-              setIsEditing={setEditingIntent}
-              inputRef={intentInputRef}
-              placeholder="Enter intent"
-              icon="🎯"
-              isHovered={isHovered}
-              isSentence={content.type === "sentence"}
-              onKeyDown={handleIntentKeyDown}
-              isLoading={isUpdating}
-            />
+            {/* Intent Field - sentence 타입인 경우에만 표시하고, intent가 있을 때만 아이콘 표시 */}
+            {content.type === "sentence" && (
+              <EditableField
+                value={localIntent}
+                onChange={setLocalIntent}
+                onUpdate={handleIntentUpdate}
+                onCancel={handleIntentCancel}
+                isEditing={editingIntent}
+                setIsEditing={setEditingIntent}
+                inputRef={intentInputRef}
+                placeholder="Add Intent"
+                icon={localIntent ? "🎯" : ""}
+                isHovered={isHovered}
+                isSentence={true}
+                onKeyDown={handleIntentKeyDown}
+                isLoading={isUpdating}
+              />
+            )}
           </div>
           <div>
             <textarea

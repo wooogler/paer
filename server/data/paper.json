@@ -183,51 +183,51 @@
         },
         {
           "block-id": "1743521069",
-          "summary": "",
-          "intent": "",
+          "summary": "This section discusses LLMs' capabilities and introduces a new tool for enhancing organizational knowledge through chat interactions.",
+          "intent": "To inform readers about LLM advancements and present a novel application for organizational intelligence.",
           "type": "paragraph",
           "content": [
             {
+              "type": "sentence",
               "block-id": "1743521063",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Recent advances in LLMs have the potential to overcome the limitations of repository-based models."
+              "content": "Recent advances in LLMs have the potential to overcome the limitations of repository-based models.",
+              "summary": "LLMs can address limitations of traditional repository models.",
+              "intent": "To highlight the advantages of LLMs over existing models."
             },
             {
+              "type": "sentence",
               "block-id": "1743521064",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "They can summarize key insights from lengthy texts, such as news articles~\\cite, group dialogues~\\cite{asthana2023summaries, tian2024dialogue}, and then integrate those insights into existing material through chat interactions~\\cite."
+              "content": "They can summarize key insights from lengthy texts, such as news articles~\\cite, group dialogues~\\cite{asthana2023summaries, tian2024dialogue}, and then integrate those insights into existing material through chat interactions~\\cite.",
+              "summary": "LLMs summarize and integrate insights from various texts.",
+              "intent": "To demonstrate LLMs' capability in processing and synthesizing information."
             },
             {
+              "type": "sentence",
               "block-id": "1743521065",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "They can also serve as moderators~\\cite or debaters~\\cite that interpret and guide the flow of dialogue among individuals."
+              "content": "They can also serve as moderators~\\cite or debaters~\\cite that interpret and guide the flow of dialogue among individuals.",
+              "summary": "LLMs can moderate and facilitate dialogues effectively.",
+              "intent": "To illustrate the role of LLMs in enhancing communication."
             },
             {
+              "type": "sentence",
               "block-id": "1743521066",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "RAG-based solutions rely on an LLM's ability to provide context-aware answers rooted in existing documents~\\cite, and various organizations have already adopted them~\\cite."
+              "content": "RAG-based solutions rely on an LLM's ability to provide context-aware answers rooted in existing documents~\\cite, and various organizations have already adopted them~\\cite.",
+              "summary": "RAG solutions utilize LLMs for context-aware responses.",
+              "intent": "To explain the practical application of LLMs in organizations."
             },
             {
+              "type": "sentence",
               "block-id": "1743521067",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Leveraging LLM's advanced capabilities, we designed  (Chat-based Helper for Organizational Intelligence Repository) to seamlessly capture knowledge within group chats, foster collaborative organizational memory, and provide contextually relevant responses to users."
+              "content": "Leveraging LLM's advanced capabilities, we designed  (Chat-based Helper for Organizational Intelligence Repository) to seamlessly capture knowledge within group chats, foster collaborative organizational memory, and provide contextually relevant responses to users.",
+              "summary": "We created a tool to enhance knowledge capture in chats.",
+              "intent": "To present a new tool that utilizes LLMs for organizational knowledge."
             },
             {
-              "block-id": "1743521068",
-              "summary": "",
-              "intent": "",
               "type": "sentence",
-              "content": "We have three design goals as follows: \\cite{zhang2024benchmarking,asthana2023summaries,tian2024dialogue,laban2024beyond,bhatia2024moderating,chiang2024enhancing,lewis2020retrieval,khangarotCouncilPostRAG}"
+              "block-id": "1743521068",
+              "content": "We have three design goals as follows: \\cite{zhang2024benchmarking,asthana2023summaries,tian2024dialogue,laban2024beyond,bhatia2024moderating,chiang2024enhancing,lewis2020retrieval,khangarotCouncilPostRAG}",
+              "summary": "We outline three key design goals for our tool.",
+              "intent": "To specify the objectives guiding the tool's development."
             }
           ]
         },
@@ -309,88 +309,88 @@
             {
               "title": "Facilitate the document update process by bridging conversations and persistent documentation",
               "block-id": "1743521080",
-              "summary": "",
-              "intent": "",
+              "summary": "The section discusses the integration of conversations and documentation for effective organizational memory management.",
+              "intent": "To advocate for a system that captures and maintains organizational knowledge through conversation integration.",
               "type": "subsubsection",
               "content": [
                 {
-                  "block-id": "1743521084",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
+                  "block-id": "1743521084",
                   "content": [
                     {
+                      "type": "sentence",
                       "block-id": "1743521081",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Our system is designed to capture knowledge and information on demand, leveraging conversations into persistent documents, thereby ensuring that organizational memory is easily and reliably maintained."
+                      "content": "Our system is designed to capture knowledge and information on demand, leveraging conversations into persistent documents, thereby ensuring that organizational memory is easily and reliably maintained.",
+                      "summary": "The system captures knowledge from conversations into documents.",
+                      "intent": "To explain the system's functionality in preserving organizational memory."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521082",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "A study on early groupware adoption found that organizations struggled to motivate members to contribute to share information, highlighting the importance of reward systems for contributions~\\cite."
+                      "content": "A study on early groupware adoption found that organizations struggled to motivate members to contribute to share information, highlighting the importance of reward systems for contributions~\\cite.",
+                      "summary": "Organizations need reward systems to encourage information sharing.",
+                      "intent": "To emphasize the necessity of incentives for knowledge contribution."
                     },
                     {
-                      "block-id": "1743521083",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "One reason is that continuously updating organizational memory requires manual efforts to keep it up-to-date. \\cite{orlikowski1992learning}"
+                      "block-id": "1743521083",
+                      "content": "One reason is that continuously updating organizational memory requires manual efforts to keep it up-to-date. \\cite{orlikowski1992learning}",
+                      "summary": "Updating organizational memory demands significant manual effort.",
+                      "intent": "To highlight the challenges in maintaining current organizational knowledge."
                     }
-                  ]
+                  ],
+                  "summary": "The system captures knowledge but faces challenges in motivating contributions and requires manual updates.",
+                  "intent": "To discuss the system's capabilities and the challenges of maintaining organizational memory."
                 },
                 {
-                  "block-id": "1743521091",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
+                  "block-id": "1743521091",
                   "content": [
                     {
+                      "type": "sentence",
                       "block-id": "1743521085",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Research collectively has highlighted the importance of bridging conversations and persistent documentation to better facilitate the continuous update and management of organizational knowledge."
+                      "content": "Research collectively has highlighted the importance of bridging conversations and persistent documentation to better facilitate the continuous update and management of organizational knowledge.",
+                      "summary": "Bridging conversations and documentation is crucial for managing knowledge.",
+                      "intent": "To assert the significance of integrating conversations with documentation."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521086",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Conversations among members can be excellent material for building organizational memory."
+                      "content": "Conversations among members can be excellent material for building organizational memory.",
+                      "summary": "Member conversations are valuable for organizational memory.",
+                      "intent": "To advocate for utilizing conversations in knowledge management."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521087",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "One early system, Answer Garden, actively used email to broaden its stored knowledge~\\cite."
+                      "content": "One early system, Answer Garden, actively used email to broaden its stored knowledge~\\cite.",
+                      "summary": "Answer Garden used email to enhance knowledge storage.",
+                      "intent": "To provide an example of effective knowledge capture."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521088",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Even in Wikipedia—an online form of organizational memory—contributors share opinions about edits via article talk pages~\\cite{kittur2008harnessing, schneider2011understanding}."
+                      "content": "Even in Wikipedia—an online form of organizational memory—contributors share opinions about edits via article talk pages~\\cite{kittur2008harnessing, schneider2011understanding}.",
+                      "summary": "Wikipedia contributors discuss edits on talk pages.",
+                      "intent": "To illustrate how conversations contribute to collective knowledge."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521089",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "There has also been extensive research on systems that capture and organize important conversation details~\\cite."
+                      "content": "There has also been extensive research on systems that capture and organize important conversation details~\\cite.",
+                      "summary": "Research focuses on systems for capturing conversation details.",
+                      "intent": "To highlight ongoing research in conversation documentation."
                     },
                     {
-                      "block-id": "1743521090",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "To that end, we will facilitate members to update their organizational memory using conversations. \\cite{ackerman1990answer,kittur2008harnessing,schneider2011understanding,nam2007arkose,zhang2017wikum,zhang2018making}"
+                      "block-id": "1743521090",
+                      "content": "To that end, we will facilitate members to update their organizational memory using conversations. \\cite{ackerman1990answer,kittur2008harnessing,schneider2011understanding,nam2007arkose,zhang2017wikum,zhang2018making}",
+                      "summary": "We aim to help members update memory through conversations.",
+                      "intent": "To propose a solution for enhancing organizational memory updates."
                     }
-                  ]
+                  ],
+                  "summary": "Research emphasizes the integration of conversations and documentation for effective knowledge management and memory updates.",
+                  "intent": "To argue for the importance of combining conversations with documentation in organizational knowledge management."
                 }
               ]
             },
