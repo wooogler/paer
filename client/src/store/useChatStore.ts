@@ -110,8 +110,7 @@ export const useChatStore = create<ChatStore>()(
           set({ isLoading: true });
           try {
             // Get the rendered content from the editor
-            const { selectedContent, parentContents } =
-              useContentStore.getState();
+            const { selectedContent, parentContents } = useContentStore.getState();
             let renderedContent = "";
 
             // Build the rendered content from parent hierarchy and selected content
@@ -123,16 +122,38 @@ export const useChatStore = create<ChatStore>()(
             }
 
             if (selectedContent) {
+              // Add the title if it exists
               if (selectedContent.title) {
                 renderedContent += `${selectedContent.title}\n\n`;
               }
+
+              // Add the content based on its type
               if (selectedContent.content) {
                 if (Array.isArray(selectedContent.content)) {
+                  // Process array content (paragraphs, sentences, etc.)
+                  const processContent = (item: any): string => {
+                    if (typeof item === 'string') return item;
+                    if (!item) return '';
+                    
+                    if (item.type === 'sentence') {
+                      return item.content || '';
+                    }
+                    
+                    if (Array.isArray(item.content)) {
+                      return item.content
+                        .map(processContent)
+                        .filter((text: string) => text)
+                        .join(" ");
+                    }
+                    
+                    return item.content || '';
+                  };
+
                   renderedContent += selectedContent.content
-                    .filter((item) => item && item.type === "sentence")
-                    .map((item) => item.content)
-                    .join(" ");
-                } else if (typeof selectedContent.content === "string") {
+                    .map(processContent)
+                    .filter((text: string) => text)
+                    .join('\n\n');
+                } else if (typeof selectedContent.content === 'string') {
                   renderedContent += selectedContent.content;
                 }
               }

@@ -55,7 +55,7 @@ export class LLMService {
         model: "gpt-4o",
         messages: this.conversationHistory,
       });
-
+      
       if (response.choices[0].message?.content) {
         this.conversationHistory.push({
           role: "assistant",
