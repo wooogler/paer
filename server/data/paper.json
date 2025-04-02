@@ -88,15 +88,13 @@
     {
       "title": "Introduction",
       "block-id": "1743521049",
-      "summary": "",
-      "intent": "",
+      "summary": "This section introduces the topic, discusses organizational memory, and presents research questions related to chatbot applications.",
+      "intent": "To provide an overview of the research context and objectives.",
       "type": "section",
       "content": [
         {
-          "block-id": "1743521054",
-          "summary": "Group chat services enhance communication but can obscure important information, leading to inefficiencies in knowledge utilization.",
-          "intent": "To discuss the benefits and challenges of using group chat services in organizations.",
           "type": "paragraph",
+          "block-id": "1743521054",
           "content": [
             {
               "type": "sentence",
@@ -122,70 +120,70 @@
               "summary": "Users struggle to access and utilize past knowledge effectively.",
               "intent": "To illustrate the consequences of poor information retrieval in chat platforms."
             }
-          ]
+          ],
+          "summary": "Group chat services enhance communication but can obscure important information, leading to inefficiencies in knowledge utilization.",
+          "intent": "To discuss the benefits and challenges of using group chat services in organizations."
         },
         {
-          "block-id": "1743521062",
-          "summary": "",
-          "intent": "",
           "type": "paragraph",
+          "block-id": "1743521062",
           "content": [
             {
+              "type": "sentence",
               "block-id": "1743521055",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Researchers in CSCW have addressed the challenge of maintaining knowledge that emerges from an organization, which is described as organizational memory~\\cite{ackerman2004organizational, ackerman2013sharing}."
+              "content": "Researchers in CSCW have addressed the challenge of maintaining knowledge that emerges from an organization, which is described as organizational memory~\\cite{ackerman2004organizational, ackerman2013sharing}.",
+              "summary": "CSCW researchers focus on maintaining organizational memory.",
+              "intent": "To introduce the concept of organizational memory in research."
             },
             {
+              "type": "sentence",
               "block-id": "1743521056",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Organizational memory refers to the knowledge stored in an organization regarding decision-making stimulus and outcomes, which can be reused to inform future decisions~\\cite{walsh2009organizational}."
+              "content": "Organizational memory refers to the knowledge stored in an organization regarding decision-making stimulus and outcomes, which can be reused to inform future decisions~\\cite{walsh2009organizational}.",
+              "summary": "Organizational memory stores knowledge for future decision-making.",
+              "intent": "To define organizational memory and its significance."
             },
             {
+              "type": "sentence",
               "block-id": "1743521057",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "The line of research has examined how repository systems can help members of an organization to store and retrieve knowledge~\\cite{ackerman1990answer, stein1995actualizing, burke1997question, pipek2003pruning, halverson2004behind, schaffert2006ikewiki, grudin2010wikis}."
+              "content": "The line of research has examined how repository systems can help members of an organization to store and retrieve knowledge~\\cite{ackerman1990answer, stein1995actualizing, burke1997question, pipek2003pruning, halverson2004behind, schaffert2006ikewiki, grudin2010wikis}.",
+              "summary": "Research explores repository systems for knowledge storage and retrieval.",
+              "intent": "To discuss the role of repository systems in knowledge management."
             },
             {
+              "type": "sentence",
               "block-id": "1743521058",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "AnswerGarden was one of the early systems that allowed users to explore the tree of organizational memory to find the information they needed; if the information was missing, they could email relevant experts to expand the tree~\\cite{ackerman1990answer}."
+              "content": "AnswerGarden was one of the early systems that allowed users to explore the tree of organizational memory to find the information they needed; if the information was missing, they could email relevant experts to expand the tree~\\cite{ackerman1990answer}.",
+              "summary": "AnswerGarden facilitated exploration of organizational memory.",
+              "intent": "To provide an example of an early knowledge management system."
             },
             {
+              "type": "sentence",
               "block-id": "1743521059",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Other scholars have also studied wiki systems as another means to store and share knowledge within companies~\\cite{schaffert2006ikewiki,grudin2010wikis}."
+              "content": "Other scholars have also studied wiki systems as another means to store and share knowledge within companies~\\cite{schaffert2006ikewiki,grudin2010wikis}.",
+              "summary": "Wiki systems are studied for knowledge sharing.",
+              "intent": "To mention alternative systems for organizational knowledge management."
             },
             {
+              "type": "sentence",
               "block-id": "1743521060",
-              "summary": "",
-              "intent": "",
-              "type": "sentence",
-              "content": "Recently, with the rising popularity of cloud-based repository services like Google Drive and Dropbox, organizations can more easily maintain and share knowledge base online~\\cite{saratchandra2022role}."
+              "content": "Recently, with the rising popularity of cloud-based repository services like Google Drive and Dropbox, organizations can more easily maintain and share knowledge base online~\\cite{saratchandra2022role}.",
+              "summary": "Cloud services simplify knowledge maintenance and sharing.",
+              "intent": "To highlight the impact of cloud technology on knowledge management."
             },
             {
-              "block-id": "1743521061",
-              "summary": "",
-              "intent": "",
               "type": "sentence",
-              "content": "Despite this convenience, the omission of social relationships, and the risk of losing rich context once it is converted into documents remains fundamental limitations for knowledge repositories~\\cite."
+              "block-id": "1743521061",
+              "content": "Despite this convenience, the omission of social relationships, and the risk of losing rich context once it is converted into documents remains fundamental limitations for knowledge repositories~\\cite.",
+              "summary": "Knowledge repositories face limitations in context preservation.",
+              "intent": "To address the drawbacks of current knowledge management systems."
             }
-          ]
+          ],
+          "summary": "This section reviews research on organizational memory and knowledge management systems, highlighting their benefits and limitations.",
+          "intent": "To summarize the state of research on organizational memory and knowledge repositories."
         },
         {
-          "block-id": "1743521069",
-          "summary": "This section discusses LLMs' capabilities and introduces a new tool for enhancing organizational knowledge through chat interactions.",
-          "intent": "To inform readers about LLM advancements and present a novel application for organizational intelligence.",
           "type": "paragraph",
+          "block-id": "1743521069",
           "content": [
             {
               "type": "sentence",
@@ -229,44 +227,46 @@
               "summary": "We outline three key design goals for our tool.",
               "intent": "To specify the objectives guiding the tool's development."
             }
-          ]
+          ],
+          "summary": "This section discusses LLMs' capabilities and introduces a new tool for enhancing organizational knowledge through chat interactions.",
+          "intent": "To inform readers about LLM advancements and present a novel application for organizational intelligence."
         },
         {
+          "type": "paragraph",
           "block-id": "1743521071",
-          "summary": "",
-          "intent": "",
-          "type": "paragraph",
           "content": [
             {
-              "block-id": "1743521070",
-              "summary": "",
-              "intent": "",
               "type": "sentence",
-              "content": "We are currently developing CHOIR as a Slack application and aim to explore the following research questions:"
+              "block-id": "1743521070",
+              "content": "We are currently developing CHOIR as a Slack application and aim to explore the following research questions:",
+              "summary": "Developing CHOIR as a Slack application to explore research questions.",
+              "intent": "To introduce the development of a new application and its research focus."
             }
-          ]
+          ],
+          "summary": "This paragraph introduces the development of the CHOIR application and its research focus.",
+          "intent": "To set the stage for discussing specific research questions."
         },
         {
-          "block-id": "1743521074",
-          "summary": "",
-          "intent": "",
           "type": "paragraph",
+          "block-id": "1743521074",
           "content": [
             {
-              "block-id": "1743521072",
-              "summary": "",
-              "intent": "",
               "type": "sentence",
-              "content": "• : How does chatbot-driven document update automation reduce management effort (e.g., time or cognitive load) while fostering user contributions in collaborative document tasks?}"
+              "block-id": "1743521072",
+              "content": "• : How does chatbot-driven document update automation reduce management effort (e.g., time or cognitive load) while fostering user contributions in collaborative document tasks?}",
+              "summary": "Investigate chatbot's impact on document management and user contributions.",
+              "intent": "To pose a research question regarding chatbot efficiency."
             },
             {
-              "block-id": "1743521073",
-              "summary": "",
-              "intent": "",
               "type": "sentence",
-              "content": "• : How does initiating discussion around documents via a chatbot influence how team members discuss and negotiate document changes, and what challenges and opportunities emerge for integrating those updates?}"
+              "block-id": "1743521073",
+              "content": "• : How does initiating discussion around documents via a chatbot influence how team members discuss and negotiate document changes, and what challenges and opportunities emerge for integrating those updates?}",
+              "summary": "Examine chatbot's role in document discussion and negotiation.",
+              "intent": "To pose a research question about chatbot-facilitated discussions."
             }
-          ]
+          ],
+          "summary": "These paragraphs present research questions regarding the role of chatbots in document management and team discussions.",
+          "intent": "To outline specific research inquiries guiding the study."
         }
       ]
     },
@@ -280,15 +280,13 @@
         {
           "title": "Design Goals",
           "block-id": "1743521076",
-          "summary": "",
-          "intent": "",
+          "summary": "The section outlines design goals for a system to enhance organizational memory through conversation integration and context preservation.",
+          "intent": "To present the objectives of the system in improving knowledge management.",
           "type": "subsection",
           "content": [
             {
-              "block-id": "1743521079",
-              "summary": "The paragraph discusses challenges of traditional repositories and presents solutions from a new system design.",
-              "intent": "To analyze repository issues and propose a system that addresses them.",
               "type": "paragraph",
+              "block-id": "1743521079",
               "content": [
                 {
                   "type": "sentence",
@@ -304,14 +302,14 @@
                   "summary": "Our system addresses these challenges through design features.",
                   "intent": "To present solutions offered by the new system design."
                 }
-              ]
+              ],
+              "summary": "The paragraph discusses challenges of traditional repositories and presents solutions from a new system design.",
+              "intent": "To analyze repository issues and propose a system that addresses them."
             },
             {
-              "title": "Facilitate the document update process by bridging conversations and persistent documentation",
-              "block-id": "1743521080",
-              "summary": "The section discusses the integration of conversations and documentation for effective organizational memory management.",
-              "intent": "To advocate for a system that captures and maintains organizational knowledge through conversation integration.",
               "type": "subsubsection",
+              "block-id": "1743521080",
+              "title": "Facilitate the document update process by bridging conversations and persistent documentation",
               "content": [
                 {
                   "type": "paragraph",
@@ -392,139 +390,141 @@
                   "summary": "Research emphasizes the integration of conversations and documentation for effective knowledge management and memory updates.",
                   "intent": "To argue for the importance of combining conversations with documentation in organizational knowledge management."
                 }
-              ]
+              ],
+              "summary": "The section discusses the integration of conversations and documentation for effective organizational memory management.",
+              "intent": "To advocate for a system that captures and maintains organizational knowledge through conversation integration."
             },
             {
-              "title": "Encourage Discussion within a group-chat environment among Stakeholders for Document Updates",
+              "type": "subsubsection",
               "block-id": "1743521093",
-              "summary": "",
-              "intent": "",
-              "type": "subsubsection",
+              "title": "Encourage Discussion within a group-chat environment among Stakeholders for Document Updates",
               "content": [
                 {
-                  "block-id": "1743521101",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
+                  "block-id": "1743521101",
                   "content": [
                     {
+                      "type": "sentence",
                       "block-id": "1743521094",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "CHOIR is designed to foster instant and context-sensitive collaboration by providing a communication channel where users can instantly discuss information tied directly to the document content."
+                      "content": "CHOIR is designed to foster instant and context-sensitive collaboration by providing a communication channel where users can instantly discuss information tied directly to the document content.",
+                      "summary": "CHOIR enables real-time discussions linked to documents.",
+                      "intent": "To describe the system's collaborative features."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521095",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Only using a repository for organizational memory often fails to capture social contexts, such as the rationale behind the changes, the author's expertise, the reliability of the information, and whether it is officially confirmed~\\cite."
+                      "content": "Only using a repository for organizational memory often fails to capture social contexts, such as the rationale behind the changes, the author's expertise, the reliability of the information, and whether it is officially confirmed~\\cite.",
+                      "summary": "Repositories alone miss important social context.",
+                      "intent": "To highlight limitations of traditional repositories."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521096",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "In contrast, a group chat environment, such as Slack, contains rich information about the suggested changes and allows members to share and verify it immediately."
+                      "content": "In contrast, a group chat environment, such as Slack, contains rich information about the suggested changes and allows members to share and verify it immediately.",
+                      "summary": "Group chats provide rich context for changes.",
+                      "intent": "To compare group chat benefits to traditional methods."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521097",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "For example, users can directly ask relevant experts about a document's information and better understand its context for specific situations."
+                      "content": "For example, users can directly ask relevant experts about a document's information and better understand its context for specific situations.",
+                      "summary": "Users can consult experts for context.",
+                      "intent": "To illustrate the advantages of direct communication."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521098",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Such a conversation also helps mitigate conflicts among contributors and fosters a more cooperative culture."
+                      "content": "Such a conversation also helps mitigate conflicts among contributors and fosters a more cooperative culture.",
+                      "summary": "Conversations reduce conflicts and promote cooperation.",
+                      "intent": "To emphasize the social benefits of discussion."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521099",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "On Wikipedia, for instance, new editors often see their contributions reverted without clear reasons, which discourages them~\\cite, but help from experienced editors significantly improves newcomer retention~\\cite."
+                      "content": "On Wikipedia, for instance, new editors often see their contributions reverted without clear reasons, which discourages them~\\cite, but help from experienced editors significantly improves newcomer retention~\\cite.",
+                      "summary": "New editors face challenges without guidance.",
+                      "intent": "To highlight the importance of mentorship in contributions."
                     },
                     {
-                      "block-id": "1743521100",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "Based on these previous findings, we designed our system to prompt conversation around documents so that users can account for the social context and receive assistance with document updates. \\cite{ackerman2013sharing,halfaker2011don,morgan2013tea}"
+                      "block-id": "1743521100",
+                      "content": "Based on these previous findings, we designed our system to prompt conversation around documents so that users can account for the social context and receive assistance with document updates. \\cite{ackerman2013sharing,halfaker2011don,morgan2013tea}",
+                      "summary": "The system encourages discussions for better updates.",
+                      "intent": "To propose a design that enhances document updating."
                     }
-                  ]
+                  ],
+                  "summary": "The section emphasizes the importance of discussions in enhancing document updates and fostering collaboration.",
+                  "intent": "To advocate for a system that promotes stakeholder discussions."
                 }
-              ]
+              ],
+              "summary": "The section discusses the role of group chats in facilitating document updates through enhanced communication.",
+              "intent": "To argue for the benefits of real-time discussions in knowledge management."
             },
             {
-              "title": "Help users grasp the document's evolving context by highlighting version histories",
-              "block-id": "1743521102",
-              "summary": "",
-              "intent": "",
               "type": "subsubsection",
+              "block-id": "1743521102",
+              "title": "Help users grasp the document's evolving context by highlighting version histories",
               "content": [
                 {
-                  "block-id": "1743521110",
-                  "summary": "",
-                  "intent": "",
                   "type": "paragraph",
+                  "block-id": "1743521110",
                   "content": [
                     {
+                      "type": "sentence",
                       "block-id": "1743521103",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "We design the system to preserve and showcase both version history and conversation logs, enabling users to more easily understand the evolving context behind each document update."
+                      "content": "We design the system to preserve and showcase both version history and conversation logs, enabling users to more easily understand the evolving context behind each document update.",
+                      "summary": "The system preserves version histories and conversation logs.",
+                      "intent": "To explain how the system aids context understanding."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521104",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "When adding new information to organizational memory, authors often omit details that can contextualize the changes~\\cite."
+                      "content": "When adding new information to organizational memory, authors often omit details that can contextualize the changes~\\cite.",
+                      "summary": "Authors often omit contextual details in updates.",
+                      "intent": "To highlight a common issue in documentation."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521105",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Such context may include social context, the source of the information, or the circumstances under which decisions were made."
+                      "content": "Such context may include social context, the source of the information, or the circumstances under which decisions were made.",
+                      "summary": "Context includes social factors and decision circumstances.",
+                      "intent": "To define what constitutes important contextual information."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521106",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "While decontextualizing the information can make it compact and thus easy to reuse in the future, retaining certain contextual details can be advantageous when they become crucial for specific decision-making scenarios~\\cite."
+                      "content": "While decontextualizing the information can make it compact and thus easy to reuse in the future, retaining certain contextual details can be advantageous when they become crucial for specific decision-making scenarios~\\cite.",
+                      "summary": "Retaining context aids future decision-making.",
+                      "intent": "To argue for the importance of context in documentation."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521107",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "In this regard, preserving conversation logs and the version history from the document updating process can be highly effective for capturing the document's evolving context."
+                      "content": "In this regard, preserving conversation logs and the version history from the document updating process can be highly effective for capturing the document's evolving context.",
+                      "summary": "Preserving logs captures evolving document context.",
+                      "intent": "To emphasize the value of maintaining historical records."
                     },
                     {
+                      "type": "sentence",
                       "block-id": "1743521108",
-                      "summary": "",
-                      "intent": "",
-                      "type": "sentence",
-                      "content": "Consequently, we designed our system to store these revision histories as contextual information when updating documents. \\cite{ackerman1999organizational,young2006don}"
+                      "content": "Consequently, we designed our system to store these revision histories as contextual information when updating documents. \\cite{ackerman1999organizational,young2006don}",
+                      "summary": "The system stores revision histories for context.",
+                      "intent": "To explain the system's approach to context preservation."
                     },
                     {
-                      "block-id": "1743521109",
-                      "summary": "",
-                      "intent": "",
                       "type": "sentence",
-                      "content": "We will present this information to ensure that users can readily understand the context behind the knowledge contained in the document."
+                      "block-id": "1743521109",
+                      "content": "We will present this information to ensure that users can readily understand the context behind the knowledge contained in the document.",
+                      "summary": "Users will access context information easily.",
+                      "intent": "To assure users of the system's usability in context understanding."
                     }
-                  ]
+                  ],
+                  "summary": "The section outlines how the system preserves context through version histories and conversation logs.",
+                  "intent": "To advocate for the importance of context in document updates."
                 }
-              ]
+              ],
+              "summary": "The section discusses the importance of version histories and conversation logs in understanding document context.",
+              "intent": "To emphasize the need for contextual information in knowledge management."
             }
           ]
         },

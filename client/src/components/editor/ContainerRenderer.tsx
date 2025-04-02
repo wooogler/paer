@@ -5,6 +5,7 @@ import HierarchyTitle from "./HierarchyTitle";
 import ContentRenderer from "./ContentRenderer";
 import AddBlockButton from "./AddBlockButton";
 import { useAddBlock } from "../../hooks/usePaperQuery";
+import { getTypeColor } from "../../utils/contentUtils";
 
 interface ContainerRendererProps {
   content: Content;
@@ -75,6 +76,25 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
       });
     };
 
+    // 배경색 가져오기
+    const getHoverBackgroundColor = (): string => {
+      const nextBlockType = getNextBlockType();
+      switch (nextBlockType) {
+        case "section":
+          return "bg-emerald-100";
+        case "subsection":
+          return "bg-amber-100";
+        case "subsubsection":
+          return "bg-sky-100";
+        case "paragraph":
+          return "bg-stone-100";
+        case "sentence":
+          return "bg-gray-100";
+        default:
+          return "bg-blue-100";
+      }
+    };
+
     return (
       <div
         className={`${config.marginClass} ${!showHierarchy ? "pl-0" : ""}`}
@@ -93,7 +113,9 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
         <div
           onMouseEnter={() => setHoverIndex(-1)}
           onMouseLeave={() => setHoverIndex(null)}
-          className={`group cursor-pointer transition-all duration-200`}
+          className={`group cursor-pointer transition-all duration-200 ${
+            hoverIndex === -1 ? getHoverBackgroundColor() : ""
+          }`}
         >
           <AddBlockButton
             onClick={() => handleAddBlock(-1)}
@@ -137,7 +159,9 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
                 <div
                   onMouseEnter={() => setHoverIndex(index)}
                   onMouseLeave={() => setHoverIndex(null)}
-                  className={`group cursor-pointer transition-all duration-200`}
+                  className={`group cursor-pointer transition-all duration-200 ${
+                    hoverIndex === index ? getHoverBackgroundColor() : ""
+                  }`}
                 >
                   <AddBlockButton
                     onClick={() => handleAddBlock(index)}
