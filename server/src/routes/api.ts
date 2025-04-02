@@ -158,7 +158,6 @@ const apiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       try {
         // Call the askLLM function from paperController
         const result = await paperController.askLLM(request, reply);
-
         // Send the result back to the client
         return reply.send({ success: true, result });
       } catch (error) {
