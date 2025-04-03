@@ -65,3 +65,40 @@ export const isSelectableContent = (type: ContentType): boolean => {
     "paragraph",
   ].includes(type);
 };
+
+// 버튼 배경색 가져오기
+export const getButtonColor = (type: ContentType): string => {
+  // 각 타입에 따른 배경색 직접 매핑
+  switch (type) {
+    case "section":
+      return "bg-emerald-500 hover:bg-emerald-600";
+    case "subsection":
+      return "bg-amber-500 hover:bg-amber-600";
+    case "subsubsection":
+      return "bg-sky-500 hover:bg-sky-600";
+    case "paragraph":
+      return "bg-stone-500 hover:bg-stone-600";
+    case "sentence":
+      return "bg-gray-500 hover:bg-gray-600";
+    default:
+      return "bg-blue-500 hover:bg-blue-600";
+  }
+};
+
+// 호버 영역 배경색 가져오기
+export const getHoverBackgroundColor = (type: ContentType): string => {
+  switch (type) {
+    case "section":
+      return "bg-emerald-100";
+    case "subsection":
+      return "bg-amber-100";
+    case "subsubsection":
+      return "bg-sky-100";
+    case "paragraph":
+      return "bg-stone-100";
+    case "sentence":
+      return "bg-gray-100";
+    default:
+      return "bg-blue-100";
+  }
+};

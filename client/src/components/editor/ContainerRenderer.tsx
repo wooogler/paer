@@ -5,6 +5,7 @@ import HierarchyTitle from "./HierarchyTitle";
 import ContentRenderer from "./ContentRenderer";
 import AddBlockButton from "./AddBlockButton";
 import { useAddBlock } from "../../hooks/usePaperQuery";
+import { getHoverBackgroundColor } from "../../utils/contentUtils";
 
 interface ContainerRendererProps {
   content: Content;
@@ -93,7 +94,9 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
         <div
           onMouseEnter={() => setHoverIndex(-1)}
           onMouseLeave={() => setHoverIndex(null)}
-          className={`group cursor-pointer transition-all duration-200`}
+          className={`group cursor-pointer transition-all duration-200 ${
+            hoverIndex === -1 ? getHoverBackgroundColor(getNextBlockType()) : ""
+          }`}
         >
           <AddBlockButton
             onClick={() => handleAddBlock(-1)}
@@ -137,7 +140,11 @@ const ContainerRenderer: React.FC<ContainerRendererProps> = React.memo(
                 <div
                   onMouseEnter={() => setHoverIndex(index)}
                   onMouseLeave={() => setHoverIndex(null)}
-                  className={`group cursor-pointer transition-all duration-200`}
+                  className={`group cursor-pointer transition-all duration-200 ${
+                    hoverIndex === index
+                      ? getHoverBackgroundColor(getNextBlockType())
+                      : ""
+                  }`}
                 >
                   <AddBlockButton
                     onClick={() => handleAddBlock(index)}

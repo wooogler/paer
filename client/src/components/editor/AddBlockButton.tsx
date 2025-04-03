@@ -1,6 +1,6 @@
 import React from "react";
 import { Content, ContentType } from "@paer/shared";
-import { getTypeColor } from "../../utils/contentUtils";
+import { getButtonColor } from "../../utils/contentUtils";
 
 interface AddBlockButtonProps {
   onClick: () => void;
@@ -29,20 +29,6 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
       default:
         return "Add new block";
     }
-  };
-
-  // 버튼 색상 가져오기 - Tailwind 클래스 매핑 추가
-  const getButtonColor = (): string => {
-    // getTypeColor로부터 main 색상 클래스 가져오기
-    const mainColorClass = getTypeColor(blockType).main;
-
-    // text-color-500 형식의 클래스를 bg-color-500 형식으로 변환
-    const baseClass = mainColorClass.replace("text-", "bg-");
-    const hoverClass = baseClass
-      .replace("-500", "-600")
-      .replace("-600", "-700");
-
-    return `${baseClass} hover:${hoverClass}`;
   };
 
   // Get placeholder content based on block type
@@ -102,7 +88,9 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({
           <div className="relative group h-1 cursor-pointer flex items-center justify-center">
             <button
               onClick={onClick}
-              className={`${getButtonColor()} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10`}
+              className={`${getButtonColor(
+                blockType
+              )} text-white rounded-full px-4 py-1 flex items-center justify-center text-sm absolute -top-4 left-1/2 transform -translate-x-1/2 z-10 shadow-md`}
             >
               {getButtonText()}
             </button>

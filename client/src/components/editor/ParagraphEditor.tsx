@@ -4,6 +4,7 @@ import { useAppStore } from "../../store/useAppStore";
 import { useAddBlock } from "../../hooks/usePaperQuery";
 import TextEditor from "./TextEditor";
 import AddBlockButton from "./AddBlockButton";
+import { getHoverBackgroundColor } from "../../utils/contentUtils";
 
 interface ParagraphEditorProps {
   content: Content;
@@ -121,6 +122,9 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
         <div
           onMouseEnter={() => setHoverIndex(-1)}
           onMouseLeave={() => setHoverIndex(null)}
+          className={`${
+            hoverIndex === -1 ? getHoverBackgroundColor("sentence") : ""
+          }`}
         >
           <AddBlockButton
             onClick={() => handleAddSentence(0)}
@@ -153,6 +157,11 @@ const ParagraphEditor: React.FC<ParagraphEditorProps> = React.memo(
               <div
                 onMouseEnter={() => setHoverIndex(index)}
                 onMouseLeave={() => setHoverIndex(null)}
+                className={`${
+                  hoverIndex === index
+                    ? getHoverBackgroundColor("sentence")
+                    : ""
+                }`}
               >
                 <AddBlockButton
                   onClick={() => handleAddSentence(index + 1)}
