@@ -7,6 +7,7 @@ import ChatInterface from "./chat/ChatInterface";
 import FileImport from "./FileImport";
 import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
+import { useStructureStore } from "../store/useStructureStore";
 import { usePaperStore } from "../store/paperStore";
 import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
@@ -17,6 +18,7 @@ import ContentInfo from "./ui/ContentInfo";
 
 const Layout: React.FC = () => {
   const { displayMode, showHierarchy, setShowHierarchy } = useAppStore();
+  const { isStructureVisible, toggleStructureVisibility } = useStructureStore();
   const {
     filterBlockId,
     isFilteringEnabled,
@@ -235,42 +237,52 @@ const Layout: React.FC = () => {
         </div>
       )}
 
-      <Pane
-        title="Structure"
-        width="20%"
-        rightContent={
-          <div className="flex items-center space-x-2">
-            <FileImport onFileImport={handleFileImport} />
-            <button
-              onClick={handleExport}
-              className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              title="Export Paper"
-            >
-              <FiDownload className="w-5 h-5" />
-            </button>
-            <div className="relative group">
+      {/* Structure Pane */}
+      {isStructureVisible && (
+        <Pane
+          title="Structure"
+          width="20%"
+          rightContent={
+            <div className="flex items-center space-x-2">
+              <FileImport onFileImport={handleFileImport} />
               <button
-                onClick={handleInitialize}
-                className="p-2 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                title="Initialize Data (Clear Everything)"
+                onClick={handleExport}
+                className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                title="Export Paper"
               >
-                <FiTrash2 className="w-5 h-5" />
+                <FiDownload className="w-5 h-5" />
               </button>
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                Initialize Data
+              <div className="relative group">
+                <button
+                  onClick={handleInitialize}
+                  className="p-2 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  title="Initialize Data (Clear Everything)"
+                >
+                  <FiTrash2 className="w-5 h-5" />
+                </button>
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Initialize Data
+                </div>
               </div>
             </div>
-          </div>
-        }
-      >
-        <React.Fragment>
-          <Structure displayMode={displayMode} />
-        </React.Fragment>
-      </Pane>
+          }
+        >
+          <React.Fragment>
+            <Structure displayMode={displayMode} />
+          </React.Fragment>
+        </Pane>
+      )}
 
+      {/* Editor Pane */}
       <Pane
         title="Editor"
-        width={isChatVisible ? "55%" : "80%"}
+        width={
+          !isStructureVisible && !isChatVisible
+            ? "100%"
+            : !isStructureVisible || !isChatVisible
+            ? "80%"
+            : "55%"
+        }
         rightContent={
           <div className="flex items-center space-x-2">
             <ToggleSwitch
@@ -299,7 +311,32 @@ const Layout: React.FC = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
+            <button
+              onClick={toggleStructureVisibility}
+              className={`ml-2 p-1.5 rounded ${
+                isStructureVisible
+                  ? "text-blue-600 bg-blue-50 hover:bg-blue-100"
+                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
+              } transition-colors`}
+              title={isStructureVisible ? "Hide Structure" : "Show Structure"}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="9" y1="21" x2="9" y2="9" />
               </svg>
             </button>
           </div>
