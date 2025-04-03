@@ -3,6 +3,7 @@ import { useContentStore } from "../../store/useContentStore";
 import { Content, ContentType } from "@paer/shared";
 import { isSelectableContent, getTypeColor } from "../../utils/contentUtils";
 import { useChatStore } from "../../store/useChatStore";
+import { ClipLoader } from "react-spinners";
 
 interface TreeItemProps {
   content: Content;
@@ -13,8 +14,12 @@ interface TreeItemProps {
 
 const TreeItem: React.FC<TreeItemProps> = memo(
   ({ content, path, depth, displayMode }) => {
-    const { selectedPath, selectedBlockPath, setSelectedBlock } =
-      useContentStore();
+    const {
+      selectedPath,
+      selectedBlockPath,
+      setSelectedBlock,
+      isBlockUpdating,
+    } = useContentStore();
     const { setFilterBlockId, isFilteringEnabled, filterBlockId } =
       useChatStore();
 
@@ -26,11 +31,17 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     const isActiveMessageFilter =
       content["block-id"] === filterBlockId && isFilteringEnabled;
 
+    // 현재 항목이 업데이트 중인지 확인
+    const isUpdating = content["block-id"]
+      ? isBlockUpdating(content["block-id"] as string)
+      : false;
+
     if (content.type === "sentence") {
       return null;
     }
 
     const handleClick = () => {
+      // Allow clicking even during updates
       if (isSelectableContent(content.type)) {
         setSelectedBlock(content, path);
       }
@@ -39,6 +50,10 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     // 채팅 필터링 활성화/비활성화 토글 처리
     const handleShowMessages = (e: React.MouseEvent) => {
       e.stopPropagation(); // 부모 요소의 클릭 이벤트 전파 방지
+
+      // 업데이트 중인 항목은 버튼 비활성화
+      if (isUpdating) return;
+
       if (content["block-id"]) {
         if (isActiveMessageFilter) {
           // 이미 active 상태일 경우, 필터링 해제
@@ -126,18 +141,24 @@ const TreeItem: React.FC<TreeItemProps> = memo(
           <div className="flex flex-col w-full min-w-0">
             {/* Display the title */}
             <div className="flex justify-between items-center">
-              <span
-                className={`${contentColorClass} ${
-                  content.type === "paragraph"
-                    ? "text-xs" // paragraph 타입의 경우 더 작은 폰트 사이즈 적용
-                    : "text-sm font-bold"
-                } ${isSelectedContent ? "text-blue-800" : ""} ${
-                  isSelectedContent ? "" : "truncate"
-                }`}
-                title={isSelectedContent ? "" : displayTitle}
-              >
-                {displayTitle}
-              </span>
+              <div className="flex items-center">
+                {/* Loading indicator - keep the spinner but remove the text */}
+                {isUpdating && (
+                  <ClipLoader size={12} color="#3B82F6" className="mr-2" />
+                )}
+                <span
+                  className={`${contentColorClass} ${
+                    content.type === "paragraph"
+                      ? "text-xs" // paragraph 타입의 경우 더 작은 폰트 사이즈 적용
+                      : "text-sm font-bold"
+                  } ${isSelectedContent ? "text-blue-800" : ""} ${
+                    isSelectedContent ? "" : "truncate"
+                  }`}
+                  title={isSelectedContent ? "" : displayTitle}
+                >
+                  {displayTitle}
+                </span>
+              </div>
 
               {/* 메시지 아이콘 버튼 - 선택된 항목일 때 표시하고, active 상태일 때 파란색으로 표시 */}
               {shouldShowMessageIcon && (
@@ -147,12 +168,15 @@ const TreeItem: React.FC<TreeItemProps> = memo(
                     isActiveMessageFilter
                       ? "text-blue-500 bg-blue-50"
                       : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
-                  } transition-colors p-1 rounded-full`}
+                  } transition-colors p-1 rounded-full ${
+                    isUpdating ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                   title={
                     isActiveMessageFilter
                       ? "Show all messages"
                       : "Show related messages"
                   }
+                  disabled={isUpdating}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -8,6 +8,8 @@ import api from "../services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { FiRefreshCw } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { Content } from "@paer/shared";
+import { ClipLoader } from "react-spinners";
 
 const Editor: React.FC = () => {
   const {
@@ -16,6 +18,9 @@ const Editor: React.FC = () => {
     parentContents,
     getContentByPath,
     setSelectedBlock,
+    addUpdatingBlockId,
+    clearUpdatingBlockIds,
+    isBlockUpdating,
   } = useContentStore();
   const { showHierarchy } = useAppStore();
   const [isUpdating, setIsUpdating] = useState(false);
@@ -60,6 +65,27 @@ const Editor: React.FC = () => {
     }
   }, [selectedBlockPath, selectedBlock, getContentByPath, setSelectedBlock]);
 
+  // 블록과 하위 블록의 모든 ID를 수집하는 함수
+  const collectBlockIds = (content: Content): string[] => {
+    const ids: string[] = [];
+
+    // 현재 블록의 ID 추가
+    if (content["block-id"]) {
+      ids.push(content["block-id"] as string);
+    }
+
+    // 하위 블록 처리
+    if (content.content && Array.isArray(content.content)) {
+      for (const child of content.content) {
+        if (typeof child !== "string") {
+          ids.push(...collectBlockIds(child));
+        }
+      }
+    }
+
+    return ids;
+  };
+
   const handleUpdateSummaries = async () => {
     if (!selectedBlock || !selectedBlock["block-id"]) {
       alert("Please select a content block to update");
@@ -67,6 +93,14 @@ const Editor: React.FC = () => {
     }
 
     setIsUpdating(true);
+
+    // 업데이트 시작 시 모든 업데이트 블록 ID 초기화
+    clearUpdatingBlockIds();
+
+    // 현재 블록과 모든 하위 블록의 ID 수집 및 업데이트 중 상태로 설정
+    const blockIds = collectBlockIds(selectedBlock);
+    blockIds.forEach((id) => addUpdatingBlockId(id));
+
     try {
       // Get the rendered content based on block type
       let renderedContent = "";
@@ -142,6 +176,8 @@ const Editor: React.FC = () => {
         error instanceof Error ? error.message : "Failed to update summaries"
       );
     } finally {
+      // 업데이트 완료 시 모든 업데이트 블록 ID 초기화
+      clearUpdatingBlockIds();
       setIsUpdating(false);
     }
   };
@@ -155,6 +191,12 @@ const Editor: React.FC = () => {
         </div>
       );
     }
+
+    // Check if currently selected block is being updated
+    const isSelectedBlockUpdating =
+      selectedBlock && selectedBlock["block-id"]
+        ? isBlockUpdating(selectedBlock["block-id"] as string)
+        : false;
 
     // Only allow editing for paper, section, subsection, and paragraph types
     if (
@@ -176,7 +218,23 @@ const Editor: React.FC = () => {
 
     // 실제 에디터 UI 반환
     return (
-      <div className="p-5">
+      <div
+        className={`p-5 relative ${
+          isSelectedBlockUpdating ? "overflow-hidden" : "overflow-auto"
+        }`}
+      >
+        {/* Global overlay for updating state - only covering Editor area */}
+        {isSelectedBlockUpdating && (
+          <div className="absolute inset-0 bg-white/50 z-50">
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+              <ClipLoader size={40} color="#3B82F6" />
+              <p className="mt-4 font-medium text-gray-700">
+                Updating content...
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* 계층 구조 정보 및 업데이트 버튼 */}
         <div className="mb-4">
           {/* 상위 계층 구조는 showHierarchy가 true일 때만 표시 */}
@@ -231,6 +289,7 @@ const Editor: React.FC = () => {
     showHierarchy,
     parentContents,
     isUpdating,
+    isBlockUpdating,
   ]);
 
   return renderContent;

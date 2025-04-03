@@ -19,6 +19,7 @@ interface ContentState {
   selectedBlockPath: number[] | null;
   parentContents: Content[]; // Parent contents of the selected content
   isLoading: boolean; // 콘텐츠 로딩 상태
+  updatingBlockIds: string[]; // 현재 업데이트 중인 블록 ID 목록
 
   // Actions
   setContent: (content: Paper) => void;
@@ -33,6 +34,10 @@ interface ContentState {
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
   setLoading: (isLoading: boolean) => void; // 로딩 상태 설정 함수
+  addUpdatingBlockId: (blockId: string) => void; // 업데이트 중인 블록 ID 추가
+  removeUpdatingBlockId: (blockId: string) => void; // 업데이트 중인 블록 ID 제거
+  clearUpdatingBlockIds: () => void; // 업데이트 중인 블록 ID 모두 제거
+  isBlockUpdating: (blockId: string) => boolean; // 해당 블록이 업데이트 중인지 확인
 }
 
 export const useContentStore = create<ContentState>()(
@@ -47,6 +52,7 @@ export const useContentStore = create<ContentState>()(
         selectedBlockPath: null,
         parentContents: [],
         isLoading: false,
+        updatingBlockIds: [],
 
         // Actions
         setContent: (content) => {
@@ -56,6 +62,32 @@ export const useContentStore = create<ContentState>()(
         // 로딩 상태 설정
         setLoading: (isLoading) => {
           set({ isLoading });
+        },
+
+        // 업데이트 중인 블록 ID 추가
+        addUpdatingBlockId: (blockId) => {
+          set((state) => ({
+            updatingBlockIds: [...state.updatingBlockIds, blockId],
+          }));
+        },
+
+        // 업데이트 중인 블록 ID 제거
+        removeUpdatingBlockId: (blockId) => {
+          set((state) => ({
+            updatingBlockIds: state.updatingBlockIds.filter(
+              (id) => id !== blockId
+            ),
+          }));
+        },
+
+        // 업데이트 중인 블록 ID 모두 제거
+        clearUpdatingBlockIds: () => {
+          set({ updatingBlockIds: [] });
+        },
+
+        // 해당 블록이 업데이트 중인지 확인
+        isBlockUpdating: (blockId) => {
+          return get().updatingBlockIds.includes(blockId);
         },
 
         // Set selected content (for chat context) - does not change parent contents

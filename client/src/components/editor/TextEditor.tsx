@@ -232,7 +232,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Update with shift+Enter handler (새 문장 추가 또는 다음 문장으로 포커스 이동)
     const handleUpdateWithNext = useCallback(() => {
       console.log("handleUpdateWithNext called", content["block-id"]);
-      if (content.type === "sentence" && content["block-id"]) {
+      if (content.type === "sentence" && content["block-id"] && !isUpdating) {
         const blockId = content["block-id"] as string;
 
         // Send update request to server first
@@ -284,6 +284,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       isLast,
       onAddNewSentence,
       onNextFocus,
+      isUpdating,
     ]);
 
     // Cancel button handler
@@ -304,7 +305,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // Delete handler
     const handleDelete = useCallback(() => {
-      if (content.type === "sentence" && content["block-id"]) {
+      if (content.type === "sentence" && content["block-id"] && !isUpdating) {
         // Confirm before deleting
         if (window.confirm("Are you sure you want to delete this sentence?")) {
           // Send delete request to server
@@ -313,11 +314,14 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           });
         }
       }
-    }, [content.type, content["block-id"], deleteSentenceMutation]);
+    }, [content.type, content["block-id"], deleteSentenceMutation, isUpdating]);
 
     // Keyboard event handler
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // 업데이트 중인 경우 키보드 이벤트 비활성화
+        if (isUpdating) return;
+
         // When Enter key is pressed (without Shift key)
         if (e.key === "Enter" && !e.shiftKey && content.type === "sentence") {
           e.preventDefault(); // Prevent default Enter behavior
@@ -353,6 +357,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         content.type,
         localValue,
         handleDelete,
+        isUpdating,
       ]
     );
 
