@@ -19,6 +19,26 @@ paer/
 └── shared/          # Shared types and utilities
 ```
 
+## Project Overview
+
+### Client (`/client`)
+React-based frontend application that provides an interactive document editor with AI assistance. Features a three-pane layout:
+- Document structure navigation
+- Rich text editor
+- AI chat interface for document writing assistance
+
+Main implementation in `src/components/Layout.tsx` with state management in `src/store/`.
+
+### Server (`/server`)
+Node.js backend that handles:
+- Document processing and management
+- AI integration for intelligent writing assistance
+- Data persistence and API endpoints
+
+Core functionality in `src/routes/` for API endpoints and `src/services/` for business logic.
+
+The application allows users to write and structure documents while getting real-time AI assistance through an integrated chat interface.
+
 ## Getting Started
 
 ### Prerequisites
