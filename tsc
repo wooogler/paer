@@ -1,0 +1,38 @@
+
+
+> paer@0.0.0 build:client /Users/sangwooklee/dev/paer
+> pnpm --filter paer-client run build
+
+
+> paer-client@0.0.0 build /Users/sangwooklee/dev/paer/client
+> tsc -b && vite build && echo 'Client build completed' && ls -la dist
+
+vite v6.2.2 building for production...
+✓ 230 modules transformed.
+dist/index.html            1.75 kB │ gzip:  0.60 kB
+dist/index-BrHvgr9Y.css   22.52 kB │ gzip:  5.05 kB
+dist/vendor-Cbv9IUNc.js   79.02 kB │ gzip: 27.12 kB
+dist/index-B3X5aPgg.js    81.28 kB │ gzip: 24.58 kB
+dist/react-BtP0CW_r.js   141.73 kB │ gzip: 45.44 kB
+✓ built in 904ms
+Client build completed
+total 752
+drwxr-xr-x@ 11 sangwooklee  staff     352 Apr  3 14:27 .
+drwxr-xr-x@ 14 sangwooklee  staff     448 Apr  1 09:32 ..
+-rw-r--r--@  1 sangwooklee  staff   81276 Apr  3 14:27 index-B3X5aPgg.js
+-rw-r--r--@  1 sangwooklee  staff   22516 Apr  3 14:27 index-BrHvgr9Y.css
+-rw-r--r--@  1 sangwooklee  staff    1748 Apr  3 14:27 index.html
+-rw-r--r--@  1 sangwooklee  staff     507 Apr  3 14:27 logo.svg
+-rw-r--r--@  1 sangwooklee  staff  141732 Apr  3 14:27 react-BtP0CW_r.js
+-rw-r--r--@  1 sangwooklee  staff   34614 Apr  3 14:27 thumbnail.png
+-rw-r--r--@  1 sangwooklee  staff    1196 Apr  3 14:27 thumbnail.svg
+-rw-r--r--@  1 sangwooklee  staff   79018 Apr  3 14:27 vendor-Cbv9IUNc.js
+-rw-r--r--@  1 sangwooklee  staff    1497 Apr  3 14:27 vite.svg
+
+> paer@0.0.0 build:server /Users/sangwooklee/dev/paer
+> pnpm --filter paer-server run build
+
+
+> paer-server@1.0.0 build /Users/sangwooklee/dev/paer/server
+> rm -rf dist && tsc && mkdir -p dist/data && cp -r data/* dist/data/
+

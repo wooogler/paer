@@ -9,44 +9,44 @@ export class ChatService {
   }
 
   /**
-   * 모든 채팅 메시지를 가져옵니다.
+   * 특정 사용자와 문서에 대한 모든 메시지를 가져옵니다.
    */
-  async getMessages(): Promise<ChatMessage[]> {
-    return this.chatRepository.getMessages();
+  async getMessages(userId: string, paperId: string): Promise<ChatMessage[]> {
+    return this.chatRepository.getMessages(userId, paperId);
   }
 
   /**
    * 특정 블록 ID에 연결된 메시지들을 가져옵니다.
    */
-  async getMessagesByBlockId(blockId: string): Promise<ChatMessage[]> {
-    return this.chatRepository.getMessagesByBlockId(blockId);
+  async getMessagesByBlockId(userId: string, paperId: string, blockId: string): Promise<ChatMessage[]> {
+    return this.chatRepository.getMessagesByBlockId(userId, paperId, blockId);
   }
 
   /**
    * 새로운 메시지를 추가합니다.
    */
-  async addMessage(message: ChatMessage): Promise<void> {
-    await this.chatRepository.addMessage(message);
+  async addMessage(userId: string, paperId: string, message: ChatMessage): Promise<void> {
+    await this.chatRepository.addMessage(userId, paperId, message);
   }
 
   /**
    * 모든 메시지를 저장합니다.
    */
-  async saveMessages(messages: ChatMessage[]): Promise<void> {
-    await this.chatRepository.saveMessages(messages);
+  async saveMessages(userId: string, paperId: string, messages: ChatMessage[]): Promise<void> {
+    await this.chatRepository.saveMessages(userId, paperId, messages);
   }
 
   /**
    * 모든 메시지를 삭제합니다.
    */
-  async clearMessages(): Promise<void> {
-    await this.chatRepository.clearMessages();
+  async clearMessages(userId: string, paperId: string): Promise<void> {
+    await this.chatRepository.clearMessages(userId, paperId);
   }
 
   /**
    * 특정 ID의 메시지를 삭제합니다.
    */
-  async deleteMessage(messageId: string): Promise<void> {
-    await this.chatRepository.deleteMessageById(messageId);
+  async deleteMessage(userId: string, paperId: string, messageId: string): Promise<void> {
+    await this.chatRepository.deleteMessageById(userId, paperId, messageId);
   }
 }

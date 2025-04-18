@@ -13,11 +13,17 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { processPaperContent, savePaper } from "../api/paperApi";
-import { FiDownload, FiTrash2 } from "react-icons/fi";
+import { FiDownload, FiTrash2, FiLogOut } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
-const Layout: React.FC = () => {
-  const { displayMode, showHierarchy, setShowHierarchy } = useAppStore();
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { displayMode, showHierarchy, setShowHierarchy, userName, userId, logout } = useAppStore();
   const { isStructureVisible, toggleStructureVisibility } = useStructureStore();
   const {
     filterBlockId,
@@ -29,9 +35,10 @@ const Layout: React.FC = () => {
   const { setPaper } = usePaperStore();
   const { content: rootContent } = useContentStore();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Fetching data from server using React Query
-  const { error, refetch } = usePaperQuery();
+  const { data: paperData, refetch } = usePaperQuery(userId || "");
 
   // 필터링된 콘텐츠 정보 가져오기
   const filteredContent = useMemo(() => {
@@ -64,22 +71,10 @@ const Layout: React.FC = () => {
 
   // 페이지 로드 시 데이터 새로고침
   useEffect(() => {
-    // 페이지 로드 시 무조건 새로고침
-    refetch();
-
-    // 페이지 새로고침 시 데이터 리로드
-    const handleBeforeUnload = () => {
-      // 브라우저 새로고침 전에 캐시 무효화
-      queryClient.removeQueries({ queryKey: ["paper"] });
-    };
-
-    // 브라우저 새로고침 이벤트 리스너 등록
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [refetch, queryClient]);
+    if (userId) {
+      refetch();
+    }
+  }, [userId, refetch]);
 
   const handleFileImport = async (content: string) => {
     try {
@@ -223,20 +218,16 @@ const Layout: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    navigate('/login');
+    toast.success('로그아웃 되었습니다.');
+  };
+
   return (
     <div className="flex h-screen w-screen bg-white text-gray-800">
-      {/* 전체 화면 로딩 인디케이터는 제거하고 각 컴포넌트에서 처리 */}
-      {error && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
-            <p className="text-lg font-medium text-red-600">
-              Data loading failed
-            </p>
-            <p className="text-sm text-gray-600">{(error as Error).message}</p>
-          </div>
-        </div>
-      )}
-
       {/* Structure Pane */}
       {isStructureVisible && (
         <Pane
@@ -247,29 +238,22 @@ const Layout: React.FC = () => {
               <FileImport onFileImport={handleFileImport} />
               <button
                 onClick={handleExport}
-                className="p-2 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="p-2 text-gray-600 hover:text-gray-800"
                 title="Export Paper"
               >
-                <FiDownload className="w-5 h-5" />
+                <FiDownload />
               </button>
-              <div className="relative group">
-                <button
-                  onClick={handleInitialize}
-                  className="p-2 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  title="Initialize Data (Clear Everything)"
-                >
-                  <FiTrash2 className="w-5 h-5" />
-                </button>
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                  Initialize Data
-                </div>
-              </div>
+              <button
+                onClick={handleInitialize}
+                className="p-2 text-gray-600 hover:text-gray-800"
+                title="Initialize Paper"
+              >
+                <FiTrash2 />
+              </button>
             </div>
           }
         >
-          <React.Fragment>
-            <Structure displayMode={displayMode} />
-          </React.Fragment>
+          <Structure displayMode="intent" />
         </Pane>
       )}
 
@@ -288,75 +272,38 @@ const Layout: React.FC = () => {
             <ToggleSwitch
               checked={showHierarchy}
               onChange={setShowHierarchy}
-              leftLabel="Sentence Only"
-              rightLabel="Show Hierarchy"
+              leftLabel="Sentence"
+              rightLabel="Hierarchy"
             />
-
-            <button
-              onClick={toggleStructureVisibility}
-              className={`ml-2 p-1.5 rounded ${
-                isStructureVisible
-                  ? "text-blue-600 bg-blue-50 hover:bg-blue-100"
-                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-              } transition-colors`}
-              title={isStructureVisible ? "Hide Structure" : "Show Structure"}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <line x1="3" y1="9" x2="21" y2="9" />
-                <line x1="9" y1="21" x2="9" y2="9" />
-              </svg>
-            </button>
-            <button
-              onClick={toggleChatVisibility}
-              className={`ml-2 p-1.5 rounded ${
-                isChatVisible
-                  ? "text-blue-600 bg-blue-50 hover:bg-blue-100"
-                  : "text-gray-600 hover:text-blue-600 hover:bg-gray-100"
-              } transition-colors`}
-              title={isChatVisible ? "Hide AI Chat" : "Show AI Chat"}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
+            {isFilteringEnabled && (
+              <div className="text-sm text-gray-500">
+                Filtering: {filteredContent?.title || "No content"}
+              </div>
+            )}
           </div>
         }
       >
-        <Editor />
+        <Editor userName={userName} />
       </Pane>
 
+      {/* Chat Pane */}
       {isChatVisible && (
         <Pane
-          title={
-            isFilteringEnabled && filterBlockId
-              ? "Filtered Messages"
-              : "AI Chat"
-          }
+          title="Chat"
           width="25%"
           isLast
           rightContent={
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">{userName}</span>
+                <button
+                  onClick={handleLogout}
+                  className="p-1.5 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 transition-colors"
+                  title="로그아웃"
+                >
+                  <FiLogOut />
+                </button>
+              </div>
               {isFilteringEnabled && filterBlockId && (
                 <button
                   onClick={() => toggleFiltering(false)}

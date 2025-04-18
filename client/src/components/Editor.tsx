@@ -11,7 +11,11 @@ import toast from "react-hot-toast";
 import { Content } from "@paer/shared";
 import { ClipLoader } from "react-spinners";
 
-const Editor: React.FC = () => {
+interface EditorProps {
+  userName: string;
+}
+
+const Editor: React.FC<EditorProps> = ({ userName }) => {
   const {
     selectedBlock,
     selectedBlockPath,
@@ -27,7 +31,7 @@ const Editor: React.FC = () => {
   const queryClient = useQueryClient();
 
   // 중요: paper 데이터의 변경을 직접 구독
-  const { data: paperData } = usePaperQuery();
+  const { data: paperData } = usePaperQuery(userName);
 
   // paperData가 변경될 때만 선택된 블록을 업데이트
   useEffect(() => {

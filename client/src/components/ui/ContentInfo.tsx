@@ -19,11 +19,12 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
   if (!content) return null;
 
   // 콘텐츠 타입 영어로 변환 (첫 글자 대문자로)
-  const contentType =
-    content.type.charAt(0).toUpperCase() + content.type.slice(1);
+  const contentType = content.type
+    ? content.type.charAt(0).toUpperCase() + content.type.slice(1)
+    : "Unknown";
 
   // 타입에 따른 색상 클래스 가져오기
-  const colorClass = getTypeColor(content.type as ContentType).main;
+  const colorClass = content.type ? getTypeColor(content.type as ContentType).main : "text-gray-500";
 
   // 콘텐츠 타입에 따라 표시할 텍스트 결정
   let contentTitle = "No title";

@@ -12,22 +12,26 @@ import {
 import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
 import { Paper, ContentType } from "@paer/shared";
+import { isValidObjectId } from "../utils/validation";
+import { useAppStore } from "../store/useAppStore";
 
 // Global variable to store the blockId of the newly added sentence
 let newSentenceBlockId: string | null = null;
 
-export function usePaperQuery() {
+export function usePaperQuery(userName: string) {
   const setContent = useContentStore((state) => state.setContent);
   const setLoading = useContentStore((state) => state.setLoading);
+  const userId = useAppStore((state) => state.userId);
 
   const query = useQuery<Paper, Error>({
-    queryKey: ["paper"],
-    queryFn: fetchPaper,
+    queryKey: ["paper", userId],
+    queryFn: () => fetchPaper(userId),
     staleTime: 1000,
     gcTime: 1000 * 60 * 5,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
+    enabled: !!userId && isValidObjectId(userId),
   });
 
   useEffect(() => {
@@ -72,6 +76,7 @@ export const useUpdateSentence = () => {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
     mutationFn: async ({
@@ -96,7 +101,7 @@ export const useUpdateSentence = () => {
     onSuccess: async () => {
       try {
         // Fetch latest data from server immediately
-        const newData = await fetchPaper();
+        const newData = await fetchPaper(userId);
 
         // Update both cache and state with the new data
         queryClient.setQueryData(["paper"], newData);
@@ -129,13 +134,14 @@ export function useDeleteSentence() {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
     mutationFn: (blockId: string) => deleteSentence(blockId),
     onSuccess: async () => {
       // Fetch latest data from server immediately
       try {
-        const newData = await fetchPaper();
+        const newData = await fetchPaper(userId);
 
         // Cache directly update
         queryClient.setQueryData(["paper"], newData);
@@ -170,6 +176,7 @@ export function useUpdateBlockIntent() {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
     mutationFn: async ({
@@ -186,7 +193,7 @@ export function useUpdateBlockIntent() {
     },
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper();
+        const newData = await fetchPaper(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -215,6 +222,7 @@ export function useUpdateBlockSummary() {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
     mutationFn: async ({
@@ -231,7 +239,7 @@ export function useUpdateBlockSummary() {
     },
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper();
+        const newData = await fetchPaper(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -260,6 +268,7 @@ export function useUpdateBlockTitle() {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
     mutationFn: async ({
@@ -276,7 +285,7 @@ export function useUpdateBlockTitle() {
     },
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper();
+        const newData = await fetchPaper(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -322,6 +331,7 @@ export function useAddBlock() {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
     mutationFn: async ({
@@ -335,38 +345,28 @@ export function useAddBlock() {
     }) => {
       return await addBlock(parentBlockId, prevBlockId, blockType);
     },
-    onSuccess: async (_) => {
+    onSuccess: async (newBlockId) => {
       try {
-        // 중요: 서버에서 새 데이터를 가져오기 전에 잠시 대기
-        // 이는 서버가 데이터베이스에 변경사항을 저장하고 반영할 시간을 확보합니다
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        // 데이터 가져오기를 한 번만 수행
-        const newData = await fetchPaper();
-
-        // 캐시 및 상태 업데이트를 한 번에 처리
+        const newData = await fetchPaper(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
-        // 선택된 콘텐츠 업데이트
+        // If the current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
           const refreshedContent = findContentByPath(newData, selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
         }
-
-        // 단일 invalidateQueries 호출로 최적화
-        queryClient.invalidateQueries({
-          queryKey: ["paper"],
-          refetchType: "none", // 우선 무효화만 하고 리페치는 하지 않음
-        });
       } catch (error) {
-        console.error("Failed to update data:", error);
+        console.error("Failed to fetch updated data:", error);
       }
-    },
-    onError: (error) => {
-      console.error("Error adding block:", error);
+
+      queryClient.invalidateQueries({
+        queryKey: ["paper"],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 }
@@ -377,38 +377,26 @@ export function useDeleteBlock() {
   const setContent = useContentStore((state) => state.setContent);
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
+  const userId = useAppStore((state) => state.userId);
 
   return useMutation({
-    mutationFn: async (blockId: string) => {
-      await deleteBlock(blockId);
-    },
+    mutationFn: (blockId: string) => deleteBlock(blockId),
     onSuccess: async () => {
-      // Fetch latest data from server immediately
       try {
-        const newData = await fetchPaper();
-
-        // Cache directly update
+        const newData = await fetchPaper(userId);
         queryClient.setQueryData(["paper"], newData);
-
-        // State directly update
         setContent(newData);
 
-        // If current selected content exists, select it again to update UI
-        // If the deleted block was selected, deselect it
         if (selectedContent && selectedPath) {
           const refreshedContent = findContentByPath(newData, selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
-          } else {
-            // If the path is no longer valid, deselect it
-            setSelectedContent(null, []);
           }
         }
       } catch (error) {
         console.error("Failed to fetch updated data:", error);
       }
 
-      // Invalidate query immediately (refresh immediately)
       queryClient.invalidateQueries({
         queryKey: ["paper"],
         exact: true,

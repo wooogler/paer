@@ -10,14 +10,24 @@ export class ChatController {
   }
 
   /**
-   * 모든 채팅 메시지를 가져옵니다.
+   * 사용자의 특정 문서에 대한 모든 채팅 메시지를 가져옵니다.
    */
   async getMessages(
-    request: FastifyRequest,
+    request: FastifyRequest<{
+      Params: { paperId: string };
+      Querystring: { userId: string };
+    }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const messages = await this.chatService.getMessages();
+      const { paperId } = request.params;
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      const messages = await this.chatService.getMessages(userId, paperId);
       return { success: true, messages };
     } catch (error) {
       console.error("Error getting chat messages:", error);
@@ -29,12 +39,21 @@ export class ChatController {
    * 특정 블록 ID에 연결된 메시지들을 가져옵니다.
    */
   async getMessagesByBlockId(
-    request: FastifyRequest<{ Params: { blockId: string } }>,
+    request: FastifyRequest<{
+      Params: { paperId: string, blockId: string };
+      Querystring: { userId: string };
+    }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { blockId } = request.params;
-      const messages = await this.chatService.getMessagesByBlockId(blockId);
+      const { paperId, blockId } = request.params;
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      const messages = await this.chatService.getMessagesByBlockId(userId, paperId, blockId);
       return { success: true, messages };
     } catch (error) {
       console.error("Error getting messages by blockId:", error);
@@ -48,12 +67,21 @@ export class ChatController {
    * 새로운 메시지를 추가합니다.
    */
   async addMessage(
-    request: FastifyRequest<{ Body: ChatMessage }>,
+    request: FastifyRequest<{
+      Params: { paperId: string };
+      Body: ChatMessage & { userId: string };
+    }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const message = request.body;
-      await this.chatService.addMessage(message);
+      const { paperId } = request.params;
+      const { userId, ...message } = request.body;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      await this.chatService.addMessage(userId, paperId, message);
       return { success: true };
     } catch (error) {
       console.error("Error adding message:", error);
@@ -65,12 +93,21 @@ export class ChatController {
    * 여러 메시지를 한 번에 저장합니다.
    */
   async saveMessages(
-    request: FastifyRequest<{ Body: { messages: ChatMessage[] } }>,
+    request: FastifyRequest<{
+      Params: { paperId: string };
+      Body: { userId: string, messages: ChatMessage[] };
+    }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { messages } = request.body;
-      await this.chatService.saveMessages(messages);
+      const { paperId } = request.params;
+      const { userId, messages } = request.body;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      await this.chatService.saveMessages(userId, paperId, messages);
       return { success: true };
     } catch (error) {
       console.error("Error saving messages:", error);
@@ -82,11 +119,21 @@ export class ChatController {
    * 모든 메시지를 삭제합니다.
    */
   async clearMessages(
-    request: FastifyRequest,
+    request: FastifyRequest<{
+      Params: { paperId: string };
+      Querystring: { userId: string };
+    }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      await this.chatService.clearMessages();
+      const { paperId } = request.params;
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      await this.chatService.clearMessages(userId, paperId);
       return { success: true };
     } catch (error) {
       console.error("Error clearing messages:", error);
@@ -98,12 +145,21 @@ export class ChatController {
    * 특정 ID의 메시지를 삭제합니다.
    */
   async deleteMessage(
-    request: FastifyRequest<{ Params: { messageId: string } }>,
+    request: FastifyRequest<{
+      Params: { paperId: string, messageId: string };
+      Querystring: { userId: string };
+    }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { messageId } = request.params;
-      await this.chatService.deleteMessage(messageId);
+      const { paperId, messageId } = request.params;
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      await this.chatService.deleteMessage(userId, paperId, messageId);
       return { success: true };
     } catch (error) {
       console.error("Error deleting message:", error);

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { processLatexContent } from '../routes/papers';
+import { processLatexContent } from 'src/utils/paperUtils';
 
 async function testPaperProcessing() {
   try {

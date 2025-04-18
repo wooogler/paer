@@ -1,37 +1,150 @@
-import fs from "fs";
-import path from "path";
-import { Paper, ContentType } from "@paer/shared";
-import { object } from "zod";
+import { Paper as SharedPaper, ContentType } from "@paer/shared";
+import { Paper, IPaper } from "../models/Paper";
+import { User } from "../models/User";
+import mongoose, { isValidObjectId } from "mongoose";
 
 export class PaperRepository {
-  private readonly filePath: string;
-
-  constructor() {
-    this.filePath = path.join(__dirname, "../../data/paper.json");
-  }
-
-  async getPaper(): Promise<Paper> {
+  /**
+   * 사용자 ID로 문서 조회
+   */
+  async getPaper(userId: string, paperId: string): Promise<SharedPaper | null> {
     try {
-      const data = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
-      return data;
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
+
+      const paper = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!paper) {
+        return null;
+      }
+
+      return paper.content;
     } catch (error) {
+      console.error("Failed to read paper data:", error);
       throw new Error("Failed to read paper data");
     }
   }
 
+  /**
+   * 특정 유저의 모든 문서 조회
+   */
+  async getUserPapers(userId: string): Promise<SharedPaper[]> {
+    try {
+      console.log('getUserPapers called with userId:', userId);
+      
+      let userObjectId: mongoose.Types.ObjectId;
+
+      // userId가 ObjectId 형식이 아닌 경우 username으로 검색
+      if (!isValidObjectId(userId)) {
+        console.log('userId is not a valid ObjectId, searching by username');
+        const user = await User.findOne({ username: userId });
+        if (!user) {
+          console.log('User not found by username:', userId);
+          throw new Error("User not found");
+        }
+        userObjectId = user._id as mongoose.Types.ObjectId;
+        console.log('Found user by username, userObjectId:', userObjectId);
+      } else {
+        userObjectId = new mongoose.Types.ObjectId(userId);
+        console.log('userId is a valid ObjectId, converted to:', userObjectId);
+      }
+
+      // MongoDB에 저장된 userId가 문자열일 수도 있고 ObjectId 타입일 수도 있으므로 
+      // 두 가지 경우 모두 검색
+      console.log('Searching papers with query:', {
+        $or: [
+          { userId: userId },  // 문자열로 검색
+          { userId: userObjectId },  // ObjectId로 검색
+          { collaborators: userId },  // 문자열로 검색
+          { collaborators: userObjectId }  // ObjectId로 검색
+        ]
+      });
+
+      const papers = await Paper.find({
+        $or: [
+          { userId: userId },  // 문자열로 검색
+          { userId: userObjectId },  // ObjectId로 검색
+          { collaborators: userId },  // 문자열로 검색
+          { collaborators: userObjectId }  // ObjectId로 검색
+        ]
+      });
+
+      console.log('Found papers:', papers);
+
+      return papers.map(paper => ({
+        ...paper.content,
+        _id: (paper._id as mongoose.Types.ObjectId).toString(),
+        userId: paper.userId.toString(),
+        collaborators: paper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
+      }));
+    } catch (error) {
+      console.error("Failed to get user papers:", error);
+      throw new Error("Failed to get user papers");
+    }
+  }
+
+  /**
+   * 새로운 문서 생성
+   */
+  async createPaper(userId: string, title: string, content: SharedPaper): Promise<string> {
+    try {
+      if (!isValidObjectId(userId)) {
+        throw new Error("Invalid userId");
+      }
+
+      const paper = await Paper.create({
+        userId,
+        title,
+        content,
+        collaborators: []
+      });
+
+      return (paper._id as mongoose.Types.ObjectId).toString();
+    } catch (error) {
+      console.error("Failed to create paper:", error);
+      throw new Error("Failed to create paper");
+    }
+  }
+
+  /**
+   * 문장 업데이트
+   */
   async updateSentence(
+    userId: string,
+    paperId: string,
     blockId: string,
     content: string,
     summary: string,
     intent: string
   ): Promise<void> {
     try {
-      // Read the current data
-      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
 
-      // Find and update the sentence with matching block-id
+      // 먼저 문서를 찾음
+      const paper = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
+
+      // 해당 block을 찾아서 업데이트
       const updated = this.findAndUpdateSentence(
-        paperData,
+        paper.content,
         blockId,
         content,
         summary,
@@ -42,21 +155,18 @@ export class PaperRepository {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // Write the updated data back to the file
-      fs.writeFileSync(
-        this.filePath,
-        JSON.stringify(paperData, null, 2),
-        "utf-8"
-      );
+      // 문서 저장
+      await paper.save();
     } catch (error) {
       console.error("Error updating sentence content:", error);
       throw new Error("Failed to update sentence content");
     }
   }
 
-  // Adds a new block to the document
-  // Assumption: The client knows the parent block ID
+  // 블록 추가
   async addBlock(
+    userId: string,
+    paperId: string,
     parentBlockId: string | null,
     prevBlockId: string | null,
     blockType: ContentType
@@ -64,8 +174,22 @@ export class PaperRepository {
     let newBlockId = "-1";
 
     try {
-      // Reads the current paper file as JSON
-      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
+
+      // 문서 조회
+      const paper = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
 
       newBlockId = Date.now().toString();
 
@@ -101,6 +225,7 @@ export class PaperRepository {
               : "",
         }),
       };
+      
       if (!parentBlockId) {
         throw new Error(
           `Could not add the new block because parent block is not provided.`
@@ -108,7 +233,7 @@ export class PaperRepository {
       }
 
       // Finds the parent block; throws an error if not found
-      const parentBlock = this.findBlockById(paperData, parentBlockId);
+      const parentBlock = this.findBlockById(paper.content, parentBlockId);
       if (!parentBlock) {
         throw new Error(
           `Could not find the parent block with block ID ${parentBlockId}`
@@ -123,12 +248,8 @@ export class PaperRepository {
           );
       parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
 
-      // Write the updated JSON back to the paper file
-      fs.writeFileSync(
-        this.filePath,
-        JSON.stringify(paperData, null, 2),
-        "utf-8"
-      );
+      // 변경사항 저장
+      await paper.save();
     } catch (error) {
       console.error("Error adding a new block:", error);
       throw new Error("Failed to add a new block");
@@ -137,38 +258,171 @@ export class PaperRepository {
     return newBlockId;
   }
 
-  // Updates a block with the specified key-value pair
+  // 블록 업데이트
   async updateBlock(
+    userId: string,
+    paperId: string,
     targetBlockId: string,
     keyToUpdate: string,
     updatedValue: string
   ): Promise<void> {
     try {
-      // Reads the current paper file as JSON
-      const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
 
-      // Find the block
-      const targetBlock = this.findBlockById(paperData, targetBlockId);
+      // 문서 조회
+      const paper = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
+
+      // 블록 찾기
+      const targetBlock = this.findBlockById(paper.content, targetBlockId);
 
       if (!targetBlock) {
         throw new Error(`Block with ID ${targetBlockId} not found`);
       }
 
-      // Updates the target block with the specified key-value pair
+      // 블록 업데이트
       targetBlock[keyToUpdate] = updatedValue;
-
-      // Write the updated JSON back to the paper file
-      fs.writeFileSync(
-        this.filePath,
-        JSON.stringify(paperData, null, 2),
-        "utf-8"
-      );
+      
+      // 변경사항 저장
+      await paper.save();
     } catch (error) {
       console.error("Error updating a block:", error);
       throw new Error(`Failed to update block ${targetBlockId}`);
     }
   }
 
+  // 블록 삭제
+  async deleteBlock(
+    userId: string,
+    paperId: string,
+    blockId: string
+  ): Promise<void> {
+    try {
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
+
+      // 문서 조회
+      const paper = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
+
+      // 블록 삭제
+      const deleted = this.findAndDeleteBlock(paper.content, blockId);
+
+      if (!deleted) {
+        throw new Error(`Block with ID ${blockId} not found`);
+      }
+
+      // 변경사항 저장
+      await paper.save();
+    } catch (error) {
+      console.error("Error deleting block:", error);
+      throw new Error(`Failed to delete block ${blockId}`);
+    }
+  }
+
+  // 문장 삭제
+  async deleteSentence(
+    userId: string,
+    paperId: string,
+    blockId: string
+  ): Promise<void> {
+    try {
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
+
+      // 문서 조회
+      const paper = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
+
+      // 문장 삭제
+      const deleted = this.findAndDeleteSentence(paper.content, blockId);
+
+      if (!deleted) {
+        throw new Error(`Sentence with block-id ${blockId} not found`);
+      }
+
+      // 변경사항 저장
+      await paper.save();
+    } catch (error) {
+      console.error("Error deleting sentence:", error);
+      throw new Error(`Failed to delete sentence ${blockId}`);
+    }
+  }
+
+  // 협업자 추가
+  async addCollaborator(
+    userId: string,
+    paperId: string,
+    collaboratorUsername: string
+  ): Promise<void> {
+    try {
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid userId or paperId");
+      }
+
+      // 협업자 사용자 찾기
+      const collaborator = await User.findOne({ username: collaboratorUsername });
+      if (!collaborator) {
+        throw new Error(`User ${collaboratorUsername} not found`);
+      }
+
+      // 문서 조회 (소유자만 협업자 추가 가능)
+      const paper = await Paper.findOne({
+        _id: paperId,
+        userId: userId
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found or you don't have permission`);
+      }
+
+      // 협업자가 이미 존재하는지 확인
+      const collaboratorId = collaborator._id as unknown as mongoose.Types.ObjectId;
+      if (paper.collaborators.includes(collaboratorId)) {
+        return; // 이미 협업자로 추가되어 있음
+      }
+
+      // 협업자 추가
+      paper.collaborators.push(collaboratorId);
+      await paper.save();
+    } catch (error) {
+      console.error("Error adding collaborator:", error);
+      throw new Error("Failed to add collaborator");
+    }
+  }
+
+  // Utility Methods
   // Find block by ID function (search recursively)
   private findBlockById(obj: any, blockId: string): any {
     // Check if the current object's block-id matches the target ID
@@ -189,56 +443,101 @@ export class PaperRepository {
     return null;
   }
 
-  /**
-   * Retrieves and concatenates values of a specific key from all sentence blocks within a given block.
-   * This function recursively traverses the block structure to find all sentences and concatenates their content.
-   *
-   * @param blockId - The ID of the parent block whose children's values need to be retrieved
-   * @param targetKey - The key of the property to retrieve from each sentence block (e.g., "content", "summary")
-   * @returns A concatenated string of all sentence values for the specified key
-   */
-  getChildrenValues(blockId: string, targetKey: string): string {
-    const paperData = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
-    const targetBlock = this.findBlockById(paperData, blockId);
-    let result = "";
-
-    // Recursive function to find and concatenate sentence values
-    const findSentenceValues = (block: any): void => {
-      // If this is a sentence, add its value
-      if (block.type === "sentence" && block[targetKey]) {
-        result += block[targetKey];
-        if (block[targetKey].endsWith(".")) {
-          result += ".";
-        }
-        result += " ";
-      }
-
-      // If block has content, recursively search through it
-      if (block.content && Array.isArray(block.content)) {
-        for (const child of block.content) {
-          findSentenceValues(child);
-        }
-      }
-    };
-
-    // Start the recursive search from the target block
-    findSentenceValues(targetBlock);
-    return result.trim();
-  }
-
-  findParentBlockByChildId(obj: any, blockId: string): any {
-    if (!obj) {
-      obj = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
+  // Find and update sentence
+  private findAndUpdateSentence(
+    obj: any,
+    blockId: string,
+    content: string,
+    summary: string,
+    intent: string
+  ): boolean {
+    // 현재 객체가 타겟 문장인지 확인
+    if (obj && obj.type === "sentence" && obj["block-id"] === blockId) {
+      obj.content = content;
+      obj.summary = summary;
+      obj.intent = intent;
+      return true;
     }
 
-    // If the object has a content array, search recursively
+    // 콘텐츠 배열이 있으면 재귀적으로 검색
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
-        // If the child matches the blockId, return the current object as the parent
-        if (child["block-id"] === blockId) {
-          return obj;
+        if (this.findAndUpdateSentence(child, blockId, content, summary, intent)) {
+          return true;
         }
-        // Recursively search in the child's content
+      }
+    }
+
+    return false;
+  }
+
+  // Find and delete sentence
+  private findAndDeleteSentence(obj: any, blockId: string): boolean {
+    // 콘텐츠 배열이 있는 경우 검색
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      // 직접적인 자식 중에서 삭제할 문장 찾기
+      const index = obj.content.findIndex(
+        (item: any) => item.type === "sentence" && item["block-id"] === blockId
+      );
+
+      if (index !== -1) {
+        // 문장 삭제
+        obj.content.splice(index, 1);
+        return true;
+      }
+
+      // 재귀적으로 자식들 검색
+      for (const child of obj.content) {
+        if (this.findAndDeleteSentence(child, blockId)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // Find and delete block
+  private findAndDeleteBlock(obj: any, blockId: string): boolean {
+    // 콘텐츠 배열이 있는 경우 검색
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      // 직접적인 자식 중에서 삭제할 블록 찾기
+      const index = obj.content.findIndex(
+        (item: any) => item["block-id"] === blockId
+      );
+
+      if (index !== -1) {
+        // 블록 삭제
+        obj.content.splice(index, 1);
+        return true;
+      }
+
+      // 재귀적으로 자식들 검색
+      for (const child of obj.content) {
+        if (this.findAndDeleteBlock(child, blockId)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // 부모 블록 찾기
+  findParentBlockByChildId(obj: any, blockId: string): any {
+    // 콘텐츠 배열이 있는 경우 검색
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      // 직접적인 자식 중에 타겟 블록이 있는지 확인
+      const hasChild = obj.content.some(
+        (item: any) => item["block-id"] === blockId
+      );
+
+      if (hasChild) {
+        return obj;
+      }
+
+      // 재귀적으로 자식들 검색
+      for (const child of obj.content) {
         const found = this.findParentBlockByChildId(child, blockId);
         if (found) {
           return found;
@@ -249,251 +548,34 @@ export class PaperRepository {
     return null;
   }
 
-  findParentBlockIdByChildId(obj: any, blockId: string): any {
-    if (!obj) {
-      obj = JSON.parse(fs.readFileSync(this.filePath, "utf-8"));
-    }
-
-    // If the object has a content array, search recursively
-    if (obj && obj.content && Array.isArray(obj.content)) {
-      for (const child of obj.content) {
-        // If the child matches the blockId, return the current object's block-id
-        if (child["block-id"] === blockId) {
-          return obj["block-id"];
-        }
-        // Recursively search in the child's content
-        const found = this.findParentBlockIdByChildId(child, blockId);
-        if (found) {
-          return found;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  // Finds the block given the ID
-  private getBlockById(root: any, blockId: string, blockType: ContentType) {
-    const matchingId = (block: any) => block["block-id"] === blockId;
-    switch (blockType) {
-      case "section":
-        return root;
-
-      case "subsection":
-        return root.content.find(matchingId);
-
-      case "subsubsection":
-        for (const section of root.content) {
-          if (section.content) {
-            const match = section.content?.find(matchingId);
-            if (match) return match;
-          }
-        }
-        return undefined;
-
-      case "paragraph":
-        for (const section of root.content) {
-          if (section.content) {
-            for (const subsection of section.content) {
-              if (subsection.content) {
-                const match = subsection.content?.find(matchingId);
-                if (match) return match;
-              }
-            }
-          }
-        }
-        return undefined;
-
-      case "sentence":
-        for (const section of root.content) {
-          for (const subsection of section.content) {
-            for (const subsubsection of subsection.content) {
-              if (subsubsection.content) {
-                const match = subsubsection.content.find(matchingId);
-                if (match) return match;
-              }
-            }
-          }
-        }
-        return undefined;
-
-      default:
-        return undefined;
-    }
-  }
-
-  private findAndUpdateSentence(
-    obj: any,
-    blockId: string,
-    content: string,
-    summary: string,
-    intent: string
-  ): boolean {
-    // Check if current object has the matching block-id
-    if (obj["block-id"] === blockId && obj.type === "sentence") {
-      obj.content = content; // Update the content
-      obj.summary = summary; // Update the summary
-      obj.intent = intent; // Update the intent
-      return true;
-    }
-
-    // If not found at this level, recursively search in the content array
-    if (Array.isArray(obj.content)) {
-      for (const item of obj.content) {
-        if (
-          this.findAndUpdateSentence(item, blockId, content, summary, intent)
-        ) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
   /**
-   * Delete a sentence
-   * @param blockId ID of the sentence to delete
+   * 자식 블록값 조회
    */
-  async deleteSentence(blockId: string): Promise<void> {
-    try {
-      // Read data from file
-      const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
-      const paperData: Paper = JSON.parse(fileContent);
-
-      // Perform deletion
-      const deleted = this.findAndDeleteSentence(paperData, blockId);
-
-      if (!deleted) {
-        throw new Error(`Sentence with block-id ${blockId} not found`);
+  getChildrenValues(paperId: string, userId: string, blockId: string, targetKey: string): Promise<string> {
+    return this.getPaper(userId, paperId).then(paper => {
+      if (!paper) {
+        throw new Error('Paper not found');
+      }
+      
+      const block = this.findBlockById(paper, blockId);
+      if (!block) {
+        throw new Error(`Block with ID ${blockId} not found`);
       }
 
-      // Save to file
-      await fs.promises.writeFile(
-        this.filePath,
-        JSON.stringify(paperData, null, 2),
-        "utf-8"
-      );
-    } catch (error) {
-      console.error("Error deleting sentence:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Helper method to recursively find and delete a sentence
-   */
-  private findAndDeleteSentence(obj: any, blockId: string): boolean {
-    // If it's an array
-    if (Array.isArray(obj)) {
-      // Find and delete the sentence block directly
-      for (let i = 0; i < obj.length; i++) {
-        const item = obj[i];
-
-        // If this item is a sentence matching the blockId, delete it
-        if (item && item.type === "sentence" && item["block-id"] === blockId) {
-          obj.splice(i, 1); // Remove from array
-          return true;
-        }
-
-        // Recursively search child items
-        if (this.findAndDeleteSentence(item, blockId)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    // If it's an object, check each property
-    if (obj && typeof obj === "object") {
-      // Search in the children or content properties of the object
-      for (const key of Object.keys(obj)) {
-        if (key === "children" || key === "content") {
-          if (this.findAndDeleteSentence(obj[key], blockId)) {
-            // If a paragraph has no sentences, set to empty array
-            if (
-              Array.isArray(obj[key]) &&
-              obj.type === "paragraph" &&
-              obj[key].length === 0
-            ) {
-              obj[key] = [];
-            }
-            return true;
+      let values: string[] = [];
+      
+      const findSentenceValues = (block: any): void => {
+        if (block.type === 'sentence') {
+          values.push(block[targetKey] || '');
+        } else if (block.content && Array.isArray(block.content)) {
+          for (const childBlock of block.content) {
+            findSentenceValues(childBlock);
           }
         }
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Delete a block
-   * @param blockId ID of the block to delete
-   */
-  async deleteBlock(blockId: string): Promise<void> {
-    try {
-      // Read data from file
-      const fileContent = await fs.promises.readFile(this.filePath, "utf-8");
-      const paperData: Paper = JSON.parse(fileContent);
-
-      // Perform deletion
-      const deleted = this.findAndDeleteBlock(paperData, blockId);
-
-      if (!deleted) {
-        throw new Error(`Block with block-id ${blockId} not found`);
-      }
-
-      // Save to file
-      await fs.promises.writeFile(
-        this.filePath,
-        JSON.stringify(paperData, null, 2),
-        "utf-8"
-      );
-    } catch (error) {
-      console.error("Error deleting block:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Helper method to recursively find and delete a block
-   */
-  private findAndDeleteBlock(obj: any, blockId: string): boolean {
-    // If it's an array
-    if (Array.isArray(obj)) {
-      // Find and delete the block directly
-      for (let i = 0; i < obj.length; i++) {
-        const item = obj[i];
-
-        // If this item matches the blockId, delete it
-        if (item && item["block-id"] === blockId) {
-          obj.splice(i, 1); // Remove from array
-          return true;
-        }
-
-        // Recursively search child items
-        if (this.findAndDeleteBlock(item, blockId)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    // If it's an object, check each property
-    if (obj && typeof obj === "object") {
-      // Search in the children or content properties of the object
-      for (const key of Object.keys(obj)) {
-        if (key === "children" || key === "content") {
-          if (this.findAndDeleteBlock(obj[key], blockId)) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
+      };
+      
+      findSentenceValues(block);
+      return values.join(' ');
+    });
   }
 }

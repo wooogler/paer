@@ -4,93 +4,123 @@ import fs from "fs";
 import { LLMService } from "./llmService";
 import path from "path";
 import process from "process";
+import { PaperSchema } from "@paer/shared/schemas/paperSchema";
+import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
+import { findOrCreateDataDir, processLatexContent, detectFileType, extractTitle } from "../utils/paperUtils";
 
 export class PaperService {
   private paperRepository: PaperRepository;
   private paperPath: string;
   private llmService: LLMService;
+  private dataDir: string;
 
   constructor(paperPath: string) {
     this.paperRepository = new PaperRepository();
     this.paperPath = paperPath;
     this.llmService = new LLMService();
+    this.dataDir = findOrCreateDataDir();
   }
 
+  // 레거시 메서드 - 호환성 유지
   async getPaper(): Promise<Paper> {
-    return this.paperRepository.getPaper();
+    return this.getPaperById("default", "default");
+  }
+
+  // 새로운 메서드 - userId와 paperId로 문서 조회
+  async getPaperById(userId: string, paperId: string): Promise<Paper> {
+    const paper = await this.paperRepository.getPaper(userId, paperId);
+    if (!paper) {
+      throw new Error("Paper not found");
+    }
+    return paper;
   }
 
   async updateSentenceMetadata(blockId: string): Promise<void> {
     return;
   }
 
+  // 레거시 메서드 - 호환성 유지
   async addBlock(
     parentBlockId: string | null,
     prevBlockId: string | null,
     blockType: ContentType
   ): Promise<string> {
-    return this.paperRepository.addBlock(parentBlockId, prevBlockId, blockType);
+    return this.addBlockWithUser("default", "default", parentBlockId, prevBlockId, blockType);
   }
 
+  // 새로운 메서드 - userId와 paperId로 블록 추가
+  async addBlockWithUser(
+    userId: string,
+    paperId: string,
+    parentBlockId: string | null,
+    prevBlockId: string | null,
+    blockType: ContentType
+  ): Promise<string> {
+    return this.paperRepository.addBlock(userId, paperId, parentBlockId, prevBlockId, blockType);
+  }
+
+  // 레거시 메서드 - 호환성 유지
   async updateBlock(
     targetBlockId: string,
     keyToUpdate: string,
     updatedValue: string
   ): Promise<void> {
+    return this.updateBlockWithUser("default", "default", targetBlockId, keyToUpdate, updatedValue);
+  }
+
+  // 새로운 메서드 - userId와 paperId로 블록 업데이트
+  async updateBlockWithUser(
+    userId: string,
+    paperId: string,
+    targetBlockId: string,
+    keyToUpdate: string,
+    updatedValue: string
+  ): Promise<void> {
     return this.paperRepository.updateBlock(
+      userId,
+      paperId,
       targetBlockId,
       keyToUpdate,
       updatedValue
     );
   }
 
-  /**
-   * Delete a sentence
-   * @param blockId ID of the sentence to delete
-   */
+  // 레거시 메서드 - 호환성 유지
   async deleteSentence(blockId: string): Promise<void> {
-    return this.paperRepository.deleteSentence(blockId);
+    return this.deleteSentenceWithUser("default", "default", blockId);
   }
 
-  /**
-   * Delete a block
-   * @param blockId ID of the block to delete
-   */
+  // 새로운 메서드 - userId와 paperId로 문장 삭제
+  async deleteSentenceWithUser(
+    userId: string,
+    paperId: string,
+    blockId: string
+  ): Promise<void> {
+    return this.paperRepository.deleteSentence(userId, paperId, blockId);
+  }
+
+  // 레거시 메서드 - 호환성 유지
   async deleteBlock(blockId: string): Promise<void> {
-    return this.paperRepository.deleteBlock(blockId);
+    return this.deleteBlockWithUser("default", "default", blockId);
+  }
+
+  // 새로운 메서드 - userId와 paperId로 블록 삭제
+  async deleteBlockWithUser(
+    userId: string,
+    paperId: string,
+    blockId: string
+  ): Promise<void> {
+    return this.paperRepository.deleteBlock(userId, paperId, blockId);
   }
 
   async savePaper(paper: Paper): Promise<void> {
     try {
-      // PaperRepository와 동일한 파일 경로 사용
-      const repoFilePath = (this.paperRepository as any).filePath;
-
-      // 1. 레포지토리의 filePath가 있으면 우선 사용 (Railway에서 확실하게 동작하는 방식)
-      if (repoFilePath) {
-        console.log(`Saving paper using repository path: ${repoFilePath}`);
-        fs.writeFileSync(repoFilePath, JSON.stringify(paper, null, 2), "utf-8");
-        return;
-      }
-
-      // 2. 레포지토리의 filePath가 없을 경우 상대 경로인지 절대 경로인지 확인
-      let pathToUse = this.paperPath;
-
-      // 상대 경로인 경우 절대 경로로 변환
-      if (!path.isAbsolute(this.paperPath)) {
-        pathToUse = path.resolve(process.cwd(), this.paperPath);
-      }
-
-      // 디렉토리가 존재하는지 확인하고 필요하면 생성
-      const directory = path.dirname(pathToUse);
-      if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
-      }
-
-      console.log(`Saving paper to: ${pathToUse}`);
-      fs.writeFileSync(pathToUse, JSON.stringify(paper, null, 2), "utf-8");
+      const paperJsonPath = path.join(this.dataDir, "paper.json");
+      const validatedPaper = PaperSchema.parse(paper);
+      fs.writeFileSync(paperJsonPath, JSON.stringify(validatedPaper, null, 2));
     } catch (error) {
       console.error("Error saving paper:", error);
-      throw new Error("Failed to save paper");
+      throw error;
     }
   }
 
@@ -99,11 +129,18 @@ export class PaperService {
    */
   async initializeConversation(): Promise<void> {
     try {
-      const paper = await this.paperRepository.getPaper();
-      const paperContent = this.paperRepository.getChildrenValues(
+      const paper = await this.getPaper();
+      if (!paper) {
+        throw new Error("Paper not found");
+      }
+      
+      const paperContent = await this.paperRepository.getChildrenValues(
+        "default", 
+        "default", 
         paper["block-id"] || "root",
         "content"
       );
+      
       await this.llmService.initializeConversation(paperContent);
     } catch (error) {
       console.error("Error initializing conversation:", error);
@@ -208,7 +245,7 @@ export class PaperService {
   }
 
   private async findBlockById(blockId: string): Promise<Content | null> {
-    const paper = await this.paperRepository.getPaper();
+    const paper = await this.getPaper();
     if (!paper) return null;
 
     const findBlock = (content: Content): Content | null => {
@@ -235,7 +272,7 @@ export class PaperService {
       const result = await this.llmService.updateRenderedSummaries(block);
 
       // Get the paper and directly replace the target block with the LLM result
-      const paper = await this.paperRepository.getPaper();
+      const paper = await this.getPaper();
 
       // Replace the block in the paper structure with the LLM result
       const replaceBlock = (content: any): boolean => {
@@ -296,5 +333,120 @@ export class PaperService {
       console.error("Error updating rendered summaries:", error);
       throw error;
     }
+  }
+
+  /**
+   * 특정 사용자의 모든 문서 목록 조회
+   */
+  async getUserPapers(userId: string): Promise<Paper[]> {
+    try {
+      const papers = await this.paperRepository.getUserPapers(userId);
+      return papers;
+    } catch (error) {
+      console.error("Error in getUserPapers:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * 새 문서 생성
+   */
+  async createPaper(userId: string, title: string, content?: string): Promise<Paper> {
+    try {
+      const paperJsonPath = path.join(this.dataDir, "paper.json");
+
+      if (content) {
+        const baseTimestamp = Math.floor(Date.now() / 1000);
+        const processedContent = processLatexContent(content, baseTimestamp);
+
+        const paper = {
+          title: title || extractTitle(content, detectFileType(content)),
+          "block-id": baseTimestamp.toString(),
+          summary: "",
+          intent: "",
+          type: ContentTypeSchemaEnum.Paper,
+          content: processedContent,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          version: 1,
+        };
+
+        const validatedPaper = PaperSchema.parse(paper);
+        fs.writeFileSync(paperJsonPath, JSON.stringify(validatedPaper, null, 2));
+        return validatedPaper;
+      } else {
+        const paper = {
+          title,
+          "block-id": Math.floor(Date.now() / 1000).toString(),
+          summary: "",
+          intent: "",
+          type: ContentTypeSchemaEnum.Paper,
+          content: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          version: 1,
+        };
+
+        const validatedPaper = PaperSchema.parse(paper);
+        fs.writeFileSync(paperJsonPath, JSON.stringify(validatedPaper, null, 2));
+        return validatedPaper;
+      }
+    } catch (error) {
+      console.error("Error creating paper:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * 문장 업데이트
+   */
+  async updateSentence(
+    userId: string,
+    paperId: string,
+    blockId: string,
+    content: string,
+    summary: string,
+    intent: string
+  ): Promise<void> {
+    return this.paperRepository.updateSentence(
+      userId,
+      paperId,
+      blockId,
+      content,
+      summary,
+      intent
+    );
+  }
+
+  /**
+   * 협업자 추가
+   */
+  async addCollaborator(
+    paperId: string,
+    userId: string,
+    collaboratorUsername: string
+  ): Promise<void> {
+    return this.paperRepository.addCollaborator(
+      userId,
+      paperId,
+      collaboratorUsername
+    );
+  }
+
+  /**
+   * 자식 블록 값 조회
+   */
+  async getChildrenValues(
+    userId: string,
+    paperId: string,
+    blockId: string,
+    targetKey: string
+  ): Promise<string> {
+    return this.paperRepository.getChildrenValues(
+      paperId,
+      userId,
+      blockId,
+      targetKey
+    );
   }
 }

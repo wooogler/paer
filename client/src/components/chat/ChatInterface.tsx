@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useChatStore } from "../../store/useChatStore";
 import { useContentStore } from "../../store/useContentStore";
+import { useAppStore } from "../../store/useAppStore";
 import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
@@ -22,22 +23,35 @@ const ChatInterface: React.FC = () => {
     fetchMessages,
   } = useChatStore();
   const { selectedContent, content: rootContent } = useContentStore();
+  const { userId } = useAppStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const initialMessageRef = useRef(false);
   const isComposing = useRef(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 메시지 로드하기
   useEffect(() => {
     const loadMessages = async () => {
-      await fetchMessages();
-      setIsLoadingMessages(false);
+      if (!userId) {
+        setError("Please enter a User ID to use the chat feature");
+        setIsLoadingMessages(false);
+        return;
+      }
+      setError(null);
+      try {
+        await fetchMessages();
+      } catch (err) {
+        setError("Failed to load messages. Please try again.");
+      } finally {
+        setIsLoadingMessages(false);
+      }
     };
 
     loadMessages();
-  }, [fetchMessages]);
+  }, [fetchMessages, userId]);
 
   // Display welcome message only after loading messages from server
   useEffect(() => {
@@ -168,30 +182,45 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white">
+      {/* Error message */}
+      {error && (
+        <div className="bg-red-50 text-red-600 p-4 text-sm">
+          {error}
+        </div>
+      )}
+
       {/* Message display area */}
       <div className="flex-1 overflow-y-auto p-4 bg-white">
-        {filteredMessages.map((message) => (
-          <ChatMessage key={message.id} message={message} />
-        ))}
-        {isLoading && (
-          <div className="flex justify-start mb-4">
-            <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none p-3">
-              <div className="flex space-x-2">
-                <div
-                  className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                  style={{ animationDelay: "0ms" }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                  style={{ animationDelay: "150ms" }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                  style={{ animationDelay: "300ms" }}
-                ></div>
-              </div>
-            </div>
+        {!userId ? (
+          <div className="text-center text-gray-500 mt-4">
+            Please enter a User ID to use the chat feature
           </div>
+        ) : (
+          <>
+            {filteredMessages.map((message) => (
+              <ChatMessage key={message.id} message={message} />
+            ))}
+            {isLoading && (
+              <div className="flex justify-start mb-4">
+                <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none p-3">
+                  <div className="flex space-x-2">
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -211,9 +240,9 @@ const ChatInterface: React.FC = () => {
           onCompositionEnd={handleCompositionEnd}
           onInput={handleInput}
           onKeyDown={handleKeyDown}
-          placeholder="Type a message... (Press Enter to send, Shift+Enter for line break)"
+          placeholder={!userId ? "Please enter a User ID to chat" : "Type a message... (Press Enter to send, Shift+Enter for line break)"}
           rows={3}
-          disabled={isLoading}
+          disabled={isLoading || !userId}
           className="w-full mt-2 resize-none border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
         />
       </form>

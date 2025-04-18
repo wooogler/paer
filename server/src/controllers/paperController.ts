@@ -2,13 +2,14 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { LLMService } from "../services/llmService";
 import { ContentType, PaperSchema, Paper } from "@paer/shared";
 import { PaperService } from "../services/paperService";
+import path from "path";
 
 export class PaperController {
   private paperService: PaperService;
   private llmService: LLMService;
 
   constructor() {
-    this.paperService = new PaperService("./data/paper.json");
+    this.paperService = new PaperService(path.join(process.cwd(), "data"));
     this.llmService = new LLMService();
   }
 
@@ -464,6 +465,78 @@ export class PaperController {
       return reply
         .status(500)
         .send({ success: false, error: "Failed to update summaries" });
+    }
+  }
+
+  /**
+   * 특정 사용자의 모든 문서 목록 조회
+   */
+  async getUserPapers(request: FastifyRequest<{ Querystring: { userId: string } }>, reply: FastifyReply) {
+    try {
+      const { userId } = request.query;
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+      const papers = await this.paperService.getUserPapers(userId);
+      return papers;
+    } catch (error) {
+      console.error("Error in getUserPapers:", error);
+      return reply.code(500).send({ error: "Failed to get user papers" });
+    }
+  }
+
+  /**
+   * 새 문서 생성
+   */
+  async createPaper(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { userId, title, content } = request.body as {
+        userId: string;
+        title: string;
+        content?: string;
+      };
+      const paper = await this.paperService.createPaper(userId, title, content);
+      return reply.send(paper);
+    } catch (error) {
+      console.error("Error in createPaper:", error);
+      return reply.status(500).send({ error: "Failed to create paper" });
+    }
+  }
+
+  /**
+   * 협업자 추가
+   */
+  async addCollaborator(
+    request: FastifyRequest<{
+      Params: { id: string };
+      Body: { userId: string; collaboratorUsername: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      const { userId, collaboratorUsername } = request.body;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      await this.paperService.addCollaborator(id, userId, collaboratorUsername);
+      return { success: true };
+    } catch (error) {
+      console.error("Error adding collaborator:", error);
+      return reply.code(500).send({ error: "Failed to add collaborator" });
+    }
+  }
+
+  async savePaper(request: FastifyRequest<{ Body: Paper }>, reply: FastifyReply) {
+    try {
+      const paper = request.body;
+      const result = await this.paperService.savePaper(paper);
+      return reply.send(result);
+    } catch (error) {
+      console.error("Error in savePaper:", error);
+      return reply.code(500).send({ error: "Failed to save paper" });
     }
   }
 }

@@ -2,11 +2,17 @@ import { type Paper, ContentType } from "@paer/shared";
 import api from "../services/api";
 
 // API function definition
-export const fetchPaper = async (): Promise<Paper> => {
+export const fetchPaper = async (userId: string): Promise<Paper> => {
   try {
-    const response = await api.get("/paper");
-    // Return response data (type validation is handled on the server side)
-    return response.data as Paper;
+    const response = await api.get(`/papers?userId=${userId}`);
+    // Server returns an array of papers, but we only need the first one
+    const papers = response.data as Paper[];
+    
+    if (!papers || papers.length === 0) {
+      throw new Error("No papers found for this user");
+    }
+    
+    return papers[0];
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching paper:", error.message);
