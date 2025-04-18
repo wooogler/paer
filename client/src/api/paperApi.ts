@@ -3,15 +3,8 @@ import api from "../services/api";
 
 // API function definition
 export const getPapers = async (userId: string) => {
-  try {
-    const response = await api.get(`/papers`, {
-      params: { userId }
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error getting papers:", error);
-    throw error;
-  }
+  const response = await api.get(`/papers?userId=${userId}`);
+  return response.data;
 };
 
 export const getPaperById = async (paperId: string, userId: string) => {
@@ -62,29 +55,23 @@ export const updateSentenceContent = async (
   content: string,
   summary: string,
   intent: string
-): Promise<void> => {
-  try {
-    await api.patch(`/papers/block/${blockId}/content`, { content, summary, intent });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error updating sentence:", error.message);
-    }
-    throw new Error("Failed to update sentence content");
-  }
+) => {
+  const response = await api.put(`/papers/${blockId}/content`, {
+    content,
+    summary,
+    intent,
+  });
+  return response.data;
 };
 
 /**
  * API function to delete a sentence
  * @param blockId ID of the sentence to delete
  */
-export async function deleteSentence(blockId: string): Promise<void> {
-  try {
-    await api.delete(`/papers/block/${blockId}`);
-  } catch (error) {
-    console.error("Error deleting sentence:", error);
-    throw error;
-  }
-}
+export const deleteSentence = async (blockId: string) => {
+  const response = await api.delete(`/papers/${blockId}`);
+  return response.data;
+};
 
 // Update sentence intent
 export const updateSentenceIntent = async (
@@ -120,112 +107,74 @@ export const updateSentenceSummary = async (
 export const addBlock = async (
   parentBlockId: string | null,
   prevBlockId: string | null,
-  blockType: ContentType
-): Promise<string> => {
-  try {
-    const response = await api.post("/papers/block", {
-      parentBlockId,
-      prevBlockId,
-      blockType,
-    });
-    return response.data.blockId;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error adding block:", error.message);
-    }
-    throw new Error("Failed to add block");
-  }
+  blockType: string
+) => {
+  const response = await api.post("/papers/blocks", {
+    parentBlockId,
+    prevBlockId,
+    blockType,
+  });
+  return response.data;
 };
 
 // Update block intent
 export const updateBlockIntent = async (
-  targetBlockId: string,
-  blockType: ContentType,
+  blockId: string,
+  blockType: string,
   intent: string
-): Promise<void> => {
-  try {
-    await api.patch(`/papers/block/${targetBlockId}/intent`, { intent });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error updating block intent:", error.message);
-    }
-    throw new Error("Failed to update block intent");
-  }
+) => {
+  const response = await api.put(`/papers/${blockId}/intent`, {
+    blockType,
+    intent,
+  });
+  return response.data;
 };
 
 // Update block summary
 export const updateBlockSummary = async (
-  targetBlockId: string,
-  blockType: ContentType,
+  blockId: string,
+  blockType: string,
   summary: string
-): Promise<void> => {
-  try {
-    await api.patch(`/papers/block/${targetBlockId}/summary`, { summary });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error updating block summary:", error.message);
-    }
-    throw new Error("Failed to update block summary");
-  }
+) => {
+  const response = await api.put(`/papers/${blockId}/summary`, {
+    blockType,
+    summary,
+  });
+  return response.data;
 };
 
 // Update block title
 export const updateBlockTitle = async (
-  targetBlockId: string,
-  blockType: ContentType,
+  blockId: string,
+  blockType: string,
   title: string
-): Promise<void> => {
-  try {
-    await api.patch(`/papers/block/${targetBlockId}/title`, { title });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error updating block title:", error.message);
-    }
-    throw new Error("Failed to update block title");
-  }
+) => {
+  const response = await api.put(`/papers/${blockId}/title`, {
+    blockType,
+    title,
+  });
+  return response.data;
 };
 
 /**
  * API function to delete a block
  * @param blockId ID of the block to delete
  */
-export async function deleteBlock(blockId: string): Promise<void> {
-  try {
-    await api.delete(`/papers/block/${blockId}`);
-  } catch (error) {
-    console.error("Error deleting block:", error);
-    throw error;
-  }
-}
-
-export const processPaperContent = async (content: string, userId?: string) => {
-  try {
-    const response = await api.post("/papers/process", { content, userId });
-    return response.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error processing paper content:", error.message);
-    }
-    throw new Error("Failed to process paper content");
-  }
+export const deleteBlock = async (blockId: string) => {
+  const response = await api.delete(`/papers/${blockId}`);
+  return response.data;
 };
 
-interface ProcessedPaper {
-  title: string;
-  content: string;
-  sections: Array<{
-    title: string;
-    content: string;
-  }>;
-}
-
-export const savePaper = async (paper: any): Promise<void> => {
-  try {
-    await api.post("/papers", paper);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error saving paper:", error.message);
-    }
-    throw new Error("Failed to save paper");
-  }
+/**
+ * API function to import a paper from LaTeX or plain text content
+ * @param content The LaTeX or plain text content to process
+ * @param userId The user ID to associate with this paper
+ * @returns The processed paper object with success/error information
+ */
+export const importPaper = async (content: string, userId: string) => {
+  const response = await api.post("/papers", {
+    content,
+    userId,
+  });
+  return response.data;
 };

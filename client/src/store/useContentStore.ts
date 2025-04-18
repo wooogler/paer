@@ -12,8 +12,8 @@ const initialContent: Paper = {
 };
 
 interface ContentState {
-  content: Paper;
-  selectedContent: Content | null;
+  content: Paper | null;
+  selectedContent: Paper | null;
   selectedPath: number[] | null;
   selectedBlock: Content | null;
   selectedBlockPath: number[] | null;
@@ -22,8 +22,8 @@ interface ContentState {
   updatingBlockIds: string[]; // 현재 업데이트 중인 블록 ID 목록
 
   // Actions
-  setContent: (content: Paper) => void;
-  setSelectedContent: (content: Content | null, path: number[] | null) => void;
+  setContent: (content: Paper | null) => void;
+  setSelectedContent: (content: Paper | null, path: number[] | null) => void;
   setSelectedBlock: (content: Content | null, path: number[] | null) => void;
   updateContent: (blockId: string, updatedContent: Partial<Content>) => void;
   addContent: (
@@ -38,6 +38,7 @@ interface ContentState {
   removeUpdatingBlockId: (blockId: string) => void; // 업데이트 중인 블록 ID 제거
   clearUpdatingBlockIds: () => void; // 업데이트 중인 블록 ID 모두 제거
   isBlockUpdating: (blockId: string) => boolean; // 해당 블록이 업데이트 중인지 확인
+  clearSelectedContent: () => void;
 }
 
 export const useContentStore = create<ContentState>()(
@@ -45,7 +46,7 @@ export const useContentStore = create<ContentState>()(
     persist(
       (set, get) => ({
         // Initial states
-        content: initialContent,
+        content: null,
         selectedContent: null,
         selectedPath: null,
         selectedBlock: null,
@@ -144,6 +145,8 @@ export const useContentStore = create<ContentState>()(
         // Get content by path
         getContentByPath: (path: number[]) => {
           const state = get();
+          if (!state.content) return null;
+          
           if (path.length === 0) return state.content as Content;
 
           let current: Content = state.content;
@@ -306,6 +309,8 @@ export const useContentStore = create<ContentState>()(
 
             return { content: contentCopy };
           }),
+
+        clearSelectedContent: () => set({ selectedContent: null, selectedPath: null }),
       }),
       {
         name: "content-storage", // Name to save in localStorage

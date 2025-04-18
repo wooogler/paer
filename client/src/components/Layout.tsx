@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Structure from "./Structure";
 import Editor from "./Editor";
 import Pane from "./layout/Pane";
@@ -12,11 +12,12 @@ import { usePaperStore } from "../store/paperStore";
 import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
-import { processPaperContent, savePaper } from "../api/paperApi";
-import { FiDownload, FiTrash2, FiLogOut } from "react-icons/fi";
+import { importPaper } from "../api/paperApi";
+import { FiDownload, FiTrash2, FiLogOut, FiList } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import PaperListModal from "./paperList/PaperListModal";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -36,9 +37,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { content: rootContent } = useContentStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [isPaperListOpen, setIsPaperListOpen] = useState(false);
 
   // Fetching data from server using React Query
-  const { data: paperData, refetch } = usePaperQuery(userId || "");
+  const { data: paperData, refetch } = usePaperQuery();
 
   // 필터링된 콘텐츠 정보 가져오기
   const filteredContent = useMemo(() => {
@@ -83,23 +85,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       setLoading(true);
 
       // FileImport 컴포넌트 내부에서도 로딩 상태를 관리합니다
-      const processedPaper = await processPaperContent(content);
-      setPaper(processedPaper);
-      await savePaper(processedPaper);
-
-      // 데이터 캐시 무효화하여 UI 업데이트
-      await queryClient.invalidateQueries({
-        queryKey: ["paper"],
-        refetchType: "active", // 즉시 refetch 수행
-      });
-
-      // 잠시 대기하여 데이터 로딩이 완료될 때까지 로딩 상태 유지
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // You might want to show a success message here
+      const response = await importPaper(content, userId);
+      if (response.success) {
+        setPaper(response.paper);
+        // 데이터 캐시 무효화하여 UI 업데이트
+        await queryClient.invalidateQueries({
+          queryKey: ["paper"],
+          refetchType: "active", // 즉시 refetch 수행
+        });
+        toast.success("논문이 성공적으로 가져와졌습니다.");
+      } else {
+        throw new Error(response.error || "논문 가져오기에 실패했습니다.");
+      }
     } catch (error) {
-      console.error("Error processing paper:", error);
-      // You might want to show an error message here
+      console.error("Error importing paper:", error);
+      toast.error(error instanceof Error ? error.message : "논문 가져오기에 실패했습니다.");
     } finally {
       // 로딩 상태 해제
       const { setLoading } = useContentStore.getState();
@@ -220,10 +220,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    localStorage.removeItem('username');
-    localStorage.removeItem('userId');
-    navigate('/login');
-    toast.success('로그아웃 되었습니다.');
+    localStorage.removeItem("user-storage");
+    localStorage.removeItem("content-storage");
+    navigate("/login");
+    toast.success("로그아웃 되었습니다.");
   };
 
   return (
@@ -235,6 +235,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           width="20%"
           rightContent={
             <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setIsPaperListOpen(true)}
+                className="p-2 text-gray-600 hover:text-gray-800"
+                title="논문 목록"
+              >
+                <FiList />
+              </button>
               <FileImport onFileImport={handleFileImport} />
               <button
                 onClick={handleExport}
@@ -256,6 +263,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Structure displayMode="intent" />
         </Pane>
       )}
+
+      {/* 논문 목록 모달 */}
+      <PaperListModal isOpen={isPaperListOpen} onClose={() => setIsPaperListOpen(false)} />
 
       {/* Editor Pane */}
       <Pane

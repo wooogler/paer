@@ -25,6 +25,7 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
     addUpdatingBlockId,
     clearUpdatingBlockIds,
     isBlockUpdating,
+    content,
   } = useContentStore();
   const { showHierarchy } = useAppStore();
   const [isUpdating, setIsUpdating] = useState(false);
@@ -188,6 +189,14 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
 
   // 렌더링을 위한 메모이제이션된 컨텐츠 및 메시지
   const renderContent = useMemo(() => {
+    if (!content) {
+      return (
+        <div className="p-5 text-center text-gray-500">
+          아직 작성된 논문이 없습니다. 새로운 논문을 작성해보세요.
+        </div>
+      );
+    }
+
     if (!selectedBlock || !selectedBlockPath) {
       return (
         <div className="p-5 text-center text-gray-500">

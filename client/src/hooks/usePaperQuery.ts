@@ -44,6 +44,9 @@ export const usePaperQuery = () => {
       // If data is an array, use the first paper
       const paperData = Array.isArray(query.data) ? query.data[0] : query.data;
       setContent(paperData);
+    } else {
+      // Set content to null when no paper exists
+      setContent(null);
     }
     const isCurrentlyLoading =
       query.isLoading || query.isPending || query.isFetching;

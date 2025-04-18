@@ -6,7 +6,7 @@ import { useChatStore } from "../../store/useChatStore";
 import { ClipLoader } from "react-spinners";
 
 interface TreeItemProps {
-  content: Content;
+  content: Content | null;
   path: number[];
   depth: number;
   displayMode: "summary" | "intent";
@@ -29,15 +29,19 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     const isSelectedContent = selectedPath?.join(",") === path.join(",");
     // 현재 항목이 필터링된 메시지의 BlockId와 같은지 확인 (active 상태 표시용)
     const isActiveMessageFilter =
-      content["block-id"] === filterBlockId && isFilteringEnabled;
+      content?.["block-id"] === filterBlockId && isFilteringEnabled;
 
     // 현재 항목이 업데이트 중인지 확인
-    const isUpdating = content["block-id"]
+    const isUpdating = content?.["block-id"]
       ? isBlockUpdating(content["block-id"] as string)
       : false;
 
-    if (content.type === "sentence") {
-      return null;
+    if (!content) {
+      return (
+        <div className="p-4 text-gray-500">
+          아직 작성된 논문이 없습니다. 새로운 논문을 작성해보세요.
+        </div>
+      );
     }
 
     const handleClick = () => {

@@ -55,23 +55,100 @@ export class PaperController {
   }
 
   /**
-   * 새 문서 생성
+   * 새 문서 생성 - 콘텐츠 처리 및 저장 통합
    */
   async createPaper(request: FastifyRequest<{
-    Body: { userId: string; title: string; content?: string }
+    Body: { userId: string; title?: string; content?: string }
   }>, reply: FastifyReply) {
     try {
       const { userId, title, content } = request.body;
       
       if (!userId) {
-        return reply.code(400).send({ error: "userId가 필요합니다" });
+        return reply.code(400).send({ 
+          success: false,
+          error: "userId가 필요합니다" 
+        });
       }
       
-      const paper = await this.paperService.createPaper(userId, title, content);
-      return reply.send(paper);
+      // 콘텐츠가 제공된 경우 처리 로직 수행
+      if (content) {
+        // 파일 유형 감지
+        const fileType = detectFileType(content);
+        
+        // 제목 추출 또는 제공된 제목 사용
+        const extractedTitle = title || extractTitle(content, fileType);
+        
+        // 현재 시간 기준 타임스탬프
+        const baseTimestamp = Date.now();
+        
+        // 콘텐츠 처리
+        let processedContent;
+        if (fileType === 'latex') {
+          processedContent = processLatexContent(content, baseTimestamp);
+        } else {
+          // 기본적으로 문단 하나로 처리
+          processedContent = [{
+            "block-id": String(baseTimestamp),
+            type: "paragraph",
+            content: [{
+              "block-id": String(baseTimestamp + 1),
+              type: "sentence",
+              content: content,
+              summary: "",
+              intent: ""
+            }],
+            summary: "",
+            intent: ""
+          }];
+        }
+
+        // 처리된 페이퍼 객체 생성
+        const processedPaper = {
+          title: extractedTitle,
+          summary: "",
+          intent: "",
+          type: "paper" as const,
+          content: processedContent,
+          "block-id": String(baseTimestamp - 1),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          version: 1
+        };
+
+        // 저장 로직
+        await this.paperService.savePaper({
+          ...processedPaper,
+          userId
+        });
+
+        // 성공 응답
+        return reply.send({
+          success: true,
+          paper: processedPaper,
+          message: "문서가 성공적으로 처리되고 저장되었습니다"
+        });
+      } else {
+        // 콘텐츠가 없는 경우 빈 문서 생성
+        if (!title) {
+          return reply.code(400).send({ 
+            success: false,
+            error: "title 또는 content가 필요합니다" 
+          });
+        }
+        
+        const paper = await this.paperService.createPaper(userId, title);
+        return reply.send({
+          success: true,
+          paper,
+          message: "빈 문서가 생성되었습니다"
+        });
+      }
     } catch (error) {
       console.error("Error in createPaper:", error);
-      return reply.status(500).send({ error: "문서 생성에 실패했습니다" });
+      return reply.code(500).send({ 
+        success: false,
+        error: "문서 생성에 실패했습니다" 
+      });
     }
   }
 
@@ -341,90 +418,6 @@ export class PaperController {
     } catch (error) {
       console.error("Error adding collaborator:", error);
       return reply.code(500).send({ error: "협업자 추가에 실패했습니다" });
-    }
-  }
-
-  /**
-   * 문서 내용 처리 (텍스트를 구조화된 문서로 변환)
-   */
-  async processPaper(
-    request: FastifyRequest<{
-      Body: { content: string; userId: string };
-    }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { content, userId } = request.body;
-
-      if (!content) {
-        return reply.code(400).send({
-          success: false,
-          error: "content가 필요합니다"
-        });
-      }
-
-      if (!userId) {
-        return reply.code(400).send({
-          success: false,
-          error: "userId가 필요합니다"
-        });
-      }
-
-      // 파일 유형 감지
-      const fileType = detectFileType(content);
-      
-      // 제목 추출
-      const title = extractTitle(content, fileType);
-      
-      // 현재 시간 기준 타임스탬프
-      const baseTimestamp = Date.now();
-      
-      // 콘텐츠 처리
-      let processedContent;
-      if (fileType === 'latex') {
-        processedContent = processLatexContent(content, baseTimestamp);
-      } else {
-        // 기본적으로 문단 하나로 처리
-        processedContent = [{
-          "block-id": String(baseTimestamp),
-          type: "paragraph",
-          content: [{
-            "block-id": String(baseTimestamp + 1),
-            type: "sentence",
-            content: content,
-            summary: "",
-            intent: ""
-          }],
-          summary: "",
-          intent: ""
-        }];
-      }
-
-      // 처리된 페이퍼 객체 생성
-      const processedPaper = {
-        title,
-        summary: "",
-        intent: "",
-        type: "paper",
-        content: processedContent,
-        "block-id": String(baseTimestamp - 1),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        version: 1,
-        userId: userId
-      };
-
-      // 반환
-      return reply.send({
-        success: true,
-        paper: processedPaper
-      });
-    } catch (error) {
-      console.error("Error processing paper:", error);
-      return reply.code(500).send({
-        success: false,
-        error: "문서 처리에 실패했습니다"
-      });
     }
   }
 

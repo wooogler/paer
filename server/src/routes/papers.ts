@@ -21,9 +21,9 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // POST /api/papers - 새 문서 생성
+  // POST /api/papers - 새 문서 생성 또는 콘텐츠 처리 및 저장
   fastify.post<{
-    Body: { userId: string; title: string; content?: string };
+    Body: { userId: string; title?: string; content?: string };
   }>(
     "/",
     async (request, reply) => {
@@ -38,16 +38,6 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     "/save",
     async (request, reply) => {
       return paperController.savePaper(request, reply);
-    }
-  );
-
-  // POST /api/papers/process - 문서 내용 처리
-  fastify.post<{
-    Body: { content: string; userId: string };
-  }>(
-    "/process",
-    async (request, reply) => {
-      return paperController.processPaper(request, reply);
     }
   );
 

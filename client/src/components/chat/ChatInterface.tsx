@@ -40,6 +40,13 @@ const ChatInterface: React.FC = () => {
         setIsLoadingMessages(false);
         return;
       }
+
+      // 논문이 없으면 메시지를 불러오지 않음
+      if (!rootContent) {
+        setIsLoadingMessages(false);
+        return;
+      }
+
       setError(null);
       try {
         await fetchMessages();
@@ -51,14 +58,15 @@ const ChatInterface: React.FC = () => {
     };
 
     loadMessages();
-  }, [fetchMessages, userId]);
+  }, [fetchMessages, userId, rootContent]);
 
   // Display welcome message only after loading messages from server
   useEffect(() => {
     if (
       !isLoadingMessages &&
       messages.length === 0 &&
-      !initialMessageRef.current
+      !initialMessageRef.current &&
+      rootContent // 논문이 있을 때만 환영 메시지 표시
     ) {
       initialMessageRef.current = true;
       // 환영 메시지를 blockId 없이 직접 생성
@@ -74,7 +82,7 @@ const ChatInterface: React.FC = () => {
       // setMessages 함수를 통해 직접 추가
       setMessages([welcomeMessage]);
     }
-  }, [isLoadingMessages, messages.length, setMessages]);
+  }, [isLoadingMessages, messages.length, setMessages, rootContent]);
 
   // 필터링된 메시지 목록 계산
   const filteredMessages = useMemo(() => {
@@ -195,6 +203,11 @@ const ChatInterface: React.FC = () => {
           <div className="text-center text-gray-500 mt-4">
             Please enter a User ID to use the chat feature
           </div>
+        ) : !rootContent ? (
+          <div className="text-center text-gray-500 mt-4">
+            <p>논문이 없습니다. 먼저 논문을 입력해주세요.</p>
+            <p className="mt-2">파일 가져오기 버튼을 사용하여 논문을 업로드하거나 새 논문을 작성해보세요.</p>
+          </div>
         ) : (
           <>
             {filteredMessages.map((message) => (
@@ -226,26 +239,31 @@ const ChatInterface: React.FC = () => {
       </div>
 
       {/* Input area */}
-      <form
-        onSubmit={handleSubmit}
-        className="border-t border-gray-200 p-4 bg-white"
-      >
+      <div className="border-t border-gray-200 p-4 bg-white">
         {/* 선택된 콘텐츠 정보 표시 - textarea 위에 배치 */}
-        <ContentInfo content={selectedContent} />
-
-        <textarea
-          ref={inputRef}
-          value={input}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
-          onInput={handleInput}
-          onKeyDown={handleKeyDown}
-          placeholder={!userId ? "Please enter a User ID to chat" : "Type a message... (Press Enter to send, Shift+Enter for line break)"}
-          rows={3}
-          disabled={isLoading || !userId}
-          className="w-full mt-2 resize-none border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-        />
-      </form>
+        {rootContent && <ContentInfo content={selectedContent} />}
+        
+        <form onSubmit={handleSubmit} className="flex items-end">
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
+            disabled={isLoading || !rootContent} // 로딩 중이거나 논문이 없을 때 비활성화
+            placeholder={rootContent ? "Type a message... (Press Enter to send, Shift+Enter for line break)" : "논문을 먼저 입력해주세요..."}
+            className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
+          />
+          <button
+            type="submit"
+            disabled={!input.trim() || isLoading || !rootContent} // 입력이 없거나 로딩 중이거나 논문이 없을 때 비활성화
+            className="ml-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
+          >
+            Send
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
