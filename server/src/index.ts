@@ -2,7 +2,6 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import path from "path";
 import dotenv from "dotenv";
-import apiRoutes from "./routes/api";
 import paperRoutes from "./routes/papers";
 import chatRoutes from "./routes/chat";
 import userRoutes from "./routes/users";
@@ -47,7 +46,6 @@ connectDB().catch(err => {
 });
 
 // Register API routes
-fastify.register(apiRoutes, { prefix: "/api" });
 fastify.register(paperRoutes, { prefix: "/api/papers" });
 fastify.register(chatRoutes, { prefix: "/api/chat" });
 fastify.register(userRoutes, { prefix: "/api/users" });

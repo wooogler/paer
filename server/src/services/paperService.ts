@@ -1,33 +1,22 @@
-import { ContentTypeSchema, Paper, ContentType, Content } from "@paer/shared";
+import { ContentTypeSchema, Paper, ContentType, Content, Paper as SharedPaper } from "@paer/shared";
 import { PaperRepository } from "../repositories/paperRepository";
-import fs from "fs";
 import { LLMService } from "./llmService";
-import path from "path";
-import process from "process";
-import { PaperSchema } from "@paer/shared/schemas/paperSchema";
 import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
-import { findOrCreateDataDir, processLatexContent, detectFileType, extractTitle } from "../utils/paperUtils";
+import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
 
 export class PaperService {
   private paperRepository: PaperRepository;
-  private paperPath: string;
   private llmService: LLMService;
-  private dataDir: string;
 
-  constructor(paperPath: string) {
+  constructor() {
     this.paperRepository = new PaperRepository();
-    this.paperPath = paperPath;
     this.llmService = new LLMService();
-    this.dataDir = findOrCreateDataDir();
   }
 
-  // 레거시 메서드 - 호환성 유지
-  async getPaper(): Promise<Paper> {
-    return this.getPaperById("default", "default");
-  }
-
-  // 새로운 메서드 - userId와 paperId로 문서 조회
-  async getPaperById(userId: string, paperId: string): Promise<Paper> {
+  /**
+   * 특정 사용자와 문서 ID로 문서 조회
+   */
+  async getPaperById(userId: string, paperId: string): Promise<SharedPaper> {
     const paper = await this.paperRepository.getPaper(userId, paperId);
     if (!paper) {
       throw new Error("Paper not found");
@@ -35,21 +24,10 @@ export class PaperService {
     return paper;
   }
 
-  async updateSentenceMetadata(blockId: string): Promise<void> {
-    return;
-  }
-
-  // 레거시 메서드 - 호환성 유지
+  /**
+   * 블록 추가
+   */
   async addBlock(
-    parentBlockId: string | null,
-    prevBlockId: string | null,
-    blockType: ContentType
-  ): Promise<string> {
-    return this.addBlockWithUser("default", "default", parentBlockId, prevBlockId, blockType);
-  }
-
-  // 새로운 메서드 - userId와 paperId로 블록 추가
-  async addBlockWithUser(
     userId: string,
     paperId: string,
     parentBlockId: string | null,
@@ -59,17 +37,10 @@ export class PaperService {
     return this.paperRepository.addBlock(userId, paperId, parentBlockId, prevBlockId, blockType);
   }
 
-  // 레거시 메서드 - 호환성 유지
+  /**
+   * 블록 업데이트
+   */
   async updateBlock(
-    targetBlockId: string,
-    keyToUpdate: string,
-    updatedValue: string
-  ): Promise<void> {
-    return this.updateBlockWithUser("default", "default", targetBlockId, keyToUpdate, updatedValue);
-  }
-
-  // 새로운 메서드 - userId와 paperId로 블록 업데이트
-  async updateBlockWithUser(
     userId: string,
     paperId: string,
     targetBlockId: string,
@@ -85,13 +56,10 @@ export class PaperService {
     );
   }
 
-  // 레거시 메서드 - 호환성 유지
-  async deleteSentence(blockId: string): Promise<void> {
-    return this.deleteSentenceWithUser("default", "default", blockId);
-  }
-
-  // 새로운 메서드 - userId와 paperId로 문장 삭제
-  async deleteSentenceWithUser(
+  /**
+   * 문장 삭제
+   */
+  async deleteSentence(
     userId: string,
     paperId: string,
     blockId: string
@@ -99,13 +67,10 @@ export class PaperService {
     return this.paperRepository.deleteSentence(userId, paperId, blockId);
   }
 
-  // 레거시 메서드 - 호환성 유지
-  async deleteBlock(blockId: string): Promise<void> {
-    return this.deleteBlockWithUser("default", "default", blockId);
-  }
-
-  // 새로운 메서드 - userId와 paperId로 블록 삭제
-  async deleteBlockWithUser(
+  /**
+   * 블록 삭제
+   */
+  async deleteBlock(
     userId: string,
     paperId: string,
     blockId: string
@@ -113,11 +78,19 @@ export class PaperService {
     return this.paperRepository.deleteBlock(userId, paperId, blockId);
   }
 
-  async savePaper(paper: Paper): Promise<void> {
+  /**
+   * 논문 저장 (MongoDB)
+   */
+  async savePaper(paper: Paper & { userId: string }): Promise<void> {
     try {
-      const paperJsonPath = path.join(this.dataDir, "paper.json");
-      const validatedPaper = PaperSchema.parse(paper);
-      fs.writeFileSync(paperJsonPath, JSON.stringify(validatedPaper, null, 2));
+      if (!paper.userId) {
+        throw new Error("userId is required");
+      }
+
+      // userId와 나머지 부분 분리
+      const { userId, ...sharedPaper } = paper;
+      await this.paperRepository.savePaper(userId, sharedPaper as SharedPaper);
+      console.log("Paper saved to MongoDB");
     } catch (error) {
       console.error("Error saving paper:", error);
       throw error;
@@ -125,18 +98,18 @@ export class PaperService {
   }
 
   /**
-   * Initialize the conversation with the paper context
+   * LLM 대화 초기화
    */
-  async initializeConversation(): Promise<void> {
+  async initializeConversation(userId: string, paperId: string): Promise<void> {
     try {
-      const paper = await this.getPaper();
+      const paper = await this.getPaperById(userId, paperId);
       if (!paper) {
         throw new Error("Paper not found");
       }
       
       const paperContent = await this.paperRepository.getChildrenValues(
-        "default", 
-        "default", 
+        paperId, 
+        userId, 
         paper["block-id"] || "root",
         "content"
       );
@@ -148,6 +121,9 @@ export class PaperService {
     }
   }
 
+  /**
+   * LLM에 질문하기
+   */
   async askLLM(
     text: string,
     renderedContent?: string,
@@ -157,7 +133,7 @@ export class PaperService {
   }
 
   /**
-   * Convert paper JSON back to LaTeX format
+   * 문서를 LaTeX 형식으로 내보내기
    */
   async exportToLatex(paper: Paper): Promise<string> {
     let latexContent = "";
@@ -244,8 +220,11 @@ export class PaperService {
     return latexContent;
   }
 
-  private async findBlockById(blockId: string): Promise<Content | null> {
-    const paper = await this.getPaper();
+  /**
+   * 특정 ID로 블록 찾기
+   */
+  private async findBlockById(userId: string, paperId: string, blockId: string): Promise<Content | null> {
+    const paper = await this.getPaperById(userId, paperId);
     if (!paper) return null;
 
     const findBlock = (content: Content): Content | null => {
@@ -262,23 +241,31 @@ export class PaperService {
     return findBlock(paper);
   }
 
-  async updateRenderedSummaries(renderedContent: string, blockId: string) {
+  /**
+   * 렌더링된 요약 업데이트
+   */
+  async updateRenderedSummaries(
+    userId: string,
+    paperId: string,
+    renderedContent: string,
+    blockId: string
+  ) {
     try {
-      const block = await this.findBlockById(blockId);
+      const block = await this.findBlockById(userId, paperId, blockId);
       if (!block) {
         throw new Error("Block not found");
       }
 
       const result = await this.llmService.updateRenderedSummaries(block);
 
-      // Get the paper and directly replace the target block with the LLM result
-      const paper = await this.getPaper();
+      // 페이퍼 가져오기 및 대상 블록을 LLM 결과로 대체
+      const paper = await this.getPaperById(userId, paperId);
 
-      // Replace the block in the paper structure with the LLM result
+      // 페이퍼 구조에서 블록을 LLM 결과로 대체
       const replaceBlock = (content: any): boolean => {
         if (typeof content === "string") return false;
 
-        // If this is the target block, replace it
+        // 대상 블록인 경우 대체
         if (content["block-id"] === blockId) {
           // 원래 block-id를 보존하면서 다른 속성만 업데이트
           const originalBlockId = content["block-id"];
@@ -306,7 +293,7 @@ export class PaperService {
           return true;
         }
 
-        // Otherwise check children
+        // 그렇지 않으면 자식들 확인
         if (Array.isArray(content.content)) {
           for (let i = 0; i < content.content.length; i++) {
             if (content.content[i] && typeof content.content[i] !== "string") {
@@ -320,13 +307,13 @@ export class PaperService {
         return false;
       };
 
-      // Start replacement from the root
+      // 루트에서 시작하여 대체
       if (paper) {
         replaceBlock(paper);
       }
 
-      // Save the updated paper
-      await this.savePaper(paper);
+      // 업데이트된 문서 저장
+      await this.savePaper({ ...paper, userId });
 
       return result;
     } catch (error) {
@@ -353,43 +340,63 @@ export class PaperService {
    */
   async createPaper(userId: string, title: string, content?: string): Promise<Paper> {
     try {
-      const paperJsonPath = path.join(this.dataDir, "paper.json");
-
+      const baseTimestamp = Math.floor(Date.now() / 1000);
+      let processedContent = [];
+      
       if (content) {
-        const baseTimestamp = Math.floor(Date.now() / 1000);
-        const processedContent = processLatexContent(content, baseTimestamp);
-
+        const fileType = detectFileType(content);
+        const extractedTitle = extractTitle(content, fileType) || title;
+        
+        if (fileType === 'latex') {
+          processedContent = processLatexContent(content, baseTimestamp);
+        } else {
+          // 기본적으로 문단 하나로 처리
+          processedContent = [{
+            "block-id": String(baseTimestamp),
+            type: "paragraph",
+            content: [{
+              "block-id": String(baseTimestamp + 1),
+              type: "sentence",
+              content: content,
+              summary: "",
+              intent: ""
+            }],
+            summary: "",
+            intent: ""
+          }];
+        }
+        
         const paper = {
-          title: title || extractTitle(content, detectFileType(content)),
+          title: extractedTitle,
           "block-id": baseTimestamp.toString(),
           summary: "",
           intent: "",
-          type: ContentTypeSchemaEnum.Paper,
+          type: "paper" as const,
           content: processedContent,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           version: 1,
         };
-
-        const validatedPaper = PaperSchema.parse(paper);
-        fs.writeFileSync(paperJsonPath, JSON.stringify(validatedPaper, null, 2));
-        return validatedPaper;
+        
+        // MongoDB에 저장
+        await this.savePaper({ ...paper, userId });
+        return paper;
       } else {
         const paper = {
           title,
-          "block-id": Math.floor(Date.now() / 1000).toString(),
+          "block-id": baseTimestamp.toString(),
           summary: "",
           intent: "",
-          type: ContentTypeSchemaEnum.Paper,
+          type: "paper" as const,
           content: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           version: 1,
         };
-
-        const validatedPaper = PaperSchema.parse(paper);
-        fs.writeFileSync(paperJsonPath, JSON.stringify(validatedPaper, null, 2));
-        return validatedPaper;
+        
+        // MongoDB에 저장
+        await this.savePaper({ ...paper, userId });
+        return paper;
       }
     } catch (error) {
       console.error("Error creating paper:", error);

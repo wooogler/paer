@@ -1,10 +1,12 @@
-import { FastifyInstance, FastifyPluginAsync } from "fastify";
+import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { ChatController } from "../controllers/chatController";
 import { ChatMessage } from "../types/chat";
+import { PaperController } from "../controllers/paperController";
 
 // Define chat routes as Fastify plugin
 const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const chatController = new ChatController();
+  const paperController = new PaperController();
 
   // GET /api/chat/messages - 모든 메시지 가져오기 (paperId 없이)
   fastify.get<{ Querystring: { userId: string } }>(
@@ -66,6 +68,24 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>("/:paperId/messages/:messageId", async (request, reply) => {
     return chatController.deleteMessage(request, reply);
   });
+
+  // POST /api/chat/ask - LLM에 질문하기
+  fastify.post<{
+    Body: { text: string; renderedContent?: string; blockId?: string };
+  }>(
+    "/ask",
+    async (request, reply) => {
+      try {
+        const result = await paperController.askLLM(request, reply);
+        return reply.send({ success: true, result });
+      } catch (error) {
+        console.error("Error in /chat/ask:", error);
+        return reply
+          .status(500)
+          .send({ success: false, error: "Failed to process the request" });
+      }
+    }
+  );
 };
 
 export default chatRoutes;

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  fetchPaper,
+  getPapers,
   updateSentenceContent,
   deleteSentence,
   addBlock,
@@ -18,33 +18,37 @@ import { useAppStore } from "../store/useAppStore";
 // Global variable to store the blockId of the newly added sentence
 let newSentenceBlockId: string | null = null;
 
-export function usePaperQuery(userName: string) {
+export const usePaperQuery = () => {
+  const userId = useAppStore((state) => state.userId);
   const setContent = useContentStore((state) => state.setContent);
   const setLoading = useContentStore((state) => state.setLoading);
-  const userId = useAppStore((state) => state.userId);
 
-  const query = useQuery<Paper, Error>({
-    queryKey: ["paper", userId],
-    queryFn: () => fetchPaper(userId),
+  const query = useQuery({
+    queryKey: ["papers", userId],
+    queryFn: () => {
+      if (typeof userId !== "string" || !userId) {
+        throw new Error("Invalid userId");
+      }
+      return getPapers(userId);
+    },
+    enabled: typeof userId === "string" && !!userId && isValidObjectId(userId),
     staleTime: 1000,
     gcTime: 1000 * 60 * 5,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: true,
-    enabled: !!userId && isValidObjectId(userId),
   });
 
   useEffect(() => {
-    // Store in the state when data is loaded successfully
     if (query.data) {
-      setContent(query.data);
+      // If data is an array, use the first paper
+      const paperData = Array.isArray(query.data) ? query.data[0] : query.data;
+      setContent(paperData);
     }
-    // 로딩 상태 업데이트 - isPending 또는 isLoading 중 하나라도 true이면 로딩 중으로 간주
     const isCurrentlyLoading =
       query.isLoading || query.isPending || query.isFetching;
     setLoading(isCurrentlyLoading);
 
-    // 디버깅용 로그
     if (isCurrentlyLoading) {
       console.log("Paper data is loading...");
     }
@@ -58,7 +62,7 @@ export function usePaperQuery(userName: string) {
   ]);
 
   return query;
-}
+};
 
 // Function to get the blockId of the newly added sentence
 export function getNewSentenceBlockId(): string | null {
@@ -101,7 +105,7 @@ export const useUpdateSentence = () => {
     onSuccess: async () => {
       try {
         // Fetch latest data from server immediately
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
 
         // Update both cache and state with the new data
         queryClient.setQueryData(["paper"], newData);
@@ -141,7 +145,7 @@ export function useDeleteSentence() {
     onSuccess: async () => {
       // Fetch latest data from server immediately
       try {
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
 
         // Cache directly update
         queryClient.setQueryData(["paper"], newData);
@@ -193,7 +197,7 @@ export function useUpdateBlockIntent() {
     },
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -239,7 +243,7 @@ export function useUpdateBlockSummary() {
     },
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -285,7 +289,7 @@ export function useUpdateBlockTitle() {
     },
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -347,7 +351,7 @@ export function useAddBlock() {
     },
     onSuccess: async (newBlockId) => {
       try {
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 
@@ -383,7 +387,7 @@ export function useDeleteBlock() {
     mutationFn: (blockId: string) => deleteBlock(blockId),
     onSuccess: async () => {
       try {
-        const newData = await fetchPaper(userId);
+        const newData = await getPapers(userId);
         queryClient.setQueryData(["paper"], newData);
         setContent(newData);
 

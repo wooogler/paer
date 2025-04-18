@@ -47,4 +47,4 @@ const PaperSchema = new Schema<IPaper>(
   }
 );
 
-export const Paper = mongoose.model<IPaper>('Paper', PaperSchema, 'paper'); 
+export const Paper = mongoose.model<IPaper>('Paper', PaperSchema, 'papers'); 

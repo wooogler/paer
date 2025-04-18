@@ -1,9 +1,16 @@
-import { Paper as SharedPaper, ContentType } from "@paer/shared";
+import { Paper as SharedPaper, ContentType, Content } from "@paer/shared";
 import { Paper, IPaper } from "../models/Paper";
 import { User } from "../models/User";
 import mongoose, { isValidObjectId } from "mongoose";
+import { UserService } from "../services/userService";
 
 export class PaperRepository {
+  private userService: UserService;
+
+  constructor() {
+    this.userService = new UserService();
+  }
+
   /**
    * 사용자 ID로 문서 조회
    */
@@ -577,5 +584,85 @@ export class PaperRepository {
       findSentenceValues(block);
       return values.join(' ');
     });
+  }
+
+  /**
+   * 논문 저장 (생성 또는 업데이트)
+   */
+  async savePaper(userId: string, paper: SharedPaper): Promise<SharedPaper> {
+    try {
+      console.log('Attempting to save paper for userId:', userId);
+      
+      let userObjectId: mongoose.Types.ObjectId;
+
+      // userId가 ObjectId 형식이 아닌 경우 username으로 사용자 검색
+      if (!isValidObjectId(userId)) {
+        console.log('userId is not a valid ObjectId, searching by username');
+        const user = await User.findOne({ username: userId });
+        if (!user) {
+          console.log('User not found by username:', userId);
+          throw new Error("User not found");
+        }
+        userObjectId = user._id as mongoose.Types.ObjectId;
+        console.log('Found user by username, userObjectId:', userObjectId);
+      } else {
+        userObjectId = new mongoose.Types.ObjectId(userId);
+        console.log('userId is a valid ObjectId, converted to:', userObjectId);
+      }
+
+      // 기존 논문 업데이트 또는 새 논문 생성
+      const paperData = { ...paper } as any;
+      
+      if (paperData._id) {
+        console.log(`Updating existing paper with ID: ${paperData._id}`);
+        
+        const existingPaper = await Paper.findOne({
+          _id: paperData._id,
+          $or: [
+            { userId: userId },
+            { userId: userObjectId },
+            { collaborators: userId },
+            { collaborators: userObjectId }
+          ]
+        });
+
+        if (!existingPaper) {
+          throw new Error("Paper not found or user does not have permission to update");
+        }
+
+        // 논문 내용 업데이트
+        existingPaper.content = paper;
+        existingPaper.title = paper.title || 'Untitled Paper';
+        await existingPaper.save();
+        
+        console.log('Paper updated successfully');
+        return {
+          ...paper,
+          _id: (existingPaper._id as mongoose.Types.ObjectId).toString(),
+          userId: (existingPaper.userId as mongoose.Types.ObjectId).toString(),
+          collaborators: existingPaper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
+        } as any;
+      } else {
+        // 새 논문 생성
+        console.log('Creating new paper');
+        const newPaper = await Paper.create({
+          userId: userObjectId,
+          title: paper.title || 'Untitled Paper',
+          content: paper,
+          collaborators: []
+        });
+
+        console.log('New paper created with ID:', newPaper._id);
+        return {
+          ...paper,
+          _id: (newPaper._id as mongoose.Types.ObjectId).toString(),
+          userId: (newPaper.userId as mongoose.Types.ObjectId).toString(),
+          collaborators: []
+        } as any;
+      }
+    } catch (error) {
+      console.error("Failed to save paper:", error);
+      throw new Error(`Failed to save paper: ${(error as Error).message}`);
+    }
   }
 }

@@ -2,57 +2,130 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { LLMService } from "../services/llmService";
 import { ContentType, PaperSchema, Paper } from "@paer/shared";
 import { PaperService } from "../services/paperService";
-import path from "path";
+import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
+import { PaperRepository } from "../repositories/paperRepository";
 
 export class PaperController {
   private paperService: PaperService;
   private llmService: LLMService;
+  private paperRepository: PaperRepository;
 
   constructor() {
-    this.paperService = new PaperService(path.join(process.cwd(), "data"));
+    this.paperService = new PaperService();
     this.llmService = new LLMService();
+    this.paperRepository = new PaperRepository();
   }
 
   /**
-   * Retrieves the current paper data from the service layer and validates it against the schema.
-   * This endpoint serves as the main data source for the paper's content structure.
-   *
-   * @param request - Fastify request object (unused in this function)
-   * @param reply - Fastify reply object for sending responses
-   * @returns The validated paper data structure
-   * @throws {Error} If paper data cannot be retrieved or fails validation
-   *
-   * @example
-   * // Response structure
-   * {
-   *   title: string,
-   *   content: Array<{
-   *     type: "section" | "subsection" | "paragraph" | "sentence",
-   *     "block-id": string,
-   *     content: string | Array<...>,
-   *     summary?: string,
-   *     intent?: string,
-   *     title?: string
-   *   }>
-   * }
+   * 문서 가져오기 (특정 사용자와 문서 ID 기준)
    */
-  async getPaper(request: FastifyRequest, reply: FastifyReply): Promise<any> {
+  async getPaperById(request: FastifyRequest<{
+    Querystring: { userId: string; paperId: string }
+  }>, reply: FastifyReply): Promise<any> {
     try {
-      const paper = await this.paperService.getPaper();
-
-      // Validate data
-      const validatedPaper = PaperSchema.parse(paper);
-
-      return validatedPaper;
+      const { userId, paperId } = request.query;
+      
+      if (!userId || !paperId) {
+        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+      }
+      
+      const paper = await this.paperService.getPaperById(userId, paperId);
+      return paper;
     } catch (error) {
-      console.error("Error in getPaper:", error);
-      return reply.code(500).send({ error: "Failed to get paper data" });
+      console.error("Error in getPaperById:", error);
+      return reply.code(500).send({ error: "문서를 가져오는데 실패했습니다" });
     }
   }
 
+  /**
+   * 특정 사용자의 모든 문서 목록 조회
+   */
+  async getUserPapers(request: FastifyRequest<{ Querystring: { userId: string } }>, reply: FastifyReply) {
+    try {
+      const { userId } = request.query;
+      if (!userId) {
+        return reply.code(400).send({ error: "userId가 필요합니다" });
+      }
+      const papers = await this.paperService.getUserPapers(userId);
+      return papers;
+    } catch (error) {
+      console.error("Error in getUserPapers:", error);
+      return reply.code(500).send({ error: "사용자의 문서 목록을 가져오는데 실패했습니다" });
+    }
+  }
+
+  /**
+   * 새 문서 생성
+   */
+  async createPaper(request: FastifyRequest<{
+    Body: { userId: string; title: string; content?: string }
+  }>, reply: FastifyReply) {
+    try {
+      const { userId, title, content } = request.body;
+      
+      if (!userId) {
+        return reply.code(400).send({ error: "userId가 필요합니다" });
+      }
+      
+      const paper = await this.paperService.createPaper(userId, title, content);
+      return reply.send(paper);
+    } catch (error) {
+      console.error("Error in createPaper:", error);
+      return reply.status(500).send({ error: "문서 생성에 실패했습니다" });
+    }
+  }
+
+  /**
+   * 문서 저장 (새 문서 또는 기존 문서 업데이트)
+   */
+  async savePaper(request: FastifyRequest<{ Body: any }>, reply: FastifyReply) {
+    try {
+      const requestBody = request.body as { userId: string; } & Paper;
+      const { userId, ...paperData } = requestBody;
+      
+      if (!userId) {
+        return reply.code(400).send({
+          success: false,
+          error: "userId가 필요합니다"
+        });
+      }
+
+      // Validate paperData against Paper schema
+      const validationResult = PaperSchema.safeParse(paperData);
+      if (!validationResult.success) {
+        return reply.code(400).send({
+          success: false,
+          error: "잘못된 문서 형식입니다",
+          details: validationResult.error
+        });
+      }
+
+      await this.paperService.savePaper({
+        ...validationResult.data,
+        userId
+      });
+      
+      return reply.send({
+        success: true,
+        message: "문서가 성공적으로 저장되었습니다"
+      });
+    } catch (error) {
+      console.error("Error saving paper:", error);
+      return reply.code(500).send({
+        success: false,
+        error: "문서 저장에 실패했습니다"
+      });
+    }
+  }
+
+  /**
+   * 문장 업데이트
+   */
   async updateSentence(
     request: FastifyRequest<{
       Body: {
+        userId: string;
+        paperId: string;
         blockId: string;
         content: string;
         summary: string;
@@ -62,55 +135,38 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { blockId, content, summary, intent } = request.body;
+      const { userId, paperId, blockId, content, summary, intent } = request.body;
 
-      if (!blockId || !content) {
-        return reply.code(400).send({ error: "Missing blockId or content" });
+      if (!userId || !paperId || !blockId || !content) {
+        return reply.code(400).send({ error: "userId, paperId, blockId, content가 필요합니다" });
       }
 
-      // Get current paper content
-      const paper = await this.paperService.getPaper();
-
-      // Helper function to find and update sentence
-      const findAndUpdateSentence = (obj: any): boolean => {
-        if (obj["block-id"] === blockId && obj.type === "sentence") {
-          obj.content = content; // Update with the new content from request
-          obj.summary = summary; // Update with the new summary from request
-          obj.intent = intent; // Update with the new intent from request
-          return true;
-        }
-
-        if (Array.isArray(obj.content)) {
-          for (const child of obj.content) {
-            if (findAndUpdateSentence(child)) return true;
-          }
-        }
-
-        return false;
-      };
-
-      // Try to find and update the sentence
-      const found = findAndUpdateSentence(paper);
-      await this.paperService.savePaper(paper);
-      // Update the parent block
-      await this.paperService.updateSentenceMetadata(blockId);
-
-      if (!found) {
-        return reply.code(404).send({ error: "Sentence not found" });
-      }
+      await this.paperService.updateSentence(
+        userId,
+        paperId,
+        blockId,
+        content,
+        summary,
+        intent
+      );
 
       return reply.send({ success: true });
     } catch (error) {
       console.error("Error in updateSentence:", error);
       return reply
         .code(500)
-        .send({ error: "Failed to update sentence content" });
+        .send({ error: "문장 업데이트에 실패했습니다" });
     }
   }
 
+  /**
+   * 블록 추가
+   */
   async addBlock(
     request: FastifyRequest<{
       Body: {
+        userId: string;
+        paperId: string;
         parentBlockId: string | null;
         prevBlockId: string | null;
         blockType: ContentType;
@@ -119,9 +175,15 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { parentBlockId, prevBlockId, blockType } = request.body;
-      // blockId can be null (to add at the beginning of a paragraph)
+      const { userId, paperId, parentBlockId, prevBlockId, blockType } = request.body;
+      
+      if (!userId || !paperId) {
+        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+      }
+      
       const newBlockId = await this.paperService.addBlock(
+        userId,
+        paperId,
         parentBlockId,
         prevBlockId,
         blockType
@@ -129,15 +191,19 @@ export class PaperController {
       return { success: true, blockId: newBlockId };
     } catch (error) {
       console.error("Error in addBlock:", error);
-      return reply.code(500).send({ error: "Failed to add new block" });
+      return reply.code(500).send({ error: "블록 추가에 실패했습니다" });
     }
   }
 
+  /**
+   * 블록 업데이트
+   */
   async updateBlock(
     request: FastifyRequest<{
       Body: {
+        userId: string;
+        paperId: string;
         targetBlockId: string;
-        blockType?: ContentType;
         keyToUpdate: string;
         updatedValue: string;
       };
@@ -145,9 +211,15 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { targetBlockId, keyToUpdate, updatedValue } = request.body;
-      // blockType is no longer needed, so using findBlockById
+      const { userId, paperId, targetBlockId, keyToUpdate, updatedValue } = request.body;
+      
+      if (!userId || !paperId || !targetBlockId || !keyToUpdate) {
+        return reply.code(400).send({ error: "userId, paperId, targetBlockId, keyToUpdate가 필요합니다" });
+      }
+      
       await this.paperService.updateBlock(
+        userId,
+        paperId,
         targetBlockId,
         keyToUpdate,
         updatedValue
@@ -155,78 +227,68 @@ export class PaperController {
       return { success: true };
     } catch (error) {
       console.error("Error in updateBlock:", error);
-      return reply.code(500).send({ error: "Failed to update target block" });
-    }
-  }
-
-  async updateWhole(
-    request: FastifyRequest<{
-      Body: {
-        content: string;
-      };
-    }>,
-    reply: FastifyReply
-  ): Promise<any> {
-    try {
-      const { content } = request.body;
-      // blockType is no longer needed, so using findBlockById
-      // await this.paperService.updateSectionSummaries();
-      console.log("you are in updateWhole controller");
-      return { success: true };
-    } catch (error) {
-      console.error("Error in updateWhole:", error);
-      return reply
-        .code(500)
-        .send({ error: "Failed to process imported document" });
+      return reply.code(500).send({ error: "블록 업데이트에 실패했습니다" });
     }
   }
 
   /**
-   * Delete a sentence
+   * 문장 삭제
    */
   async deleteSentence(
-    request: FastifyRequest<{ Params: { blockId: string } }>,
+    request: FastifyRequest<{
+      Body: {
+        userId: string;
+        paperId: string;
+        blockId: string;
+      }
+    }>,
     reply: FastifyReply
   ): Promise<void> {
     try {
-      const { blockId } = request.params;
+      const { userId, paperId, blockId } = request.body;
 
-      if (!blockId) {
-        return reply.code(400).send({ error: "Missing blockId" });
+      if (!userId || !paperId || !blockId) {
+        return reply.code(400).send({ error: "userId, paperId, blockId가 필요합니다" });
       }
 
-      await this.paperService.deleteSentence(blockId);
+      await this.paperService.deleteSentence(userId, paperId, blockId);
       return reply.code(200).send({ success: true });
     } catch (error) {
       console.error("Error deleting sentence:", error);
-      return reply.code(500).send({ error: "Failed to delete sentence" });
+      return reply.code(500).send({ error: "문장 삭제에 실패했습니다" });
     }
   }
 
   /**
-   * Delete a block
+   * 블록 삭제
    */
   async deleteBlock(
-    request: FastifyRequest<{ Params: { blockId: string } }>,
+    request: FastifyRequest<{
+      Body: {
+        userId: string;
+        paperId: string;
+        blockId: string;
+      }
+    }>,
     reply: FastifyReply
   ): Promise<void> {
     try {
-      const { blockId } = request.params;
+      const { userId, paperId, blockId } = request.body;
 
-      if (!blockId) {
-        return reply.code(400).send({ error: "Missing blockId" });
+      if (!userId || !paperId || !blockId) {
+        return reply.code(400).send({ error: "userId, paperId, blockId가 필요합니다" });
       }
 
-      await this.paperService.deleteBlock(blockId);
+      await this.paperService.deleteBlock(userId, paperId, blockId);
       return reply.code(200).send({ success: true });
     } catch (error) {
       console.error("Error deleting block:", error);
-      return reply.code(500).send({ error: "Failed to delete block" });
+      return reply.code(500).send({ error: "블록 삭제에 실패했습니다" });
     }
   }
 
   /**
-   * ask LLM a question
+   * LLM에 질문하기
    */
   async askLLM(
     request: FastifyRequest<{
@@ -256,121 +318,136 @@ export class PaperController {
     }
   }
 
-  async updateSentenceIntent(
+  /**
+   * 협업자 추가
+   */
+  async addCollaborator(
     request: FastifyRequest<{
-      Body: { blockId: string; intent: string };
+      Params: { id: string };
+      Body: { userId: string; collaboratorUsername: string };
     }>,
     reply: FastifyReply
   ) {
     try {
-      const { blockId, intent } = request.body;
+      const { id } = request.params;
+      const { userId, collaboratorUsername } = request.body;
 
-      // Validate input
-      if (!blockId || !intent) {
-        return reply
-          .code(400)
-          .send({ error: "blockId and intent are required" });
+      if (!userId || !id || !collaboratorUsername) {
+        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername이 필요합니다" });
       }
 
-      // Get current paper content
-      const paper = await this.paperService.getPaper();
-
-      // Helper function to find and update sentence
-      const findAndUpdateSentence = (content: any): boolean => {
-        if (content["block-id"] === blockId && content.type === "sentence") {
-          content.intent = intent;
-          return true;
-        }
-
-        if (Array.isArray(content.content)) {
-          for (const child of content.content) {
-            if (findAndUpdateSentence(child)) return true;
-          }
-        }
-
-        return false;
-      };
-
-      // Try to find and update the sentence
-      const found = findAndUpdateSentence(paper);
-      if (!found) {
-        return reply.code(404).send({ error: "Sentence not found" });
-      }
-
-      // Save updated paper
-      await this.paperService.savePaper(paper);
-
-      return reply.send({ success: true });
+      await this.paperService.addCollaborator(id, userId, collaboratorUsername);
+      return { success: true };
     } catch (error) {
-      console.error("Error updating sentence intent:", error);
-      return reply
-        .code(500)
-        .send({ error: "Failed to update sentence intent" });
-    }
-  }
-
-  async updateSentenceSummary(
-    request: FastifyRequest<{
-      Body: { blockId: string; summary: string };
-    }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { blockId, summary } = request.body;
-
-      // Validate input
-      if (!blockId || !summary) {
-        return reply
-          .code(400)
-          .send({ error: "blockId and summary are required" });
-      }
-
-      // Get current paper content
-      const paper = await this.paperService.getPaper();
-
-      // Helper function to find and update sentence
-      const findAndUpdateSentence = (content: any): boolean => {
-        if (content["block-id"] === blockId && content.type === "sentence") {
-          content.summary = summary;
-          return true;
-        }
-
-        if (Array.isArray(content.content)) {
-          for (const child of content.content) {
-            if (findAndUpdateSentence(child)) return true;
-          }
-        }
-
-        return false;
-      };
-
-      // Try to find and update the sentence
-      const found = findAndUpdateSentence(paper);
-      if (!found) {
-        return reply.code(404).send({ error: "Sentence not found" });
-      }
-
-      // Save updated paper
-      await this.paperService.savePaper(paper);
-
-      return reply.send({ success: true });
-    } catch (error) {
-      console.error("Error updating sentence summary:", error);
-      return reply
-        .code(500)
-        .send({ error: "Failed to update sentence summary" });
+      console.error("Error adding collaborator:", error);
+      return reply.code(500).send({ error: "협업자 추가에 실패했습니다" });
     }
   }
 
   /**
-   * Export paper to LaTeX format
+   * 문서 내용 처리 (텍스트를 구조화된 문서로 변환)
    */
-  async exportPaper(request: FastifyRequest, reply: FastifyReply) {
+  async processPaper(
+    request: FastifyRequest<{
+      Body: { content: string; userId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      // Get the latest paper data
-      const paper = await this.paperService.getPaper();
+      const { content, userId } = request.body;
 
-      // Export to LaTeX
+      if (!content) {
+        return reply.code(400).send({
+          success: false,
+          error: "content가 필요합니다"
+        });
+      }
+
+      if (!userId) {
+        return reply.code(400).send({
+          success: false,
+          error: "userId가 필요합니다"
+        });
+      }
+
+      // 파일 유형 감지
+      const fileType = detectFileType(content);
+      
+      // 제목 추출
+      const title = extractTitle(content, fileType);
+      
+      // 현재 시간 기준 타임스탬프
+      const baseTimestamp = Date.now();
+      
+      // 콘텐츠 처리
+      let processedContent;
+      if (fileType === 'latex') {
+        processedContent = processLatexContent(content, baseTimestamp);
+      } else {
+        // 기본적으로 문단 하나로 처리
+        processedContent = [{
+          "block-id": String(baseTimestamp),
+          type: "paragraph",
+          content: [{
+            "block-id": String(baseTimestamp + 1),
+            type: "sentence",
+            content: content,
+            summary: "",
+            intent: ""
+          }],
+          summary: "",
+          intent: ""
+        }];
+      }
+
+      // 처리된 페이퍼 객체 생성
+      const processedPaper = {
+        title,
+        summary: "",
+        intent: "",
+        type: "paper",
+        content: processedContent,
+        "block-id": String(baseTimestamp - 1),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        version: 1,
+        userId: userId
+      };
+
+      // 반환
+      return reply.send({
+        success: true,
+        paper: processedPaper
+      });
+    } catch (error) {
+      console.error("Error processing paper:", error);
+      return reply.code(500).send({
+        success: false,
+        error: "문서 처리에 실패했습니다"
+      });
+    }
+  }
+
+  /**
+   * 문서를 LaTeX 형식으로 내보내기
+   */
+  async exportPaper(
+    request: FastifyRequest<{
+      Querystring: { userId: string; paperId: string }
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { userId, paperId } = request.query;
+      
+      if (!userId || !paperId) {
+        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+      }
+      
+      // 최신 문서 데이터 가져오기
+      const paper = await this.paperService.getPaperById(userId, paperId);
+
+      // LaTeX로 변환
       const latexContent = await this.paperService.exportToLatex(paper);
 
       return {
@@ -388,74 +465,24 @@ export class PaperController {
   }
 
   /**
-   * Initialize data by resetting paper.json and chat.json
+   * 렌더링된 요약 업데이트
    */
-  async initializeData(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      // Import the file utilities
-      const {
-        ensureDataDirectoryExists,
-        initializePaperJson,
-        initializeChatJson,
-      } = await import("../utils/fileUtils");
-
-      // Ensure the data directory exists and is writable
-      const dataDir = ensureDataDirectoryExists();
-      if (!dataDir) {
-        throw new Error("Could not access data directory for initialization");
-      }
-
-      // Create the initial paper template
-      const initialPaper: Paper = {
-        title: "New Paper",
-        "block-id": Date.now().toString(),
-        summary: "",
-        intent: "",
-        type: "paper",
-        content: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        version: 1,
-      };
-
-      // Initialize paper both in file system and in-memory repository
-      const paperJsonPath = initializePaperJson(dataDir, initialPaper);
-      if (!paperJsonPath) {
-        throw new Error("Failed to initialize paper.json");
-      }
-
-      // Also update paper in the service repository
-      await this.paperService.savePaper(initialPaper);
-
-      // Initialize chat.json
-      const chatJsonPath = initializeChatJson(dataDir);
-      if (!chatJsonPath) {
-        throw new Error("Failed to initialize chat.json");
-      }
-
-      return {
-        success: true,
-        message: "Paper and chat data initialized successfully",
-      };
-    } catch (error) {
-      console.error("Error initializing data:", error);
-      const errorMessage = (error as Error).message;
-      return reply.status(500).send({
-        success: false,
-        error: errorMessage,
-      });
-    }
-  }
-
   async updateRenderedSummaries(
     request: FastifyRequest<{
-      Body: { renderedContent: string; blockId: string };
+      Body: { userId: string; paperId: string; renderedContent: string; blockId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
-      const { renderedContent, blockId } = request.body;
+      const { userId, paperId, renderedContent, blockId } = request.body;
+      
+      if (!userId || !paperId) {
+        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+      }
+      
       const result = await this.paperService.updateRenderedSummaries(
+        userId,
+        paperId,
         renderedContent,
         blockId
       );
@@ -464,79 +491,7 @@ export class PaperController {
       console.error("Error updating rendered summaries:", error);
       return reply
         .status(500)
-        .send({ success: false, error: "Failed to update summaries" });
-    }
-  }
-
-  /**
-   * 특정 사용자의 모든 문서 목록 조회
-   */
-  async getUserPapers(request: FastifyRequest<{ Querystring: { userId: string } }>, reply: FastifyReply) {
-    try {
-      const { userId } = request.query;
-      if (!userId) {
-        return reply.code(400).send({ error: "userId is required" });
-      }
-      const papers = await this.paperService.getUserPapers(userId);
-      return papers;
-    } catch (error) {
-      console.error("Error in getUserPapers:", error);
-      return reply.code(500).send({ error: "Failed to get user papers" });
-    }
-  }
-
-  /**
-   * 새 문서 생성
-   */
-  async createPaper(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { userId, title, content } = request.body as {
-        userId: string;
-        title: string;
-        content?: string;
-      };
-      const paper = await this.paperService.createPaper(userId, title, content);
-      return reply.send(paper);
-    } catch (error) {
-      console.error("Error in createPaper:", error);
-      return reply.status(500).send({ error: "Failed to create paper" });
-    }
-  }
-
-  /**
-   * 협업자 추가
-   */
-  async addCollaborator(
-    request: FastifyRequest<{
-      Params: { id: string };
-      Body: { userId: string; collaboratorUsername: string };
-    }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { id } = request.params;
-      const { userId, collaboratorUsername } = request.body;
-
-      if (!userId) {
-        return reply.code(400).send({ error: "userId is required" });
-      }
-
-      await this.paperService.addCollaborator(id, userId, collaboratorUsername);
-      return { success: true };
-    } catch (error) {
-      console.error("Error adding collaborator:", error);
-      return reply.code(500).send({ error: "Failed to add collaborator" });
-    }
-  }
-
-  async savePaper(request: FastifyRequest<{ Body: Paper }>, reply: FastifyReply) {
-    try {
-      const paper = request.body;
-      const result = await this.paperService.savePaper(paper);
-      return reply.send(result);
-    } catch (error) {
-      console.error("Error in savePaper:", error);
-      return reply.code(500).send({ error: "Failed to save paper" });
+        .send({ success: false, error: "요약 업데이트에 실패했습니다" });
     }
   }
 }
