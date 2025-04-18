@@ -3,6 +3,7 @@ import { PaperRepository } from "../repositories/paperRepository";
 import { LLMService } from "./llmService";
 import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
+import mongoose from "mongoose";
 
 export class PaperService {
   private paperRepository: PaperRepository;
@@ -376,6 +377,7 @@ export class PaperService {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           version: 1,
+          _id: new mongoose.Types.ObjectId().toString()
         };
         
         // MongoDB에 저장
@@ -392,6 +394,7 @@ export class PaperService {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           version: 1,
+          _id: new mongoose.Types.ObjectId().toString()
         };
         
         // MongoDB에 저장
@@ -455,5 +458,12 @@ export class PaperService {
       blockId,
       targetKey
     );
+  }
+
+  /**
+   * 논문 삭제
+   */
+  async deletePaper(userId: string, paperId: string): Promise<void> {
+    return this.paperRepository.deletePaper(userId, paperId);
   }
 }

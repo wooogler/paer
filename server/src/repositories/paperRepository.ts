@@ -665,4 +665,68 @@ export class PaperRepository {
       throw new Error(`Failed to save paper: ${(error as Error).message}`);
     }
   }
+
+  /**
+   * 논문 삭제
+   */
+  async deletePaper(userId: string, paperId: string): Promise<void> {
+    try {
+      console.log(`Attempting to delete paper. userId: ${userId}, paperId: ${paperId}`);
+      
+      if (!isValidObjectId(userId)) {
+        console.error(`Invalid userId format: ${userId}`);
+        throw new Error("Invalid userId format");
+      }
+      
+      if (!isValidObjectId(paperId)) {
+        console.error(`Invalid paperId format: ${paperId}`);
+        throw new Error("Invalid paperId format");
+      }
+
+      // 논문 존재 여부 확인
+      const paperExists = await Paper.findById(paperId);
+      if (!paperExists) {
+        console.error(`Paper not found with id: ${paperId}`);
+        throw new Error(`Paper not found with id: ${paperId}`);
+      }
+
+      // 사용자 권한 확인
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const hasPermission = await Paper.findOne({
+        _id: paperId,
+        $or: [
+          { userId: userObjectId },
+          { userId: userId },
+          { collaborators: userObjectId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!hasPermission) {
+        console.error(`User ${userId} does not have permission to delete paper ${paperId}`);
+        throw new Error("User does not have permission to delete this paper");
+      }
+
+      // 문서 조회 및 삭제
+      const result = await Paper.findOneAndDelete({
+        _id: paperId,
+        $or: [
+          { userId: userObjectId },
+          { userId: userId },
+          { collaborators: userObjectId },
+          { collaborators: userId }
+        ]
+      });
+
+      if (!result) {
+        console.error(`Failed to delete paper. Paper: ${paperId}, User: ${userId}`);
+        throw new Error("Failed to delete paper");
+      }
+      
+      console.log(`Successfully deleted paper ${paperId} for user ${userId}`);
+    } catch (error) {
+      console.error("Error deleting paper:", error);
+      throw new Error(`Failed to delete paper: ${(error as Error).message}`);
+    }
+  }
 }

@@ -39,9 +39,11 @@ export const updatePaper = async (paperId: string, paperData: any) => {
   }
 };
 
-export const deletePaper = async (paperId: string) => {
+export const deletePaper = async (paperId: string, userId: string) => {
   try {
-    const response = await api.delete(`/papers/${paperId}`);
+    const response = await api.delete(`/papers/${paperId}`, {
+      params: { userId }
+    });
     return response.data;
   } catch (error) {
     console.error("Error deleting paper:", error);

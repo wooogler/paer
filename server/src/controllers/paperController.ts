@@ -4,6 +4,7 @@ import { ContentType, PaperSchema, Paper } from "@paer/shared";
 import { PaperService } from "../services/paperService";
 import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
 import { PaperRepository } from "../repositories/paperRepository";
+import mongoose from "mongoose";
 
 export class PaperController {
   private paperService: PaperService;
@@ -112,7 +113,8 @@ export class PaperController {
           "block-id": String(baseTimestamp - 1),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          version: 1
+          version: 1,
+          _id: new mongoose.Types.ObjectId().toString()
         };
 
         // 저장 로직
@@ -485,6 +487,41 @@ export class PaperController {
       return reply
         .status(500)
         .send({ success: false, error: "요약 업데이트에 실패했습니다" });
+    }
+  }
+
+  /**
+   * 논문 삭제
+   */
+  async deletePaper(
+    request: FastifyRequest<{
+      Params: { id: string };
+      Querystring: { userId: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<void> {
+    try {
+      const { id } = request.params;
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ 
+          success: false,
+          error: "userId가 필요합니다" 
+        });
+      }
+
+      await this.paperService.deletePaper(userId, id);
+      return reply.send({ 
+        success: true,
+        message: "논문이 성공적으로 삭제되었습니다" 
+      });
+    } catch (error) {
+      console.error("Error deleting paper:", error);
+      return reply.code(500).send({ 
+        success: false,
+        error: "논문 삭제에 실패했습니다" 
+      });
     }
   }
 }

@@ -161,21 +161,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           if (typeof contentStore.setSelectedBlock === "function") {
             contentStore.setSelectedBlock(null, null);
           }
-
-          // Reset content data
-          if (typeof contentStore.setContent === "function") {
-            contentStore.setContent({
-              title: "New Paper",
-              summary: "",
-              intent: "",
-              type: "paper",
-              content: [],
-              "block-id": Date.now().toString(),
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              version: 1,
-            });
-          }
         }
 
         // Reset chat store

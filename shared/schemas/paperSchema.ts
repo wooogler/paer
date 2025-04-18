@@ -3,6 +3,7 @@ import { Content, ContentSchema } from "./contentSchema";
 
 // Define Paper interface for better type safety
 export interface Paper extends Omit<Content, "content"> {
+  _id: string;
   title: string; // title is required for Paper (not optional)
   content: Content[];
   // Paper specific properties
@@ -16,6 +17,7 @@ export interface Paper extends Omit<Content, "content"> {
 
 // Define paper schema
 export const PaperSchema: z.ZodType<Paper> = z.object({
+  _id: z.string(),
   title: z.string(),
   summary: z.string(),
   intent: z.string(),

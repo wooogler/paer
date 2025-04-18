@@ -190,6 +190,17 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       return paperController.addCollaborator(request, reply);
     }
   );
+
+  // DELETE /api/papers/:id - 논문 삭제
+  fastify.delete<{
+    Params: { id: string };
+    Querystring: { userId: string };
+  }>(
+    "/:id",
+    async (request, reply) => {
+      return paperController.deletePaper(request, reply);
+    }
+  );
 };
 
 export default paperRoutes;
