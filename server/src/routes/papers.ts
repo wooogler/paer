@@ -191,6 +191,16 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
+  // POST /api/papers/update-rendered-summaries - 렌더링된 컨텐츠의 요약 및 의도 업데이트
+  fastify.post<{
+    Body: { userId: string; paperId: string; renderedContent: string; blockId: string };
+  }>(
+    "/update-rendered-summaries",
+    async (request, reply) => {
+      return paperController.updateRenderedSummaries(request, reply);
+    }
+  );
+
   // DELETE /api/papers/:id - 논문 삭제
   fastify.delete<{
     Params: { id: string };

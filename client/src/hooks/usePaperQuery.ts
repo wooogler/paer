@@ -11,9 +11,9 @@ import {
 } from "../api/paperApi";
 import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
-import { Paper, ContentType } from "@paer/shared";
-import { isValidObjectId } from "../utils/validation";
+import { ContentType } from "@paer/shared";
 import { useAppStore } from "../store/useAppStore";
+import { isValidObjectId } from "src/utils/validation";
 
 // Global variable to store the blockId of the newly added sentence
 let newSentenceBlockId: string | null = null;
@@ -22,6 +22,7 @@ export const usePaperQuery = () => {
   const userId = useAppStore((state) => state.userId);
   const setContent = useContentStore((state) => state.setContent);
   const setLoading = useContentStore((state) => state.setLoading);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   const query = useQuery({
     queryKey: ["papers", userId],
@@ -41,12 +42,18 @@ export const usePaperQuery = () => {
 
   useEffect(() => {
     if (query.data) {
-      // If data is an array, use the first paper
-      const paperData = Array.isArray(query.data) ? query.data[0] : query.data;
-      setContent(paperData);
-    } else {
-      // Set content to null when no paper exists
-      setContent(null);
+      // 항상 최신 데이터로 업데이트
+      const papers = Array.isArray(query.data) ? query.data : [query.data];
+      const selectedPaper = selectedPaperId 
+        ? papers.find(paper => paper._id === selectedPaperId)
+        : papers[0]; // If no selectedPaperId, use the first paper
+      
+      if (selectedPaper) {
+        setContent(selectedPaper);
+
+        // 디버깅을 위한 로그 추가
+        console.log("Paper data updated:", selectedPaper);
+      }
     }
     const isCurrentlyLoading =
       query.isLoading || query.isPending || query.isFetching;
@@ -62,6 +69,7 @@ export const usePaperQuery = () => {
     query.isFetching,
     setContent,
     setLoading,
+    selectedPaperId,
   ]);
 
   return query;
@@ -111,7 +119,7 @@ export const useUpdateSentence = () => {
         const newData = await getPapers(userId);
 
         // Update both cache and state with the new data
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
         setContent(newData);
 
         // If current selected content exists, select it again to update UI
@@ -124,7 +132,7 @@ export const useUpdateSentence = () => {
 
         // Invalidate query to ensure all components are updated
         await queryClient.invalidateQueries({
-          queryKey: ["paper"],
+          queryKey: ["papers", userId],
           exact: true,
           refetchType: "active",
         });
@@ -151,7 +159,7 @@ export function useDeleteSentence() {
         const newData = await getPapers(userId);
 
         // Cache directly update
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
 
         // State directly update
         setContent(newData);
@@ -169,7 +177,7 @@ export function useDeleteSentence() {
 
       // Invalidate query immediately (refresh immediately)
       queryClient.invalidateQueries({
-        queryKey: ["paper"],
+        queryKey: ["papers", userId],
         exact: true,
         refetchType: "active",
       });
@@ -201,7 +209,7 @@ export function useUpdateBlockIntent() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
         setContent(newData);
 
         if (selectedContent && selectedPath) {
@@ -215,7 +223,7 @@ export function useUpdateBlockIntent() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["paper"],
+        queryKey: ["papers", userId],
         exact: true,
         refetchType: "active",
       });
@@ -247,7 +255,7 @@ export function useUpdateBlockSummary() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
         setContent(newData);
 
         if (selectedContent && selectedPath) {
@@ -261,7 +269,7 @@ export function useUpdateBlockSummary() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["paper"],
+        queryKey: ["papers", userId],
         exact: true,
         refetchType: "active",
       });
@@ -293,7 +301,7 @@ export function useUpdateBlockTitle() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
         setContent(newData);
 
         if (selectedContent && selectedPath) {
@@ -307,7 +315,7 @@ export function useUpdateBlockTitle() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["paper"],
+        queryKey: ["papers", userId],
         exact: true,
         refetchType: "active",
       });
@@ -355,7 +363,7 @@ export function useAddBlock() {
     onSuccess: async (newBlockId) => {
       try {
         const newData = await getPapers(userId);
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
         setContent(newData);
 
         // If the current selected content exists, select it again to update UI
@@ -370,7 +378,7 @@ export function useAddBlock() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["paper"],
+        queryKey: ["papers", userId],
         exact: true,
         refetchType: "active",
       });
@@ -391,7 +399,7 @@ export function useDeleteBlock() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
-        queryClient.setQueryData(["paper"], newData);
+        queryClient.setQueryData(["papers", userId], newData);
         setContent(newData);
 
         if (selectedContent && selectedPath) {
@@ -405,7 +413,7 @@ export function useDeleteBlock() {
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["paper"],
+        queryKey: ["papers", userId],
         exact: true,
         refetchType: "active",
       });

@@ -9,7 +9,8 @@ export class ChatRepository {
   async getMessages(userId: string, paperId: string): Promise<ChatMessage[]> {
     try {
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return [];
       }
 
       const chat = await Chat.findOne({
@@ -34,7 +35,8 @@ export class ChatRepository {
   async saveMessages(userId: string, paperId: string, messages: ChatMessage[]): Promise<void> {
     try {
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return;
       }
 
       await Chat.findOneAndUpdate(
@@ -44,7 +46,6 @@ export class ChatRepository {
       );
     } catch (error) {
       console.error("Error saving chat messages:", error);
-      throw new Error("Failed to save chat messages");
     }
   }
 
@@ -54,7 +55,8 @@ export class ChatRepository {
   async addMessage(userId: string, paperId: string, message: ChatMessage): Promise<void> {
     try {
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return;
       }
 
       await Chat.findOneAndUpdate(
@@ -64,7 +66,6 @@ export class ChatRepository {
       );
     } catch (error) {
       console.error("Error adding chat message:", error);
-      throw new Error("Failed to add chat message");
     }
   }
 
@@ -74,7 +75,8 @@ export class ChatRepository {
   async clearMessages(userId: string, paperId: string): Promise<void> {
     try {
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return;
       }
 
       await Chat.findOneAndUpdate(
@@ -84,7 +86,6 @@ export class ChatRepository {
       );
     } catch (error) {
       console.error("Error clearing chat messages:", error);
-      throw new Error("Failed to clear chat messages");
     }
   }
 
@@ -94,7 +95,8 @@ export class ChatRepository {
   async getMessagesByBlockId(userId: string, paperId: string, blockId: string): Promise<ChatMessage[]> {
     try {
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return [];
       }
 
       const chat = await Chat.findOne({
@@ -109,7 +111,7 @@ export class ChatRepository {
       return chat.messages.filter(message => message.blockId === blockId);
     } catch (error) {
       console.error("Error getting messages by blockId:", error);
-      throw new Error("Failed to get messages by blockId");
+      return [];
     }
   }
 
@@ -119,7 +121,8 @@ export class ChatRepository {
   async deleteMessageById(userId: string, paperId: string, messageId: string): Promise<void> {
     try {
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return;
       }
 
       await Chat.findOneAndUpdate(
@@ -128,7 +131,6 @@ export class ChatRepository {
       );
     } catch (error) {
       console.error("Error deleting message:", error);
-      throw new Error("Failed to delete message");
     }
   }
 }

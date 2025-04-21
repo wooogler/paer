@@ -1,12 +1,18 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ChatService } from "../services/chatService";
 import { ChatMessage } from "../types/chat";
+import { PaperService } from "../services/paperService";
+import { LLMService } from "../services/llmService";
 
 export class ChatController {
   private chatService: ChatService;
+  private paperService: PaperService;
+  private llmService: LLMService;
 
   constructor() {
     this.chatService = new ChatService();
+    this.paperService = new PaperService();
+    this.llmService = new LLMService();
   }
 
   /**
@@ -25,6 +31,10 @@ export class ChatController {
 
       if (!userId) {
         return reply.code(400).send({ error: "userId is required" });
+      }
+
+      if (!paperId) {
+        return reply.code(400).send({ error: "paperId is required" });
       }
 
       const messages = await this.chatService.getMessages(userId, paperId);
@@ -64,7 +74,7 @@ export class ChatController {
   }
 
   /**
-   * 새로운 메시지를 추가합니다.
+   * 새로운 메시지를 추가하고 OpenAI 응답을 저장합니다.
    */
   async addMessage(
     request: FastifyRequest<{
@@ -77,11 +87,55 @@ export class ChatController {
       const { paperId } = request.params;
       const { userId, ...message } = request.body;
 
+      console.log('ChatController - Received message:', {
+        paperId,
+        userId,
+        message
+      });
+
       if (!userId) {
         return reply.code(400).send({ error: "userId is required" });
       }
 
+      // 사용자 메시지 저장
       await this.chatService.addMessage(userId, paperId, message);
+
+      // 논문 내용 가져오기
+      const paper = await this.paperService.getPaperById(userId, paperId);
+      if (!paper) {
+        return reply.code(404).send({ error: "Paper not found" });
+      }
+
+      console.log('ChatController - Retrieved paper:', {
+        paperId,
+        content: paper.content
+      });
+
+      // 대화 초기화 (필요한 경우)
+      await this.llmService.initializeConversation(JSON.stringify(paper.content));
+
+      // OpenAI API 호출
+      const response = await this.llmService.askLLM(
+        message.content,
+        message.blockId ? JSON.stringify(paper.content) : undefined,
+        message.blockId
+      );
+
+      console.log('ChatController - OpenAI response:', response);
+
+      // OpenAI 응답을 메시지로 저장
+      if (response.choices[0].message?.content) {
+        const assistantMessage: ChatMessage = {
+          id: `assistant-${Date.now()}`,
+          role: "assistant",
+          content: response.choices[0].message.content,
+          timestamp: Date.now(),
+          blockId: message.blockId
+        };
+
+        await this.chatService.addMessage(userId, paperId, assistantMessage);
+      }
+
       return { success: true };
     } catch (error) {
       console.error("Error adding message:", error);

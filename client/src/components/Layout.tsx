@@ -7,8 +7,6 @@ import ChatInterface from "./chat/ChatInterface";
 import FileImport from "./FileImport";
 import { useAppStore } from "../store/useAppStore";
 import { useChatStore } from "../store/useChatStore";
-import { useStructureStore } from "../store/useStructureStore";
-import { usePaperStore } from "../store/paperStore";
 import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,8 +22,16 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { displayMode, showHierarchy, setShowHierarchy, userName, userId, logout } = useAppStore();
-  const { isStructureVisible, toggleStructureVisibility } = useStructureStore();
+  const { 
+    displayMode, 
+    showHierarchy, 
+    setShowHierarchy, 
+    userName, 
+    userId, 
+    logout,
+    isStructureVisible,
+    toggleStructureVisibility 
+  } = useAppStore();
   const {
     filterBlockId,
     isFilteringEnabled,
@@ -33,8 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     isChatVisible,
     toggleChatVisibility,
   } = useChatStore();
-  const { setPaper } = usePaperStore();
-  const { content: rootContent } = useContentStore();
+  const { content: rootContent, setContent } = useContentStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isPaperListOpen, setIsPaperListOpen] = useState(false);
@@ -42,7 +47,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   // Fetching data from server using React Query
   const { data: paperData, refetch } = usePaperQuery();
 
-  // 필터링된 콘텐츠 정보 가져오기
+  // Get filtered content information
   const filteredContent = useMemo(() => {
     if (!filterBlockId || !rootContent) return null;
 
@@ -66,12 +71,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return findContentByBlockId(rootContent, filterBlockId);
   }, [filterBlockId, rootContent]);
 
-  // 필터링 토글 처리
+  // Handle filtering toggle
   const handleToggleFiltering = () => {
     toggleFiltering(!isFilteringEnabled);
   };
 
-  // 페이지 로드 시 데이터 새로고침
+  // Refresh data on page load
   useEffect(() => {
     if (userId) {
       refetch();
@@ -87,19 +92,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       // FileImport 컴포넌트 내부에서도 로딩 상태를 관리합니다
       const response = await importPaper(content, userId);
       if (response.success) {
-        setPaper(response.paper);
+        setContent(response.paper);
         // 데이터 캐시 무효화하여 UI 업데이트
         await queryClient.invalidateQueries({
           queryKey: ["paper"],
           refetchType: "active", // 즉시 refetch 수행
         });
-        toast.success("논문이 성공적으로 가져와졌습니다.");
+        toast.success("Paper imported successfully.");
       } else {
-        throw new Error(response.error || "논문 가져오기에 실패했습니다.");
+        throw new Error(response.error || "Failed to import paper.");
       }
     } catch (error) {
       console.error("Error importing paper:", error);
-      toast.error(error instanceof Error ? error.message : "논문 가져오기에 실패했습니다.");
+      toast.error(error instanceof Error ? error.message : "Failed to import paper.");
     } finally {
       // 로딩 상태 해제
       const { setLoading } = useContentStore.getState();
@@ -178,6 +183,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   content:
                     "Hello! Do you need help with writing your document? How can I assist you?",
                   timestamp: Date.now(),
+                  userId: userId || "",
+                  paperId: "",
+                  userName: "System"
                 },
               ]);
             }
@@ -208,7 +216,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     localStorage.removeItem("user-storage");
     localStorage.removeItem("content-storage");
     navigate("/login");
-    toast.success("로그아웃 되었습니다.");
+    toast.success("Logged out successfully.");
   };
 
   return (
@@ -234,13 +242,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 title="Export Paper"
               >
                 <FiDownload />
-              </button>
-              <button
-                onClick={handleInitialize}
-                className="p-2 text-gray-600 hover:text-gray-800"
-                title="Initialize Paper"
-              >
-                <FiTrash2 />
               </button>
             </div>
           }
@@ -299,6 +300,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <FiLogOut />
                 </button>
               </div>
+              <button
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to clear all chat messages?")) {
+                    useChatStore.getState().clearMessages();
+                  }
+                }}
+                className="p-1.5 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 transition-colors"
+                title="Clear chat messages"
+              >
+                <FiTrash2 />
+              </button>
               {isFilteringEnabled && filterBlockId && (
                 <button
                   onClick={() => toggleFiltering(false)}

@@ -16,40 +16,40 @@ const Login: React.FC = () => {
     setError('');
 
     if (!username.trim()) {
-      setError('유저 이름을 입력해주세요.');
+      setError('Please enter a username.');
       return;
     }
 
     try {
-      // 먼저 유저가 존재하는지 확인
+      // Check if user exists
       const userResponse = await getUserIdByUsername(username);
       
       if (userResponse.success) {
-        // 유저가 존재하는 경우
+        // User exists
         setUserName(username);
-        setUserId(userResponse.userId);
+        setUserId(userResponse.userId || '');
         localStorage.setItem('username', username);
-        localStorage.setItem('userId', userResponse.userId);
-        toast.success('로그인 성공!');
+        localStorage.setItem('userId', userResponse.userId || '');
+        toast.success('Login successful!');
         navigate('/');
       } else {
-        // 유저가 존재하지 않는 경우, 새로 생성
+        // User doesn't exist, create new one
         const createResponse = await createUser(username);
         
         if (createResponse.success) {
           setUserName(username);
-          setUserId(createResponse.userId);
+          setUserId(createResponse.userId || '');
           localStorage.setItem('username', username);
-          localStorage.setItem('userId', createResponse.userId);
-          toast.success('새로운 계정이 생성되었습니다!');
+          localStorage.setItem('userId', createResponse.userId || '');
+          toast.success('New account created!');
           navigate('/');
         } else {
-          setError(createResponse.error || '계정 생성에 실패했습니다.');
+          setError(createResponse.error || 'Failed to create account.');
         }
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('로그인 중 오류가 발생했습니다.');
+      setError('An error occurred during login.');
     }
   };
 
@@ -58,14 +58,14 @@ const Login: React.FC = () => {
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            로그인
+            Login
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="username" className="sr-only">
-                유저 이름
+                Username
               </label>
               <input
                 id="username"
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="유저 이름"
+                placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -89,16 +89,16 @@ const Login: React.FC = () => {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              로그인
+              Login
             </button>
           </div>
           
           <div className="text-sm text-center">
             <p className="text-gray-600">
-              사용자 이름을 입력하면 해당 사용자의 논문을 조회합니다.
+              Enter a username to view the user's papers.
             </p>
             <p className="text-gray-500 text-xs mt-2">
-              예: testuser
+              Example: testuser
             </p>
           </div>
         </form>

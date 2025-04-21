@@ -39,7 +39,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     if (!content) {
       return (
         <div className="p-4 text-gray-500">
-          아직 작성된 논문이 없습니다. 새로운 논문을 작성해보세요.
+          No paper has been written yet. Please create a new paper.
         </div>
       );
     }
@@ -228,13 +228,15 @@ const TreeItem: React.FC<TreeItemProps> = memo(
         {/* Render child content recursively */}
         {Array.isArray(content.content) &&
           content.content.map((child: Content, index: number) => (
-            <TreeItem
-              key={child?.["block-id"] || index}
-              content={child}
-              path={[...path, index]}
-              depth={depth + 1}
-              displayMode={displayMode}
-            />
+            child.type !== "sentence" && (
+              <TreeItem
+                key={child?.["block-id"] || index}
+                content={child}
+                path={[...path, index]}
+                depth={depth + 1}
+                displayMode={displayMode}
+              />
+            )
           ))}
       </div>
     );

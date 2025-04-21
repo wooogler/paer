@@ -22,7 +22,7 @@ const ChatInterface: React.FC = () => {
     isFilteringEnabled,
     fetchMessages,
   } = useChatStore();
-  const { selectedContent, content: rootContent } = useContentStore();
+  const { selectedContent, content: rootContent, selectedPaperId } = useContentStore();
   const { userId } = useAppStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,7 @@ const ChatInterface: React.FC = () => {
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 메시지 로드하기
+  // Load messages when component mounts or selectedPaperId changes
   useEffect(() => {
     const loadMessages = async () => {
       if (!userId) {
@@ -41,8 +41,8 @@ const ChatInterface: React.FC = () => {
         return;
       }
 
-      // 논문이 없으면 메시지를 불러오지 않음
-      if (!rootContent) {
+      // Don't load messages if there's no paper
+      if (!rootContent || !selectedPaperId) {
         setIsLoadingMessages(false);
         return;
       }
@@ -58,7 +58,7 @@ const ChatInterface: React.FC = () => {
     };
 
     loadMessages();
-  }, [fetchMessages, userId, rootContent]);
+  }, [fetchMessages, userId, rootContent, selectedPaperId]);
 
   // Display welcome message only after loading messages from server
   useEffect(() => {
@@ -66,42 +66,44 @@ const ChatInterface: React.FC = () => {
       !isLoadingMessages &&
       messages.length === 0 &&
       !initialMessageRef.current &&
-      rootContent // 논문이 있을 때만 환영 메시지 표시
+      rootContent // Only show welcome message when there is a paper
     ) {
       initialMessageRef.current = true;
-      // 환영 메시지를 blockId 없이 직접 생성
+      // Create welcome message without blockId
       const welcomeMessage = {
         id: uuidv4(),
         role: "system" as const,
         content:
           "Hello! Do you need help with writing your document? How can I assist you?",
         timestamp: Date.now(),
-        // blockId 없음
+        userId: userId || "",
+        paperId: "",
+        userName: "System"
       };
 
-      // setMessages 함수를 통해 직접 추가
+      // Add directly through setMessages function
       setMessages([welcomeMessage]);
     }
-  }, [isLoadingMessages, messages.length, setMessages, rootContent]);
+  }, [isLoadingMessages, messages.length, setMessages, rootContent, userId]);
 
-  // 필터링된 메시지 목록 계산
+  // Calculate filtered messages list
   const filteredMessages = useMemo(() => {
     if (!isFilteringEnabled || !filterBlockId) return messages;
 
-    // 필터링된 blockId에 해당하는 메시지만 가져오기
-    // 재귀적으로 하위 콘텐츠 blockId도 포함
+    // Get only messages matching the filtered blockId
+    // Include child content blockIds recursively
     const blockIds = new Set<string | undefined>([filterBlockId]);
 
-    // 재귀 함수로 하위 콘텐츠의 blockId 수집
+    // Recursive function to collect child content blockIds
     const collectChildBlockIds = (content: any) => {
       if (!content) return;
 
-      // 현재 콘텐츠의 blockId 추가
+      // Add current content's blockId
       if (content["block-id"]) {
         blockIds.add(content["block-id"]);
       }
 
-      // 하위 콘텐츠가 배열인 경우 재귀적으로 처리
+      // Process child content recursively if it's an array
       if (content.content && Array.isArray(content.content)) {
         content.content.forEach((child: any) => {
           collectChildBlockIds(child);
@@ -109,16 +111,16 @@ const ChatInterface: React.FC = () => {
       }
     };
 
-    // 필터링된 blockId의 콘텐츠 찾기
+    // Find content by blockId
     const findContentByBlockId = (content: any, blockId: string): any => {
       if (!content) return null;
 
-      // 현재 콘텐츠가 찾는 blockId인지 확인
+      // Check if current content matches the blockId
       if (content["block-id"] === blockId) {
         return content;
       }
 
-      // 하위 콘텐츠 검색
+      // Search child content
       if (content.content && Array.isArray(content.content)) {
         for (const child of content.content) {
           const found = findContentByBlockId(child, blockId);
@@ -129,10 +131,10 @@ const ChatInterface: React.FC = () => {
       return null;
     };
 
-    // 루트 콘텐츠에서 필터 blockId 콘텐츠 찾기
+    // Find filtered blockId content in root content
     const filteredContent = findContentByBlockId(rootContent, filterBlockId);
 
-    // 찾은 콘텐츠의 하위 blockId 모두 수집
+    // Collect all child blockIds of found content
     collectChildBlockIds(filteredContent);
 
     return messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
@@ -152,7 +154,17 @@ const ChatInterface: React.FC = () => {
       e.preventDefault();
 
       if (input.trim()) {
-        await addMessage(input, "user");
+        const message = {
+          id: uuidv4(),
+          role: "user" as const,
+          content: input,
+          timestamp: Date.now(),
+          userId: userId || "",
+          paperId: rootContent?._id || "",
+          userName: "User",
+          blockId: selectedContent?.["block-id"]
+        };
+        await addMessage(message);
         setInput("");
 
         // Keep focus on input field
@@ -161,7 +173,7 @@ const ChatInterface: React.FC = () => {
         }, 0);
       }
     },
-    [input, addMessage]
+    [input, addMessage, userId, rootContent, selectedContent]
   );
 
   // Submit with Enter, line break with Shift+Enter
@@ -205,13 +217,13 @@ const ChatInterface: React.FC = () => {
           </div>
         ) : !rootContent ? (
           <div className="text-center text-gray-500 mt-4">
-            <p>논문이 없습니다. 먼저 논문을 입력해주세요.</p>
-            <p className="mt-2">파일 가져오기 버튼을 사용하여 논문을 업로드하거나 새 논문을 작성해보세요.</p>
+            <p>No paper available. Please input a paper first.</p>
+            <p className="mt-2">Use the import button to upload a paper or create a new one.</p>
           </div>
         ) : (
           <>
-            {filteredMessages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
+            {filteredMessages.map((message, index) => (
+              <ChatMessage key={`${message.id}-${index}`} message={message} />
             ))}
             {isLoading && (
               <div className="flex justify-start mb-4">
@@ -252,7 +264,7 @@ const ChatInterface: React.FC = () => {
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
             disabled={isLoading || !rootContent} // 로딩 중이거나 논문이 없을 때 비활성화
-            placeholder={rootContent ? "Type a message... (Press Enter to send, Shift+Enter for line break)" : "논문을 먼저 입력해주세요..."}
+            placeholder={rootContent ? "Type a message... (Press Enter to send, Shift+Enter for line break)" : "Please input a paper first..."}
             className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
           />
           <button

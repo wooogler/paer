@@ -147,9 +147,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const handleFocus = useCallback(() => {
       setIsFocused(true);
 
-      // 문장에 포커스가 생기면 selectedContent를 업데이트
+      // Update selectedContent when sentence gets focus
       if (content.type === "sentence" && path.length > 0) {
-        setSelectedContent(content, path);
+        setSelectedContent(content as any, path);
       }
     }, [content, path, setSelectedContent]);
 
@@ -327,7 +327,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           e.preventDefault(); // Prevent default Enter behavior
           handleUpdate(); // Execute update
 
-          // 업데이트 중에는 포커스를 유지하고, 성공 콜백에서 처리하도록 제거
+          // Keep focus during update, handle in success callback
           // if (textareaRef.current) {
           //   textareaRef.current.blur();
           // }
@@ -337,7 +337,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         if (e.key === "Enter" && e.shiftKey && content.type === "sentence") {
           e.preventDefault(); // Prevent default Enter behavior
 
-          // 다음 동작까지 처리하는 별도 함수 호출
+          // Handle next action in separate function
           handleUpdateWithNext();
         }
 

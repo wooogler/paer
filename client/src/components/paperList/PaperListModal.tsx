@@ -28,7 +28,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useAppStore();
-  const { setContent } = useContentStore();
+  const { setContent, setSelectedPaperId } = useContentStore();
 
   // 논문 목록 가져오기
   useEffect(() => {
@@ -42,7 +42,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
         setPapers(Array.isArray(papersData) ? papersData : []);
       } catch (err) {
         console.error("Failed to fetch papers:", err);
-        setError("논문 목록을 가져오는데 실패했습니다.");
+        setError("Failed to fetch papers.");
       } finally {
         setLoading(false);
       }
@@ -53,6 +53,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
 
   // 논문 선택 처리
   const handleSelectPaper = (paper: Paper) => {
+    setSelectedPaperId(paper._id);
     setContent(paper);
     onClose();
   };
@@ -62,16 +63,16 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
     event.stopPropagation(); // 이벤트 버블링 방지
     
     if (!paperId) {
-      toast.error("유효하지 않은 논문 ID입니다.");
+      toast.error("Invalid paper ID.");
       return;
     }
     
-    if (!window.confirm("이 논문을 삭제하시겠습니까?")) {
+    if (!window.confirm("Are you sure you want to delete this paper?")) {
       return;
     }
 
     if (!userId) {
-      toast.error("사용자 정보가 없습니다. 다시 로그인해주세요.");
+      toast.error("User information is missing. Please log in again.");
       return;
     }
 
@@ -80,14 +81,14 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
       if (response.success) {
         // 삭제된 논문을 목록에서 제거
         setPapers(papers.filter(paper => paper._id !== paperId));
-        toast.success("논문이 삭제되었습니다.");
+        toast.success("Paper deleted successfully.");
         onClose(); // 삭제 성공 후 모달 닫기
       } else {
-        throw new Error(response.error || "논문 삭제에 실패했습니다.");
+        throw new Error(response.error || "Failed to delete paper.");
       }
     } catch (err) {
       console.error("Failed to delete paper:", err);
-      toast.error(err instanceof Error ? err.message : "논문 삭제에 실패했습니다.");
+      toast.error(err instanceof Error ? err.message : "Failed to delete paper.");
     }
   };
 
@@ -121,7 +122,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
           >
             <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
               <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 flex justify-between items-center">
-                <span>논문 목록</span>
+                <span>Paper List</span>
                 <button
                   onClick={onClose}
                   className="text-gray-400 hover:text-gray-500 focus:outline-none"
@@ -133,7 +134,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
               <div className="mt-4">
                 {loading ? (
                   <div className="py-4 text-center text-gray-500">
-                    논문 목록을 불러오는 중...
+                    Loading papers...
                   </div>
                 ) : error ? (
                   <div className="py-4 text-center text-red-500">
@@ -141,7 +142,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 ) : papers.length === 0 ? (
                   <div className="py-4 text-center text-gray-500">
-                    등록된 논문이 없습니다.
+                    No papers registered.
                   </div>
                 ) : (
                   <ul className="divide-y divide-gray-200 max-h-80 overflow-y-auto">
@@ -157,18 +158,18 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
                               <FiBook className="text-blue-500" size={18} />
                             </div>
                             <div className="ml-3 flex-1">
-                              <p className="text-sm font-medium text-gray-900">{paper.title || "제목 없음"}</p>
+                              <p className="text-sm font-medium text-gray-900">{paper.title || "No title"}</p>
                               <p className="text-xs text-gray-500 mt-1">
                                 {paper.updatedAt 
-                                  ? `최종 수정: ${formatDate(new Date(paper.updatedAt))}` 
-                                  : "날짜 정보 없음"}
+                                  ? `Last modified: ${formatDate(new Date(paper.updatedAt))}` 
+                                  : "No date information"}
                               </p>
                             </div>
                           </div>
                           <button
                             onClick={(e) => handleDeletePaper(paper._id, e)}
                             className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-opacity"
-                            title="논문 삭제"
+                            title="Delete paper"
                           >
                             <FiTrash2 size={16} />
                           </button>

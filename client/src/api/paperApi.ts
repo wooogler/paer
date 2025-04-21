@@ -1,5 +1,15 @@
 import { type Paper, ContentType } from "@paer/shared";
-import api from "../services/api";
+import axios from "axios";
+import { useAppStore } from "../store/useAppStore";
+import { useContentStore } from "../store/useContentStore";
+
+// API instance 생성
+export const api = axios.create({
+  baseURL: "http://localhost:3000",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // API function definition
 export const getPapers = async (userId: string) => {
@@ -58,7 +68,17 @@ export const updateSentenceContent = async (
   summary: string,
   intent: string
 ) => {
-  const response = await api.put(`/papers/${blockId}/content`, {
+  const userId = useAppStore.getState().userId;
+  const paperId = useContentStore.getState().selectedPaperId;
+  
+  if (!userId || !paperId) {
+    throw new Error("User ID or Paper ID is missing");
+  }
+
+  const response = await api.patch("/papers/sentence", {
+    userId,
+    paperId,
+    blockId,
     content,
     summary,
     intent,

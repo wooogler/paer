@@ -1,6 +1,6 @@
 // import React from "react";
 import { useState } from "react";
-import { useUpdateSentence } from "../hooks/usePaperQuery";
+import { useUpdateSentence } from "../../hooks/usePaperQuery";
 
 interface SentenceBlock {
   id: string;
@@ -94,4 +94,4 @@ export const SentenceBlock = ({ block }: { block: SentenceBlock }) => {
       )}
     </div>
   );
-};
+}; 

@@ -2,9 +2,9 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { LLMService } from "../services/llmService";
 import { ContentType, PaperSchema, Paper } from "@paer/shared";
 import { PaperService } from "../services/paperService";
-import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
+import { extractTitle, processLatexContent } from "../utils/paperUtils";
 import { PaperRepository } from "../repositories/paperRepository";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 export class PaperController {
   private paperService: PaperService;
@@ -58,99 +58,82 @@ export class PaperController {
   /**
    * 새 문서 생성 - 콘텐츠 처리 및 저장 통합
    */
-  async createPaper(request: FastifyRequest<{
+  async createPaper(req: FastifyRequest<{
     Body: { userId: string; title?: string; content?: string }
   }>, reply: FastifyReply) {
     try {
-      const { userId, title, content } = request.body;
-      
-      if (!userId) {
-        return reply.code(400).send({ 
-          success: false,
-          error: "userId가 필요합니다" 
-        });
-      }
-      
-      // 콘텐츠가 제공된 경우 처리 로직 수행
-      if (content) {
-        // 파일 유형 감지
-        const fileType = detectFileType(content);
-        
-        // 제목 추출 또는 제공된 제목 사용
-        const extractedTitle = title || extractTitle(content, fileType);
-        
-        // 현재 시간 기준 타임스탬프
-        const baseTimestamp = Date.now();
-        
-        // 콘텐츠 처리
-        let processedContent;
-        if (fileType === 'latex') {
-          processedContent = processLatexContent(content, baseTimestamp);
-        } else {
-          // 기본적으로 문단 하나로 처리
-          processedContent = [{
-            "block-id": String(baseTimestamp),
-            type: "paragraph",
-            content: [{
-              "block-id": String(baseTimestamp + 1),
-              type: "sentence",
-              content: content,
-              summary: "",
-              intent: ""
-            }],
-            summary: "",
-            intent: ""
-          }];
-        }
+      const { userId, title, content } = req.body;
+      console.log('=== Paper 생성 시작 ===');
+      console.log('입력된 content:', content?.substring(0, 200) + '...');
 
-        // 처리된 페이퍼 객체 생성
-        const processedPaper = {
-          title: extractedTitle,
-          summary: "",
-          intent: "",
-          type: "paper" as const,
-          content: processedContent,
-          "block-id": String(baseTimestamp - 1),
+      if (!userId || !content) {
+        return reply.code(400).send({ error: 'userId and content are required' });
+      }
+
+      let processedPaper: Paper;
+      
+      // LaTeX 파일 감지 조건 수정
+      const isLatexFile = content.includes('\\documentclass') || 
+                         content.includes('\\begin{document}') || 
+                         content.includes('\\section{');
+      
+      if (isLatexFile) {
+        console.log('LaTeX 파일 감지됨');
+        // content에서 주석 제거
+        const cleanedContent = content.replace(/^%.*$/gm, '').trim();
+        console.log('주석 제거 후 content:', cleanedContent.substring(0, 200) + '...');
+        
+        const sectionsArray = processLatexContent(cleanedContent, Date.now());
+        console.log('처리된 섹션 수:', sectionsArray.length);
+        
+        processedPaper = {
+          _id: new Types.ObjectId().toString(),
+          title: extractTitle(cleanedContent, 'latex'),
+          summary: '',
+          intent: '',
+          type: 'paper',
+          content: sectionsArray,
+          'block-id': 'root',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          version: 1,
-          _id: new mongoose.Types.ObjectId().toString()
+          updatedAt: new Date().toISOString()
         };
-
-        // 저장 로직
-        await this.paperService.savePaper({
-          ...processedPaper,
-          userId
-        });
-
-        // 성공 응답
-        return reply.send({
-          success: true,
-          paper: processedPaper,
-          message: "문서가 성공적으로 처리되고 저장되었습니다"
-        });
       } else {
-        // 콘텐츠가 없는 경우 빈 문서 생성
-        if (!title) {
-          return reply.code(400).send({ 
-            success: false,
-            error: "title 또는 content가 필요합니다" 
-          });
-        }
-        
-        const paper = await this.paperService.createPaper(userId, title);
-        return reply.send({
-          success: true,
-          paper,
-          message: "빈 문서가 생성되었습니다"
-        });
+        processedPaper = {
+          _id: new Types.ObjectId().toString(),
+          title: title || extractTitle(content, 'text'),
+          summary: '',
+          intent: '',
+          type: 'paper',
+          content: [{
+            type: 'sentence' as ContentType,
+            content: content,
+            'block-id': 'root',
+            summary: '',
+            intent: ''
+          }],
+          'block-id': 'root',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
       }
-    } catch (error) {
-      console.error("Error in createPaper:", error);
-      return reply.code(500).send({ 
-        success: false,
-        error: "문서 생성에 실패했습니다" 
+
+      // 새 페이퍼 생성을 위해 _id를 완전히 제거합니다
+      const { _id, ...paperWithoutId } = processedPaper;
+      const paperToSave = { 
+        ...paperWithoutId,
+        userId 
+      };
+      
+      console.log('Creating paper without ID. Repository will generate a new ID.');
+      
+      const savedPaper = await this.paperService.savePaper(paperToSave as any);
+      return reply.code(201).send({ 
+        message: 'Paper created successfully',
+        paperId: savedPaper._id
       });
+    } catch (error) {
+      console.error('Error creating paper:', error);
+      return reply.code(500).send({ error: 'Failed to create paper' });
     }
   }
 

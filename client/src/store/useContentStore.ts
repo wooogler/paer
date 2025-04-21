@@ -4,6 +4,7 @@ import { devtools } from "zustand/middleware";
 import { Content, Paper } from "@paer/shared";
 
 const initialContent: Paper = {
+  _id: "",
   title: "New Paper",
   summary: "",
   intent: "",
@@ -18,8 +19,9 @@ interface ContentState {
   selectedBlock: Content | null;
   selectedBlockPath: number[] | null;
   parentContents: Content[]; // Parent contents of the selected content
-  isLoading: boolean; // 콘텐츠 로딩 상태
-  updatingBlockIds: string[]; // 현재 업데이트 중인 블록 ID 목록
+  isLoading: boolean; // Content loading status
+  updatingBlockIds: string[]; // List of currently updating block IDs
+  selectedPaperId: string | null;  // Added: Currently selected paper ID
 
   // Actions
   setContent: (content: Paper | null) => void;
@@ -33,12 +35,13 @@ interface ContentState {
   ) => void;
   removeContent: (path: number[]) => void;
   getContentByPath: (path: number[]) => Content | null;
-  setLoading: (isLoading: boolean) => void; // 로딩 상태 설정 함수
-  addUpdatingBlockId: (blockId: string) => void; // 업데이트 중인 블록 ID 추가
-  removeUpdatingBlockId: (blockId: string) => void; // 업데이트 중인 블록 ID 제거
-  clearUpdatingBlockIds: () => void; // 업데이트 중인 블록 ID 모두 제거
-  isBlockUpdating: (blockId: string) => boolean; // 해당 블록이 업데이트 중인지 확인
+  setLoading: (isLoading: boolean) => void; // Function to set loading status
+  addUpdatingBlockId: (blockId: string) => void; // Function to add updating block ID
+  removeUpdatingBlockId: (blockId: string) => void; // Function to remove updating block ID
+  clearUpdatingBlockIds: () => void; // Function to clear all updating block IDs
+  isBlockUpdating: (blockId: string) => boolean; // Function to check if a block is updating
   clearSelectedContent: () => void;
+  setSelectedPaperId: (paperId: string | null) => void;  // Added: Function to set paper ID
 }
 
 export const useContentStore = create<ContentState>()(
@@ -54,10 +57,24 @@ export const useContentStore = create<ContentState>()(
         parentContents: [],
         isLoading: false,
         updatingBlockIds: [],
+        selectedPaperId: null,  // Added: Initial value null
 
         // Actions
         setContent: (content) => {
-          set({ content });
+          // content가 null이거나 selectedPaperId와 일치하는 경우에만 업데이트
+          const currentPaperId = get().selectedPaperId;
+          if (!content || content._id === currentPaperId) {
+            set({ content });
+          }
+        },
+
+        // 추가: 페이퍼 ID 설정 함수
+        setSelectedPaperId: (paperId) => {
+          set({ selectedPaperId: paperId });
+          // 페이퍼 ID가 변경되면 content 초기화
+          if (paperId !== get().selectedPaperId) {
+            set({ content: null });
+          }
         },
 
         // 로딩 상태 설정
@@ -112,11 +129,13 @@ export const useContentStore = create<ContentState>()(
           }
 
           const rootContent = get().content;
+          if (!rootContent) return;
+
           const parentContents: Content[] = [];
 
           // Find parent contents based on path
           if (path.length > 0) {
-            let current: Content = rootContent;
+            let current: Content = rootContent as Content;
             parentContents.push(current); // paper level
 
             const currentPath: number[] = [];
@@ -136,7 +155,7 @@ export const useContentStore = create<ContentState>()(
           return set({
             selectedBlock: content,
             selectedBlockPath: path,
-            selectedContent: content, // 초기에는 selectedContent도 동일한 값으로 설정
+            selectedContent: content as Paper, // Cast to Paper type
             selectedPath: path,
             parentContents,
           });
@@ -165,6 +184,8 @@ export const useContentStore = create<ContentState>()(
         // Update content by blockId
         updateContent: (blockId: string, updatedContent: Partial<Content>) =>
           set((state) => {
+            if (!state.content) return state;
+            
             const newContent = JSON.parse(
               JSON.stringify(state.content)
             ) as Paper; // Deep copy
@@ -217,7 +238,7 @@ export const useContentStore = create<ContentState>()(
             // Update the selected content if it matches the blockId
             const updatedSelectedContent =
               state.selectedContent?.["block-id"] === blockId
-                ? { ...state.selectedContent, ...result.updatedContent }
+                ? { ...state.selectedContent, ...result.updatedContent } as Paper
                 : state.selectedContent;
 
             // Update parent contents if needed
@@ -226,6 +247,7 @@ export const useContentStore = create<ContentState>()(
               : state.parentContents;
 
             return {
+              ...state,
               content: newContent,
               selectedContent: updatedSelectedContent,
               parentContents: updatedParentContents,
@@ -322,9 +344,10 @@ export const useContentStore = create<ContentState>()(
           selectedBlock: state.selectedBlock,
           selectedBlockPath: state.selectedBlockPath,
           parentContents: state.parentContents,
+          selectedPaperId: state.selectedPaperId,  // Added: Also store selectedPaperId
         }),
       }
     ),
-    { name: "Content Store" } // Redux DevTools에 표시될 이름
+    { name: "Content Store" } // Name to display in Redux DevTools
   )
 );

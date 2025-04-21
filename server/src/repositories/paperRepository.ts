@@ -20,11 +20,14 @@ export class PaperRepository {
         throw new Error("Invalid userId or paperId");
       }
 
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const paperObjectId = new mongoose.Types.ObjectId(paperId);
+
       const paper = await Paper.findOne({
-        _id: paperId,
+        _id: paperObjectId,
         $or: [
-          { userId: userId },
-          { collaborators: userId }
+          { userId: userObjectId },
+          { collaborators: userObjectId }
         ]
       });
 
@@ -32,7 +35,18 @@ export class PaperRepository {
         return null;
       }
 
-      return paper.content;
+      const paperContent = paper.content as Content;
+      return {
+        _id: (paper._id as mongoose.Types.ObjectId).toString(),
+        title: paper.title,
+        content: paperContent.content as Content[],
+        type: "paper",
+        summary: paperContent.summary || "",
+        intent: paperContent.intent || "",
+        createdAt: paper.createdAt?.toISOString(),
+        updatedAt: paper.updatedAt?.toISOString(),
+        "block-id": paperContent["block-id"]
+      };
     } catch (error) {
       console.error("Failed to read paper data:", error);
       throw new Error("Failed to read paper data");
@@ -132,20 +146,33 @@ export class PaperRepository {
     intent: string
   ): Promise<void> {
     try {
+      console.log('updateSentence called with:', { userId, paperId, blockId });
+      
       if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        console.log('Invalid IDs:', { userId, paperId });
         throw new Error("Invalid userId or paperId");
       }
 
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const paperObjectId = new mongoose.Types.ObjectId(paperId);
+
       // 먼저 문서를 찾음
       const paper = await Paper.findOne({
-        _id: paperId,
+        _id: paperObjectId,
         $or: [
-          { userId: userId },
-          { collaborators: userId }
+          { userId: userObjectId },
+          { collaborators: userObjectId }
         ]
       });
 
       if (!paper) {
+        console.log('Paper not found with query:', {
+          _id: paperObjectId,
+          $or: [
+            { userId: userObjectId },
+            { collaborators: userObjectId }
+          ]
+        });
         throw new Error(`Paper not found`);
       }
 
@@ -592,6 +619,11 @@ export class PaperRepository {
   async savePaper(userId: string, paper: SharedPaper): Promise<SharedPaper> {
     try {
       console.log('Attempting to save paper for userId:', userId);
+      console.log('Paper object received:', JSON.stringify({
+        _id: paper._id,
+        title: paper.title,
+        'block-id': paper['block-id']
+      }));
       
       let userObjectId: mongoose.Types.ObjectId;
 
@@ -613,7 +645,8 @@ export class PaperRepository {
       // 기존 논문 업데이트 또는 새 논문 생성
       const paperData = { ...paper } as any;
       
-      if (paperData._id) {
+      // 명시적으로 paperData._id가 유효한 ObjectId인지 확인
+      if (paperData._id && isValidObjectId(paperData._id)) {
         console.log(`Updating existing paper with ID: ${paperData._id}`);
         
         const existingPaper = await Paper.findOne({
@@ -644,7 +677,7 @@ export class PaperRepository {
         } as any;
       } else {
         // 새 논문 생성
-        console.log('Creating new paper');
+        console.log('Creating new paper - no _id provided');
         const newPaper = await Paper.create({
           userId: userObjectId,
           title: paper.title || 'Untitled Paper',

@@ -1,4 +1,4 @@
-import api from "../services/api";
+import { api } from "./paperApi";
 
 export interface Message {
   id: string;
@@ -6,20 +6,29 @@ export interface Message {
   content: string;
   timestamp: number;
   blockId?: string;
+  userId: string;
+  paperId: string;
+  userName: string;
 }
 
 /**
  * 모든 채팅 메시지를 가져옵니다
  */
-export const getMessages = async (userId: string): Promise<Message[]> => {
+export const getMessages = async (userId: string, paperId: string): Promise<Message[]> => {
   try {
-    const response = await api.get(`/chat/messages`, {
+    const response = await api.get(`/api/chat/${paperId}/messages`, {
       params: { userId }
     });
-    if (!Array.isArray(response.data.messages)) {
-      throw new Error("Invalid response format");
+    
+    // 응답 구조 확인 및 올바른 메시지 배열 반환
+    if (response.data && response.data.messages && Array.isArray(response.data.messages)) {
+      return response.data.messages;
+    } else if (response.data && Array.isArray(response.data)) {
+      return response.data;
+    } else {
+      console.warn("Unexpected response format:", response.data);
+      return [];
     }
-    return response.data.messages;
   } catch (error) {
     console.error("Error fetching messages:", error);
     throw error;
@@ -31,7 +40,7 @@ export const getMessages = async (userId: string): Promise<Message[]> => {
  */
 export const getMessagesByBlockId = async (paperId: string, blockId: string, userId: string): Promise<Message[]> => {
   try {
-    const response = await api.get(`/chat/${paperId}/messages/${blockId}`, {
+    const response = await api.get(`/api/chat/${paperId}/messages/${blockId}`, {
       params: { userId }
     });
     return response.data.messages;
@@ -46,7 +55,7 @@ export const getMessagesByBlockId = async (paperId: string, blockId: string, use
  */
 export const addMessage = async (paperId: string, message: Message & { userId: string }): Promise<Message> => {
   try {
-    const response = await api.post(`/chat/${paperId}/messages`, message);
+    const response = await api.post(`/api/chat/${paperId}/messages`, message);
     return response.data;
   } catch (error) {
     console.error("Error adding message:", error);
@@ -59,7 +68,7 @@ export const addMessage = async (paperId: string, message: Message & { userId: s
  */
 export const saveMessages = async (paperId: string, messages: Message[], userId: string): Promise<void> => {
   try {
-    await api.post(`/chat/${paperId}/messages/batch`, { messages, userId });
+    await api.put(`/api/chat/${paperId}/messages`, { messages, userId });
   } catch (error) {
     console.error("Error saving messages:", error);
     throw error;
@@ -71,7 +80,7 @@ export const saveMessages = async (paperId: string, messages: Message[], userId:
  */
 export const clearMessages = async (paperId: string, userId: string): Promise<void> => {
   try {
-    await api.delete(`/chat/${paperId}/messages`, {
+    await api.delete(`/api/chat/${paperId}/messages`, {
       params: { userId }
     });
   } catch (error) {
@@ -85,7 +94,7 @@ export const clearMessages = async (paperId: string, userId: string): Promise<vo
  */
 export const deleteMessage = async (paperId: string, messageId: string, userId: string): Promise<boolean> => {
   try {
-    await api.delete(`/chat/${paperId}/messages/${messageId}`, {
+    await api.delete(`/api/chat/${paperId}/messages/${messageId}`, {
       params: { userId }
     });
     return true;
@@ -93,4 +102,36 @@ export const deleteMessage = async (paperId: string, messageId: string, userId: 
     console.error(`Error deleting message ${messageId}:`, error);
     return false;
   }
+};
+
+export const chatApi = {
+  fetchAllMessages: async (paperId: string) => {
+    const response = await api.get(`/api/chat/${paperId}/messages`);
+    return response.data;
+  },
+
+  fetchMessagesByBlockId: async (paperId: string, blockId: string) => {
+    const response = await api.get(`/api/chat/${paperId}/messages/${blockId}`);
+    return response.data;
+  },
+
+  addMessage: async (paperId: string, message: Message) => {
+    const response = await api.post(`/api/chat/${paperId}/messages`, message);
+    return response.data;
+  },
+
+  saveMessages: async (paperId: string, messages: Message[]) => {
+    const response = await api.post(`/api/chat/${paperId}/messages/batch`, messages);
+    return response.data;
+  },
+
+  clearMessages: async (paperId: string) => {
+    const response = await api.delete(`/api/chat/${paperId}/messages`);
+    return response.data;
+  },
+
+  deleteMessage: async (paperId: string, messageId: string) => {
+    const response = await api.delete(`/api/chat/${paperId}/messages/${messageId}`);
+    return response.data;
+  },
 };

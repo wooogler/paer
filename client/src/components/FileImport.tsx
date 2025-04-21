@@ -51,7 +51,7 @@ const FileImport: React.FC<FileImportProps> = ({
         )}
       </button>
       <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-        {isLoading ? "가져오는 중..." : "Import Paper"}
+        {isLoading ? "Importing..." : "Import Paper"}
       </div>
       <input
         ref={fileInputRef}

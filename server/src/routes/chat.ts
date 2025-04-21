@@ -12,12 +12,22 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   fastify.get<{ Querystring: { userId: string } }>(
     "/messages",
     async (request, reply) => {
-      // 기본 paperId를 사용하거나 null로 설정
-      const paperId = "default";
-      return chatController.getMessages(
-        { ...request, params: { paperId } } as any,
-        reply
-      );
+      try {
+        const { userId } = request.query;
+        
+        if (!userId) {
+          return reply.code(400).send({ error: "userId is required" });
+        }
+        
+        // 기본 paperId를 사용하는 대신, 응답 코드와 함께 오류 메시지 반환
+        return reply.code(400).send({ 
+          error: "paperId is required", 
+          message: "Please specify a paper ID to get messages" 
+        });
+      } catch (error) {
+        console.error("Error in GET /messages:", error);
+        return reply.code(500).send({ error: "Failed to process request" });
+      }
     }
   );
 

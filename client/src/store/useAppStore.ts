@@ -6,6 +6,7 @@ interface AppState {
   activePane: "structure" | "editor" | "chat";
   displayMode: "sentence" | "hierarchy";
   showHierarchy: boolean;
+  isStructureVisible: boolean;
 
   // User related states
   user: {
@@ -19,6 +20,7 @@ interface AppState {
   setActivePane: (pane: "structure" | "editor" | "chat") => void;
   setDisplayMode: (mode: "sentence" | "hierarchy") => void;
   setShowHierarchy: (show: boolean) => void;
+  toggleStructureVisibility: () => void;
   setUser: (name: string) => void;
   setUserName: (name: string) => void;
   setUserId: (id: string) => void;
@@ -33,17 +35,19 @@ export const useAppStore = create<AppState>()(
       activePane: "structure",
       displayMode: "sentence",
       showHierarchy: false,
+      isStructureVisible: true,
       user: {
         name: "testuser",
         isLoggedIn: true,
       },
-      userName: "", // 초기값을 빈 문자열로 변경
+      userName: "", // Changed initial value to empty string
       userId: "",
 
       // Actions
       setActivePane: (pane) => set({ activePane: pane }),
       setDisplayMode: (mode) => set({ displayMode: mode }),
       setShowHierarchy: (show) => set({ showHierarchy: show }),
+      toggleStructureVisibility: () => set((state) => ({ isStructureVisible: !state.isStructureVisible })),
       setUser: (name: string) =>
         set((state) => ({
           user: {

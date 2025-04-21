@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
-import { ChatMessage as ChatMessageType } from "../../types/chat";
+import { Message } from "../../api/chatApi";
 import { useContentStore } from "../../store/useContentStore";
 import ContentInfo from "../ui/ContentInfo";
 import { Content } from "@paer/shared";
 
+export type MessageRole = "user" | "assistant" | "system";
+
 interface ChatMessageProps {
-  message: ChatMessageType;
+  message: Message;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
@@ -58,7 +60,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             {message.content}
           </p>
           <div className="text-xs mt-1 opacity-70 text-right">
-            {new Date(message.timestamp).toLocaleTimeString()}
+            {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
           </div>
         </div>
       </div>
@@ -83,7 +85,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         {message.content}
       </p>
       <div className="text-xs mt-1 opacity-70 text-right">
-        {new Date(message.timestamp).toLocaleTimeString()}
+        {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
       </div>
     </div>
   );

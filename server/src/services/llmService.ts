@@ -23,12 +23,39 @@ export class LLMService {
   }
 
   async initializeConversation(paperContent: string): Promise<void> {
-    this.conversationHistory = [
-      {
-        role: "system",
-        content: `You are a helpful peer reader for academic writing. Here is the context of the paper you are helping with:\n\n${paperContent}\n\nPlease provide your response based on this context.`,
-      },
-    ];
+    try {
+      // JSON 문자열을 파싱
+      const content = JSON.parse(paperContent);
+      
+      // 콘텐츠에서 텍스트만 추출하는 재귀 함수
+      const extractText = (node: any): string => {
+        if (typeof node === 'string') return node;
+        if (Array.isArray(node)) return node.map(extractText).join(' ');
+        if (node && typeof node === 'object') {
+          if (node.content) return extractText(node.content);
+          return Object.values(node).map(extractText).join(' ');
+        }
+        return '';
+      };
+
+      const paperText = extractText(content);
+      
+      this.conversationHistory = [
+        {
+          role: "system",
+          content: `You are a helpful peer reader for academic writing. Here is the context of the paper you are helping with:\n\n${paperText}\n\nPlease provide your response based on this context.`,
+        },
+      ];
+    } catch (error) {
+      console.error("Error initializing conversation:", error);
+      // 에러가 발생해도 기본 시스템 메시지로 초기화
+      this.conversationHistory = [
+        {
+          role: "system",
+          content: "You are a helpful peer reader for academic writing. Please provide your response based on the user's question.",
+        },
+      ];
+    }
   }
 
   async askLLM(
@@ -37,6 +64,13 @@ export class LLMService {
     blockId?: string
   ): Promise<any> {
     try {
+      console.log('OpenAI Input:', {
+        text,
+        renderedContent,
+        blockId,
+        conversationHistory: this.conversationHistory
+      });
+
       this.conversationHistory.push({
         role: "user",
         content: text,
@@ -51,11 +85,18 @@ export class LLMService {
         });
       }
 
+      console.log('OpenAI Request:', {
+        model: "gpt-4o",
+        messages: this.conversationHistory
+      });
+
       const response = await this.client.chat.completions.create({
         model: "gpt-4o",
         messages: this.conversationHistory,
       });
       
+      console.log('OpenAI Response:', response);
+
       if (response.choices[0].message?.content) {
         this.conversationHistory.push({
           role: "assistant",

@@ -4,18 +4,18 @@ import { useAppStore } from "../store/useAppStore";
 import HierarchyTitle from "./editor/HierarchyTitle";
 import ContentRenderer from "./editor/ContentRenderer";
 import { usePaperQuery } from "../hooks/usePaperQuery";
-import api from "../services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { FiRefreshCw } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { Content } from "@paer/shared";
 import { ClipLoader } from "react-spinners";
+import { api } from "../api/paperApi";
 
 interface EditorProps {
   userName: string;
 }
 
-const Editor: React.FC<EditorProps> = ({ userName }) => {
+const Editor: React.FC<EditorProps> = () => {
   const {
     selectedBlock,
     selectedBlockPath,
@@ -32,7 +32,7 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
   const queryClient = useQueryClient();
 
   // 중요: paper 데이터의 변경을 직접 구독
-  const { data: paperData } = usePaperQuery(userName);
+  const { data: paperData } = usePaperQuery();
 
   // paperData가 변경될 때만 선택된 블록을 업데이트
   useEffect(() => {
@@ -97,6 +97,17 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
       return;
     }
 
+    const userId = useAppStore.getState().userId;
+    const paperId = useContentStore.getState().selectedPaperId;
+
+    console.log("Current userId:", userId);
+    console.log("Current paperId:", paperId);
+
+    if (!userId || !paperId) {
+      alert("Please login and select a paper first");
+      return;
+    }
+
     setIsUpdating(true);
 
     // 업데이트 시작 시 모든 업데이트 블록 ID 초기화
@@ -151,9 +162,11 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
       // }
 
       // Send the rendered content to the backend to generate new summaries and intents
-      const response = await api.post("/paper/update-rendered-summaries", {
+      const response = await api.post("/papers/update-rendered-summaries", {
         renderedContent: renderedContent.trim(),
         blockId: selectedBlock["block-id"],
+        userId,
+        paperId
       });
 
       console.log("OpenAI API 요청 결과:", response.data);
@@ -164,14 +177,8 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
 
       // 데이터 갱신을 위해 쿼리 무효화 및 리패치
       await queryClient.invalidateQueries({
-        queryKey: ["paper"],
-        exact: true,
-      });
-
-      // 최신 데이터 가져오기
-      await queryClient.refetchQueries({
-        queryKey: ["paper"],
-        exact: true,
+        queryKey: ["papers", userId],
+        exact: false,
       });
 
       toast.success("Summary and intent updated successfully!");
@@ -192,7 +199,7 @@ const Editor: React.FC<EditorProps> = ({ userName }) => {
     if (!content) {
       return (
         <div className="p-5 text-center text-gray-500">
-          아직 작성된 논문이 없습니다. 새로운 논문을 작성해보세요.
+          No paper has been written yet. Please create a new paper.
         </div>
       );
     }

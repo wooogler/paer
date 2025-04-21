@@ -82,7 +82,7 @@ export class PaperService {
   /**
    * 논문 저장 (MongoDB)
    */
-  async savePaper(paper: Paper & { userId: string }): Promise<void> {
+  async savePaper(paper: Paper & { userId: string }): Promise<SharedPaper> {
     try {
       if (!paper.userId) {
         throw new Error("userId is required");
@@ -90,8 +90,9 @@ export class PaperService {
 
       // userId와 나머지 부분 분리
       const { userId, ...sharedPaper } = paper;
-      await this.paperRepository.savePaper(userId, sharedPaper as SharedPaper);
+      const savedPaper = await this.paperRepository.savePaper(userId, sharedPaper as SharedPaper);
       console.log("Paper saved to MongoDB");
+      return savedPaper;
     } catch (error) {
       console.error("Error saving paper:", error);
       throw error;
