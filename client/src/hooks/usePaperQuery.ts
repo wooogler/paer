@@ -13,7 +13,8 @@ import { useContentStore } from "../store/useContentStore";
 import { useEffect } from "react";
 import { ContentType } from "@paer/shared";
 import { useAppStore } from "../store/useAppStore";
-import { isValidObjectId } from "src/utils/validation";
+import { isValidObjectId } from "../utils/validation";
+
 
 // Global variable to store the blockId of the newly added sentence
 let newSentenceBlockId: string | null = null;
