@@ -14,9 +14,11 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     if (!username.trim()) {
       setError('Please enter a username.');
+      setIsLoading(false);
       return;
     }
 
@@ -50,6 +52,8 @@ const Login: React.FC = () => {
     } catch (error) {
       console.error('Login error:', error);
       setError('An error occurred during login.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,6 +80,7 @@ const Login: React.FC = () => {
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -87,9 +92,10 @@ const Login: React.FC = () => {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? 'Loading...' : 'Login'}
             </button>
           </div>
           

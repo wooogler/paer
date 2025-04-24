@@ -13,20 +13,11 @@ interface ApiResponse {
  */
 export const getUserIdByUsername = async (username: string): Promise<ApiResponse> => {
   try {
-    const response = await api.get(`/users/username/${username}`);
-    if (!response.data.user) {
-      throw new Error("User not found");
-    }
-    return {
-      success: true,
-      userId: response.data.user._id
-    };
+    const response = await api.get(`/api/users/username/${username}`);
+    return response.data;
   } catch (error) {
-    console.error("Error getting user ID by username:", error);
-    return {
-      success: false,
-      error: "사용자를 찾을 수 없습니다."
-    };
+    console.error("Error getting user by username:", error);
+    throw error;
   }
 };
 
@@ -52,23 +43,11 @@ export const getUserInfo = async (userId: string) => {
  */
 export const createUser = async (username: string): Promise<ApiResponse> => {
   try {
-    const response = await api.post('/users', { username });
-    if (!response.data || !response.data.success || !response.data.userId) {
-      return {
-        success: false,
-        error: '사용자 생성에 실패했습니다.'
-      };
-    }
-    return {
-      success: true,
-      userId: response.data.userId
-    };
+    const response = await api.post("/api/users", { username });
+    return response.data;
   } catch (error) {
-    console.error("사용자 생성 오류:", error);
-    return {
-      success: false,
-      error: '사용자 생성에 실패했습니다.'
-    };
+    console.error("Error creating user:", error);
+    throw error;
   }
 };
 
@@ -84,7 +63,7 @@ export const createOrGetUser = async (username: string, email: string) => {
 
 export const getUserByUsername = async (username: string) => {
   try {
-    const response = await api.get(`/users/username/${username}`);
+    const response = await api.get(`/api/users/username/${username}`);
     return response.data;
   } catch (error) {
     console.error("Error getting user by username:", error);
