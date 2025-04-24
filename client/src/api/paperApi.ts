@@ -221,3 +221,31 @@ export const getCollaborators = async (paperId: string, userId: string) => {
     throw error;
   }
 };
+
+export const addCollaborator = async (paperId: string, userId: string, collaboratorUsername: string) => {
+  try {
+    const response = await api.post(`/api/papers/${paperId}/collaborators`, {
+      userId,
+      collaboratorUsername
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding collaborator:", error);
+    throw error;
+  }
+};
+
+export const removeCollaborator = async (paperId: string, userId: string, collaboratorUsername: string) => {
+  try {
+    const response = await api.delete(`/api/papers/${paperId}/collaborators`, {
+      data: {
+        userId,
+        collaboratorUsername
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error removing collaborator:", error);
+    throw error;
+  }
+};

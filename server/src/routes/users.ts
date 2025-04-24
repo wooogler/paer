@@ -36,6 +36,14 @@ const userRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       return userController.getUserIdByUsername(request, reply);
     }
   );
+
+  // GET /api/users - 모든 사용자 목록 조회
+  fastify.get(
+    "/",
+    async (request, reply) => {
+      return userController.getAllUsers(request, reply);
+    }
+  );
 };
 
 export default userRoutes; 

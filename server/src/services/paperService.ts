@@ -5,14 +5,17 @@ import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
 import mongoose from "mongoose";
 import { Paper as PaperModel } from '../models/Paper';
+import { UserService } from "./userService";
 
 export class PaperService {
   private paperRepository: PaperRepository;
   private llmService: LLMService;
+  private userService: UserService;
 
   constructor() {
     this.paperRepository = new PaperRepository();
     this.llmService = new LLMService();
+    this.userService = new UserService();
   }
 
   /**
@@ -442,24 +445,7 @@ export class PaperService {
     userId: string,
     collaboratorUsername: string
   ): Promise<void> {
-    const paper = await this.paperRepository.getPaper(userId, paperId);
-    if (!paper) {
-      throw new Error("Paper not found");
-    }
-
-    // 이미 협업자인 경우 중복 추가 방지
-    if (paper.collaboratorIds.includes(collaboratorUsername)) {
-      throw new Error("User is already a collaborator");
-    }
-
-    // 협업자 목록에 추가
-    const updatedPaper = {
-      ...paper,
-      collaboratorIds: [...paper.collaboratorIds, collaboratorUsername]
-    };
-
-    // MongoDB에 저장
-    await this.paperRepository.savePaper(userId, updatedPaper);
+    return this.paperRepository.addCollaborator(userId, paperId, collaboratorUsername);
   }
 
   /**
@@ -522,6 +508,28 @@ export class PaperService {
     if (!paper) {
       throw new Error("Paper not found");
     }
-    return paper.collaboratorIds || [];
+    
+    const collaboratorIds = paper.collaboratorIds || [];
+    
+    // 각 collaborator ID에 대한 사용자 정보 조회
+    const collaborators = await Promise.all(
+      collaboratorIds.map(async (id) => {
+        try {
+          const user = await this.userService.getUserById(id);
+          return {
+            userId: id,
+            username: user ? user.username : '알 수 없는 사용자'
+          };
+        } catch (error) {
+          console.error(`Error fetching user for ID ${id}:`, error);
+          return {
+            userId: id,
+            username: '알 수 없는 사용자'
+          };
+        }
+      })
+    );
+    
+    return collaborators;
   }
 }

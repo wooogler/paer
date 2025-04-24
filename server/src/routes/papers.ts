@@ -180,12 +180,12 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // POST /api/papers/collaborator - 협업자 추가
+  // POST /api/papers/:id/collaborators - 협업자 추가
   fastify.post<{
     Params: { id: string };
     Body: { userId: string; collaboratorUsername: string };
   }>(
-    "/collaborator/:id",
+    "/:id/collaborators",
     async (request, reply) => {
       return paperController.addCollaborator(request, reply);
     }

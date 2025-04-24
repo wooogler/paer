@@ -122,4 +122,21 @@ export class UserController {
       });
     }
   }
+
+  async getAllUsers(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const users = await this.userService.getAllUsers();
+      
+      return reply.send({ 
+        success: true, 
+        users 
+      });
+    } catch (error) {
+      console.error('Error getting all users:', error);
+      return reply.status(500).send({ 
+        success: false, 
+        error: '서버 오류가 발생했습니다.' 
+      });
+    }
+  }
 } 

@@ -93,4 +93,16 @@ export class UserService {
       return null;
     }
   }
+
+  /**
+   * 모든 사용자 조회
+   */
+  async getAllUsers(): Promise<IUser[]> {
+    try {
+      return await User.find({}, { username: 1, email: 1, _id: 1 });
+    } catch (error) {
+      console.error("Error in getAllUsers:", error);
+      throw new Error("Failed to get all users");
+    }
+  }
 } 

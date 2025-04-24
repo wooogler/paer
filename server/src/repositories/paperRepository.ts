@@ -423,8 +423,20 @@ export class PaperRepository {
     collaboratorUsername: string
   ): Promise<void> {
     try {
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(paperId)) {
+        throw new Error("Invalid paperId");
+      }
+
+      // 문서 소유자 찾기 (userId가 username인 경우 처리)
+      let ownerId: mongoose.Types.ObjectId;
+      if (isValidObjectId(userId)) {
+        ownerId = new mongoose.Types.ObjectId(userId);
+      } else {
+        const owner = await User.findOne({ username: userId });
+        if (!owner) {
+          throw new Error(`User ${userId} not found`);
+        }
+        ownerId = owner._id as mongoose.Types.ObjectId;
       }
 
       // 협업자 사용자 찾기
@@ -436,7 +448,7 @@ export class PaperRepository {
       // 문서 조회 (소유자만 협업자 추가 가능)
       const paper = await Paper.findOne({
         _id: paperId,
-        userId: userId
+        userId: ownerId
       });
 
       if (!paper) {
@@ -444,7 +456,7 @@ export class PaperRepository {
       }
 
       // 협업자가 이미 존재하는지 확인
-      const collaboratorId = collaborator._id as unknown as mongoose.Types.ObjectId;
+      const collaboratorId = collaborator._id as mongoose.Types.ObjectId;
       if (paper.collaborators.includes(collaboratorId)) {
         return; // 이미 협업자로 추가되어 있음
       }

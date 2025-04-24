@@ -69,4 +69,14 @@ export const getUserByUsername = async (username: string) => {
     console.error("Error getting user by username:", error);
     throw error;
   }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const response = await api.get("/api/users");
+    return response.data;
+  } catch (error) {
+    console.error("Error getting all users:", error);
+    throw error;
+  }
 }; 
