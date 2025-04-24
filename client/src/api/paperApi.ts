@@ -12,17 +12,26 @@ export const api = axios.create({
 });
 
 // API function definition
-export const getPapers = async (userId: string) => {
+export const getPapers = async (userId: string): Promise<Paper[]> => {
   const response = await api.get(`/api/papers?userId=${userId}`);
-  return response.data;
+  return response.data.map((paper: any) => ({
+    ...paper,
+    authorId: paper.userId,
+    collaboratorIds: paper.collaborators
+  }));
 };
 
-export const getPaperById = async (paperId: string, userId: string) => {
+export const getPaperById = async (paperId: string, userId: string): Promise<Paper> => {
   try {
     const response = await api.get(`/api/papers/${paperId}`, {
       params: { userId }
     });
-    return response.data;
+    const paper = response.data;
+    return {
+      ...paper,
+      authorId: paper.userId,
+      collaboratorIds: paper.collaborators
+    };
   } catch (error) {
     console.error("Error getting paper:", error);
     throw error;
@@ -199,4 +208,16 @@ export const importPaper = async (content: string, userId: string) => {
     userId,
   });
   return response.data;
+};
+
+export const getCollaborators = async (paperId: string, userId: string) => {
+  try {
+    const response = await api.get(`/api/papers/${paperId}/collaborators`, {
+      params: { userId }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting collaborators:", error);
+    throw error;
+  }
 };

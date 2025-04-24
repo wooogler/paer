@@ -11,6 +11,8 @@ import { useAppStore } from "../../store/useAppStore";
 import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
+import { FiUsers } from "react-icons/fi";
+import CollaboratorModal from "./CollaboratorModal";
 
 const ChatInterface: React.FC = () => {
   const {
@@ -31,6 +33,7 @@ const ChatInterface: React.FC = () => {
   const isComposing = useRef(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
 
   // Load messages when component mounts or selectedPaperId changes
   useEffect(() => {
@@ -263,19 +266,24 @@ const ChatInterface: React.FC = () => {
             onKeyDown={handleKeyDown}
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
-            disabled={isLoading || !rootContent} // 로딩 중이거나 논문이 없을 때 비활성화
+            disabled={isLoading || !rootContent}
             placeholder={rootContent ? "Type a message... (Press Enter to send, Shift+Enter for line break)" : "Please input a paper first..."}
             className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
           />
           <button
             type="submit"
-            disabled={!input.trim() || isLoading || !rootContent} // 입력이 없거나 로딩 중이거나 논문이 없을 때 비활성화
+            disabled={!input.trim() || isLoading || !rootContent}
             className="ml-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
           >
             Send
           </button>
         </form>
       </div>
+
+      <CollaboratorModal
+        isOpen={isCollaboratorModalOpen}
+        onClose={() => setIsCollaboratorModalOpen(false)}
+      />
     </div>
   );
 };

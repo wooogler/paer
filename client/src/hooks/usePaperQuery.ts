@@ -93,6 +93,7 @@ export const useUpdateSentence = () => {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: async ({
@@ -118,14 +119,19 @@ export const useUpdateSentence = () => {
       try {
         // Fetch latest data from server immediately
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
 
         // Update both cache and state with the new data
         queryClient.setQueryData(["papers", userId], newData);
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         // If current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
@@ -151,6 +157,7 @@ export function useDeleteSentence() {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: (blockId: string) => deleteSentence(blockId),
@@ -158,16 +165,21 @@ export function useDeleteSentence() {
       // Fetch latest data from server immediately
       try {
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
 
         // Cache directly update
         queryClient.setQueryData(["papers", userId], newData);
 
         // State directly update
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         // If current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
@@ -193,6 +205,7 @@ export function useUpdateBlockIntent() {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: async ({
@@ -210,11 +223,17 @@ export function useUpdateBlockIntent() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
+
         queryClient.setQueryData(["papers", userId], newData);
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
@@ -239,6 +258,7 @@ export function useUpdateBlockSummary() {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: async ({
@@ -256,11 +276,17 @@ export function useUpdateBlockSummary() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
+
         queryClient.setQueryData(["papers", userId], newData);
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
@@ -285,6 +311,7 @@ export function useUpdateBlockTitle() {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: async ({
@@ -302,11 +329,17 @@ export function useUpdateBlockTitle() {
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
+
         queryClient.setQueryData(["papers", userId], newData);
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
@@ -348,6 +381,7 @@ export function useAddBlock() {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: async ({
@@ -364,12 +398,18 @@ export function useAddBlock() {
     onSuccess: async (newBlockId) => {
       try {
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
+
         queryClient.setQueryData(["papers", userId], newData);
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         // If the current selected content exists, select it again to update UI
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }
@@ -394,17 +434,24 @@ export function useDeleteBlock() {
   const { selectedContent, selectedPath, setSelectedContent } =
     useContentStore();
   const userId = useAppStore((state) => state.userId);
+  const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
     mutationFn: (blockId: string) => deleteBlock(blockId),
     onSuccess: async () => {
       try {
         const newData = await getPapers(userId);
+        const selectedPaper = selectedPaperId 
+          ? newData.find(paper => paper._id === selectedPaperId)
+          : newData[0];
+
         queryClient.setQueryData(["papers", userId], newData);
-        setContent(newData);
+        if (selectedPaper) {
+          setContent(selectedPaper);
+        }
 
         if (selectedContent && selectedPath) {
-          const refreshedContent = findContentByPath(newData, selectedPath);
+          const refreshedContent = findContentByPath(selectedPaper || newData[0], selectedPath);
           if (refreshedContent) {
             setSelectedContent(refreshedContent, selectedPath);
           }

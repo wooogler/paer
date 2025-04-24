@@ -11,7 +11,8 @@ export interface Paper extends Omit<Content, "content"> {
   createdAt?: string;
   updatedAt?: string;
   version?: number;
-  authors?: string[];
+  authorId: string; // 논문 작성자 ID
+  collaboratorIds: string[]; // 협업자 ID 목록
   "block-id"?: string; // Also include block-id at the Paper level
 }
 
@@ -27,6 +28,7 @@ export const PaperSchema: z.ZodType<Paper> = z.object({
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
   version: z.number().optional(),
-  authors: z.array(z.string()).optional(),
+  authorId: z.string(),
+  collaboratorIds: z.array(z.string()),
   "block-id": z.string().optional(),
 });

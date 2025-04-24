@@ -95,7 +95,9 @@ export class PaperController {
           content: sectionsArray,
           'block-id': 'root',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          authorId: userId,
+          collaboratorIds: []
         };
       } else {
         processedPaper = {
@@ -113,7 +115,9 @@ export class PaperController {
           }],
           'block-id': 'root',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
+          authorId: userId,
+          collaboratorIds: []
         };
       }
 
@@ -505,6 +509,58 @@ export class PaperController {
         success: false,
         error: "논문 삭제에 실패했습니다" 
       });
+    }
+  }
+
+  /**
+   * 논문의 협업자 목록 조회
+   */
+  async getCollaborators(
+    request: FastifyRequest<{
+      Params: { id: string };
+      Querystring: { userId: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { id: paperId } = request.params;
+      const { userId } = request.query;
+
+      if (!userId || !paperId) {
+        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+      }
+
+      const collaborators = await this.paperService.getCollaborators(userId, paperId);
+      return reply.send(collaborators);
+    } catch (error) {
+      console.error("Error in getCollaborators:", error);
+      return reply.code(500).send({ error: "협업자 목록을 가져오는데 실패했습니다" });
+    }
+  }
+
+  /**
+   * 협업자 제거
+   */
+  async removeCollaborator(
+    request: FastifyRequest<{
+      Params: { id: string };
+      Body: { userId: string; collaboratorUsername: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      const { userId, collaboratorUsername } = request.body;
+
+      if (!userId || !id || !collaboratorUsername) {
+        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername이 필요합니다" });
+      }
+
+      await this.paperService.removeCollaborator(id, userId, collaboratorUsername);
+      return { success: true };
+    } catch (error) {
+      console.error("Error removing collaborator:", error);
+      return reply.code(500).send({ error: "협업자 제거에 실패했습니다" });
     }
   }
 }

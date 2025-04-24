@@ -49,12 +49,12 @@ export class LLMService {
     } catch (error) {
       console.error("Error initializing conversation:", error);
       // 에러가 발생해도 기본 시스템 메시지로 초기화
-      this.conversationHistory = [
-        {
-          role: "system",
+    this.conversationHistory = [
+      {
+        role: "system",
           content: "You are a helpful peer reader for academic writing. Please provide your response based on the user's question.",
-        },
-      ];
+      },
+    ];
     }
   }
 
@@ -96,7 +96,7 @@ export class LLMService {
       });
       
       console.log('OpenAI Response:', response);
-
+      
       if (response.choices[0].message?.content) {
         this.conversationHistory.push({
           role: "assistant",

@@ -11,11 +11,12 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { importPaper } from "../api/paperApi";
-import { FiDownload, FiTrash2, FiLogOut, FiList } from "react-icons/fi";
+import { FiDownload, FiTrash2, FiLogOut, FiList, FiUsers } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import PaperListModal from "./paperList/PaperListModal";
+import CollaboratorModal from "./chat/CollaboratorModal";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -43,6 +44,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isPaperListOpen, setIsPaperListOpen] = useState(false);
+  const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
 
   // Fetching data from server using React Query
   const { data: paperData, refetch } = usePaperQuery();
@@ -301,6 +303,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </button>
               </div>
               <button
+                onClick={() => setIsCollaboratorModalOpen(true)}
+                className="p-1.5 text-gray-600 hover:text-blue-600 rounded-md hover:bg-gray-100 transition-colors"
+                title="View collaborators"
+              >
+                <FiUsers />
+              </button>
+              <button
                 onClick={() => {
                   if (window.confirm("Are you sure you want to clear all chat messages?")) {
                     useChatStore.getState().clearMessages();
@@ -376,6 +385,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </Pane>
       )}
+
+      <CollaboratorModal
+        isOpen={isCollaboratorModalOpen}
+        onClose={() => setIsCollaboratorModalOpen(false)}
+      />
     </div>
   );
 };

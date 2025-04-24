@@ -4,6 +4,7 @@ import { LLMService } from "./llmService";
 import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
 import mongoose from "mongoose";
+import { Paper as PaperModel } from '../models/Paper';
 
 export class PaperService {
   private paperRepository: PaperRepository;
@@ -378,7 +379,9 @@ export class PaperService {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           version: 1,
-          _id: new mongoose.Types.ObjectId().toString()
+          _id: new mongoose.Types.ObjectId().toString(),
+          authorId: userId,
+          collaboratorIds: []
         };
         
         // MongoDB에 저장
@@ -395,7 +398,9 @@ export class PaperService {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           version: 1,
-          _id: new mongoose.Types.ObjectId().toString()
+          _id: new mongoose.Types.ObjectId().toString(),
+          authorId: userId,
+          collaboratorIds: []
         };
         
         // MongoDB에 저장
@@ -437,11 +442,52 @@ export class PaperService {
     userId: string,
     collaboratorUsername: string
   ): Promise<void> {
-    return this.paperRepository.addCollaborator(
-      userId,
-      paperId,
-      collaboratorUsername
-    );
+    const paper = await this.paperRepository.getPaper(userId, paperId);
+    if (!paper) {
+      throw new Error("Paper not found");
+    }
+
+    // 이미 협업자인 경우 중복 추가 방지
+    if (paper.collaboratorIds.includes(collaboratorUsername)) {
+      throw new Error("User is already a collaborator");
+    }
+
+    // 협업자 목록에 추가
+    const updatedPaper = {
+      ...paper,
+      collaboratorIds: [...paper.collaboratorIds, collaboratorUsername]
+    };
+
+    // MongoDB에 저장
+    await this.paperRepository.savePaper(userId, updatedPaper);
+  }
+
+  /**
+   * 협업자 제거
+   */
+  async removeCollaborator(
+    paperId: string,
+    userId: string,
+    collaboratorUsername: string
+  ): Promise<void> {
+    const paper = await this.paperRepository.getPaper(userId, paperId);
+    if (!paper) {
+      throw new Error("Paper not found");
+    }
+
+    // 협업자가 아닌 경우 에러
+    if (!paper.collaboratorIds.includes(collaboratorUsername)) {
+      throw new Error("User is not a collaborator");
+    }
+
+    // 협업자 목록에서 제거
+    const updatedPaper = {
+      ...paper,
+      collaboratorIds: paper.collaboratorIds.filter(id => id !== collaboratorUsername)
+    };
+
+    // MongoDB에 저장
+    await this.paperRepository.savePaper(userId, updatedPaper);
   }
 
   /**
@@ -466,5 +512,16 @@ export class PaperService {
    */
   async deletePaper(userId: string, paperId: string): Promise<void> {
     return this.paperRepository.deletePaper(userId, paperId);
+  }
+
+  /**
+   * 논문의 협업자 목록 조회
+   */
+  async getCollaborators(userId: string, paperId: string) {
+    const paper = await this.paperRepository.getPaper(userId, paperId);
+    if (!paper) {
+      throw new Error("Paper not found");
+    }
+    return paper.collaboratorIds || [];
   }
 }

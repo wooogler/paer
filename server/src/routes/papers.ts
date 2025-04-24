@@ -211,6 +211,28 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       return paperController.deletePaper(request, reply);
     }
   );
+
+  // GET /api/papers/:id/collaborators - 논문의 협업자 목록 조회
+  fastify.get<{
+    Params: { id: string };
+    Querystring: { userId: string };
+  }>(
+    "/:id/collaborators",
+    async (request, reply) => {
+      return paperController.getCollaborators(request, reply);
+    }
+  );
+
+  // DELETE /api/papers/:id/collaborator - 협업자 제거
+  fastify.delete<{
+    Params: { id: string };
+    Body: { userId: string; collaboratorUsername: string };
+  }>(
+    "/:id/collaborator",
+    async (request, reply) => {
+      return paperController.removeCollaborator(request, reply);
+    }
+  );
 };
 
 export default paperRoutes;

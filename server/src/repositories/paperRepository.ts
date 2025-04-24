@@ -45,7 +45,9 @@ export class PaperRepository {
         intent: paperContent.intent || "",
         createdAt: paper.createdAt?.toISOString(),
         updatedAt: paper.updatedAt?.toISOString(),
-        "block-id": paperContent["block-id"]
+        "block-id": paperContent["block-id"],
+        authorId: paper.userId.toString(),
+        collaboratorIds: paper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
       };
     } catch (error) {
       console.error("Failed to read paper data:", error);
@@ -102,8 +104,8 @@ export class PaperRepository {
       return papers.map(paper => ({
         ...paper.content,
         _id: (paper._id as mongoose.Types.ObjectId).toString(),
-        userId: paper.userId.toString(),
-        collaborators: paper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
+        authorId: paper.userId.toString(),
+        collaboratorIds: paper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
       }));
     } catch (error) {
       console.error("Failed to get user papers:", error);
