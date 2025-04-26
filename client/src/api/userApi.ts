@@ -13,7 +13,8 @@ interface ApiResponse {
  */
 export const getUserIdByUsername = async (username: string): Promise<ApiResponse> => {
   try {
-    const response = await api.get(`/api/users/username/${username}`);
+    const response = await api.get(`/api/users/id/${username}`);
+    console.log("getUserIdByUsername response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error getting user by username:", error);
