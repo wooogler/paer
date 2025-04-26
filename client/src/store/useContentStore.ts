@@ -3,15 +3,6 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { devtools } from "zustand/middleware";
 import { Content, Paper } from "@paer/shared";
 
-const initialContent: Paper = {
-  _id: "",
-  title: "New Paper",
-  summary: "",
-  intent: "",
-  type: "paper",
-  content: [],
-};
-
 interface ContentState {
   content: Paper | null;
   selectedContent: Paper | null;

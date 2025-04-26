@@ -24,10 +24,10 @@ export class LLMService {
 
   async initializeConversation(paperContent: string): Promise<void> {
     try {
-      // JSON 문자열을 파싱
+      // Parse JSON string
       const content = JSON.parse(paperContent);
       
-      // 콘텐츠에서 텍스트만 추출하는 재귀 함수
+      // Recursive function to extract text from content
       const extractText = (node: any): string => {
         if (typeof node === 'string') return node;
         if (Array.isArray(node)) return node.map(extractText).join(' ');
@@ -48,13 +48,13 @@ export class LLMService {
       ];
     } catch (error) {
       console.error("Error initializing conversation:", error);
-      // 에러가 발생해도 기본 시스템 메시지로 초기화
-    this.conversationHistory = [
-      {
-        role: "system",
+      // Initialize with default system message even if error occurs
+      this.conversationHistory = [
+        {
+          role: "system",
           content: "You are a helpful peer reader for academic writing. Please provide your response based on the user's question.",
-      },
-    ];
+        },
+      ];
     }
   }
 
@@ -165,7 +165,7 @@ Please provide your response as a raw JSON object (without any markdown formatti
 - For sentence blocks, provide short 5-10 word summaries and clear intent statements
 - For blocks with nested content, consider the combined text of all child blocks`;
 
-      console.log("OpenAI API에 보내는 프롬프트:", prompt);
+      console.log("Prompt sent to OpenAI API:", prompt);
 
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
@@ -176,7 +176,7 @@ Please provide your response as a raw JSON object (without any markdown formatti
       const result = JSON.parse(
         response.choices[0].message?.content?.trim() ?? "{}"
       );
-      console.log("OpenAI API 응답: ", JSON.stringify(result, null, 2));
+      console.log("OpenAI API response:", JSON.stringify(result, null, 2));
 
       return {
         prompt,

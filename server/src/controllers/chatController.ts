@@ -16,7 +16,7 @@ export class ChatController {
   }
 
   /**
-   * 사용자의 특정 문서에 대한 모든 채팅 메시지를 가져옵니다.
+   * Get chat history for a specific paper
    */
   async getMessages(
     request: FastifyRequest<{
@@ -46,7 +46,7 @@ export class ChatController {
   }
 
   /**
-   * 특정 블록 ID에 연결된 메시지들을 가져옵니다.
+   * Get messages connected to a specific block ID
    */
   async getMessagesByBlockId(
     request: FastifyRequest<{
@@ -74,7 +74,7 @@ export class ChatController {
   }
 
   /**
-   * 새로운 메시지를 추가하고 OpenAI 응답을 저장합니다.
+   * Add a new message and save OpenAI response
    */
   async addMessage(
     request: FastifyRequest<{
@@ -97,10 +97,10 @@ export class ChatController {
         return reply.code(400).send({ error: "userId is required" });
       }
 
-      // 사용자 메시지 저장
+      // Save user message
       await this.chatService.addMessage(userId, paperId, message);
 
-      // 논문 내용 가져오기
+      // Get paper content
       const paper = await this.paperService.getPaperById(userId, paperId);
       if (!paper) {
         return reply.code(404).send({ error: "Paper not found" });
@@ -111,10 +111,10 @@ export class ChatController {
         content: paper.content
       });
 
-      // 대화 초기화 (필요한 경우)
+      // Initialize conversation (if needed)
       await this.llmService.initializeConversation(JSON.stringify(paper.content));
 
-      // OpenAI API 호출
+      // Call OpenAI API
       const response = await this.llmService.askLLM(
         message.content,
         message.blockId ? JSON.stringify(paper.content) : undefined,
@@ -123,7 +123,7 @@ export class ChatController {
 
       console.log('ChatController - OpenAI response:', response);
 
-      // OpenAI 응답을 메시지로 저장
+      // Save OpenAI response as message
       if (response.choices[0].message?.content) {
         const assistantMessage: ChatMessage = {
           id: `assistant-${Date.now()}`,
@@ -144,7 +144,7 @@ export class ChatController {
   }
 
   /**
-   * 여러 메시지를 한 번에 저장합니다.
+   * Save multiple messages at once
    */
   async saveMessages(
     request: FastifyRequest<{
@@ -170,7 +170,7 @@ export class ChatController {
   }
 
   /**
-   * 모든 메시지를 삭제합니다.
+   * Delete all messages
    */
   async clearMessages(
     request: FastifyRequest<{
@@ -196,7 +196,7 @@ export class ChatController {
   }
 
   /**
-   * 특정 ID의 메시지를 삭제합니다.
+   * Delete a specific message
    */
   async deleteMessage(
     request: FastifyRequest<{

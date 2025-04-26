@@ -3,14 +3,14 @@ import mongoose from "mongoose";
 
 export class UserService {
   /**
-   * 사용자 생성 또는 조회
+   * Create or get user
    */
   async createOrGetUser(username: string, email?: string): Promise<IUser> {
     try {
       let user = await User.findOne({ username });
 
       if (!user) {
-        // 새 사용자 생성
+        // Create new user
         user = await User.create({
           username,
           email
@@ -25,7 +25,7 @@ export class UserService {
   }
 
   /**
-   * ID로 사용자 조회
+   * Get user by ID
    */
   async getUserById(id: string): Promise<IUser | null> {
     try {
@@ -41,7 +41,7 @@ export class UserService {
   }
 
   /**
-   * 사용자명으로 사용자 조회
+   * Get user by username
    */
   async getUserByUsername(username: string): Promise<IUser | null> {
     try {
@@ -53,7 +53,7 @@ export class UserService {
   }
 
   /**
-   * username으로 userId 조회
+   * Get userId by username
    */
   async getUserIdByUsername(username: string): Promise<string | null> {
     try {
@@ -69,7 +69,7 @@ export class UserService {
   }
 
   /**
-   * 사용자 생성
+   * Create user
    */
   async createUser(username: string): Promise<IUser | null> {
     try {
@@ -95,7 +95,7 @@ export class UserService {
   }
 
   /**
-   * 모든 사용자 조회
+   * Get all users
    */
   async getAllUsers(): Promise<IUser[]> {
     try {

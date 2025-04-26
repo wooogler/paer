@@ -374,11 +374,11 @@ export function processLatexContent(
   content: string,
   baseTimestamp: number
 ): any[] {
-  console.log('=== LaTeX 파일 처리 시작 ===');
-  console.log('입력된 내용:', content.substring(0, 200) + '...'); // 처음 200자만 출력
+  console.log('=== Starting LaTeX file processing ===');
+  console.log('Input content:', content.substring(0, 200) + '...'); // Print first 200 characters
   
   const fileType = detectFileType(content);
-  console.log('감지된 파일 타입:', fileType);
+  console.log('Detected file type:', fileType);
 
   // Pre-process content to remove multi-line XML blocks and LaTeX environments
   // This helps handle cases where these tags span multiple lines
@@ -390,10 +390,10 @@ export function processLatexContent(
     // Remove LaTeX classification commands
     .replace(/\\ccsdesc\[.*?\]{.*?}/g, "");
 
-  console.log('전처리 후 내용:', content.substring(0, 200) + '...');
+  console.log('Content after preprocessing:', content.substring(0, 200) + '...');
 
   const lines = content.split("\n");
-  console.log('총 라인 수:', lines.length);
+  console.log('Total number of lines:', lines.length);
   
   const result: any[] = [];
   let currentParagraph: any[] = [];
@@ -426,12 +426,12 @@ export function processLatexContent(
     if (currentSection) {
       if (currentSubsection) {
         saveCurrentSubsection();
-        // null 값 필터링
+        // Filter out null values
         if (currentSubsection && currentSubsection.content.length > 0) {
           currentSection.content.push(currentSubsection);
         }
       }
-      // null 값 필터링
+      // Filter out null values
       if (Array.isArray(currentSection.content)) {
         currentSection.content = currentSection.content.filter(
           (item: any) => item !== null
@@ -449,9 +449,9 @@ export function processLatexContent(
   // Helper function to save current subsection if it has content
   const saveCurrentSubsection = () => {
     if (currentSubsection && currentSection) {
-      // 먼저 현재 subsubsection이 있으면 저장
+      // First save current subsubsection if it exists
       if (currentSubsubsection && currentSubsubsection.content.length > 0) {
-        // null 값 필터링
+        // Filter out null values
         if (Array.isArray(currentSubsubsection.content)) {
           currentSubsubsection.content = currentSubsubsection.content.filter(
             (item: any) => item !== null
@@ -460,19 +460,19 @@ export function processLatexContent(
         currentSubsection.content.push(currentSubsubsection);
       }
 
-      // null 값 필터링
+      // Filter out null values
       if (Array.isArray(currentSubsection.content)) {
         currentSubsection.content = currentSubsection.content.filter(
           (item: any) => item !== null
         );
       }
 
-      // 현재 subsection이 내용이 있으면 section에 추가
+      // Add current subsection to section if it has content
       if (currentSubsection.content.length > 0) {
         currentSection.content.push(currentSubsection);
       }
 
-      // 초기화
+      // Reset
       currentSubsection = null;
       currentSubsubsection = null;
     }
@@ -814,17 +814,17 @@ export function processLatexContent(
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    console.log('현재 처리 중인 라인:', trimmedLine);
+    console.log('Currently processing line:', trimmedLine);
 
     // Handle abstract environment
     if (trimmedLine === "\\begin{abstract}") {
-      console.log('추상 시작 감지');
+      console.log('Abstract start detected');
       inAbstract = true;
       saveCurrentSection();
       currentSection = createSectionBlock("Abstract", []);
       continue;
     } else if (trimmedLine === "\\end{abstract}") {
-      console.log('추상 종료 감지');
+      console.log('Abstract end detected');
       inAbstract = false;
       saveCurrentSection();
       continue;
@@ -836,7 +836,7 @@ export function processLatexContent(
       if (currentParagraph && currentParagraph.length > 0) {
         const paragraph = createParagraphBlock(currentParagraph);
 
-        // 단계별로 확인하여 적절한 위치에 추가
+        // Check step by step to add to appropriate location
         if (currentSection) {
           if (currentSubsection) {
             if (currentSubsubsection) {
@@ -848,7 +848,7 @@ export function processLatexContent(
             currentSection.content.push(paragraph);
           }
         } else {
-          // 만약 아직 섹션이 없다면 기본 섹션 생성
+          // If no section exists yet, create default section
           currentSection = createSectionBlock("Main Content", []);
           currentSection.content.push(paragraph);
         }
@@ -862,7 +862,7 @@ export function processLatexContent(
     if (fileType === "latex") {
       // Skip section headers if we're in the abstract
       if (inAbstract) {
-        console.log('추상 내부 처리 중');
+        console.log('Processing inside abstract');
         // Clean and process the line
         const cleanedLine = cleanLatexContent(trimmedLine);
 
@@ -892,10 +892,10 @@ export function processLatexContent(
 
       // Handle section headers with optional short title
       if (trimmedLine.includes("\\section[")) {
-        console.log('섹션 헤더 감지 (짧은 제목 포함):', trimmedLine);
+        console.log('Section header detected (with short title):', trimmedLine);
         const match = trimmedLine.match(/\\section\[(.*?)\]\{(.*?)\}/);
         if (match) {
-          console.log('섹션 매칭 결과:', match);
+          console.log('Section match result:', match);
           saveCurrentSection();
           const title = match[2];
           currentSection = createSectionBlock(title, []);
@@ -1034,7 +1034,7 @@ export function processLatexContent(
           currentParagraph = sentences;
           const paragraph = createParagraphBlock(currentParagraph);
 
-          // 단계별로 확인하여 적절한 위치에 추가
+          // Check step by step to add to appropriate location
           if (currentSection) {
             if (currentSubsection) {
               if (currentSubsubsection) {
@@ -1046,7 +1046,7 @@ export function processLatexContent(
               currentSection.content.push(paragraph);
             }
           } else {
-            // 만약 아직 섹션이 없다면 기본 섹션 생성
+            // If no section exists yet, create default section
             currentSection = createSectionBlock("Main Content", []);
             currentSection.content.push(paragraph);
           }
@@ -1079,7 +1079,7 @@ export function processLatexContent(
         currentParagraph = sentences;
         const paragraph = createParagraphBlock(currentParagraph);
 
-        // 단계별로 확인하여 적절한 위치에 추가
+        // Check step by step to add to appropriate location
         if (currentSection) {
           if (currentSubsection) {
             if (currentSubsubsection) {
@@ -1091,7 +1091,7 @@ export function processLatexContent(
             currentSection.content.push(paragraph);
           }
         } else {
-          // 만약 아직 섹션이 없다면 기본 섹션 생성
+          // If no section exists yet, create default section
           currentSection = createSectionBlock("Main Content", []);
           currentSection.content.push(paragraph);
         }
@@ -1102,10 +1102,10 @@ export function processLatexContent(
   // Save the last section and subsection
   saveCurrentSection();
 
-  console.log('=== 최종 결과 ===');
-  console.log('생성된 섹션 수:', result.length);
+  console.log('=== Final Result ===');
+  console.log('Number of sections created:', result.length);
   result.forEach((section, index) => {
-    console.log(`섹션 ${index + 1}:`, {
+    console.log(`Section ${index + 1}:`, {
       title: section.title,
       type: section.type,
       contentLength: section.content ? section.content.length : 0

@@ -18,7 +18,7 @@ export class PaperController {
   }
 
   /**
-   * 문서 가져오기 (특정 사용자와 문서 ID 기준)
+   * Get paper by ID
    */
   async getPaperById(request: FastifyRequest<{
     Querystring: { userId: string; paperId: string }
@@ -27,44 +27,44 @@ export class PaperController {
       const { userId, paperId } = request.query;
       
       if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+        return reply.code(400).send({ error: "userId와 paperId are required" });
       }
       
       const paper = await this.paperService.getPaperById(userId, paperId);
       return paper;
     } catch (error) {
       console.error("Error in getPaperById:", error);
-      return reply.code(500).send({ error: "문서를 가져오는데 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to get paper" });
     }
   }
 
   /**
-   * 특정 사용자의 모든 문서 목록 조회
+   * Get all papers for a user
    */
   async getUserPapers(request: FastifyRequest<{ Querystring: { userId: string } }>, reply: FastifyReply) {
     try {
       const { userId } = request.query;
       if (!userId) {
-        return reply.code(400).send({ error: "userId가 필요합니다" });
+        return reply.code(400).send({ error: "userId is required" });
       }
       const papers = await this.paperService.getUserPapers(userId);
       return papers;
     } catch (error) {
       console.error("Error in getUserPapers:", error);
-      return reply.code(500).send({ error: "사용자의 문서 목록을 가져오는데 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to get user papers" });
     }
   }
 
   /**
-   * 새 문서 생성 - 콘텐츠 처리 및 저장 통합
+   * Create new paper
    */
   async createPaper(req: FastifyRequest<{
     Body: { userId: string; title?: string; content?: string }
   }>, reply: FastifyReply) {
     try {
       const { userId, title, content } = req.body;
-      console.log('=== Paper 생성 시작 ===');
-      console.log('입력된 content:', content?.substring(0, 200) + '...');
+      console.log('=== Paper creation started ===');
+      console.log('Input content:', content?.substring(0, 200) + '...');
 
       if (!userId || !content) {
         return reply.code(400).send({ error: 'userId and content are required' });
@@ -72,19 +72,19 @@ export class PaperController {
 
       let processedPaper: Paper;
       
-      // LaTeX 파일 감지 조건 수정
+      // LaTeX file detection condition modified
       const isLatexFile = content.includes('\\documentclass') || 
                          content.includes('\\begin{document}') || 
                          content.includes('\\section{');
       
       if (isLatexFile) {
-        console.log('LaTeX 파일 감지됨');
-        // content에서 주석 제거
+        console.log('LaTeX file detected');
+        // Remove comments from content
         const cleanedContent = content.replace(/^%.*$/gm, '').trim();
-        console.log('주석 제거 후 content:', cleanedContent.substring(0, 200) + '...');
+        console.log('Comments removed content:', cleanedContent.substring(0, 200) + '...');
         
         const sectionsArray = processLatexContent(cleanedContent, Date.now());
-        console.log('처리된 섹션 수:', sectionsArray.length);
+        console.log('Processed section count:', sectionsArray.length);
         
         processedPaper = {
           _id: new Types.ObjectId().toString(),
@@ -121,7 +121,7 @@ export class PaperController {
         };
       }
 
-      // 새 페이퍼 생성을 위해 _id를 완전히 제거합니다
+      // Remove _id for creating a new paper
       const { _id, ...paperWithoutId } = processedPaper;
       const paperToSave = { 
         ...paperWithoutId,
@@ -142,7 +142,7 @@ export class PaperController {
   }
 
   /**
-   * 문서 저장 (새 문서 또는 기존 문서 업데이트)
+   * Update paper
    */
   async savePaper(request: FastifyRequest<{ Body: any }>, reply: FastifyReply) {
     try {
@@ -152,7 +152,7 @@ export class PaperController {
       if (!userId) {
         return reply.code(400).send({
           success: false,
-          error: "userId가 필요합니다"
+          error: "userId is required"
         });
       }
 
@@ -161,7 +161,7 @@ export class PaperController {
       if (!validationResult.success) {
         return reply.code(400).send({
           success: false,
-          error: "잘못된 문서 형식입니다",
+          error: "Invalid paper format",
           details: validationResult.error
         });
       }
@@ -173,19 +173,19 @@ export class PaperController {
       
       return reply.send({
         success: true,
-        message: "문서가 성공적으로 저장되었습니다"
+        message: "Paper saved successfully"
       });
     } catch (error) {
       console.error("Error saving paper:", error);
       return reply.code(500).send({
         success: false,
-        error: "문서 저장에 실패했습니다"
+        error: "Failed to save paper"
       });
     }
   }
 
   /**
-   * 문장 업데이트
+   * Update sentence
    */
   async updateSentence(
     request: FastifyRequest<{
@@ -204,7 +204,7 @@ export class PaperController {
       const { userId, paperId, blockId, content, summary, intent } = request.body;
 
       if (!userId || !paperId || !blockId || !content) {
-        return reply.code(400).send({ error: "userId, paperId, blockId, content가 필요합니다" });
+        return reply.code(400).send({ error: "userId, paperId, blockId, content are required" });
       }
 
       await this.paperService.updateSentence(
@@ -221,12 +221,12 @@ export class PaperController {
       console.error("Error in updateSentence:", error);
       return reply
         .code(500)
-        .send({ error: "문장 업데이트에 실패했습니다" });
+        .send({ error: "Failed to update sentence" });
     }
   }
 
   /**
-   * 블록 추가
+   * Add block
    */
   async addBlock(
     request: FastifyRequest<{
@@ -244,7 +244,7 @@ export class PaperController {
       const { userId, paperId, parentBlockId, prevBlockId, blockType } = request.body;
       
       if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+        return reply.code(400).send({ error: "userId와 paperId are required" });
       }
       
       const newBlockId = await this.paperService.addBlock(
@@ -257,12 +257,12 @@ export class PaperController {
       return { success: true, blockId: newBlockId };
     } catch (error) {
       console.error("Error in addBlock:", error);
-      return reply.code(500).send({ error: "블록 추가에 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to add block" });
     }
   }
 
   /**
-   * 블록 업데이트
+   * Update block
    */
   async updateBlock(
     request: FastifyRequest<{
@@ -280,7 +280,7 @@ export class PaperController {
       const { userId, paperId, targetBlockId, keyToUpdate, updatedValue } = request.body;
       
       if (!userId || !paperId || !targetBlockId || !keyToUpdate) {
-        return reply.code(400).send({ error: "userId, paperId, targetBlockId, keyToUpdate가 필요합니다" });
+        return reply.code(400).send({ error: "userId, paperId, targetBlockId, keyToUpdate are required" });
       }
       
       await this.paperService.updateBlock(
@@ -293,12 +293,12 @@ export class PaperController {
       return { success: true };
     } catch (error) {
       console.error("Error in updateBlock:", error);
-      return reply.code(500).send({ error: "블록 업데이트에 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to update block" });
     }
   }
 
   /**
-   * 문장 삭제
+   * Delete sentence
    */
   async deleteSentence(
     request: FastifyRequest<{
@@ -314,19 +314,19 @@ export class PaperController {
       const { userId, paperId, blockId } = request.body;
 
       if (!userId || !paperId || !blockId) {
-        return reply.code(400).send({ error: "userId, paperId, blockId가 필요합니다" });
+        return reply.code(400).send({ error: "userId, paperId, blockId are required" });
       }
 
       await this.paperService.deleteSentence(userId, paperId, blockId);
       return reply.code(200).send({ success: true });
     } catch (error) {
       console.error("Error deleting sentence:", error);
-      return reply.code(500).send({ error: "문장 삭제에 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to delete sentence" });
     }
   }
 
   /**
-   * 블록 삭제
+   * Delete block
    */
   async deleteBlock(
     request: FastifyRequest<{
@@ -342,19 +342,19 @@ export class PaperController {
       const { userId, paperId, blockId } = request.body;
 
       if (!userId || !paperId || !blockId) {
-        return reply.code(400).send({ error: "userId, paperId, blockId가 필요합니다" });
+        return reply.code(400).send({ error: "userId, paperId, blockId are required" });
       }
 
       await this.paperService.deleteBlock(userId, paperId, blockId);
       return reply.code(200).send({ success: true });
     } catch (error) {
       console.error("Error deleting block:", error);
-      return reply.code(500).send({ error: "블록 삭제에 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to delete block" });
     }
   }
 
   /**
-   * LLM에 질문하기
+   * Initialize LLM conversation
    */
   async askLLM(
     request: FastifyRequest<{
@@ -385,7 +385,7 @@ export class PaperController {
   }
 
   /**
-   * 협업자 추가
+   * Add collaborator
    */
   async addCollaborator(
     request: FastifyRequest<{
@@ -399,19 +399,19 @@ export class PaperController {
       const { userId, collaboratorUsername } = request.body;
 
       if (!userId || !id || !collaboratorUsername) {
-        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername이 필요합니다" });
+        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername are required" });
       }
 
       await this.paperService.addCollaborator(id, userId, collaboratorUsername);
       return { success: true };
     } catch (error) {
       console.error("Error adding collaborator:", error);
-      return reply.code(500).send({ error: "협업자 추가에 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to add collaborator" });
     }
   }
 
   /**
-   * 문서를 LaTeX 형식으로 내보내기
+   * Export to LaTeX
    */
   async exportPaper(
     request: FastifyRequest<{
@@ -423,13 +423,13 @@ export class PaperController {
       const { userId, paperId } = request.query;
       
       if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+        return reply.code(400).send({ error: "userId와 paperId are required" });
       }
       
-      // 최신 문서 데이터 가져오기
+      // Get latest paper data
       const paper = await this.paperService.getPaperById(userId, paperId);
 
-      // LaTeX로 변환
+      // Convert to LaTeX
       const latexContent = await this.paperService.exportToLatex(paper);
 
       return {
@@ -447,7 +447,7 @@ export class PaperController {
   }
 
   /**
-   * 렌더링된 요약 업데이트
+   * Update rendered summaries
    */
   async updateRenderedSummaries(
     request: FastifyRequest<{
@@ -459,7 +459,7 @@ export class PaperController {
       const { userId, paperId, renderedContent, blockId } = request.body;
       
       if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+        return reply.code(400).send({ error: "userId와 paperId are required" });
       }
       
       const result = await this.paperService.updateRenderedSummaries(
@@ -473,12 +473,12 @@ export class PaperController {
       console.error("Error updating rendered summaries:", error);
       return reply
         .status(500)
-        .send({ success: false, error: "요약 업데이트에 실패했습니다" });
+        .send({ success: false, error: "Failed to update rendered summaries" });
     }
   }
 
   /**
-   * 논문 삭제
+   * Delete paper
    */
   async deletePaper(
     request: FastifyRequest<{
@@ -494,26 +494,26 @@ export class PaperController {
       if (!userId) {
         return reply.code(400).send({ 
           success: false,
-          error: "userId가 필요합니다" 
+          error: "userId is required" 
         });
       }
 
       await this.paperService.deletePaper(userId, id);
       return reply.send({ 
         success: true,
-        message: "논문이 성공적으로 삭제되었습니다" 
+        message: "Paper deleted successfully" 
       });
     } catch (error) {
       console.error("Error deleting paper:", error);
       return reply.code(500).send({ 
         success: false,
-        error: "논문 삭제에 실패했습니다" 
+        error: "Failed to delete paper" 
       });
     }
   }
 
   /**
-   * 논문의 협업자 목록 조회
+   * Get collaborators
    */
   async getCollaborators(
     request: FastifyRequest<{
@@ -527,19 +527,19 @@ export class PaperController {
       const { userId } = request.query;
 
       if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId가 필요합니다" });
+        return reply.code(400).send({ error: "userId와 paperId are required" });
       }
 
       const collaborators = await this.paperService.getCollaborators(userId, paperId);
       return reply.send(collaborators);
     } catch (error) {
       console.error("Error in getCollaborators:", error);
-      return reply.code(500).send({ error: "협업자 목록을 가져오는데 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to get collaborators" });
     }
   }
 
   /**
-   * 협업자 제거
+   * Remove collaborator
    */
   async removeCollaborator(
     request: FastifyRequest<{
@@ -553,14 +553,14 @@ export class PaperController {
       const { userId, collaboratorUsername } = request.body;
 
       if (!userId || !id || !collaboratorUsername) {
-        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername이 필요합니다" });
+        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername are required" });
       }
 
       await this.paperService.removeCollaborator(id, userId, collaboratorUsername);
       return { success: true };
     } catch (error) {
       console.error("Error removing collaborator:", error);
-      return reply.code(500).send({ error: "협업자 제거에 실패했습니다" });
+      return reply.code(500).send({ error: "Failed to remove collaborator" });
     }
   }
 }

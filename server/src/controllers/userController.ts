@@ -17,7 +17,7 @@ export class UserController {
       if (!username) {
         return reply.status(400).send({ 
           success: false, 
-          error: '유저 이름이 필요합니다.' 
+          error: 'A username is required.' 
         });
       }
 
@@ -26,7 +26,7 @@ export class UserController {
       if (!user) {
         return reply.status(500).send({ 
           success: false, 
-          error: '사용자 생성에 실패했습니다.' 
+          error: 'Failed to create user.' 
         });
       }
 
@@ -43,7 +43,7 @@ export class UserController {
       console.error('Error creating user:', error);
       return reply.status(500).send({ 
         success: false, 
-        error: '서버 오류가 발생했습니다.' 
+        error: 'Server error occurred.' 
       });
     }
   }
@@ -56,7 +56,7 @@ export class UserController {
       if (!user) {
         return reply.status(404).send({ 
           success: false, 
-          error: '사용자를 찾을 수 없습니다.' 
+          error: 'User not found.' 
         });
       }
 
@@ -68,7 +68,7 @@ export class UserController {
       console.error('Error getting user by ID:', error);
       return reply.status(500).send({ 
         success: false, 
-        error: '서버 오류가 발생했습니다.' 
+        error: 'Server error occurred.' 
       });
     }
   }
@@ -81,7 +81,7 @@ export class UserController {
       if (!user) {
         return reply.status(404).send({ 
           success: false, 
-          error: '사용자를 찾을 수 없습니다.' 
+          error: 'User not found.' 
         });
       }
 
@@ -93,7 +93,7 @@ export class UserController {
       console.error('Error getting user by username:', error);
       return reply.status(500).send({ 
         success: false, 
-        error: '서버 오류가 발생했습니다.' 
+        error: 'Server error occurred.' 
       });
     }
   }
@@ -106,7 +106,7 @@ export class UserController {
       if (!userId) {
         return reply.status(404).send({ 
           success: false, 
-          error: '사용자를 찾을 수 없습니다.' 
+          error: 'User not found.' 
         });
       }
 
@@ -118,7 +118,7 @@ export class UserController {
       console.error('Error getting user ID by username:', error);
       return reply.status(500).send({ 
         success: false, 
-        error: '서버 오류가 발생했습니다.' 
+        error: 'Server error occurred.' 
       });
     }
   }
@@ -135,7 +135,7 @@ export class UserController {
       console.error('Error getting all users:', error);
       return reply.status(500).send({ 
         success: false, 
-        error: '서버 오류가 발생했습니다.' 
+        error: 'Server error occurred.' 
       });
     }
   }

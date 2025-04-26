@@ -19,7 +19,7 @@ export class PaperService {
   }
 
   /**
-   * 특정 사용자와 문서 ID로 문서 조회
+   * Get paper by user ID and paper ID
    */
   async getPaperById(userId: string, paperId: string): Promise<SharedPaper> {
     const paper = await this.paperRepository.getPaper(userId, paperId);
@@ -30,7 +30,7 @@ export class PaperService {
   }
 
   /**
-   * 블록 추가
+   * Add block
    */
   async addBlock(
     userId: string,
@@ -43,7 +43,7 @@ export class PaperService {
   }
 
   /**
-   * 블록 업데이트
+   * Update block
    */
   async updateBlock(
     userId: string,
@@ -62,7 +62,7 @@ export class PaperService {
   }
 
   /**
-   * 문장 삭제
+   * Delete sentence
    */
   async deleteSentence(
     userId: string,
@@ -73,7 +73,7 @@ export class PaperService {
   }
 
   /**
-   * 블록 삭제
+   * Delete block
    */
   async deleteBlock(
     userId: string,
@@ -84,7 +84,7 @@ export class PaperService {
   }
 
   /**
-   * 논문 저장 (MongoDB)
+   * Save paper (MongoDB)
    */
   async savePaper(paper: Paper & { userId: string }): Promise<SharedPaper> {
     try {
@@ -92,7 +92,7 @@ export class PaperService {
         throw new Error("userId is required");
       }
 
-      // userId와 나머지 부분 분리
+      // Separate userId and the rest
       const { userId, ...sharedPaper } = paper;
       const savedPaper = await this.paperRepository.savePaper(userId, sharedPaper as SharedPaper);
       console.log("Paper saved to MongoDB");
@@ -104,7 +104,7 @@ export class PaperService {
   }
 
   /**
-   * LLM 대화 초기화
+   * Initialize LLM conversation
    */
   async initializeConversation(userId: string, paperId: string): Promise<void> {
     try {
@@ -128,7 +128,7 @@ export class PaperService {
   }
 
   /**
-   * LLM에 질문하기
+   * Ask question to LLM
    */
   async askLLM(
     text: string,
@@ -139,7 +139,7 @@ export class PaperService {
   }
 
   /**
-   * 문서를 LaTeX 형식으로 내보내기
+   * Export document in LaTeX format
    */
   async exportToLatex(paper: Paper): Promise<string> {
     let latexContent = "";
@@ -227,7 +227,7 @@ export class PaperService {
   }
 
   /**
-   * 특정 ID로 블록 찾기
+   * Find block by specific ID
    */
   private async findBlockById(userId: string, paperId: string, blockId: string): Promise<Content | null> {
     const paper = await this.getPaperById(userId, paperId);
@@ -248,7 +248,7 @@ export class PaperService {
   }
 
   /**
-   * 렌더링된 요약 업데이트
+   * Update rendered summary
    */
   async updateRenderedSummaries(
     userId: string,
@@ -264,42 +264,42 @@ export class PaperService {
 
       const result = await this.llmService.updateRenderedSummaries(block);
 
-      // 페이퍼 가져오기 및 대상 블록을 LLM 결과로 대체
+      // Get paper and replace target block with LLM result
       const paper = await this.getPaperById(userId, paperId);
 
-      // 페이퍼 구조에서 블록을 LLM 결과로 대체
+      // Replace block in paper structure with LLM result
       const replaceBlock = (content: any): boolean => {
         if (typeof content === "string") return false;
 
-        // 대상 블록인 경우 대체
+        // Target block case
         if (content["block-id"] === blockId) {
-          // 원래 block-id를 보존하면서 다른 속성만 업데이트
+          // Keep original block-id while updating other properties
           const originalBlockId = content["block-id"];
 
-          // block-id가 없는 경우 원래 block-id를 사용
+          // block-id is missing in result, use original block-id
           const parsedResult = result.apiResponse.parsedResult;
 
-          // 결과에 block-id가 없으면 원래 block-id를 추가
+          // If result doesn't have block-id, add original block-id
           if (!parsedResult["block-id"]) {
             console.log(
-              `LLM 응답에 block-id가 없어서 원래 ID(${originalBlockId})를 사용합니다.`
+              `LLM response doesn't have block-id, using original ID(${originalBlockId})`
             );
           }
 
-          // Object.assign 대신 각 속성을 개별적으로 복사하면서 block-id는 유지
+          // Copy each property individually while keeping block-id
           Object.keys(parsedResult).forEach((key) => {
             if (key !== "block-id") {
               content[key] = parsedResult[key];
             }
           });
 
-          // block-id 명시적으로 보존
+          // Explicitly keep block-id
           content["block-id"] = originalBlockId;
 
           return true;
         }
 
-        // 그렇지 않으면 자식들 확인
+        // If not, check children
         if (Array.isArray(content.content)) {
           for (let i = 0; i < content.content.length; i++) {
             if (content.content[i] && typeof content.content[i] !== "string") {
@@ -313,12 +313,12 @@ export class PaperService {
         return false;
       };
 
-      // 루트에서 시작하여 대체
+      // Start from root and replace
       if (paper) {
         replaceBlock(paper);
       }
 
-      // 업데이트된 문서 저장
+      // Save updated document
       await this.savePaper({ ...paper, userId });
 
       return result;
@@ -329,7 +329,7 @@ export class PaperService {
   }
 
   /**
-   * 특정 사용자의 모든 문서 목록 조회
+   * Get all papers for a specific user
    */
   async getUserPapers(userId: string): Promise<Paper[]> {
     try {
@@ -342,7 +342,7 @@ export class PaperService {
   }
 
   /**
-   * 새 문서 생성
+   * Create new paper
    */
   async createPaper(userId: string, title: string, content?: string): Promise<Paper> {
     try {
@@ -356,7 +356,7 @@ export class PaperService {
         if (fileType === 'latex') {
           processedContent = processLatexContent(content, baseTimestamp);
         } else {
-          // 기본적으로 문단 하나로 처리
+          // Default to one paragraph
           processedContent = [{
             "block-id": String(baseTimestamp),
             type: "paragraph",
@@ -387,7 +387,7 @@ export class PaperService {
           collaboratorIds: []
         };
         
-        // MongoDB에 저장
+        // Save to MongoDB
         await this.savePaper({ ...paper, userId });
         return paper;
       } else {
@@ -406,7 +406,7 @@ export class PaperService {
           collaboratorIds: []
         };
         
-        // MongoDB에 저장
+        // Save to MongoDB
         await this.savePaper({ ...paper, userId });
         return paper;
       }
@@ -417,7 +417,7 @@ export class PaperService {
   }
 
   /**
-   * 문장 업데이트
+   * Update sentence
    */
   async updateSentence(
     userId: string,
@@ -438,7 +438,7 @@ export class PaperService {
   }
 
   /**
-   * 협업자 추가
+   * Add collaborator
    */
   async addCollaborator(
     paperId: string,
@@ -449,7 +449,7 @@ export class PaperService {
   }
 
   /**
-   * 협업자 제거
+   * Remove collaborator
    */
   async removeCollaborator(
     paperId: string,
@@ -461,23 +461,23 @@ export class PaperService {
       throw new Error("Paper not found");
     }
 
-    // 협업자가 아닌 경우 에러
+    // Error if user is not a collaborator
     if (!paper.collaboratorIds.includes(collaboratorUsername)) {
       throw new Error("User is not a collaborator");
     }
 
-    // 협업자 목록에서 제거
+    // Remove from collaborator list
     const updatedPaper = {
       ...paper,
       collaboratorIds: paper.collaboratorIds.filter(id => id !== collaboratorUsername)
     };
 
-    // MongoDB에 저장
+    // Save to MongoDB
     await this.paperRepository.savePaper(userId, updatedPaper);
   }
 
   /**
-   * 자식 블록 값 조회
+   * Get children values
    */
   async getChildrenValues(
     userId: string,
@@ -494,14 +494,14 @@ export class PaperService {
   }
 
   /**
-   * 논문 삭제
+   * Delete paper
    */
   async deletePaper(userId: string, paperId: string): Promise<void> {
     return this.paperRepository.deletePaper(userId, paperId);
   }
 
   /**
-   * 논문의 협업자 목록 조회
+   * Get collaborators for a paper
    */
   async getCollaborators(userId: string, paperId: string) {
     const paper = await this.paperRepository.getPaper(userId, paperId);
@@ -511,20 +511,20 @@ export class PaperService {
     
     const collaboratorIds = paper.collaboratorIds || [];
     
-    // 각 collaborator ID에 대한 사용자 정보 조회
+    // Get user information for each collaborator ID
     const collaborators = await Promise.all(
       collaboratorIds.map(async (id) => {
         try {
           const user = await this.userService.getUserById(id);
           return {
             userId: id,
-            username: user ? user.username : '알 수 없는 사용자'
+            username: user ? user.username : 'Unknown user'
           };
         } catch (error) {
           console.error(`Error fetching user for ID ${id}:`, error);
           return {
             userId: id,
-            username: '알 수 없는 사용자'
+            username: 'Unknown user'
           };
         }
       })

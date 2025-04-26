@@ -7,6 +7,7 @@ export interface IUser extends Document {
   updatedAt: Date;
 }
 
+// User model schema
 const UserSchema = new Schema<IUser>(
   {
     username: {
