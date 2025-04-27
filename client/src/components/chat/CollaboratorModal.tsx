@@ -40,7 +40,26 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
         setLoading(true);
         setError(null);
         const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
-        setCollaborators(Array.isArray(collaboratorsData) ? collaboratorsData : []);
+        // 협업자 데이터에 username 추가
+        const collaboratorsWithUsername = await Promise.all(
+          collaboratorsData.map(async (collaboratorId: string) => {
+            try {
+              const userResponse = await getAllUsers();
+              const user = userResponse.users.find((u: User) => u._id === collaboratorId);
+              return {
+                userId: collaboratorId,
+                username: user ? user.username : 'Unknown User'
+              };
+            } catch (err) {
+              console.error("Failed to fetch user details:", err);
+              return {
+                userId: collaboratorId,
+                username: 'Unknown User'
+              };
+            }
+          })
+        );
+        setCollaborators(collaboratorsWithUsername);
       } catch (err) {
         console.error("Failed to fetch collaborators:", err);
         setError("Failed to fetch collaborators.");
