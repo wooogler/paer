@@ -21,19 +21,14 @@ export const getPapers = async (authorId: string): Promise<Paper[]> => {
   }));
 };
 
-export const getPaperById = async (paperId: string, authorId: string): Promise<Paper> => {
+export const getPaperById = async (paperId: string, authorId: string) => {
   try {
     const response = await api.get(`/papers/${paperId}`, {
-      params: { authorId }
+      params: { authorId },
     });
-    const paper = response.data;
-    return {
-      ...paper,
-      authorId: paper.authorId,
-      collaboratorIds: paper.collaboratorIds || []
-    };
+    return response.data;
   } catch (error) {
-    console.error("Error getting paper:", error);
+    console.error("Error in getPaperById:", error);
     throw error;
   }
 };
@@ -203,11 +198,21 @@ export const deleteBlock = async (blockId: string) => {
  * @returns The processed paper object with success/error information
  */
 export const importPaper = async (content: string, userId: string) => {
-  const response = await api.post("/papers", {
-    content,
-    authorId: userId,
-  });
-  return response.data;
+  try {
+    const response = await api.post("/papers", {
+      content,
+      authorId: userId,
+    });
+    
+    if (response.data.message === 'Paper created successfully') {
+      return response.data;
+    } else {
+      throw new Error('Failed to import paper');
+    }
+  } catch (error) {
+    console.error('Error importing paper:', error);
+    throw error;
+  }
 };
 
 export const getCollaborators = async (paperId: string, userId: string) => {

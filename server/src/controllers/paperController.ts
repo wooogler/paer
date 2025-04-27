@@ -21,10 +21,12 @@ export class PaperController {
    * Get paper by ID
    */
   async getPaperById(request: FastifyRequest<{
-    Querystring: { authorId: string; paperId: string }
+    Params: { id: string };
+    Querystring: { authorId: string }
   }>, reply: FastifyReply): Promise<any> {
     try {
-      const { authorId, paperId } = request.query;
+      const { id: paperId } = request.params;
+      const { authorId } = request.query;
       
       if (!authorId || !paperId) {
         return reply.code(400).send({ error: "authorId와 paperId are required" });

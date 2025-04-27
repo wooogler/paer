@@ -139,7 +139,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
         displayTitle: getDisplayTitle(),
         displayText: getDisplayText(),
       };
-    }, [content, displayMode, path]);
+    }, [content.type, content.summary, content.intent, content.title, displayMode, path]);
 
     return (
       <div>

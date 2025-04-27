@@ -10,7 +10,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
-import { importPaper } from "../api/paperApi";
+import { importPaper, getPaperById } from "../api/paperApi";
 import { FiDownload, FiTrash2, FiLogOut, FiList, FiUsers } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 import { toast } from "react-hot-toast";
@@ -87,22 +87,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleFileImport = async (content: string) => {
     try {
+      const { userId } = useAppStore.getState();
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
+
       // 파일 가져오기 시작 시 로딩 상태 설정
       const { setLoading } = useContentStore.getState();
       setLoading(true);
 
       // FileImport 컴포넌트 내부에서도 로딩 상태를 관리합니다
       const response = await importPaper(content, userId);
-      if (response.success) {
-        setContent(response.paper);
+      if (response.message === 'Paper created successfully') {
+        // 새로 생성된 논문을 가져옵니다
+        const newPaper = await getPaperById(response.paperId, userId);
+        setContent(newPaper);
         // 데이터 캐시 무효화하여 UI 업데이트
         await queryClient.invalidateQueries({
-          queryKey: ["paper"],
+          queryKey: ["papers", userId],
           refetchType: "active", // 즉시 refetch 수행
         });
         toast.success("Paper imported successfully.");
       } else {
-        throw new Error(response.error || "Failed to import paper.");
+        throw new Error("Failed to import paper.");
       }
     } catch (error) {
       console.error("Error importing paper:", error);

@@ -6,7 +6,10 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const paperController = new PaperController();
 
   // GET /api/papers/:id - 특정 문서 조회
-  fastify.get<{ Querystring: { authorId: string; paperId: string } }>(
+  fastify.get<{ 
+    Params: { id: string };
+    Querystring: { authorId: string }
+  }>(
     "/:id",
     async (request, reply) => {
       return paperController.getPaperById(request, reply);
