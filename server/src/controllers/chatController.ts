@@ -97,6 +97,16 @@ export class ChatController {
         return reply.code(400).send({ error: "userId is required" });
       }
 
+      // Before saving the message, validate messageType and senderId
+      // if messageType is not specified, set it to "chat"
+      if (!message.messageType) {
+        message.messageType = "chat";
+      }
+      // // if senderId is not specified, set it to userId
+      // if (!message.senderId) {
+      //   message.senderId = userId;
+      // }
+
       // Save user message
       await this.chatService.addMessage(userId, paperId, message);
 
@@ -111,6 +121,12 @@ export class ChatController {
         content: paper.content
       });
 
+      // if messageType is "chat", proceed with OpenAI API
+      // otherwise, return success
+      if (message.messageType == "comment") {
+        return { success: true };
+      }
+      
       // Initialize conversation (if needed)
       await this.llmService.initializeConversation(JSON.stringify(paper.content));
 

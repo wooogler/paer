@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { MessageRole } from '../types/chat';
+import { MessageRole, MessageType } from '../types/chat';
 
 export interface IMessage {
   id: string;
@@ -7,6 +7,8 @@ export interface IMessage {
   content: string;
   timestamp: number;
   blockId?: string;
+  messageType?: MessageType;
+  // senderId?: string;
 }
 
 export interface IChat extends Document {
@@ -38,7 +40,15 @@ const MessageSchema = new Schema<IMessage>({
   },
   blockId: {
     type: String
-  }
+  },
+  messageType: {
+    type: String,
+    enum: ['chat', 'comment'],
+    default: 'chat'
+  },
+  // senderId: {
+  //   type: String
+  // }
 }, { _id: false });
 
 const ChatSchema = new Schema<IChat>(
