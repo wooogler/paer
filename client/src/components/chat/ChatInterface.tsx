@@ -156,6 +156,14 @@ const ChatInterface: React.FC = () => {
     async (e: React.FormEvent) => {
       e.preventDefault();
 
+      const button = e.nativeEvent.submitter as HTMLButtonElement; // Get the button that triggered the submit
+      const action = button?.value; // Get the value of the button
+
+      let messageType = "chat";
+      if (action == "sendAsComment") {
+        messageType = "comment";
+      }
+
       if (input.trim()) {
         const message = {
           id: uuidv4(),
@@ -165,7 +173,8 @@ const ChatInterface: React.FC = () => {
           userId: userId || "",
           paperId: rootContent?._id || "",
           userName: "User",
-          blockId: selectedContent?.["block-id"]
+          blockId: selectedContent?.["block-id"],
+          messageType: messageType,
         };
         await addMessage(message);
         setInput("");
@@ -257,8 +266,8 @@ const ChatInterface: React.FC = () => {
       <div className="border-t border-gray-200 p-4 bg-white">
         {/* 선택된 콘텐츠 정보 표시 - textarea 위에 배치 */}
         {rootContent && <ContentInfo content={selectedContent} />}
-        
-        <form onSubmit={handleSubmit} className="flex items-end">
+
+        <form onSubmit={handleSubmit} className="flex items-start space-x-4">
           <textarea
             ref={inputRef}
             value={input}
@@ -267,16 +276,33 @@ const ChatInterface: React.FC = () => {
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
             disabled={isLoading || !rootContent}
-            placeholder={rootContent ? "Type a message... (Press Enter to send, Shift+Enter for line break)" : "Please input a paper first..."}
-            className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
+            placeholder={
+              rootContent
+                ? "Type a message... (Press Enter to send, Shift+Enter for line break)"
+                : "Please input a paper first..."
+            }
+            className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[120px] max-h-[200px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
           />
-          <button
-            type="submit"
-            disabled={!input.trim() || isLoading || !rootContent}
-            className="ml-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
-          >
-            Send
-          </button>
+          <div className="flex flex-col space-y-2">
+            <button
+              type="submit"
+              name="action"
+              value="send"
+              disabled={!input.trim() || isLoading || !rootContent}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            >
+              Chat
+            </button>
+            <button
+              type="submit"
+              name="action"
+              value="sendAsComment"
+              disabled={!input.trim() || isLoading || !rootContent}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            >
+              Comment
+            </button>
+          </div>
         </form>
       </div>
 
