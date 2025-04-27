@@ -4,7 +4,7 @@ import mongoose, { isValidObjectId } from "mongoose";
 
 export class ChatRepository {
   /**
-   * 특정 사용자와 문서에 대한 모든 메시지 조회
+   * Get all messages for a specific user and paper
    */
   async getMessages(userId: string, paperId: string): Promise<ChatMessage[]> {
     try {
@@ -30,7 +30,7 @@ export class ChatRepository {
   }
 
   /**
-   * 특정 사용자와 문서에 대한 메시지 저장
+   * Save messages for a specific user and paper
    */
   async saveMessages(userId: string, paperId: string, messages: ChatMessage[]): Promise<void> {
     try {
@@ -50,7 +50,7 @@ export class ChatRepository {
   }
 
   /**
-   * 특정 사용자와 문서에 새 메시지 추가
+   * Add a new message for a specific user and paper
    */
   async addMessage(userId: string, paperId: string, message: ChatMessage): Promise<void> {
     try {
@@ -70,7 +70,7 @@ export class ChatRepository {
   }
 
   /**
-   * 특정 사용자와 문서의 모든 메시지 제거
+   * Clear all messages for a specific user and paper
    */
   async clearMessages(userId: string, paperId: string): Promise<void> {
     try {
@@ -90,7 +90,7 @@ export class ChatRepository {
   }
 
   /**
-   * 특정 블록 ID에 해당하는 메시지 조회
+   * Get messages by block ID for a specific user and paper
    */
   async getMessagesByBlockId(userId: string, paperId: string, blockId: string): Promise<ChatMessage[]> {
     try {
@@ -116,7 +116,7 @@ export class ChatRepository {
   }
 
   /**
-   * 특정 메시지 ID에 해당하는 메시지 삭제
+   * Delete a message by ID for a specific user and paper
    */
   async deleteMessageById(userId: string, paperId: string, messageId: string): Promise<void> {
     try {

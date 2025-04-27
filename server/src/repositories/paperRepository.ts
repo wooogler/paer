@@ -15,7 +15,7 @@ export class PaperRepository {
   }
 
   /**
-   * 사용자 ID로 문서 조회
+   * Get paper by author ID and paper ID
    */
   async getPaper(authorId: string, paperId: string): Promise<SharedPaper | null> {
     try {
@@ -35,7 +35,7 @@ export class PaperRepository {
         return null;
       }
 
-      // 문서 데이터 구성
+      // Compose paper data
       return {
         _id: paper._id?.toString() || "",
         title: paper.title,
@@ -56,7 +56,7 @@ export class PaperRepository {
   }
 
   /**
-   * 특정 유저의 모든 문서 조회
+   * Get all papers for a specific user
    */
   async getUserPapers(authorId: Types.ObjectId): Promise<SharedPaper[]> {
     try {
@@ -88,7 +88,7 @@ export class PaperRepository {
   }
 
   /**
-   * 새로운 문서 생성
+   * Create a new paper
    */
   async createPaper(authorId: string, title: string, content: SharedPaper): Promise<string> {
     try {
@@ -111,7 +111,7 @@ export class PaperRepository {
   }
 
   /**
-   * 문장 업데이트
+   * Update sentence content
    */
   async updateSentence(
     authorId: string,
@@ -132,7 +132,7 @@ export class PaperRepository {
       const userObjectId = new mongoose.Types.ObjectId(authorId);
       const paperObjectId = new mongoose.Types.ObjectId(paperId);
 
-      // 먼저 문서를 찾음
+      // First find the paper
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
         authorId: userObjectId
@@ -146,7 +146,7 @@ export class PaperRepository {
         throw new Error(`Paper not found`);
       }
 
-      // 해당 block을 찾아서 업데이트
+      // Find and update the block
       const updated = this.findAndUpdateSentence(
         paper.content,
         blockId,
@@ -159,7 +159,7 @@ export class PaperRepository {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // 문서 저장
+      // Save the paper
       await paper.save();
     } catch (error) {
       console.error("Error updating sentence content:", error);
@@ -167,7 +167,7 @@ export class PaperRepository {
     }
   }
 
-  // 블록 추가
+  // Add a new block
   async addBlock(
     authorId: string,
     paperId: string,
@@ -182,7 +182,7 @@ export class PaperRepository {
         throw new Error("Invalid authorId or paperId");
       }
 
-      // 문서 조회
+      // Find the paper
       const paper = await PaperModel.findOne({
         _id: paperId,
         authorId: authorId
@@ -203,7 +203,7 @@ export class PaperRepository {
         "block-id": (Date.now() + 1).toString(), // Add +1 to ensure block ID is not duplicated
       };
 
-      // Initializes a new block w/ specified block type and assigned block ID
+      // Initialize a new block with specified block type and assigned block ID
       const newBlock = {
         type: blockType,
         // For paragraph type, set summary to "Empty Summary"
@@ -216,7 +216,7 @@ export class PaperRepository {
             : blockType === "paragraph"
             ? [emptySentence]
             : [],
-        "block-id": newBlockId, // Assigns a unique block ID using timestamp
+        "block-id": newBlockId, // Assign a unique block ID using timestamp
         ...(blockType !== "sentence" && {
           title:
             blockType === "section"
@@ -233,7 +233,7 @@ export class PaperRepository {
         );
       }
 
-      // Finds the parent block; throws an error if not found
+      // Find the parent block; throw an error if not found
       const parentBlock = this.findBlockById(paper.content, parentBlockId);
       if (!parentBlock) {
         throw new Error(
@@ -241,7 +241,7 @@ export class PaperRepository {
         );
       }
 
-      // Finds the index of the previous block ID within the parent block; return -1 if not found
+      // Find the index of the previous block ID within the parent block; return -1 if not found
       const prevBlockIndex = !prevBlockId
         ? -1
         : parentBlock.content.findIndex(
@@ -249,7 +249,7 @@ export class PaperRepository {
           );
       parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
 
-      // 변경사항 저장
+      // Save changes
       await paper.save();
     } catch (error) {
       console.error("Error adding a new block:", error);
@@ -259,7 +259,7 @@ export class PaperRepository {
     return newBlockId;
   }
 
-  // 블록 업데이트
+  // Update block content
   async updateBlock(
     authorId: string,
     paperId: string,
@@ -272,7 +272,7 @@ export class PaperRepository {
         throw new Error("Invalid authorId or paperId");
       }
 
-      // 문서 조회
+      // Find the paper
       const paper = await PaperModel.findOne({
         _id: paperId,
         authorId: authorId
@@ -282,17 +282,17 @@ export class PaperRepository {
         throw new Error(`Paper not found`);
       }
 
-      // 블록 찾기
+      // Find the block
       const targetBlock = this.findBlockById(paper.content, targetBlockId);
 
       if (!targetBlock) {
         throw new Error(`Block with ID ${targetBlockId} not found`);
       }
 
-      // 블록 업데이트
+      // Update the block
       targetBlock[keyToUpdate] = updatedValue;
       
-      // 변경사항 저장
+      // Save changes
       await paper.save();
     } catch (error) {
       console.error("Error updating a block:", error);
@@ -300,7 +300,7 @@ export class PaperRepository {
     }
   }
 
-  // 블록 삭제
+  // Delete a block
   async deleteBlock(
     authorId: string,
     paperId: string,
@@ -311,7 +311,7 @@ export class PaperRepository {
         throw new Error("Invalid authorId or paperId");
       }
 
-      // 문서 조회
+      // Find the paper
       const paper = await PaperModel.findOne({
         _id: paperId,
         authorId: authorId
@@ -321,14 +321,14 @@ export class PaperRepository {
         throw new Error(`Paper not found`);
       }
 
-      // 블록 삭제
+      // Delete the block
       const deleted = this.findAndDeleteBlock(paper.content, blockId);
 
       if (!deleted) {
         throw new Error(`Block with ID ${blockId} not found`);
       }
 
-      // 변경사항 저장
+      // Save changes
       await paper.save();
     } catch (error) {
       console.error("Error deleting block:", error);
@@ -336,7 +336,7 @@ export class PaperRepository {
     }
   }
 
-  // 문장 삭제
+  // Delete a sentence
   async deleteSentence(
     authorId: string,
     paperId: string,
@@ -347,7 +347,7 @@ export class PaperRepository {
         throw new Error("Invalid authorId or paperId");
       }
 
-      // 문서 조회
+      // Find the paper
       const paper = await PaperModel.findOne({
         _id: paperId,
         authorId: authorId
@@ -357,14 +357,14 @@ export class PaperRepository {
         throw new Error(`Paper not found`);
       }
 
-      // 문장 삭제
+      // Delete the sentence
       const deleted = this.findAndDeleteSentence(paper.content, blockId);
 
       if (!deleted) {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // 변경사항 저장
+      // Save changes
       await paper.save();
     } catch (error) {
       console.error("Error deleting sentence:", error);
@@ -372,7 +372,7 @@ export class PaperRepository {
     }
   }
 
-  // 협업자 추가
+  // Add a collaborator
   async addCollaborator(
     paperId: string,
     authorId: string,
@@ -383,7 +383,7 @@ export class PaperRepository {
         throw new Error("Invalid paperId");
       }
 
-      // 문서 소유자 찾기 (authorId가 username인 경우 처리)
+      // Find the paper owner (handle case where authorId is username)
       let ownerId: mongoose.Types.ObjectId;
       if (isValidObjectId(authorId)) {
         ownerId = new mongoose.Types.ObjectId(authorId);
@@ -395,13 +395,13 @@ export class PaperRepository {
         ownerId = owner._id as mongoose.Types.ObjectId;
       }
 
-      // 협업자 사용자 찾기
+      // Find the collaborator user
       const collaborator = await User.findOne({ username: collaboratorUsername });
       if (!collaborator) {
         throw new Error(`User ${collaboratorUsername} not found`);
       }
 
-      // 문서 조회 (소유자만 협업자 추가 가능)
+      // Find the paper (only owner can add collaborators)
       const paper = await PaperModel.findOne({
         _id: paperId,
         authorId: ownerId
@@ -411,25 +411,25 @@ export class PaperRepository {
         throw new Error(`Paper not found or you don't have permission`);
       }
 
-      // 협업자가 이미 존재하는지 확인
+      // Check if collaborator already exists
       const collaboratorId = collaborator._id as mongoose.Types.ObjectId;
       const collaboratorIdString = collaboratorId.toString();
       
-      // collaboratorIds가 없으면 초기화
+      // Initialize collaboratorIds if it doesn't exist
       if (!paper.collaboratorIds) {
         paper.collaboratorIds = [];
       }
       
-      // 이미 협업자로 등록되어 있는지 확인
+      // Check if collaborator is already added
       const collaboratorExists = paper.collaboratorIds.some(id => 
         (id as any)?.toString() === collaboratorIdString
       );
       
       if (collaboratorExists) {
-        return; // 이미 협업자로 추가되어 있음
+        return; // Collaborator already exists
       }
 
-      // 협업자 추가
+      // Add the collaborator
       paper.collaboratorIds.push(collaboratorId as any);
       await paper.save();
     } catch (error) {
@@ -467,7 +467,7 @@ export class PaperRepository {
     summary: string,
     intent: string
   ): boolean {
-    // 현재 객체가 타겟 문장인지 확인
+    // Check if current object is the target sentence
     if (obj && obj.type === "sentence" && obj["block-id"] === blockId) {
       obj.content = content;
       obj.summary = summary;
@@ -475,7 +475,7 @@ export class PaperRepository {
       return true;
     }
 
-    // 콘텐츠 배열이 있으면 재귀적으로 검색
+    // If content array exists, search recursively
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
         if (this.findAndUpdateSentence(child, blockId, content, summary, intent)) {
@@ -489,20 +489,20 @@ export class PaperRepository {
 
   // Find and delete sentence
   private findAndDeleteSentence(obj: any, blockId: string): boolean {
-    // 콘텐츠 배열이 있는 경우 검색
+    // If content array exists, search
     if (obj && obj.content && Array.isArray(obj.content)) {
-      // 직접적인 자식 중에서 삭제할 문장 찾기
+      // Find the sentence to delete among direct children
       const index = obj.content.findIndex(
         (item: any) => item.type === "sentence" && item["block-id"] === blockId
       );
 
       if (index !== -1) {
-        // 문장 삭제
+        // Delete the sentence
         obj.content.splice(index, 1);
         return true;
       }
 
-      // 재귀적으로 자식들 검색
+      // Search recursively through children
       for (const child of obj.content) {
         if (this.findAndDeleteSentence(child, blockId)) {
           return true;
@@ -515,20 +515,20 @@ export class PaperRepository {
 
   // Find and delete block
   private findAndDeleteBlock(obj: any, blockId: string): boolean {
-    // 콘텐츠 배열이 있는 경우 검색
+    // If content array exists, search
     if (obj && obj.content && Array.isArray(obj.content)) {
-      // 직접적인 자식 중에서 삭제할 블록 찾기
+      // Find the block to delete among direct children
       const index = obj.content.findIndex(
         (item: any) => item["block-id"] === blockId
       );
 
       if (index !== -1) {
-        // 블록 삭제
+        // Delete the block
         obj.content.splice(index, 1);
         return true;
       }
 
-      // 재귀적으로 자식들 검색
+      // Search recursively through children
       for (const child of obj.content) {
         if (this.findAndDeleteBlock(child, blockId)) {
           return true;
@@ -539,11 +539,11 @@ export class PaperRepository {
     return false;
   }
 
-  // 부모 블록 찾기
+  // Find parent block by child ID
   findParentBlockByChildId(obj: any, blockId: string): any {
-    // 콘텐츠 배열이 있는 경우 검색
+    // If content array exists, search
     if (obj && obj.content && Array.isArray(obj.content)) {
-      // 직접적인 자식 중에 타겟 블록이 있는지 확인
+      // Check if target block exists among direct children
       const hasChild = obj.content.some(
         (item: any) => item["block-id"] === blockId
       );
@@ -552,7 +552,7 @@ export class PaperRepository {
         return obj;
       }
 
-      // 재귀적으로 자식들 검색
+      // Search recursively through children
       for (const child of obj.content) {
         const found = this.findParentBlockByChildId(child, blockId);
         if (found) {
@@ -565,7 +565,7 @@ export class PaperRepository {
   }
 
   /**
-   * 자식 블록값 조회
+   * Get children values
    */
   getChildrenValues(authorId: string, paperId: string, blockId: string, targetKey: string): Promise<string> {
     return this.getPaper(authorId, paperId).then(paper => {
@@ -596,7 +596,7 @@ export class PaperRepository {
   }
 
   /**
-   * 논문 저장 (생성 또는 업데이트)
+   * Save paper (create or update)
    */
   async savePaper(authorId: string, paper: SharedPaper): Promise<SharedPaper> {
     try {
@@ -609,7 +609,7 @@ export class PaperRepository {
       
       let userObjectId: mongoose.Types.ObjectId;
 
-      // authorId가 ObjectId 형식이 아닌 경우 username으로 사용자 검색
+      // If authorId is not in ObjectId format, search by username
       if (!isValidObjectId(authorId)) {
         console.log('authorId is not a valid ObjectId, searching by username');
         const user = await User.findOne({ username: authorId });
@@ -624,10 +624,10 @@ export class PaperRepository {
         console.log('authorId is a valid ObjectId, converted to:', userObjectId);
       }
 
-      // 기존 논문 업데이트 또는 새 논문 생성
+      // Update existing paper or create new one
       const paperData = { ...paper } as any;
       
-      // 명시적으로 paperData._id가 유효한 ObjectId인지 확인
+      // Explicitly check if paperData._id is a valid ObjectId
       if (paperData._id && isValidObjectId(paperData._id)) {
         console.log(`Updating existing paper with ID: ${paperData._id}`);
         
@@ -643,15 +643,15 @@ export class PaperRepository {
           throw new Error("Paper not found or user does not have permission to update");
         }
 
-        // 논문 내용 업데이트 - paper 객체에서 필요한 필드만 추출
+        // Update paper content - extract only necessary fields from paper object
         existingPaper.title = paper.title || 'Untitled Paper';
         
-        // content 필드만 직접 업데이트 (타입 불일치 방지)
+        // Update content field directly (to avoid type mismatch)
         if (paper.content) {
           existingPaper.content = paper.content as any;
         }
         
-        // 기타 필드 업데이트
+        // Update other fields
         if (paper.summary) existingPaper.summary = paper.summary;
         if (paper.intent) existingPaper.intent = paper.intent;
         if (paper['block-id']) existingPaper['block-id'] = paper['block-id'];
@@ -660,7 +660,7 @@ export class PaperRepository {
         
         console.log('Paper updated successfully');
         
-        // 응답 객체 생성
+        // Create response object
         return {
           ...paper,
           _id: existingPaper._id?.toString() || paperData._id,
@@ -668,7 +668,7 @@ export class PaperRepository {
           collaboratorIds: (existingPaper.collaboratorIds || []).map(id => (id as any)?.toString() || "")
         };
       } else {
-        // 새 논문 생성
+        // Create new paper
         console.log('Creating new paper - no _id provided');
         const newPaper = await PaperModel.create({
           authorId: userObjectId,
@@ -696,7 +696,7 @@ export class PaperRepository {
   }
 
   /**
-   * 논문 삭제
+   * Delete paper
    */
   async deletePaper(authorId: string, paperId: string): Promise<void> {
     try {
@@ -712,14 +712,14 @@ export class PaperRepository {
         throw new Error("Invalid paperId format");
       }
 
-      // 논문 존재 여부 확인
+      // Check if paper exists
       const paperExists = await PaperModel.findById(paperId);
       if (!paperExists) {
         console.error(`Paper not found with id: ${paperId}`);
         throw new Error(`Paper not found with id: ${paperId}`);
       }
 
-      // 사용자 권한 확인
+      // Check user permissions
       const userObjectId = new mongoose.Types.ObjectId(authorId);
       const hasPermission = await PaperModel.findOne({
         _id: paperId,
@@ -734,7 +734,7 @@ export class PaperRepository {
         throw new Error("User does not have permission to delete this paper");
       }
 
-      // 문서 조회 및 삭제
+      // Find and delete the paper
       const result = await PaperModel.findOneAndDelete({
         _id: paperId,
         $or: [
