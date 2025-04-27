@@ -4,7 +4,7 @@ import { LLMService } from "./llmService";
 import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
 import mongoose from "mongoose";
-import { Paper as PaperModel } from '../models/Paper';
+import { PaperModel } from '../models/Paper';
 import { UserService } from "./userService";
 
 export class PaperService {

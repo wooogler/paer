@@ -1,18 +1,15 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { Paper as SharedPaper, ContentSchema } from '@paer/shared';
+import mongoose, { Schema } from 'mongoose';
+import { Paper, PaperSchema } from '@paer/shared/schemas/paperSchema';
 
-export interface IPaper extends Document {
-  userId: string | mongoose.Types.ObjectId;
-  title: string;
-  content: SharedPaper;
-  collaborators: (string | mongoose.Types.ObjectId)[];
+// Mongoose 문서 타입 정의 (타입스크립트용)
+export interface PaperDocument extends Omit<Paper, 'createdAt' | 'updatedAt' | '_id'>, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
 
-const PaperSchema = new Schema<IPaper>(
+const PaperMongooseSchema = new Schema(
   {
-    userId: {
+    authorId: {
       type: Schema.Types.Mixed,
       ref: 'User',
       required: true
@@ -28,23 +25,43 @@ const PaperSchema = new Schema<IPaper>(
       validate: {
         validator: function(value: any) {
           try {
-            ContentSchema.parse(value);
+            // Zod 스키마로 유효성 검증
+            PaperSchema.parse(value);
             return true;
           } catch (error) {
             return false;
           }
         },
-        message: props => `${props.value} is not a valid paper content structure!`
+        message: (props: any) => `${props.value} is not a valid paper content structure!`
       }
     },
-    collaborators: [{
+    collaboratorIds: [{
       type: Schema.Types.Mixed,
       ref: 'User'
-    }]
+    }],
+    summary: {
+      type: String,
+      default: ''
+    },
+    intent: {
+      type: String,
+      default: ''
+    },
+    type: {
+      type: String,
+      default: 'paper'
+    },
+    version: {
+      type: Number,
+      default: 1
+    },
+    'block-id': {
+      type: String
+    }
   },
   {
     timestamps: true
   }
 );
 
-export const Paper = mongoose.model<IPaper>('Paper', PaperSchema, 'papers'); 
+export const PaperModel = mongoose.model<PaperDocument>('Paper', PaperMongooseSchema, 'papers'); 

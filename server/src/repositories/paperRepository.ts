@@ -1,5 +1,5 @@
 import { Paper as SharedPaper, ContentType, Content } from "@paer/shared";
-import { Paper, IPaper } from "../models/Paper";
+import { PaperModel, PaperDocument } from "../models/Paper";
 import { User } from "../models/User";
 import mongoose, { isValidObjectId } from "mongoose";
 import { UserService } from "../services/userService";
@@ -23,11 +23,11 @@ export class PaperRepository {
       const userObjectId = new mongoose.Types.ObjectId(userId);
       const paperObjectId = new mongoose.Types.ObjectId(paperId);
 
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperObjectId,
         $or: [
-          { userId: userObjectId },
-          { collaborators: userObjectId }
+          { authorId: userObjectId },
+          { collaboratorIds: userObjectId }
         ]
       });
 
@@ -35,19 +35,19 @@ export class PaperRepository {
         return null;
       }
 
-      const paperContent = paper.content as Content;
+      // 문서 데이터 구성
       return {
-        _id: (paper._id as mongoose.Types.ObjectId).toString(),
+        _id: paper._id?.toString() || "",
         title: paper.title,
-        content: paperContent.content as Content[],
+        content: paper.content as unknown as Content[],
         type: "paper",
-        summary: paperContent.summary || "",
-        intent: paperContent.intent || "",
-        createdAt: paper.createdAt?.toISOString(),
-        updatedAt: paper.updatedAt?.toISOString(),
-        "block-id": paperContent["block-id"],
-        authorId: paper.userId.toString(),
-        collaboratorIds: paper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
+        summary: paper.summary || "",
+        intent: paper.intent || "",
+        createdAt: typeof paper.createdAt === 'string' ? paper.createdAt : paper.createdAt?.toISOString(),
+        updatedAt: typeof paper.updatedAt === 'string' ? paper.updatedAt : paper.updatedAt?.toISOString(),
+        "block-id": paper["block-id"] || "",
+        authorId: (paper.authorId as any)?.toString() || "",
+        collaboratorIds: (paper.collaboratorIds || []).map(id => (id as any)?.toString() || "")
       };
     } catch (error) {
       console.error("Failed to read paper data:", error);
@@ -83,29 +83,37 @@ export class PaperRepository {
       // 두 가지 경우 모두 검색
       console.log('Searching papers with query:', {
         $or: [
-          { userId: userId },  // 문자열로 검색
-          { userId: userObjectId },  // ObjectId로 검색
-          { collaborators: userId },  // 문자열로 검색
-          { collaborators: userObjectId }  // ObjectId로 검색
+          { authorId: userId },  // 문자열로 검색
+          { authorId: userObjectId },  // ObjectId로 검색
+          { collaboratorIds: userId },  // 문자열로 검색
+          { collaboratorIds: userObjectId }  // ObjectId로 검색
         ]
       });
 
-      const papers = await Paper.find({
+      const papers = await PaperModel.find({
         $or: [
-          { userId: userId },  // 문자열로 검색
-          { userId: userObjectId },  // ObjectId로 검색
-          { collaborators: userId },  // 문자열로 검색
-          { collaborators: userObjectId }  // ObjectId로 검색
+          { authorId: userId },  // 문자열로 검색
+          { authorId: userObjectId },  // ObjectId로 검색
+          { collaboratorIds: userId },  // 문자열로 검색
+          { collaboratorIds: userObjectId }  // ObjectId로 검색
         ]
       });
 
       console.log('Found papers:', papers);
 
+      // 요구되는 SharedPaper 형식으로 변환
       return papers.map(paper => ({
-        ...paper.content,
-        _id: (paper._id as mongoose.Types.ObjectId).toString(),
-        authorId: paper.userId.toString(),
-        collaboratorIds: paper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
+        _id: paper._id?.toString() || "",
+        title: paper.title,
+        summary: paper.summary || "",
+        intent: paper.intent || "",
+        type: "paper",
+        content: paper.content as unknown as Content[],
+        "block-id": paper["block-id"] || "",
+        createdAt: typeof paper.createdAt === 'string' ? paper.createdAt : paper.createdAt?.toISOString(),
+        updatedAt: typeof paper.updatedAt === 'string' ? paper.updatedAt : paper.updatedAt?.toISOString(),
+        authorId: (paper.authorId as any)?.toString() || "",
+        collaboratorIds: (paper.collaboratorIds || []).map(id => (id as any)?.toString() || "")
       }));
     } catch (error) {
       console.error("Failed to get user papers:", error);
@@ -122,14 +130,14 @@ export class PaperRepository {
         throw new Error("Invalid userId");
       }
 
-      const paper = await Paper.create({
-        userId,
+      const paper = await PaperModel.create({
+        authorId: userId,
         title,
         content,
-        collaborators: []
+        collaboratorIds: []
       });
 
-      return (paper._id as mongoose.Types.ObjectId).toString();
+      return (paper._id as any)?.toString() || "";
     } catch (error) {
       console.error("Failed to create paper:", error);
       throw new Error("Failed to create paper");
@@ -159,11 +167,11 @@ export class PaperRepository {
       const paperObjectId = new mongoose.Types.ObjectId(paperId);
 
       // 먼저 문서를 찾음
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperObjectId,
         $or: [
-          { userId: userObjectId },
-          { collaborators: userObjectId }
+          { authorId: userObjectId },
+          { collaboratorIds: userObjectId }
         ]
       });
 
@@ -171,8 +179,8 @@ export class PaperRepository {
         console.log('Paper not found with query:', {
           _id: paperObjectId,
           $or: [
-            { userId: userObjectId },
-            { collaborators: userObjectId }
+            { authorId: userObjectId },
+            { collaboratorIds: userObjectId }
           ]
         });
         throw new Error(`Paper not found`);
@@ -215,11 +223,11 @@ export class PaperRepository {
       }
 
       // 문서 조회
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperId,
         $or: [
-          { userId: userId },
-          { collaborators: userId }
+          { authorId: userId },
+          { collaboratorIds: userId }
         ]
       });
 
@@ -308,11 +316,11 @@ export class PaperRepository {
       }
 
       // 문서 조회
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperId,
         $or: [
-          { userId: userId },
-          { collaborators: userId }
+          { authorId: userId },
+          { collaboratorIds: userId }
         ]
       });
 
@@ -350,11 +358,11 @@ export class PaperRepository {
       }
 
       // 문서 조회
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperId,
         $or: [
-          { userId: userId },
-          { collaborators: userId }
+          { authorId: userId },
+          { collaboratorIds: userId }
         ]
       });
 
@@ -389,11 +397,11 @@ export class PaperRepository {
       }
 
       // 문서 조회
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperId,
         $or: [
-          { userId: userId },
-          { collaborators: userId }
+          { authorId: userId },
+          { collaboratorIds: userId }
         ]
       });
 
@@ -446,9 +454,9 @@ export class PaperRepository {
       }
 
       // 문서 조회 (소유자만 협업자 추가 가능)
-      const paper = await Paper.findOne({
+      const paper = await PaperModel.findOne({
         _id: paperId,
-        userId: ownerId
+        authorId: ownerId
       });
 
       if (!paper) {
@@ -457,12 +465,24 @@ export class PaperRepository {
 
       // 협업자가 이미 존재하는지 확인
       const collaboratorId = collaborator._id as mongoose.Types.ObjectId;
-      if (paper.collaborators.includes(collaboratorId)) {
+      const collaboratorIdString = collaboratorId.toString();
+      
+      // collaboratorIds가 없으면 초기화
+      if (!paper.collaboratorIds) {
+        paper.collaboratorIds = [];
+      }
+      
+      // 이미 협업자로 등록되어 있는지 확인
+      const collaboratorExists = paper.collaboratorIds.some(id => 
+        (id as any)?.toString() === collaboratorIdString
+      );
+      
+      if (collaboratorExists) {
         return; // 이미 협업자로 추가되어 있음
       }
 
       // 협업자 추가
-      paper.collaborators.push(collaboratorId);
+      paper.collaboratorIds.push(collaboratorId as any);
       await paper.save();
     } catch (error) {
       console.error("Error adding collaborator:", error);
@@ -663,13 +683,13 @@ export class PaperRepository {
       if (paperData._id && isValidObjectId(paperData._id)) {
         console.log(`Updating existing paper with ID: ${paperData._id}`);
         
-        const existingPaper = await Paper.findOne({
+        const existingPaper = await PaperModel.findOne({
           _id: paperData._id,
           $or: [
-            { userId: userId },
-            { userId: userObjectId },
-            { collaborators: userId },
-            { collaborators: userObjectId }
+            { authorId: userId },
+            { authorId: userObjectId },
+            { collaboratorIds: userId },
+            { collaboratorIds: userObjectId }
           ]
         });
 
@@ -677,35 +697,51 @@ export class PaperRepository {
           throw new Error("Paper not found or user does not have permission to update");
         }
 
-        // 논문 내용 업데이트
-        existingPaper.content = paper;
+        // 논문 내용 업데이트 - paper 객체에서 필요한 필드만 추출
         existingPaper.title = paper.title || 'Untitled Paper';
+        
+        // content 필드만 직접 업데이트 (타입 불일치 방지)
+        if (paper.content) {
+          existingPaper.content = paper.content as any;
+        }
+        
+        // 기타 필드 업데이트
+        if (paper.summary) existingPaper.summary = paper.summary;
+        if (paper.intent) existingPaper.intent = paper.intent;
+        if (paper['block-id']) existingPaper['block-id'] = paper['block-id'];
+        
         await existingPaper.save();
         
         console.log('Paper updated successfully');
+        
+        // 응답 객체 생성
         return {
           ...paper,
-          _id: (existingPaper._id as mongoose.Types.ObjectId).toString(),
-          userId: (existingPaper.userId as mongoose.Types.ObjectId).toString(),
-          collaborators: existingPaper.collaborators.map(id => (id as mongoose.Types.ObjectId).toString())
-        } as any;
+          _id: existingPaper._id?.toString() || paperData._id,
+          authorId: (existingPaper.authorId as any)?.toString() || userId,
+          collaboratorIds: (existingPaper.collaboratorIds || []).map(id => (id as any)?.toString() || "")
+        };
       } else {
         // 새 논문 생성
         console.log('Creating new paper - no _id provided');
-        const newPaper = await Paper.create({
-          userId: userObjectId,
+        const newPaper = await PaperModel.create({
+          authorId: userObjectId,
           title: paper.title || 'Untitled Paper',
-          content: paper,
-          collaborators: []
+          content: paper.content || [],
+          collaboratorIds: [],
+          summary: paper.summary || "",
+          intent: paper.intent || "",
+          type: "paper",
+          "block-id": paper["block-id"] || Date.now().toString()
         });
 
         console.log('New paper created with ID:', newPaper._id);
         return {
           ...paper,
-          _id: (newPaper._id as mongoose.Types.ObjectId).toString(),
-          userId: (newPaper.userId as mongoose.Types.ObjectId).toString(),
-          collaborators: []
-        } as any;
+          _id: newPaper._id?.toString() || new mongoose.Types.ObjectId().toString(),
+          authorId: userId,
+          collaboratorIds: []
+        };
       }
     } catch (error) {
       console.error("Failed to save paper:", error);
@@ -731,7 +767,7 @@ export class PaperRepository {
       }
 
       // 논문 존재 여부 확인
-      const paperExists = await Paper.findById(paperId);
+      const paperExists = await PaperModel.findById(paperId);
       if (!paperExists) {
         console.error(`Paper not found with id: ${paperId}`);
         throw new Error(`Paper not found with id: ${paperId}`);
@@ -739,13 +775,13 @@ export class PaperRepository {
 
       // 사용자 권한 확인
       const userObjectId = new mongoose.Types.ObjectId(userId);
-      const hasPermission = await Paper.findOne({
+      const hasPermission = await PaperModel.findOne({
         _id: paperId,
         $or: [
-          { userId: userObjectId },
-          { userId: userId },
-          { collaborators: userObjectId },
-          { collaborators: userId }
+          { authorId: userObjectId },
+          { authorId: userId },
+          { collaboratorIds: userObjectId },
+          { collaboratorIds: userId }
         ]
       });
 
@@ -755,13 +791,13 @@ export class PaperRepository {
       }
 
       // 문서 조회 및 삭제
-      const result = await Paper.findOneAndDelete({
+      const result = await PaperModel.findOneAndDelete({
         _id: paperId,
         $or: [
-          { userId: userObjectId },
-          { userId: userId },
-          { collaborators: userObjectId },
-          { collaborators: userId }
+          { authorId: userObjectId },
+          { authorId: userId },
+          { collaboratorIds: userObjectId },
+          { collaboratorIds: userId }
         ]
       });
 
