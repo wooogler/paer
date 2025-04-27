@@ -205,7 +205,7 @@ export const deleteBlock = async (blockId: string) => {
 export const importPaper = async (content: string, userId: string) => {
   const response = await api.post("/papers", {
     content,
-    userId,
+    authorId: userId,
   });
   return response.data;
 };
