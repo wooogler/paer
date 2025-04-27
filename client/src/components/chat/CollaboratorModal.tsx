@@ -3,9 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { FiX, FiUser, FiPlus, FiTrash2 } from "react-icons/fi";
 import { getCollaborators, addCollaborator, removeCollaborator } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
-import { useContentStore } from "../../store/useContentStore";
 import { toast } from "react-hot-toast";
-import { useAppStore } from "../../store/useAppStore";
 
 interface Collaborator {
   userId: string;
@@ -21,9 +19,11 @@ interface User {
 interface CollaboratorModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedPaperId: string;
+  authorId: string;
 }
 
-const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }) => {
+const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, selectedPaperId, authorId }) => {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,17 +31,15 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }
   const [isAdding, setIsAdding] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const { selectedPaperId } = useContentStore();
-  const { userId } = useAppStore();
 
   useEffect(() => {
     const fetchCollaborators = async () => {
-      if (!selectedPaperId || !isOpen) return;
+      if (!selectedPaperId || !authorId || !isOpen) return;
       
       try {
         setLoading(true);
         setError(null);
-        const collaboratorsData = await getCollaborators(selectedPaperId, userId);
+        const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
         setCollaborators(Array.isArray(collaboratorsData) ? collaboratorsData : []);
       } catch (err) {
         console.error("Failed to fetch collaborators:", err);
@@ -53,10 +51,12 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }
     };
 
     fetchCollaborators();
-  }, [selectedPaperId, isOpen, userId]);
+  }, [selectedPaperId, authorId, isOpen]);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!isOpen) return;
+      
       try {
         setLoading(true);
         const response = await getAllUsers();
@@ -73,32 +73,30 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }
       }
     };
 
-    if (isOpen) {
-      fetchUsers();
-    }
+    fetchUsers();
   }, [isOpen]);
 
   useEffect(() => {
-    if (allUsers.length > 0 && userId) {
+    if (allUsers.length > 0 && authorId) {
       // 현재 로그인한 유저와 이미 협력자로 등록된 유저를 제외
       const collaboratorIds = collaborators.map(c => c.userId);
       const filtered = allUsers.filter(user => 
-        user._id !== userId && !collaboratorIds.includes(user._id)
+        user._id !== authorId && !collaboratorIds.includes(user._id)
       );
       setFilteredUsers(filtered);
     }
-  }, [allUsers, collaborators, userId]);
+  }, [allUsers, collaborators, authorId]);
 
   const handleAddCollaborator = async () => {
-    if (!selectedPaperId || !userId || !selectedUser) return;
+    if (!selectedPaperId || !authorId || !selectedUser) return;
 
     try {
       setIsAdding(true);
-      const response = await addCollaborator(selectedPaperId, userId, selectedUser);
+      const response = await addCollaborator(selectedPaperId, authorId, selectedUser);
       if (response.success) {
         toast.success("Collaborator added successfully");
         // Refresh collaborators list
-        const collaboratorsData = await getCollaborators(selectedPaperId, userId);
+        const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
         setCollaborators(Array.isArray(collaboratorsData) ? collaboratorsData : []);
         setSelectedUser("");
       } else {
@@ -112,16 +110,16 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }
     }
   };
 
-  const handleRemoveCollaborator = async (collaboratorUsername: string) => {
-    if (!selectedPaperId || !userId) return;
+  const handleRemoveCollaborator = async (collaboratorId: string) => {
+    if (!selectedPaperId || !authorId) return;
 
     try {
       setIsAdding(true);
-      const response = await removeCollaborator(selectedPaperId, userId, collaboratorUsername);
+      const response = await removeCollaborator(selectedPaperId, authorId, collaboratorId);
       if (response.success) {
         toast.success("Collaborator removed successfully");
         // Refresh collaborators list
-        const collaboratorsData = await getCollaborators(selectedPaperId, userId);
+        const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
         setCollaborators(Array.isArray(collaboratorsData) ? collaboratorsData : []);
       } else {
         throw new Error(response.error || "Failed to remove collaborator");
@@ -185,7 +183,7 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }
                       <option value="">Select a user</option>
                       {filteredUsers.length > 0 ? (
                         filteredUsers.map((user) => (
-                          <option key={user._id} value={user.username}>
+                          <option key={user._id} value={user._id}>
                             {user.username} ({user.email || 'No email'})
                           </option>
                         ))
@@ -230,7 +228,7 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose }
                             </div>
                           </div>
                           <button
-                            onClick={() => handleRemoveCollaborator(collaborator.username)}
+                            onClick={() => handleRemoveCollaborator(collaborator.userId)}
                             className="text-red-500 hover:text-red-700 focus:outline-none"
                             disabled={isAdding}
                           >

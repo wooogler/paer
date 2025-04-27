@@ -186,7 +186,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // POST /api/papers/:id/collaborators - 협업자 추가
   fastify.post<{
     Params: { id: string };
-    Body: { authorId: string; collaboratorUsername: string };
+    Body: { authorId: string; collaboratorId: string };
   }>(
     "/:id/collaborators",
     async (request, reply) => {
@@ -229,7 +229,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // DELETE /api/papers/:id/collaborator - 협업자 제거
   fastify.delete<{
     Params: { id: string };
-    Body: { authorId: string; collaboratorUsername: string };
+    Body: { authorId: string; collaboratorId: string };
   }>(
     "/:id/collaborator",
     async (request, reply) => {

@@ -409,6 +409,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <CollaboratorModal
         isOpen={isCollaboratorModalOpen}
         onClose={() => setIsCollaboratorModalOpen(false)}
+        selectedPaperId={rootContent?._id || ""}
+        authorId={userId || ""}
       />
     </div>
   );

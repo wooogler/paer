@@ -376,35 +376,21 @@ export class PaperRepository {
   async addCollaborator(
     paperId: string,
     authorId: string,
-    collaboratorUsername: string
+    collaboratorId: string
   ): Promise<void> {
     try {
-      if (!isValidObjectId(paperId)) {
-        throw new Error("Invalid paperId");
+      if (!isValidObjectId(paperId) || !isValidObjectId(authorId) || !isValidObjectId(collaboratorId)) {
+        throw new Error("Invalid paperId, authorId, or collaboratorId");
       }
 
-      // Find the paper owner (handle case where authorId is username)
-      let ownerId: mongoose.Types.ObjectId;
-      if (isValidObjectId(authorId)) {
-        ownerId = new mongoose.Types.ObjectId(authorId);
-      } else {
-        const owner = await User.findOne({ username: authorId });
-        if (!owner) {
-          throw new Error(`User ${authorId} not found`);
-        }
-        ownerId = owner._id as mongoose.Types.ObjectId;
-      }
-
-      // Find the collaborator user
-      const collaborator = await User.findOne({ username: collaboratorUsername });
-      if (!collaborator) {
-        throw new Error(`User ${collaboratorUsername} not found`);
-      }
+      const paperObjectId = new mongoose.Types.ObjectId(paperId);
+      const authorObjectId = new mongoose.Types.ObjectId(authorId);
+      const collaboratorObjectId = new mongoose.Types.ObjectId(collaboratorId);
 
       // Find the paper (only owner can add collaborators)
       const paper = await PaperModel.findOne({
-        _id: paperId,
-        authorId: ownerId
+        _id: paperObjectId,
+        authorId: authorObjectId
       });
 
       if (!paper) {
@@ -412,17 +398,8 @@ export class PaperRepository {
       }
 
       // Check if collaborator already exists
-      const collaboratorId = collaborator._id as mongoose.Types.ObjectId;
-      const collaboratorIdString = collaboratorId.toString();
-      
-      // Initialize collaboratorIds if it doesn't exist
-      if (!paper.collaboratorIds) {
-        paper.collaboratorIds = [];
-      }
-      
-      // Check if collaborator is already added
       const collaboratorExists = paper.collaboratorIds.some(id => 
-        (id as any)?.toString() === collaboratorIdString
+        (id as any)?.toString() === collaboratorId
       );
       
       if (collaboratorExists) {
@@ -430,11 +407,46 @@ export class PaperRepository {
       }
 
       // Add the collaborator
-      paper.collaboratorIds.push(collaboratorId as any);
+      paper.collaboratorIds.push(collaboratorObjectId as any);
       await paper.save();
     } catch (error) {
       console.error("Error adding collaborator:", error);
       throw new Error("Failed to add collaborator");
+    }
+  }
+
+  async removeCollaborator(
+    paperId: string,
+    authorId: string,
+    collaboratorId: string
+  ): Promise<void> {
+    try {
+      if (!isValidObjectId(paperId) || !isValidObjectId(authorId) || !isValidObjectId(collaboratorId)) {
+        throw new Error("Invalid paperId, authorId, or collaboratorId");
+      }
+
+      const paperObjectId = new mongoose.Types.ObjectId(paperId);
+      const authorObjectId = new mongoose.Types.ObjectId(authorId);
+      const collaboratorObjectId = new mongoose.Types.ObjectId(collaboratorId);
+
+      // Find the paper (only owner can remove collaborators)
+      const paper = await PaperModel.findOne({
+        _id: paperObjectId,
+        authorId: authorObjectId
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found or you don't have permission`);
+      }
+
+      // Remove the collaborator
+      paper.collaboratorIds = paper.collaboratorIds.filter(id => 
+        (id as any)?.toString() !== collaboratorId
+      );
+      await paper.save();
+    } catch (error) {
+      console.error("Error removing collaborator:", error);
+      throw new Error("Failed to remove collaborator");
     }
   }
 

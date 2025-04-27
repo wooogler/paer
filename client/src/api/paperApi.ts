@@ -215,10 +215,10 @@ export const importPaper = async (content: string, userId: string) => {
   }
 };
 
-export const getCollaborators = async (paperId: string, userId: string) => {
+export const getCollaborators = async (paperId: string, authorId: string) => {
   try {
     const response = await api.get(`/papers/${paperId}/collaborators`, {
-      params: { userId }
+      params: { authorId }
     });
     return response.data;
   } catch (error) {
@@ -227,11 +227,11 @@ export const getCollaborators = async (paperId: string, userId: string) => {
   }
 };
 
-export const addCollaborator = async (paperId: string, userId: string, collaboratorUsername: string) => {
+export const addCollaborator = async (paperId: string, authorId: string, collaboratorId: string) => {
   try {
     const response = await api.post(`/papers/${paperId}/collaborators`, {
-      userId,
-      collaboratorUsername
+      authorId,
+      collaboratorId
     });
     return response.data;
   } catch (error) {
@@ -240,13 +240,10 @@ export const addCollaborator = async (paperId: string, userId: string, collabora
   }
 };
 
-export const removeCollaborator = async (paperId: string, userId: string, collaboratorUsername: string) => {
+export const removeCollaborator = async (paperId: string, authorId: string, collaboratorId: string) => {
   try {
     const response = await api.delete(`/papers/${paperId}/collaborators`, {
-      data: {
-        userId,
-        collaboratorUsername
-      }
+      data: { authorId, collaboratorId }
     });
     return response.data;
   } catch (error) {

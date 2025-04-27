@@ -426,10 +426,10 @@ export class PaperService {
   async addCollaborator(
     paperId: string,
     authorId: string,
-    collaboratorUsername: string
+    collaboratorId: string
   ): Promise<void> {
     try {
-      await this.paperRepository.addCollaborator(paperId, authorId, collaboratorUsername);
+      await this.paperRepository.addCollaborator(paperId, authorId, collaboratorId);
     } catch (error) {
       console.error("Error in addCollaborator:", error);
       throw error;
@@ -442,16 +442,10 @@ export class PaperService {
   async removeCollaborator(
     paperId: string,
     authorId: string,
-    collaboratorUsername: string
+    collaboratorId: string
   ): Promise<void> {
     try {
-      await this.paperRepository.updateBlock(
-        authorId,
-        paperId,
-        'collaboratorIds',
-        'remove',
-        collaboratorUsername
-      );
+      await this.paperRepository.removeCollaborator(paperId, authorId, collaboratorId);
     } catch (error) {
       console.error("Error in removeCollaborator:", error);
       throw error;

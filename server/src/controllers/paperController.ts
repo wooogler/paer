@@ -425,19 +425,19 @@ export class PaperController {
   async addCollaborator(
     request: FastifyRequest<{
       Params: { id: string };
-      Body: { authorId: string; collaboratorUsername: string };
+      Body: { authorId: string; collaboratorId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const { id } = request.params;
-      const { authorId, collaboratorUsername } = request.body;
+      const { authorId, collaboratorId } = request.body;
 
-      if (!authorId || !id || !collaboratorUsername) {
-        return reply.code(400).send({ error: "authorId, paperId, collaboratorUsername are required" });
+      if (!authorId || !id || !collaboratorId) {
+        return reply.code(400).send({ error: "authorId, paperId, collaboratorId are required" });
       }
 
-      await this.paperService.addCollaborator(id, authorId, collaboratorUsername);
+      await this.paperService.addCollaborator(id, authorId, collaboratorId);
       return { success: true };
     } catch (error) {
       console.error("Error adding collaborator:", error);
@@ -583,19 +583,19 @@ export class PaperController {
   async removeCollaborator(
     request: FastifyRequest<{
       Params: { id: string };
-      Body: { authorId: string; collaboratorUsername: string };
+      Body: { authorId: string; collaboratorId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const { id } = request.params;
-      const { authorId, collaboratorUsername } = request.body;
+      const { authorId, collaboratorId } = request.body;
 
-      if (!authorId || !id || !collaboratorUsername) {
-        return reply.code(400).send({ error: "authorId, paperId, collaboratorUsername are required" });
+      if (!authorId || !id || !collaboratorId) {
+        return reply.code(400).send({ error: "authorId, paperId, collaboratorId are required" });
       }
 
-      await this.paperService.removeCollaborator(id, authorId, collaboratorUsername);
+      await this.paperService.removeCollaborator(id, authorId, collaboratorId);
       return { success: true };
     } catch (error) {
       console.error("Error removing collaborator:", error);
