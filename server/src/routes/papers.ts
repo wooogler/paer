@@ -6,7 +6,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const paperController = new PaperController();
 
   // GET /api/papers/:id - 특정 문서 조회
-  fastify.get<{ Querystring: { userId: string; paperId: string } }>(
+  fastify.get<{ Querystring: { authorId: string; paperId: string } }>(
     "/:id",
     async (request, reply) => {
       return paperController.getPaperById(request, reply);
@@ -14,7 +14,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   );
 
   // GET /api/papers - 사용자의 모든 문서 목록 조회
-  fastify.get<{ Querystring: { userId: string } }>(
+  fastify.get<{ Querystring: { authorId: string } }>(
     "/",
     async (request, reply) => {
       return paperController.getUserPapers(request, reply);
@@ -23,7 +23,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
 
   // POST /api/papers - 새 문서 생성 또는 콘텐츠 처리 및 저장
   fastify.post<{
-    Body: { userId: string; title?: string; content?: string };
+    Body: { authorId: string; title?: string; content?: string };
   }>(
     "/",
     async (request, reply) => {
@@ -44,7 +44,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // PATCH /api/papers/sentence - 문장 업데이트
   fastify.patch<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       blockId: string;
       content: string;
@@ -61,7 +61,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // POST /api/papers/block - 블록 추가
   fastify.post<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       parentBlockId: string | null;
       prevBlockId: string | null;
@@ -77,7 +77,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // PATCH /api/papers/block/intent - 블록 의도 업데이트
   fastify.patch<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       targetBlockId: string;
       updatedValue: string;
@@ -85,11 +85,11 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>(
     "/block/intent",
     async (request, reply) => {
-      const { userId, paperId, targetBlockId, updatedValue } = request.body;
+      const { authorId, paperId, targetBlockId, updatedValue } = request.body;
       const modifiedRequest = {
         ...request,
         body: {
-          userId,
+          authorId,
           paperId,
           targetBlockId,
           keyToUpdate: "intent",
@@ -103,7 +103,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // PATCH /api/papers/block/summary - 블록 요약 업데이트
   fastify.patch<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       targetBlockId: string;
       updatedValue: string;
@@ -111,11 +111,11 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>(
     "/block/summary",
     async (request, reply) => {
-      const { userId, paperId, targetBlockId, updatedValue } = request.body;
+      const { authorId, paperId, targetBlockId, updatedValue } = request.body;
       const modifiedRequest = {
         ...request,
         body: {
-          userId,
+          authorId,
           paperId,
           targetBlockId,
           keyToUpdate: "summary",
@@ -129,7 +129,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // PATCH /api/papers/block/title - 블록 제목 업데이트
   fastify.patch<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       targetBlockId: string;
       updatedValue: string;
@@ -137,11 +137,11 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>(
     "/block/title",
     async (request, reply) => {
-      const { userId, paperId, targetBlockId, updatedValue } = request.body;
+      const { authorId, paperId, targetBlockId, updatedValue } = request.body;
       const modifiedRequest = {
         ...request,
         body: {
-          userId,
+          authorId,
           paperId,
           targetBlockId,
           keyToUpdate: "title",
@@ -155,7 +155,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // DELETE /api/papers/sentence - 문장 삭제
   fastify.delete<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       blockId: string;
     };
@@ -169,7 +169,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // DELETE /api/papers/block - 블록 삭제
   fastify.delete<{
     Body: {
-      userId: string;
+      authorId: string;
       paperId: string;
       blockId: string;
     };
@@ -183,7 +183,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // POST /api/papers/:id/collaborators - 협업자 추가
   fastify.post<{
     Params: { id: string };
-    Body: { userId: string; collaboratorUsername: string };
+    Body: { authorId: string; collaboratorUsername: string };
   }>(
     "/:id/collaborators",
     async (request, reply) => {
@@ -193,7 +193,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
 
   // POST /api/papers/update-rendered-summaries - 렌더링된 컨텐츠의 요약 및 의도 업데이트
   fastify.post<{
-    Body: { userId: string; paperId: string; renderedContent: string; blockId: string };
+    Body: { authorId: string; paperId: string; renderedContent: string; blockId: string };
   }>(
     "/update-rendered-summaries",
     async (request, reply) => {
@@ -204,7 +204,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // DELETE /api/papers/:id - 논문 삭제
   fastify.delete<{
     Params: { id: string };
-    Querystring: { userId: string };
+    Querystring: { authorId: string };
   }>(
     "/:id",
     async (request, reply) => {
@@ -215,7 +215,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // GET /api/papers/:id/collaborators - 논문의 협업자 목록 조회
   fastify.get<{
     Params: { id: string };
-    Querystring: { userId: string };
+    Querystring: { authorId: string };
   }>(
     "/:id/collaborators",
     async (request, reply) => {
@@ -226,13 +226,27 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // DELETE /api/papers/:id/collaborator - 협업자 제거
   fastify.delete<{
     Params: { id: string };
-    Body: { userId: string; collaboratorUsername: string };
+    Body: { authorId: string; collaboratorUsername: string };
   }>(
     "/:id/collaborator",
     async (request, reply) => {
       return paperController.removeCollaborator(request, reply);
     }
   );
+
+  // Export to LaTeX
+  fastify.get<{
+    Querystring: { authorId: string; paperId: string }
+  }>("/:id/export", async (request, reply) => {
+    return paperController.exportPaper(request, reply);
+  });
+
+  // Update rendered summaries
+  fastify.post<{
+    Body: { authorId: string; paperId: string; renderedContent: string; blockId: string }
+  }>("/:id/summaries", async (request, reply) => {
+    return paperController.updateRenderedSummaries(request, reply);
+  });
 };
 
 export default paperRoutes;

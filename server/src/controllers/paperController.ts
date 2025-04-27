@@ -21,16 +21,16 @@ export class PaperController {
    * Get paper by ID
    */
   async getPaperById(request: FastifyRequest<{
-    Querystring: { userId: string; paperId: string }
+    Querystring: { authorId: string; paperId: string }
   }>, reply: FastifyReply): Promise<any> {
     try {
-      const { userId, paperId } = request.query;
+      const { authorId, paperId } = request.query;
       
-      if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId are required" });
+      if (!authorId || !paperId) {
+        return reply.code(400).send({ error: "authorId와 paperId are required" });
       }
       
-      const paper = await this.paperService.getPaperById(userId, paperId);
+      const paper = await this.paperService.getPaperById(authorId, paperId);
       return paper;
     } catch (error) {
       console.error("Error in getPaperById:", error);
@@ -41,17 +41,30 @@ export class PaperController {
   /**
    * Get all papers for a user
    */
-  async getUserPapers(request: FastifyRequest<{ Querystring: { userId: string } }>, reply: FastifyReply) {
+  async getUserPapers(request: FastifyRequest<{ Querystring: { authorId: string } }>, reply: FastifyReply) {
     try {
-      const { userId } = request.query;
-      if (!userId) {
-        return reply.code(400).send({ error: "userId is required" });
+      const { authorId } = request.query;
+      console.log("Received authorId:", authorId);
+
+      if (!authorId) {
+        return reply.code(400).send({ error: "Author ID is required" });
       }
-      const papers = await this.paperService.getUserPapers(userId);
+
+      let authorIdObj;
+      try {
+        authorIdObj = new Types.ObjectId(authorId);
+      } catch (error) {
+        console.error("Error converting authorId to ObjectId:", error);
+        return reply.status(400).send({ error: "Invalid author ID format" });
+      }
+
+      console.log("Query:", { authorId: authorIdObj });
+      const papers = await this.paperService.getUserPapers(authorIdObj);
+      console.log("Found papers:", papers);
       return papers;
     } catch (error) {
       console.error("Error in getUserPapers:", error);
-      return reply.code(500).send({ error: "Failed to get user papers" });
+      return reply.code(500).send({ error: "Failed to fetch user papers" });
     }
   }
 
@@ -59,15 +72,15 @@ export class PaperController {
    * Create new paper
    */
   async createPaper(req: FastifyRequest<{
-    Body: { userId: string; title?: string; content?: string }
+    Body: { authorId: string; title?: string; content?: string }
   }>, reply: FastifyReply) {
     try {
-      const { userId, title, content } = req.body;
+      const { authorId, title, content } = req.body;
       console.log('=== Paper creation started ===');
       console.log('Input content:', content?.substring(0, 200) + '...');
 
-      if (!userId || !content) {
-        return reply.code(400).send({ error: 'userId and content are required' });
+      if (!authorId || !content) {
+        return reply.code(400).send({ error: 'authorId and content are required' });
       }
 
       let processedPaper: Paper;
@@ -84,11 +97,12 @@ export class PaperController {
         console.log('Comments removed content:', cleanedContent.substring(0, 200) + '...');
         
         const sectionsArray = processLatexContent(cleanedContent, Date.now());
+        console.log('Processed sections structure:', JSON.stringify(sectionsArray, null, 2));
         console.log('Processed section count:', sectionsArray.length);
         
         processedPaper = {
           _id: new Types.ObjectId().toString(),
-          title: extractTitle(cleanedContent, 'latex'),
+          title: extractTitle(cleanedContent, 'latex') || title || 'Untitled Paper',
           summary: '',
           intent: '',
           type: 'paper',
@@ -96,19 +110,27 @@ export class PaperController {
           'block-id': 'root',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          authorId: userId,
+          authorId: authorId,
           collaboratorIds: []
         };
+        console.log('Final processed paper structure:', JSON.stringify(processedPaper, null, 2));
       } else {
+        // For non-LaTeX content, create a single paragraph with a sentence
         processedPaper = {
           _id: new Types.ObjectId().toString(),
-          title: title || extractTitle(content, 'text'),
+          title: title || 'Untitled Paper',
           summary: '',
           intent: '',
           type: 'paper',
           content: [{
-            type: 'sentence' as ContentType,
-            content: content,
+            type: 'paragraph',
+            content: [{
+              type: 'sentence',
+              content: content,
+              'block-id': 'root',
+              summary: '',
+              intent: ''
+            }],
             'block-id': 'root',
             summary: '',
             intent: ''
@@ -116,16 +138,27 @@ export class PaperController {
           'block-id': 'root',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          authorId: userId,
+          authorId: authorId,
           collaboratorIds: []
         };
+      }
+
+      // Validate the processed paper
+      const validationResult = PaperSchema.safeParse(processedPaper);
+      if (!validationResult.success) {
+        console.error('Paper validation failed:', validationResult.error);
+        return reply.code(400).send({ 
+          error: 'Invalid paper format',
+          details: validationResult.error 
+        });
       }
 
       // Remove _id for creating a new paper
       const { _id, ...paperWithoutId } = processedPaper;
       const paperToSave = { 
         ...paperWithoutId,
-        userId 
+        authorId: authorId,
+        collaboratorIds: []
       };
       
       console.log('Creating paper without ID. Repository will generate a new ID.');
@@ -146,13 +179,13 @@ export class PaperController {
    */
   async savePaper(request: FastifyRequest<{ Body: any }>, reply: FastifyReply) {
     try {
-      const requestBody = request.body as { userId: string; } & Paper;
-      const { userId, ...paperData } = requestBody;
+      const requestBody = request.body as { authorId: string; } & Paper;
+      const { authorId, ...paperData } = requestBody;
       
-      if (!userId) {
+      if (!authorId) {
         return reply.code(400).send({
           success: false,
-          error: "userId is required"
+          error: "authorId is required"
         });
       }
 
@@ -168,7 +201,7 @@ export class PaperController {
 
       await this.paperService.savePaper({
         ...validationResult.data,
-        userId
+        authorId
       });
       
       return reply.send({
@@ -190,7 +223,7 @@ export class PaperController {
   async updateSentence(
     request: FastifyRequest<{
       Body: {
-        userId: string;
+        authorId: string;
         paperId: string;
         blockId: string;
         content: string;
@@ -201,14 +234,14 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { userId, paperId, blockId, content, summary, intent } = request.body;
+      const { authorId, paperId, blockId, content, summary, intent } = request.body;
 
-      if (!userId || !paperId || !blockId || !content) {
-        return reply.code(400).send({ error: "userId, paperId, blockId, content are required" });
+      if (!authorId || !paperId || !blockId || !content) {
+        return reply.code(400).send({ error: "authorId, paperId, blockId, content are required" });
       }
 
       await this.paperService.updateSentence(
-        userId,
+        authorId,
         paperId,
         blockId,
         content,
@@ -231,7 +264,7 @@ export class PaperController {
   async addBlock(
     request: FastifyRequest<{
       Body: {
-        userId: string;
+        authorId: string;
         paperId: string;
         parentBlockId: string | null;
         prevBlockId: string | null;
@@ -241,14 +274,14 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { userId, paperId, parentBlockId, prevBlockId, blockType } = request.body;
+      const { authorId, paperId, parentBlockId, prevBlockId, blockType } = request.body;
       
-      if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId are required" });
+      if (!authorId || !paperId) {
+        return reply.code(400).send({ error: "authorId와 paperId are required" });
       }
       
       const newBlockId = await this.paperService.addBlock(
-        userId,
+        authorId,
         paperId,
         parentBlockId,
         prevBlockId,
@@ -267,7 +300,7 @@ export class PaperController {
   async updateBlock(
     request: FastifyRequest<{
       Body: {
-        userId: string;
+        authorId: string;
         paperId: string;
         targetBlockId: string;
         keyToUpdate: string;
@@ -277,14 +310,14 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { userId, paperId, targetBlockId, keyToUpdate, updatedValue } = request.body;
+      const { authorId, paperId, targetBlockId, keyToUpdate, updatedValue } = request.body;
       
-      if (!userId || !paperId || !targetBlockId || !keyToUpdate) {
-        return reply.code(400).send({ error: "userId, paperId, targetBlockId, keyToUpdate are required" });
+      if (!authorId || !paperId || !targetBlockId || !keyToUpdate) {
+        return reply.code(400).send({ error: "authorId, paperId, targetBlockId, keyToUpdate are required" });
       }
       
       await this.paperService.updateBlock(
-        userId,
+        authorId,
         paperId,
         targetBlockId,
         keyToUpdate,
@@ -303,7 +336,7 @@ export class PaperController {
   async deleteSentence(
     request: FastifyRequest<{
       Body: {
-        userId: string;
+        authorId: string;
         paperId: string;
         blockId: string;
       }
@@ -311,13 +344,13 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<void> {
     try {
-      const { userId, paperId, blockId } = request.body;
+      const { authorId, paperId, blockId } = request.body;
 
-      if (!userId || !paperId || !blockId) {
-        return reply.code(400).send({ error: "userId, paperId, blockId are required" });
+      if (!authorId || !paperId || !blockId) {
+        return reply.code(400).send({ error: "authorId, paperId, blockId are required" });
       }
 
-      await this.paperService.deleteSentence(userId, paperId, blockId);
+      await this.paperService.deleteSentence(authorId, paperId, blockId);
       return reply.code(200).send({ success: true });
     } catch (error) {
       console.error("Error deleting sentence:", error);
@@ -331,7 +364,7 @@ export class PaperController {
   async deleteBlock(
     request: FastifyRequest<{
       Body: {
-        userId: string;
+        authorId: string;
         paperId: string;
         blockId: string;
       }
@@ -339,13 +372,13 @@ export class PaperController {
     reply: FastifyReply
   ): Promise<void> {
     try {
-      const { userId, paperId, blockId } = request.body;
+      const { authorId, paperId, blockId } = request.body;
 
-      if (!userId || !paperId || !blockId) {
-        return reply.code(400).send({ error: "userId, paperId, blockId are required" });
+      if (!authorId || !paperId || !blockId) {
+        return reply.code(400).send({ error: "authorId, paperId, blockId are required" });
       }
 
-      await this.paperService.deleteBlock(userId, paperId, blockId);
+      await this.paperService.deleteBlock(authorId, paperId, blockId);
       return reply.code(200).send({ success: true });
     } catch (error) {
       console.error("Error deleting block:", error);
@@ -390,19 +423,19 @@ export class PaperController {
   async addCollaborator(
     request: FastifyRequest<{
       Params: { id: string };
-      Body: { userId: string; collaboratorUsername: string };
+      Body: { authorId: string; collaboratorUsername: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const { id } = request.params;
-      const { userId, collaboratorUsername } = request.body;
+      const { authorId, collaboratorUsername } = request.body;
 
-      if (!userId || !id || !collaboratorUsername) {
-        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername are required" });
+      if (!authorId || !id || !collaboratorUsername) {
+        return reply.code(400).send({ error: "authorId, paperId, collaboratorUsername are required" });
       }
 
-      await this.paperService.addCollaborator(id, userId, collaboratorUsername);
+      await this.paperService.addCollaborator(id, authorId, collaboratorUsername);
       return { success: true };
     } catch (error) {
       console.error("Error adding collaborator:", error);
@@ -415,19 +448,23 @@ export class PaperController {
    */
   async exportPaper(
     request: FastifyRequest<{
-      Querystring: { userId: string; paperId: string }
+      Querystring: { authorId: string; paperId: string }
     }>,
     reply: FastifyReply
   ) {
     try {
-      const { userId, paperId } = request.query;
+      const { authorId, paperId } = request.query;
       
-      if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId are required" });
+      if (!authorId || !paperId) {
+        return reply.code(400).send({ error: "authorId와 paperId are required" });
       }
       
       // Get latest paper data
-      const paper = await this.paperService.getPaperById(userId, paperId);
+      const paper = await this.paperService.getPaperById(authorId, paperId);
+      
+      if (!paper) {
+        return reply.code(404).send({ error: "Paper not found" });
+      }
 
       // Convert to LaTeX
       const latexContent = await this.paperService.exportToLatex(paper);
@@ -451,19 +488,19 @@ export class PaperController {
    */
   async updateRenderedSummaries(
     request: FastifyRequest<{
-      Body: { userId: string; paperId: string; renderedContent: string; blockId: string };
+      Body: { authorId: string; paperId: string; renderedContent: string; blockId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
-      const { userId, paperId, renderedContent, blockId } = request.body;
+      const { authorId, paperId, renderedContent, blockId } = request.body;
       
-      if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId are required" });
+      if (!authorId || !paperId) {
+        return reply.code(400).send({ error: "authorId와 paperId are required" });
       }
       
       const result = await this.paperService.updateRenderedSummaries(
-        userId,
+        authorId,
         paperId,
         renderedContent,
         blockId
@@ -483,22 +520,22 @@ export class PaperController {
   async deletePaper(
     request: FastifyRequest<{
       Params: { id: string };
-      Querystring: { userId: string };
+      Querystring: { authorId: string };
     }>,
     reply: FastifyReply
   ): Promise<void> {
     try {
       const { id } = request.params;
-      const { userId } = request.query;
+      const { authorId } = request.query;
 
-      if (!userId) {
+      if (!authorId) {
         return reply.code(400).send({ 
           success: false,
-          error: "userId is required" 
+          error: "authorId is required" 
         });
       }
 
-      await this.paperService.deletePaper(userId, id);
+      await this.paperService.deletePaper(authorId, id);
       return reply.send({ 
         success: true,
         message: "Paper deleted successfully" 
@@ -518,19 +555,19 @@ export class PaperController {
   async getCollaborators(
     request: FastifyRequest<{
       Params: { id: string };
-      Querystring: { userId: string };
+      Querystring: { authorId: string };
     }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
       const { id: paperId } = request.params;
-      const { userId } = request.query;
+      const { authorId } = request.query;
 
-      if (!userId || !paperId) {
-        return reply.code(400).send({ error: "userId와 paperId are required" });
+      if (!authorId || !paperId) {
+        return reply.code(400).send({ error: "authorId와 paperId are required" });
       }
 
-      const collaborators = await this.paperService.getCollaborators(userId, paperId);
+      const collaborators = await this.paperService.getCollaborators(authorId, paperId);
       return reply.send(collaborators);
     } catch (error) {
       console.error("Error in getCollaborators:", error);
@@ -544,19 +581,19 @@ export class PaperController {
   async removeCollaborator(
     request: FastifyRequest<{
       Params: { id: string };
-      Body: { userId: string; collaboratorUsername: string };
+      Body: { authorId: string; collaboratorUsername: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const { id } = request.params;
-      const { userId, collaboratorUsername } = request.body;
+      const { authorId, collaboratorUsername } = request.body;
 
-      if (!userId || !id || !collaboratorUsername) {
-        return reply.code(400).send({ error: "userId, paperId, collaboratorUsername are required" });
+      if (!authorId || !id || !collaboratorUsername) {
+        return reply.code(400).send({ error: "authorId, paperId, collaboratorUsername are required" });
       }
 
-      await this.paperService.removeCollaborator(id, userId, collaboratorUsername);
+      await this.paperService.removeCollaborator(id, authorId, collaboratorUsername);
       return { success: true };
     } catch (error) {
       console.error("Error removing collaborator:", error);

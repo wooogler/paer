@@ -25,14 +25,29 @@ const PaperMongooseSchema = new Schema(
       validate: {
         validator: function(value: any) {
           try {
-            // Zod 스키마로 유효성 검증
-            PaperSchema.parse(value);
-            return true;
+            // Validate each content item recursively
+            const validateContent = (content: any) => {
+              if (!content || typeof content !== 'object') return false;
+              
+              // Check required fields
+              if (!content.type || !content['block-id']) return false;
+              
+              // If content has nested content array, validate each item
+              if (Array.isArray(content.content)) {
+                return content.content.every(validateContent);
+              }
+              
+              return true;
+            };
+            
+            // Validate the entire content array
+            return Array.isArray(value) && value.every(validateContent);
           } catch (error) {
+            console.error('Content validation error:', error);
             return false;
           }
         },
-        message: (props: any) => `${props.value} is not a valid paper content structure!`
+        message: (props: any) => `Invalid content structure: ${JSON.stringify(props.value)}`
       }
     },
     collaboratorIds: [{

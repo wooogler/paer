@@ -5,32 +5,32 @@ import { useContentStore } from "../store/useContentStore";
 
 // API instance 생성
 export const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 // API function definition
-export const getPapers = async (userId: string): Promise<Paper[]> => {
-  const response = await api.get(`/api/papers?userId=${userId}`);
+export const getPapers = async (authorId: string): Promise<Paper[]> => {
+  const response = await api.get(`/papers?authorId=${authorId}`);
   return response.data.map((paper: any) => ({
     ...paper,
-    authorId: paper.userId,
-    collaboratorIds: paper.collaborators
+    authorId: paper.authorId,
+    collaboratorIds: paper.collaboratorIds || []
   }));
 };
 
-export const getPaperById = async (paperId: string, userId: string): Promise<Paper> => {
+export const getPaperById = async (paperId: string, authorId: string): Promise<Paper> => {
   try {
-    const response = await api.get(`/api/papers/${paperId}`, {
-      params: { userId }
+    const response = await api.get(`/papers/${paperId}`, {
+      params: { authorId }
     });
     const paper = response.data;
     return {
       ...paper,
-      authorId: paper.userId,
-      collaboratorIds: paper.collaborators
+      authorId: paper.authorId,
+      collaboratorIds: paper.collaboratorIds || []
     };
   } catch (error) {
     console.error("Error getting paper:", error);
@@ -40,7 +40,7 @@ export const getPaperById = async (paperId: string, userId: string): Promise<Pap
 
 export const createPaper = async (paperData: any) => {
   try {
-    const response = await api.post("/api/papers", paperData);
+    const response = await api.post("/papers", paperData);
     return response.data;
   } catch (error) {
     console.error("Error creating paper:", error);
@@ -50,7 +50,7 @@ export const createPaper = async (paperData: any) => {
 
 export const updatePaper = async (paperId: string, paperData: any) => {
   try {
-    const response = await api.put(`/api/papers/${paperId}`, paperData);
+    const response = await api.put(`/papers/${paperId}`, paperData);
     return response.data;
   } catch (error) {
     console.error("Error updating paper:", error);
@@ -58,10 +58,10 @@ export const updatePaper = async (paperId: string, paperData: any) => {
   }
 };
 
-export const deletePaper = async (paperId: string, userId: string) => {
+export const deletePaper = async (paperId: string, authorId: string) => {
   try {
-    const response = await api.delete(`/api/papers/${paperId}`, {
-      params: { userId }
+    const response = await api.delete(`/papers/${paperId}`, {
+      params: { authorId }
     });
     return response.data;
   } catch (error) {
@@ -77,15 +77,15 @@ export const updateSentenceContent = async (
   summary: string,
   intent: string
 ) => {
-  const userId = useAppStore.getState().userId;
+  const authorId = useAppStore.getState().userId;
   const paperId = useContentStore.getState().selectedPaperId;
   
-  if (!userId || !paperId) {
-    throw new Error("User ID or Paper ID is missing");
+  if (!authorId || !paperId) {
+    throw new Error("Author ID or Paper ID is missing");
   }
 
-  const response = await api.patch("/api/papers/sentence", {
-    userId,
+  const response = await api.patch("/papers/sentence", {
+    authorId,
     paperId,
     blockId,
     content,
@@ -100,7 +100,7 @@ export const updateSentenceContent = async (
  * @param blockId ID of the sentence to delete
  */
 export const deleteSentence = async (blockId: string) => {
-  const response = await api.delete(`/api/papers/${blockId}`);
+  const response = await api.delete(`/papers/${blockId}`);
   return response.data;
 };
 
@@ -110,7 +110,7 @@ export const updateSentenceIntent = async (
   intent: string
 ): Promise<void> => {
   try {
-    await api.patch(`/api/papers/block/${blockId}/intent`, { intent });
+    await api.patch(`/papers/block/${blockId}/intent`, { intent });
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error updating sentence intent:", error.message);
@@ -125,7 +125,7 @@ export const updateSentenceSummary = async (
   summary: string
 ): Promise<void> => {
   try {
-    await api.patch(`/api/papers/block/${blockId}/summary`, { summary });
+    await api.patch(`/papers/block/${blockId}/summary`, { summary });
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error updating sentence summary:", error.message);
@@ -140,7 +140,7 @@ export const addBlock = async (
   prevBlockId: string | null,
   blockType: string
 ) => {
-  const response = await api.post("/api/papers/blocks", {
+  const response = await api.post("/papers/blocks", {
     parentBlockId,
     prevBlockId,
     blockType,
@@ -154,7 +154,7 @@ export const updateBlockIntent = async (
   blockType: string,
   intent: string
 ) => {
-  const response = await api.put(`/api/papers/${blockId}/intent`, {
+  const response = await api.put(`/papers/${blockId}/intent`, {
     blockType,
     intent,
   });
@@ -167,7 +167,7 @@ export const updateBlockSummary = async (
   blockType: string,
   summary: string
 ) => {
-  const response = await api.put(`/api/papers/${blockId}/summary`, {
+  const response = await api.put(`/papers/${blockId}/summary`, {
     blockType,
     summary,
   });
@@ -180,7 +180,7 @@ export const updateBlockTitle = async (
   blockType: string,
   title: string
 ) => {
-  const response = await api.put(`/api/papers/${blockId}/title`, {
+  const response = await api.put(`/papers/${blockId}/title`, {
     blockType,
     title,
   });
@@ -192,7 +192,7 @@ export const updateBlockTitle = async (
  * @param blockId ID of the block to delete
  */
 export const deleteBlock = async (blockId: string) => {
-  const response = await api.delete(`/api/papers/${blockId}`);
+  const response = await api.delete(`/papers/${blockId}`);
   return response.data;
 };
 
@@ -203,7 +203,7 @@ export const deleteBlock = async (blockId: string) => {
  * @returns The processed paper object with success/error information
  */
 export const importPaper = async (content: string, userId: string) => {
-  const response = await api.post("/api/papers", {
+  const response = await api.post("/papers", {
     content,
     userId,
   });
@@ -212,7 +212,7 @@ export const importPaper = async (content: string, userId: string) => {
 
 export const getCollaborators = async (paperId: string, userId: string) => {
   try {
-    const response = await api.get(`/api/papers/${paperId}/collaborators`, {
+    const response = await api.get(`/papers/${paperId}/collaborators`, {
       params: { userId }
     });
     return response.data;
@@ -224,7 +224,7 @@ export const getCollaborators = async (paperId: string, userId: string) => {
 
 export const addCollaborator = async (paperId: string, userId: string, collaboratorUsername: string) => {
   try {
-    const response = await api.post(`/api/papers/${paperId}/collaborators`, {
+    const response = await api.post(`/papers/${paperId}/collaborators`, {
       userId,
       collaboratorUsername
     });
@@ -237,7 +237,7 @@ export const addCollaborator = async (paperId: string, userId: string, collabora
 
 export const removeCollaborator = async (paperId: string, userId: string, collaboratorUsername: string) => {
   try {
-    const response = await api.delete(`/api/papers/${paperId}/collaborators`, {
+    const response = await api.delete(`/papers/${paperId}/collaborators`, {
       data: {
         userId,
         collaboratorUsername

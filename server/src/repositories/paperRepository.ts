@@ -1,34 +1,34 @@
 import { Paper as SharedPaper, ContentType, Content } from "@paer/shared";
 import { PaperModel, PaperDocument } from "../models/Paper";
 import { User } from "../models/User";
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId, Types } from "mongoose";
 import { UserService } from "../services/userService";
+import { ObjectId } from "mongodb";
 
 export class PaperRepository {
   private userService: UserService;
+  private paperModel: mongoose.Model<PaperDocument>;
 
   constructor() {
     this.userService = new UserService();
+    this.paperModel = PaperModel;
   }
 
   /**
    * 사용자 ID로 문서 조회
    */
-  async getPaper(userId: string, paperId: string): Promise<SharedPaper | null> {
+  async getPaper(authorId: string, paperId: string): Promise<SharedPaper | null> {
     try {
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid authorId or paperId");
       }
 
-      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const userObjectId = new mongoose.Types.ObjectId(authorId);
       const paperObjectId = new mongoose.Types.ObjectId(paperId);
 
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
-        $or: [
-          { authorId: userObjectId },
-          { collaboratorIds: userObjectId }
-        ]
+        authorId: userObjectId
       });
 
       if (!paper) {
@@ -58,80 +58,46 @@ export class PaperRepository {
   /**
    * 특정 유저의 모든 문서 조회
    */
-  async getUserPapers(userId: string): Promise<SharedPaper[]> {
+  async getUserPapers(authorId: Types.ObjectId): Promise<SharedPaper[]> {
     try {
-      console.log('getUserPapers called with userId:', userId);
-      
-      let userObjectId: mongoose.Types.ObjectId;
-
-      // userId가 ObjectId 형식이 아닌 경우 username으로 검색
-      if (!isValidObjectId(userId)) {
-        console.log('userId is not a valid ObjectId, searching by username');
-        const user = await User.findOne({ username: userId });
-        if (!user) {
-          console.log('User not found by username:', userId);
-          throw new Error("User not found");
-        }
-        userObjectId = user._id as mongoose.Types.ObjectId;
-        console.log('Found user by username, userObjectId:', userObjectId);
-      } else {
-        userObjectId = new mongoose.Types.ObjectId(userId);
-        console.log('userId is a valid ObjectId, converted to:', userObjectId);
-      }
-
-      // MongoDB에 저장된 userId가 문자열일 수도 있고 ObjectId 타입일 수도 있으므로 
-      // 두 가지 경우 모두 검색
-      console.log('Searching papers with query:', {
+      console.log("Searching papers for authorId:", authorId);
+      const papers = await this.paperModel.find({
         $or: [
-          { authorId: userId },  // 문자열로 검색
-          { authorId: userObjectId },  // ObjectId로 검색
-          { collaboratorIds: userId },  // 문자열로 검색
-          { collaboratorIds: userObjectId }  // ObjectId로 검색
+          { authorId: authorId },
+          { collaboratorIds: authorId }
         ]
-      });
-
-      const papers = await PaperModel.find({
-        $or: [
-          { authorId: userId },  // 문자열로 검색
-          { authorId: userObjectId },  // ObjectId로 검색
-          { collaboratorIds: userId },  // 문자열로 검색
-          { collaboratorIds: userObjectId }  // ObjectId로 검색
-        ]
-      });
-
-      console.log('Found papers:', papers);
-
-      // 요구되는 SharedPaper 형식으로 변환
+      }).sort({ updatedAt: -1 });
+      console.log("Found papers in repository:", papers);
       return papers.map(paper => ({
         _id: paper._id?.toString() || "",
         title: paper.title,
+        content: paper.content as unknown as Content[],
+        type: "paper",
         summary: paper.summary || "",
         intent: paper.intent || "",
-        type: "paper",
-        content: paper.content as unknown as Content[],
-        "block-id": paper["block-id"] || "",
         createdAt: typeof paper.createdAt === 'string' ? paper.createdAt : paper.createdAt?.toISOString(),
         updatedAt: typeof paper.updatedAt === 'string' ? paper.updatedAt : paper.updatedAt?.toISOString(),
+        "block-id": paper["block-id"] || "",
         authorId: (paper.authorId as any)?.toString() || "",
         collaboratorIds: (paper.collaboratorIds || []).map(id => (id as any)?.toString() || "")
       }));
     } catch (error) {
-      console.error("Failed to get user papers:", error);
-      throw new Error("Failed to get user papers");
+      console.error("Error in getUserPapers:", error);
+      throw error;
     }
   }
 
   /**
    * 새로운 문서 생성
    */
-  async createPaper(userId: string, title: string, content: SharedPaper): Promise<string> {
+  async createPaper(authorId: string, title: string, content: SharedPaper): Promise<string> {
     try {
-      if (!isValidObjectId(userId)) {
-        throw new Error("Invalid userId");
+      if (!isValidObjectId(authorId)) {
+        throw new Error("Invalid authorId");
       }
 
       const paper = await PaperModel.create({
-        authorId: userId,
+        authorId: authorId,
         title,
         content,
         collaboratorIds: []
@@ -148,7 +114,7 @@ export class PaperRepository {
    * 문장 업데이트
    */
   async updateSentence(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string,
     content: string,
@@ -156,32 +122,26 @@ export class PaperRepository {
     intent: string
   ): Promise<void> {
     try {
-      console.log('updateSentence called with:', { userId, paperId, blockId });
+      console.log('updateSentence called with:', { authorId, paperId, blockId });
       
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        console.log('Invalid IDs:', { userId, paperId });
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        console.log('Invalid IDs:', { authorId, paperId });
+        throw new Error("Invalid authorId or paperId");
       }
 
-      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const userObjectId = new mongoose.Types.ObjectId(authorId);
       const paperObjectId = new mongoose.Types.ObjectId(paperId);
 
       // 먼저 문서를 찾음
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
-        $or: [
-          { authorId: userObjectId },
-          { collaboratorIds: userObjectId }
-        ]
+        authorId: userObjectId
       });
 
       if (!paper) {
         console.log('Paper not found with query:', {
           _id: paperObjectId,
-          $or: [
-            { authorId: userObjectId },
-            { collaboratorIds: userObjectId }
-          ]
+          authorId: userObjectId
         });
         throw new Error(`Paper not found`);
       }
@@ -209,7 +169,7 @@ export class PaperRepository {
 
   // 블록 추가
   async addBlock(
-    userId: string,
+    authorId: string,
     paperId: string,
     parentBlockId: string | null,
     prevBlockId: string | null,
@@ -218,17 +178,14 @@ export class PaperRepository {
     let newBlockId = "-1";
 
     try {
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid authorId or paperId");
       }
 
       // 문서 조회
       const paper = await PaperModel.findOne({
         _id: paperId,
-        $or: [
-          { authorId: userId },
-          { collaboratorIds: userId }
-        ]
+        authorId: authorId
       });
 
       if (!paper) {
@@ -304,24 +261,21 @@ export class PaperRepository {
 
   // 블록 업데이트
   async updateBlock(
-    userId: string,
+    authorId: string,
     paperId: string,
     targetBlockId: string,
     keyToUpdate: string,
     updatedValue: string
   ): Promise<void> {
     try {
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid authorId or paperId");
       }
 
       // 문서 조회
       const paper = await PaperModel.findOne({
         _id: paperId,
-        $or: [
-          { authorId: userId },
-          { collaboratorIds: userId }
-        ]
+        authorId: authorId
       });
 
       if (!paper) {
@@ -348,22 +302,19 @@ export class PaperRepository {
 
   // 블록 삭제
   async deleteBlock(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string
   ): Promise<void> {
     try {
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid authorId or paperId");
       }
 
       // 문서 조회
       const paper = await PaperModel.findOne({
         _id: paperId,
-        $or: [
-          { authorId: userId },
-          { collaboratorIds: userId }
-        ]
+        authorId: authorId
       });
 
       if (!paper) {
@@ -387,22 +338,19 @@ export class PaperRepository {
 
   // 문장 삭제
   async deleteSentence(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string
   ): Promise<void> {
     try {
-      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
-        throw new Error("Invalid userId or paperId");
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid authorId or paperId");
       }
 
       // 문서 조회
       const paper = await PaperModel.findOne({
         _id: paperId,
-        $or: [
-          { authorId: userId },
-          { collaboratorIds: userId }
-        ]
+        authorId: authorId
       });
 
       if (!paper) {
@@ -426,8 +374,8 @@ export class PaperRepository {
 
   // 협업자 추가
   async addCollaborator(
-    userId: string,
     paperId: string,
+    authorId: string,
     collaboratorUsername: string
   ): Promise<void> {
     try {
@@ -435,14 +383,14 @@ export class PaperRepository {
         throw new Error("Invalid paperId");
       }
 
-      // 문서 소유자 찾기 (userId가 username인 경우 처리)
+      // 문서 소유자 찾기 (authorId가 username인 경우 처리)
       let ownerId: mongoose.Types.ObjectId;
-      if (isValidObjectId(userId)) {
-        ownerId = new mongoose.Types.ObjectId(userId);
+      if (isValidObjectId(authorId)) {
+        ownerId = new mongoose.Types.ObjectId(authorId);
       } else {
-        const owner = await User.findOne({ username: userId });
+        const owner = await User.findOne({ username: authorId });
         if (!owner) {
-          throw new Error(`User ${userId} not found`);
+          throw new Error(`User ${authorId} not found`);
         }
         ownerId = owner._id as mongoose.Types.ObjectId;
       }
@@ -619,8 +567,8 @@ export class PaperRepository {
   /**
    * 자식 블록값 조회
    */
-  getChildrenValues(paperId: string, userId: string, blockId: string, targetKey: string): Promise<string> {
-    return this.getPaper(userId, paperId).then(paper => {
+  getChildrenValues(authorId: string, paperId: string, blockId: string, targetKey: string): Promise<string> {
+    return this.getPaper(authorId, paperId).then(paper => {
       if (!paper) {
         throw new Error('Paper not found');
       }
@@ -650,9 +598,9 @@ export class PaperRepository {
   /**
    * 논문 저장 (생성 또는 업데이트)
    */
-  async savePaper(userId: string, paper: SharedPaper): Promise<SharedPaper> {
+  async savePaper(authorId: string, paper: SharedPaper): Promise<SharedPaper> {
     try {
-      console.log('Attempting to save paper for userId:', userId);
+      console.log('Attempting to save paper for authorId:', authorId);
       console.log('Paper object received:', JSON.stringify({
         _id: paper._id,
         title: paper.title,
@@ -661,19 +609,19 @@ export class PaperRepository {
       
       let userObjectId: mongoose.Types.ObjectId;
 
-      // userId가 ObjectId 형식이 아닌 경우 username으로 사용자 검색
-      if (!isValidObjectId(userId)) {
-        console.log('userId is not a valid ObjectId, searching by username');
-        const user = await User.findOne({ username: userId });
+      // authorId가 ObjectId 형식이 아닌 경우 username으로 사용자 검색
+      if (!isValidObjectId(authorId)) {
+        console.log('authorId is not a valid ObjectId, searching by username');
+        const user = await User.findOne({ username: authorId });
         if (!user) {
-          console.log('User not found by username:', userId);
+          console.log('User not found by username:', authorId);
           throw new Error("User not found");
         }
         userObjectId = user._id as mongoose.Types.ObjectId;
         console.log('Found user by username, userObjectId:', userObjectId);
       } else {
-        userObjectId = new mongoose.Types.ObjectId(userId);
-        console.log('userId is a valid ObjectId, converted to:', userObjectId);
+        userObjectId = new mongoose.Types.ObjectId(authorId);
+        console.log('authorId is a valid ObjectId, converted to:', userObjectId);
       }
 
       // 기존 논문 업데이트 또는 새 논문 생성
@@ -686,10 +634,8 @@ export class PaperRepository {
         const existingPaper = await PaperModel.findOne({
           _id: paperData._id,
           $or: [
-            { authorId: userId },
-            { authorId: userObjectId },
-            { collaboratorIds: userId },
-            { collaboratorIds: userObjectId }
+            { authorId: authorId },
+            { authorId: userObjectId }
           ]
         });
 
@@ -718,7 +664,7 @@ export class PaperRepository {
         return {
           ...paper,
           _id: existingPaper._id?.toString() || paperData._id,
-          authorId: (existingPaper.authorId as any)?.toString() || userId,
+          authorId: (existingPaper.authorId as any)?.toString() || authorId,
           collaboratorIds: (existingPaper.collaboratorIds || []).map(id => (id as any)?.toString() || "")
         };
       } else {
@@ -739,7 +685,7 @@ export class PaperRepository {
         return {
           ...paper,
           _id: newPaper._id?.toString() || new mongoose.Types.ObjectId().toString(),
-          authorId: userId,
+          authorId: authorId,
           collaboratorIds: []
         };
       }
@@ -752,13 +698,13 @@ export class PaperRepository {
   /**
    * 논문 삭제
    */
-  async deletePaper(userId: string, paperId: string): Promise<void> {
+  async deletePaper(authorId: string, paperId: string): Promise<void> {
     try {
-      console.log(`Attempting to delete paper. userId: ${userId}, paperId: ${paperId}`);
+      console.log(`Attempting to delete paper. authorId: ${authorId}, paperId: ${paperId}`);
       
-      if (!isValidObjectId(userId)) {
-        console.error(`Invalid userId format: ${userId}`);
-        throw new Error("Invalid userId format");
+      if (!isValidObjectId(authorId)) {
+        console.error(`Invalid authorId format: ${authorId}`);
+        throw new Error("Invalid authorId format");
       }
       
       if (!isValidObjectId(paperId)) {
@@ -774,19 +720,17 @@ export class PaperRepository {
       }
 
       // 사용자 권한 확인
-      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const userObjectId = new mongoose.Types.ObjectId(authorId);
       const hasPermission = await PaperModel.findOne({
         _id: paperId,
         $or: [
-          { authorId: userObjectId },
-          { authorId: userId },
-          { collaboratorIds: userObjectId },
-          { collaboratorIds: userId }
+          { authorId: authorId },
+          { authorId: userObjectId }
         ]
       });
 
       if (!hasPermission) {
-        console.error(`User ${userId} does not have permission to delete paper ${paperId}`);
+        console.error(`User ${authorId} does not have permission to delete paper ${paperId}`);
         throw new Error("User does not have permission to delete this paper");
       }
 
@@ -794,19 +738,17 @@ export class PaperRepository {
       const result = await PaperModel.findOneAndDelete({
         _id: paperId,
         $or: [
-          { authorId: userObjectId },
-          { authorId: userId },
-          { collaboratorIds: userObjectId },
-          { collaboratorIds: userId }
+          { authorId: authorId },
+          { authorId: userObjectId }
         ]
       });
 
       if (!result) {
-        console.error(`Failed to delete paper. Paper: ${paperId}, User: ${userId}`);
+        console.error(`Failed to delete paper. Paper: ${paperId}, User: ${authorId}`);
         throw new Error("Failed to delete paper");
       }
       
-      console.log(`Successfully deleted paper ${paperId} for user ${userId}`);
+      console.log(`Successfully deleted paper ${paperId} for user ${authorId}`);
     } catch (error) {
       console.error("Error deleting paper:", error);
       throw new Error(`Failed to delete paper: ${(error as Error).message}`);

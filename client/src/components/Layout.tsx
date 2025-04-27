@@ -294,6 +294,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600">{userName}</span>
+                {rootContent && (() => {
+                  console.log('Current paper:', {
+                    authorId: rootContent.authorId,
+                    collaboratorIds: rootContent.collaboratorIds,
+                    currentUserId: userId
+                  });
+                  return (
+                    <span className={`text-xs px-2 py-1 rounded-full 
+                      ${rootContent.authorId === userId ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
+                      {rootContent.authorId === userId ? 'Author' : 'Collaborator'}
+                    </span>
+                  );
+                })()}
                 <button
                   onClick={handleLogout}
                   className="p-1.5 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 transition-colors"

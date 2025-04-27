@@ -13,7 +13,7 @@ interface ApiResponse {
  */
 export const getUserIdByUsername = async (username: string): Promise<ApiResponse> => {
   try {
-    const response = await api.get(`/api/users/id/${username}`);
+    const response = await api.get(`/users/id/${username}`);
     console.log("getUserIdByUsername response:", response.data);
     return response.data;
   } catch (error) {
@@ -44,7 +44,7 @@ export const getUserInfo = async (userId: string) => {
  */
 export const createUser = async (username: string): Promise<ApiResponse> => {
   try {
-    const response = await api.post("/api/users", { username });
+    const response = await api.post("/users", { username });
     return response.data;
   } catch (error) {
     console.error("Error creating user:", error);
@@ -64,7 +64,7 @@ export const createOrGetUser = async (username: string, email: string) => {
 
 export const getUserByUsername = async (username: string) => {
   try {
-    const response = await api.get(`/api/users/username/${username}`);
+    const response = await api.get(`/users/username/${username}`);
     return response.data;
   } catch (error) {
     console.error("Error getting user by username:", error);
@@ -74,7 +74,7 @@ export const getUserByUsername = async (username: string) => {
 
 export const getAllUsers = async () => {
   try {
-    const response = await api.get("/api/users");
+    const response = await api.get("/users");
     return response.data;
   } catch (error) {
     console.error("Error getting all users:", error);

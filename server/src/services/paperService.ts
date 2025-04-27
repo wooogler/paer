@@ -3,7 +3,7 @@ import { PaperRepository } from "../repositories/paperRepository";
 import { LLMService } from "./llmService";
 import { ContentTypeSchemaEnum } from "@paer/shared/schemas/contentSchema";
 import { detectFileType, extractTitle, processLatexContent } from "../utils/paperUtils";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { PaperModel } from '../models/Paper';
 import { UserService } from "./userService";
 
@@ -21,84 +21,118 @@ export class PaperService {
   /**
    * Get paper by user ID and paper ID
    */
-  async getPaperById(userId: string, paperId: string): Promise<SharedPaper> {
-    const paper = await this.paperRepository.getPaper(userId, paperId);
-    if (!paper) {
-      throw new Error("Paper not found");
+  async getPaperById(authorId: string, paperId: string): Promise<Paper | null> {
+    try {
+      const paper = await this.paperRepository.getPaper(authorId, paperId);
+      return paper;
+    } catch (error) {
+      console.error("Error in getPaperById:", error);
+      throw error;
     }
-    return paper;
   }
 
   /**
    * Add block
    */
   async addBlock(
-    userId: string,
+    authorId: string,
     paperId: string,
     parentBlockId: string | null,
     prevBlockId: string | null,
     blockType: ContentType
   ): Promise<string> {
-    return this.paperRepository.addBlock(userId, paperId, parentBlockId, prevBlockId, blockType);
+    try {
+      const newBlockId = await this.paperRepository.addBlock(
+        authorId,
+        paperId,
+        parentBlockId,
+        prevBlockId,
+        blockType
+      );
+      return newBlockId;
+    } catch (error) {
+      console.error("Error in addBlock:", error);
+      throw error;
+    }
   }
 
   /**
    * Update block
    */
   async updateBlock(
-    userId: string,
+    authorId: string,
     paperId: string,
     targetBlockId: string,
     keyToUpdate: string,
-    updatedValue: string
+    updatedValue: any
   ): Promise<void> {
-    return this.paperRepository.updateBlock(
-      userId,
-      paperId,
-      targetBlockId,
-      keyToUpdate,
-      updatedValue
-    );
+    try {
+      await this.paperRepository.updateBlock(
+        authorId,
+        paperId,
+        targetBlockId,
+        keyToUpdate,
+        updatedValue
+      );
+    } catch (error) {
+      console.error("Error in updateBlock:", error);
+      throw error;
+    }
   }
 
   /**
    * Delete sentence
    */
   async deleteSentence(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string
   ): Promise<void> {
-    return this.paperRepository.deleteSentence(userId, paperId, blockId);
+    try {
+      await this.paperRepository.deleteSentence(authorId, paperId, blockId);
+    } catch (error) {
+      console.error("Error in deleteSentence:", error);
+      throw error;
+    }
   }
 
   /**
    * Delete block
    */
   async deleteBlock(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string
   ): Promise<void> {
-    return this.paperRepository.deleteBlock(userId, paperId, blockId);
+    try {
+      await this.paperRepository.deleteBlock(authorId, paperId, blockId);
+    } catch (error) {
+      console.error("Error in deleteBlock:", error);
+      throw error;
+    }
   }
 
   /**
    * Save paper (MongoDB)
    */
-  async savePaper(paper: Paper & { userId: string }): Promise<SharedPaper> {
+  async savePaper(paper: Paper & { authorId: string }): Promise<Paper> {
     try {
-      if (!paper.userId) {
-        throw new Error("userId is required");
+      if (!paper.authorId) {
+        throw new Error("authorId is required");
       }
 
-      // Separate userId and the rest
-      const { userId, ...sharedPaper } = paper;
-      const savedPaper = await this.paperRepository.savePaper(userId, sharedPaper as SharedPaper);
-      console.log("Paper saved to MongoDB");
+      const { authorId, ...paperData } = paper;
+      const paperToSave = {
+        ...paperData,
+        authorId,
+        collaboratorIds: paperData.collaboratorIds || []
+      };
+
+      const savedPaper = await this.paperRepository.savePaper(authorId, paperToSave);
+      console.log("Paper saved to MongoDB:", savedPaper._id);
       return savedPaper;
     } catch (error) {
-      console.error("Error saving paper:", error);
+      console.error("Error in savePaper:", error);
       throw error;
     }
   }
@@ -106,16 +140,16 @@ export class PaperService {
   /**
    * Initialize LLM conversation
    */
-  async initializeConversation(userId: string, paperId: string): Promise<void> {
+  async initializeConversation(authorId: string, paperId: string): Promise<void> {
     try {
-      const paper = await this.getPaperById(userId, paperId);
+      const paper = await this.getPaperById(authorId, paperId);
       if (!paper) {
         throw new Error("Paper not found");
       }
       
       const paperContent = await this.paperRepository.getChildrenValues(
         paperId, 
-        userId, 
+        authorId, 
         paper["block-id"] || "root",
         "content"
       );
@@ -229,8 +263,8 @@ export class PaperService {
   /**
    * Find block by specific ID
    */
-  private async findBlockById(userId: string, paperId: string, blockId: string): Promise<Content | null> {
-    const paper = await this.getPaperById(userId, paperId);
+  private async findBlockById(authorId: string, paperId: string, blockId: string): Promise<Content | null> {
+    const paper = await this.getPaperById(authorId, paperId);
     if (!paper) return null;
 
     const findBlock = (content: Content): Content | null => {
@@ -251,79 +285,21 @@ export class PaperService {
    * Update rendered summary
    */
   async updateRenderedSummaries(
-    userId: string,
+    authorId: string,
     paperId: string,
     renderedContent: string,
     blockId: string
-  ) {
+  ): Promise<void> {
     try {
-      const block = await this.findBlockById(userId, paperId, blockId);
-      if (!block) {
-        throw new Error("Block not found");
-      }
-
-      const result = await this.llmService.updateRenderedSummaries(block);
-
-      // Get paper and replace target block with LLM result
-      const paper = await this.getPaperById(userId, paperId);
-
-      // Replace block in paper structure with LLM result
-      const replaceBlock = (content: any): boolean => {
-        if (typeof content === "string") return false;
-
-        // Target block case
-        if (content["block-id"] === blockId) {
-          // Keep original block-id while updating other properties
-          const originalBlockId = content["block-id"];
-
-          // block-id is missing in result, use original block-id
-          const parsedResult = result.apiResponse.parsedResult;
-
-          // If result doesn't have block-id, add original block-id
-          if (!parsedResult["block-id"]) {
-            console.log(
-              `LLM response doesn't have block-id, using original ID(${originalBlockId})`
-            );
-          }
-
-          // Copy each property individually while keeping block-id
-          Object.keys(parsedResult).forEach((key) => {
-            if (key !== "block-id") {
-              content[key] = parsedResult[key];
-            }
-          });
-
-          // Explicitly keep block-id
-          content["block-id"] = originalBlockId;
-
-          return true;
-        }
-
-        // If not, check children
-        if (Array.isArray(content.content)) {
-          for (let i = 0; i < content.content.length; i++) {
-            if (content.content[i] && typeof content.content[i] !== "string") {
-              if (replaceBlock(content.content[i])) {
-                return true;
-              }
-            }
-          }
-        }
-
-        return false;
-      };
-
-      // Start from root and replace
-      if (paper) {
-        replaceBlock(paper);
-      }
-
-      // Save updated document
-      await this.savePaper({ ...paper, userId });
-
-      return result;
+      await this.paperRepository.updateBlock(
+        authorId,
+        paperId,
+        blockId,
+        'renderedContent',
+        renderedContent
+      );
     } catch (error) {
-      console.error("Error updating rendered summaries:", error);
+      console.error("Error in updateRenderedSummaries:", error);
       throw error;
     }
   }
@@ -331,9 +307,11 @@ export class PaperService {
   /**
    * Get all papers for a specific user
    */
-  async getUserPapers(userId: string): Promise<Paper[]> {
+  async getUserPapers(authorId: Types.ObjectId): Promise<Paper[]> {
     try {
-      const papers = await this.paperRepository.getUserPapers(userId);
+      console.log("Getting papers for authorId:", authorId);
+      const papers = await this.paperRepository.getUserPapers(authorId);
+      console.log("Found papers:", papers);
       return papers;
     } catch (error) {
       console.error("Error in getUserPapers:", error);
@@ -344,7 +322,7 @@ export class PaperService {
   /**
    * Create new paper
    */
-  async createPaper(userId: string, title: string, content?: string): Promise<Paper> {
+  async createPaper(authorId: string, title: string, content?: string): Promise<Paper> {
     try {
       const baseTimestamp = Math.floor(Date.now() / 1000);
       let processedContent = [];
@@ -383,12 +361,12 @@ export class PaperService {
           updatedAt: new Date().toISOString(),
           version: 1,
           _id: new mongoose.Types.ObjectId().toString(),
-          authorId: userId,
+          authorId,
           collaboratorIds: []
         };
         
         // Save to MongoDB
-        await this.savePaper({ ...paper, userId });
+        await this.savePaper({ ...paper, authorId });
         return paper;
       } else {
         const paper = {
@@ -402,12 +380,12 @@ export class PaperService {
           updatedAt: new Date().toISOString(),
           version: 1,
           _id: new mongoose.Types.ObjectId().toString(),
-          authorId: userId,
+          authorId,
           collaboratorIds: []
         };
         
         // Save to MongoDB
-        await this.savePaper({ ...paper, userId });
+        await this.savePaper({ ...paper, authorId });
         return paper;
       }
     } catch (error) {
@@ -420,21 +398,26 @@ export class PaperService {
    * Update sentence
    */
   async updateSentence(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string,
     content: string,
-    summary: string,
-    intent: string
+    summary?: string,
+    intent?: string
   ): Promise<void> {
-    return this.paperRepository.updateSentence(
-      userId,
-      paperId,
-      blockId,
-      content,
-      summary,
-      intent
-    );
+    try {
+      await this.paperRepository.updateSentence(
+        authorId,
+        paperId,
+        blockId,
+        content,
+        summary || '',
+        intent || ''
+      );
+    } catch (error) {
+      console.error("Error in updateSentence:", error);
+      throw error;
+    }
   }
 
   /**
@@ -442,10 +425,15 @@ export class PaperService {
    */
   async addCollaborator(
     paperId: string,
-    userId: string,
+    authorId: string,
     collaboratorUsername: string
   ): Promise<void> {
-    return this.paperRepository.addCollaborator(userId, paperId, collaboratorUsername);
+    try {
+      await this.paperRepository.addCollaborator(paperId, authorId, collaboratorUsername);
+    } catch (error) {
+      console.error("Error in addCollaborator:", error);
+      throw error;
+    }
   }
 
   /**
@@ -453,41 +441,35 @@ export class PaperService {
    */
   async removeCollaborator(
     paperId: string,
-    userId: string,
+    authorId: string,
     collaboratorUsername: string
   ): Promise<void> {
-    const paper = await this.paperRepository.getPaper(userId, paperId);
-    if (!paper) {
-      throw new Error("Paper not found");
+    try {
+      await this.paperRepository.updateBlock(
+        authorId,
+        paperId,
+        'collaboratorIds',
+        'remove',
+        collaboratorUsername
+      );
+    } catch (error) {
+      console.error("Error in removeCollaborator:", error);
+      throw error;
     }
-
-    // Error if user is not a collaborator
-    if (!paper.collaboratorIds.includes(collaboratorUsername)) {
-      throw new Error("User is not a collaborator");
-    }
-
-    // Remove from collaborator list
-    const updatedPaper = {
-      ...paper,
-      collaboratorIds: paper.collaboratorIds.filter(id => id !== collaboratorUsername)
-    };
-
-    // Save to MongoDB
-    await this.paperRepository.savePaper(userId, updatedPaper);
   }
 
   /**
    * Get children values
    */
   async getChildrenValues(
-    userId: string,
+    authorId: string,
     paperId: string,
     blockId: string,
     targetKey: string
   ): Promise<string> {
     return this.paperRepository.getChildrenValues(
       paperId,
-      userId,
+      authorId,
       blockId,
       targetKey
     );
@@ -496,40 +478,25 @@ export class PaperService {
   /**
    * Delete paper
    */
-  async deletePaper(userId: string, paperId: string): Promise<void> {
-    return this.paperRepository.deletePaper(userId, paperId);
+  async deletePaper(authorId: string, paperId: string): Promise<void> {
+    try {
+      await this.paperRepository.deletePaper(authorId, paperId);
+    } catch (error) {
+      console.error("Error in deletePaper:", error);
+      throw error;
+    }
   }
 
   /**
    * Get collaborators for a paper
    */
-  async getCollaborators(userId: string, paperId: string) {
-    const paper = await this.paperRepository.getPaper(userId, paperId);
-    if (!paper) {
-      throw new Error("Paper not found");
+  async getCollaborators(authorId: string, paperId: string): Promise<string[]> {
+    try {
+      const paper = await this.paperRepository.getPaper(authorId, paperId);
+      return paper?.collaboratorIds || [];
+    } catch (error) {
+      console.error("Error in getCollaborators:", error);
+      throw error;
     }
-    
-    const collaboratorIds = paper.collaboratorIds || [];
-    
-    // Get user information for each collaborator ID
-    const collaborators = await Promise.all(
-      collaboratorIds.map(async (id) => {
-        try {
-          const user = await this.userService.getUserById(id);
-          return {
-            userId: id,
-            username: user ? user.username : 'Unknown user'
-          };
-        } catch (error) {
-          console.error(`Error fetching user for ID ${id}:`, error);
-          return {
-            userId: id,
-            username: 'Unknown user'
-          };
-        }
-      })
-    );
-    
-    return collaborators;
   }
 }
