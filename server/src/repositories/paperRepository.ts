@@ -159,8 +159,11 @@ export class PaperRepository {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // Save the paper
-      await paper.save();
+      // replace the paper with the updated one
+      await PaperModel.replaceOne(
+        {"_id": paperObjectId,},
+        updated
+      );
     } catch (error) {
       console.error("Error updating sentence content:", error);
       throw new Error("Failed to update sentence content");
@@ -478,25 +481,25 @@ export class PaperRepository {
     content: string,
     summary: string,
     intent: string
-  ): boolean {
+  ) {
     // Check if current object is the target sentence
     if (obj && obj.type === "sentence" && obj["block-id"] === blockId) {
       obj.content = content;
       obj.summary = summary;
       obj.intent = intent;
-      return true;
+      return obj;
     }
 
     // If content array exists, search recursively
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
         if (this.findAndUpdateSentence(child, blockId, content, summary, intent)) {
-          return true;
+          return obj;
         }
       }
     }
 
-    return false;
+    return null;
   }
 
   // Find and delete sentence
