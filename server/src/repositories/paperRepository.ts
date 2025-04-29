@@ -288,7 +288,7 @@ export class PaperRepository {
       }
 
       // Find the block
-      const targetBlock = this.findBlockById(paper.content, targetBlockId);
+      const targetBlock = this.findBlockById(paper, targetBlockId);
 
       if (!targetBlock) {
         throw new Error(`Block with ID ${targetBlockId} not found`);
@@ -298,7 +298,10 @@ export class PaperRepository {
       targetBlock[keyToUpdate] = updatedValue;
       
       // Save changes
-      await paper.save();
+      await PaperModel.replaceOne(
+        {"_id": paperId,},
+        paper
+      );
     } catch (error) {
       console.error("Error updating a block:", error);
       throw new Error(`Failed to update block ${targetBlockId}`);

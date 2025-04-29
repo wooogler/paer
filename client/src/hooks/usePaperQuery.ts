@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getPapers,
   updateSentenceContent,
-  deleteSentence,
   addBlock,
   updateBlockIntent,
   updateBlockSummary,
@@ -218,7 +217,7 @@ export function useUpdateBlockIntent() {
       blockType: ContentType;
       intent: string;
     }) => {
-      await updateBlockIntent(targetBlockId, blockType, intent);
+      await updateBlockIntent(userId, selectedPaperId, targetBlockId, intent);
     },
     onSuccess: async () => {
       try {

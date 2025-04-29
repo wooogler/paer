@@ -155,13 +155,16 @@ export const addBlock = async (
 
 // Update block intent
 export const updateBlockIntent = async (
+  authorId: string,
+  paperId: string | null,
   blockId: string,
-  blockType: string,
   intent: string
 ) => {
-  const response = await api.put(`/papers/${blockId}/intent`, {
-    blockType,
-    intent,
+  const response = await api.patch(`/papers/block/intent`, {
+    authorId,
+    paperId,
+    targetBlockId: blockId,
+    updatedValue: intent
   });
   return response.data;
 };
