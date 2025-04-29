@@ -323,7 +323,7 @@ export function useUpdateBlockTitle() {
       blockType: ContentType;
       title: string;
     }) => {
-      await updateBlockTitle(targetBlockId, blockType, title);
+      await updateBlockTitle(userId, selectedPaperId, targetBlockId, title);
     },
     onSuccess: async () => {
       try {

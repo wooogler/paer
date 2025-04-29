@@ -184,13 +184,16 @@ export const updateBlockSummary = async (
 
 // Update block title
 export const updateBlockTitle = async (
+  authorId: string,
+  paperId: string | null,
   blockId: string,
-  blockType: string,
   title: string
 ) => {
-  const response = await api.put(`/papers/${blockId}/title`, {
-    blockType,
-    title,
+  const response = await api.patch(`/papers/block/title`, {
+    authorId,
+    paperId,
+    targetBlockId: blockId,
+    updatedValue: title
   });
   return response.data;
 };
