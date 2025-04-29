@@ -135,7 +135,16 @@ export const addBlock = async (
   prevBlockId: string | null,
   blockType: string
 ) => {
-  const response = await api.post("/papers/blocks", {
+  const authorId = useAppStore.getState().userId;
+  const paperId = useContentStore.getState().selectedPaperId;
+  
+  if (!authorId || !paperId) {
+    throw new Error("Author ID or Paper ID is missing");
+  }
+
+  const response = await api.post("/papers/block", {
+    authorId,
+    paperId,
     parentBlockId,
     prevBlockId,
     blockType,

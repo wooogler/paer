@@ -159,7 +159,7 @@ export class PaperRepository {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // replace the paper with the updated one
+      // Saves the paper (by replacement)
       await PaperModel.replaceOne(
         {"_id": paperObjectId,},
         updated
@@ -237,23 +237,25 @@ export class PaperRepository {
       }
 
       // Find the parent block; throw an error if not found
-      const parentBlock = this.findBlockById(paper.content, parentBlockId);
+      const parentBlock = this.findBlockById(paper, parentBlockId);
       if (!parentBlock) {
         throw new Error(
           `Could not find the parent block with block ID ${parentBlockId}`
         );
       }
 
-      // Find the index of the previous block ID within the parent block; return -1 if not found
-      const prevBlockIndex = !prevBlockId
-        ? -1
-        : parentBlock.content.findIndex(
-            (block: any) => block["block-id"] === prevBlockId
-          );
-      parentBlock.content.splice(prevBlockIndex + 1, 0, newBlock);
+      const paperWithAddedBlock = this.findAndAddBlock(
+        paper,
+        parentBlockId,
+        newBlock,
+        prevBlockId
+      );
 
-      // Save changes
-      await paper.save();
+      // Saves the paper (by replacement)
+      await PaperModel.replaceOne(
+        {"_id": paperId,},
+        paperWithAddedBlock
+      );
     } catch (error) {
       console.error("Error adding a new block:", error);
       throw new Error("Failed to add a new block");
@@ -325,7 +327,7 @@ export class PaperRepository {
       }
 
       // Delete the block
-      const deleted = this.findAndDeleteBlock(paper.content, blockId);
+      const deleted = this.findAndDeleteBlock(paper, blockId);
 
       if (!deleted) {
         throw new Error(`Block with ID ${blockId} not found`);
@@ -361,7 +363,7 @@ export class PaperRepository {
       }
 
       // Delete the sentence
-      const deleted = this.findAndDeleteSentence(paper.content, blockId);
+      const deleted = this.findAndDeleteSentence(paper, blockId);
 
       if (!deleted) {
         throw new Error(`Sentence with block-id ${blockId} not found`);
@@ -472,6 +474,38 @@ export class PaperRepository {
     }
 
     return null;
+  }
+
+  // Find and add block function (search recursively)
+  // This function finds the parent block by its ID and adds a new block after the specified previous block ID
+  private findAndAddBlock(
+    obj: any,
+    parentBlockId: string,
+    newBlock: any,
+    prevBlockId: string | null
+  ): any {
+    // Check if the current object's block-id matches the parentBlockId
+    if (obj && obj["block-id"] === parentBlockId) {
+      // Find the index of the previous block ID within the parent block's content
+      const prevBlockIndex = !prevBlockId
+        ? -1
+        : obj.content.findIndex((block: any) => block["block-id"] === prevBlockId);
+  
+      // Insert the new block after the previous block
+      obj.content.splice(prevBlockIndex + 1, 0, newBlock);
+      return obj; // Successfully added the block
+    }
+  
+    // If the object has a content array, search recursively
+    if (obj && obj.content && Array.isArray(obj.content)) {
+      for (const child of obj.content) {
+        if (this.findAndAddBlock(child, parentBlockId, newBlock, prevBlockId)) {
+          return obj; // Block added successfully in a child
+        }
+      }
+    }
+  
+    return null; // Block not added
   }
 
   // Find and update sentence
