@@ -331,7 +331,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
 
           <div className={`text-base flex flex-col text-gray-700`}>
             {/* For paragraph type, display summary as title */}
-            {isParagraph && (
+            {/* {isParagraph && (
               <div
                 className={`${titleSizeClass} font-bold flex items-center gap-2 group relative mb-2`}
               >
@@ -362,10 +362,10 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                   </span>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Display summary for non-paragraph types */}
-            {!isParagraph && (
+            {/* {!isParagraph && (
               <div>
                 {isEditableBlock ? (
                   renderEditableField(
@@ -385,7 +385,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                   </span>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Display intent for all types */}
             <div className="flex items-center gap-2 w-full mb-2">
@@ -402,7 +402,14 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                     intentInputRef,
                     "Empty Intent",
                     handleIntentKeyDown,
-                    { icon: "" }
+                    // { icon: "" },
+                    {
+                      fontSize: titleSizeClass,
+                      fontWeight: "font-bold",
+                      extraButton: renderDeleteButton(
+                        "opacity-0 group-hover:opacity-100 transition-opacity ml-1"
+                      ),
+                    }
                   )}
                 </div>
               ) : (
