@@ -160,7 +160,7 @@ export function useDeleteSentence() {
   const selectedPaperId = useContentStore((state) => state.selectedPaperId);
 
   return useMutation({
-    mutationFn: (blockId: string) => deleteSentence(blockId),
+    mutationFn: (blockId: string) => deleteBlock(blockId),
     onSuccess: async () => {
       // Fetch latest data from server immediately
       try {

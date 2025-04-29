@@ -155,19 +155,20 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // DELETE /api/papers/sentence - 문장 삭제
-  fastify.delete<{
-    Body: {
-      authorId: string;
-      paperId: string;
-      blockId: string;
-    };
-  }>(
-    "/sentence",
-    async (request, reply) => {
-      return paperController.deleteSentence(request, reply);
-    }
-  );
+  // deprecated
+  // // DELETE /api/papers/sentence - 문장 삭제
+  // fastify.delete<{
+  //   Body: {
+  //     authorId: string;
+  //     paperId: string;
+  //     blockId: string;
+  //   };
+  // }>(
+  //   "/sentence",
+  //   async (request, reply) => {
+  //     return paperController.deleteSentence(request, reply);
+  //   }
+  // );
 
   // DELETE /api/papers/block - 블록 삭제
   fastify.delete<{

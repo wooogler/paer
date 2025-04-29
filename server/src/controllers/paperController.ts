@@ -332,33 +332,34 @@ export class PaperController {
     }
   }
 
-  /**
-   * Delete sentence
-   */
-  async deleteSentence(
-    request: FastifyRequest<{
-      Body: {
-        authorId: string;
-        paperId: string;
-        blockId: string;
-      }
-    }>,
-    reply: FastifyReply
-  ): Promise<void> {
-    try {
-      const { authorId, paperId, blockId } = request.body;
+  // deprecated
+  // /**
+  //  * Delete sentence
+  //  */
+  // async deleteSentence(
+  //   request: FastifyRequest<{
+  //     Body: {
+  //       authorId: string;
+  //       paperId: string;
+  //       blockId: string;
+  //     }
+  //   }>,
+  //   reply: FastifyReply
+  // ): Promise<void> {
+  //   try {
+  //     const { authorId, paperId, blockId } = request.body;
 
-      if (!authorId || !paperId || !blockId) {
-        return reply.code(400).send({ error: "authorId, paperId, blockId are required" });
-      }
+  //     if (!authorId || !paperId || !blockId) {
+  //       return reply.code(400).send({ error: "authorId, paperId, blockId are required" });
+  //     }
 
-      await this.paperService.deleteSentence(authorId, paperId, blockId);
-      return reply.code(200).send({ success: true });
-    } catch (error) {
-      console.error("Error deleting sentence:", error);
-      return reply.code(500).send({ error: "Failed to delete sentence" });
-    }
-  }
+  //     await this.paperService.deleteSentence(authorId, paperId, blockId);
+  //     return reply.code(200).send({ success: true });
+  //   } catch (error) {
+  //     console.error("Error deleting sentence:", error);
+  //     return reply.code(500).send({ error: "Failed to delete sentence" });
+  //   }
+  // }
 
   /**
    * Delete block

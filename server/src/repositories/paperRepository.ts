@@ -159,7 +159,7 @@ export class PaperRepository {
         throw new Error(`Sentence with block-id ${blockId} not found`);
       }
 
-      // Saves the paper (by replacement)
+      // Save the paper (by replacement)
       await PaperModel.replaceOne(
         {"_id": paperObjectId,},
         updated
@@ -251,7 +251,7 @@ export class PaperRepository {
         prevBlockId
       );
 
-      // Saves the paper (by replacement)
+      // Save the paper (by replacement)
       await PaperModel.replaceOne(
         {"_id": paperId,},
         paperWithAddedBlock
@@ -333,8 +333,11 @@ export class PaperRepository {
         throw new Error(`Block with ID ${blockId} not found`);
       }
 
-      // Save changes
-      await paper.save();
+      // Save the paper (by replacement)
+      await PaperModel.replaceOne(
+        {"_id": paperId,},
+        deleted
+      );
     } catch (error) {
       console.error("Error deleting block:", error);
       throw new Error(`Failed to delete block ${blockId}`);
@@ -563,7 +566,7 @@ export class PaperRepository {
   }
 
   // Find and delete block
-  private findAndDeleteBlock(obj: any, blockId: string): boolean {
+  private findAndDeleteBlock(obj: any, blockId: string): any {
     // If content array exists, search
     if (obj && obj.content && Array.isArray(obj.content)) {
       // Find the block to delete among direct children
@@ -574,18 +577,18 @@ export class PaperRepository {
       if (index !== -1) {
         // Delete the block
         obj.content.splice(index, 1);
-        return true;
+        return obj;
       }
 
       // Search recursively through children
       for (const child of obj.content) {
         if (this.findAndDeleteBlock(child, blockId)) {
-          return true;
+          return obj;
         }
       }
     }
 
-    return false;
+    return null;
   }
 
   // Find parent block by child ID

@@ -90,14 +90,15 @@ export const updateSentenceContent = async (
   return response.data;
 };
 
-/**
- * API function to delete a sentence
- * @param blockId ID of the sentence to delete
- */
-export const deleteSentence = async (blockId: string) => {
-  const response = await api.delete(`/papers/${blockId}`);
-  return response.data;
-};
+// deprecated
+// /**
+//  * API function to delete a sentence
+//  * @param blockId ID of the sentence to delete
+//  */
+// export const deleteSentence = async (blockId: string) => {
+//   const response = await api.delete(`/papers/block/${blockId}`);
+//   return response.data;
+// };
 
 // Update sentence intent
 export const updateSentenceIntent = async (
@@ -195,8 +196,23 @@ export const updateBlockTitle = async (
  * API function to delete a block
  * @param blockId ID of the block to delete
  */
-export const deleteBlock = async (blockId: string) => {
-  const response = await api.delete(`/papers/${blockId}`);
+export const deleteBlock = async (
+  blockId: string
+) => {
+  const authorId = useAppStore.getState().userId;
+  const paperId = useContentStore.getState().selectedPaperId;
+  
+  if (!authorId || !paperId) {
+    throw new Error("Author ID or Paper ID is missing");
+  }
+
+  const response = await api.delete("/papers/block", {
+    data: {
+      authorId,
+      paperId,
+      blockId,
+    }
+  });
   return response.data;
 };
 
