@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ChatService } from "../services/chatService";
-import { ChatMessage } from "../types/chat";
+import { ChatMessage, MessageAccessList } from "../types/chat";
 import { PaperService } from "../services/paperService";
 import { LLMService } from "../services/llmService";
 
@@ -235,6 +235,32 @@ export class ChatController {
     } catch (error) {
       console.error("Error deleting message:", error);
       return reply.code(500).send({ error: "Failed to delete message" });
+    }
+  }
+
+  /**
+   * Update message access
+   */
+  async updateMessageAccess(
+    request: FastifyRequest<{
+      Params: { paperId: string };
+      Body: { userId: string; messageAccessList: MessageAccessList};
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { paperId } = request.params;
+      const { userId, messageAccessList } = request.body;
+
+      if (!paperId || !userId) {
+        return reply.code(400).send({ error: "paperId and userId are required" });
+      }
+
+      await this.chatService.updateMessageAccess(userId, paperId, messageAccessList);
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating message access:", error);
+      return reply.code(500).send({ error: "Failed to update message access" });
     }
   }
 }

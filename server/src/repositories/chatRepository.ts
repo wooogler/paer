@@ -1,4 +1,4 @@
-import { ChatMessage } from "../types/chat";
+import { ChatMessage, MessageAccessList } from "../types/chat";
 import { Chat, IChat } from "../models/Chat";
 import mongoose, { isValidObjectId } from "mongoose";
 
@@ -131,6 +131,48 @@ export class ChatRepository {
       );
     } catch (error) {
       console.error("Error deleting message:", error);
+    }
+  }
+
+  /**
+   * Update message access
+   */
+  async updateMessageAccess(userId: string, paperId: string, messageAccessList: MessageAccessList): Promise<void> {
+    try {
+      if (!isValidObjectId(userId) || !isValidObjectId(paperId)) {
+        console.error(`Invalid userId (${userId}) or paperId (${paperId})`);
+        return;
+      }
+
+      // validate all messageIds exist in the database
+      const messageIds = [...messageAccessList["public"], ...messageAccessList["private"]];
+      const chat = await Chat.findOne({ userId, paperId });
+      if (!chat) {
+        console.error(`Chat not found for userId (${userId}) and paperId (${paperId})`);
+        return;
+      }
+      const messages = chat.messages.filter(message => messageIds.includes(message.id));
+      if (messages.length !== messageIds.length) {
+        console.error(`Not all messageIds exist in the database for userId (${userId}) and paperId (${paperId})`);
+        return;
+      }
+
+      // update access
+      await Chat.updateOne(
+        { userId, paperId },
+        { $set: { "messages.$[elem].acess": "public" } },
+        { arrayFilters: [{ "elem.id": { $in: messageAccessList["public"] } }] }
+      );
+      await Chat.updateOne(
+        { userId, paperId },
+        { $set: { "messages.$[elem].access": "private" } },
+        { arrayFilters: [{ "elem.id": { $in: messageAccessList["private"] } }] }
+      );
+      console.log(`Updated message access for userId (${userId}) and paperId (${paperId})`);
+      return;
+ 
+    } catch (error) {
+      console.error("Error updating message access:", error);
     }
   }
 }

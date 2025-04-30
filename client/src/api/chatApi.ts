@@ -107,6 +107,23 @@ export const deleteMessage = async (paperId: string, messageId: string, userId: 
   }
 };
 
+interface MessageAccessList {
+  "private": string[];
+  "public": string[];
+}
+
+/**
+ * update message access
+ */
+export const updateMessageAccess = async (paperId: string, userId: string, messageAccessList: MessageAccessList): Promise<void> => {
+  try {
+    await api.patch(`/chat/${paperId}/messages/access`, { userId, messageAccessList });
+  } catch (error) {
+    console.error("Error updating message access:", error);
+    throw error;
+  }
+}
+
 export const chatApi = {
   fetchAllMessages: async (paperId: string) => {
     const response = await api.get(`/chat/${paperId}/messages`);

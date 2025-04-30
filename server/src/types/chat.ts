@@ -10,5 +10,11 @@ export interface ChatMessage {
   blockId?: string;
   messageType?: MessageType;
   userName?: string;
-  // senderId?: string;
+  userId?: string;
+  viewAccess?: boolean;
+}
+
+export interface MessageAccessList {
+  "public": string[],
+  "private": string[],
 }

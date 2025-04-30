@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { ChatController } from "../controllers/chatController";
-import { ChatMessage } from "../types/chat";
+import { ChatMessage, MessageAccessList } from "../types/chat";
 import { PaperController } from "../controllers/paperController";
 
 // Define chat routes as Fastify plugin
@@ -96,6 +96,24 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       }
     }
   );
+
+  // This API endpoint edits (view) acess of blocks
+  // PATCH /api/chat/:paperId/access
+  // design consideration:
+  // message ID must exist
+  // paperID, authorID must match
+
+  fastify.patch<{
+    Params: { paperId: string };
+    Body: { userId: string, messageAccessList: MessageAccessList};
+  }>(
+    "/:paperId/messages/access",
+    async (request, reply) => {
+
+      return chatController.updateMessageAccess(request, reply);
+    }
+  );
+
 };
 
 export default chatRoutes;

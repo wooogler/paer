@@ -177,6 +177,7 @@ const ChatInterface: React.FC = () => {
           userName: userName || "You",
           blockId: selectedContent?.["block-id"],
           messageType,
+          viewAccess: "private"
         };
         await addMessage(message);
         setInput("");
@@ -391,7 +392,7 @@ const ChatInterface: React.FC = () => {
                 disabled={!input.trim() || isLoading || !rootContent}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed whitespace-nowrap"
               >
-                Chat
+                Ask AI
               </button>
               <button
                 type="submit"
