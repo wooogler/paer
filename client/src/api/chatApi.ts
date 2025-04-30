@@ -1,5 +1,7 @@
 import { api } from "./paperApi";
 
+export type MessageType = "chat" | "comment";
+
 export interface Message {
   id: string;
   role: "user" | "assistant" | "system";
@@ -9,6 +11,7 @@ export interface Message {
   userId: string;
   paperId: string;
   userName: string;
+  messageType?: MessageType;
 }
 
 /**

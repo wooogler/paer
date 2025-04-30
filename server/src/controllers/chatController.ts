@@ -146,7 +146,8 @@ export class ChatController {
           role: "assistant",
           content: response.choices[0].message.content,
           timestamp: Date.now(),
-          blockId: message.blockId
+          blockId: message.blockId,
+          userName: "Assistant"
         };
 
         await this.chatService.addMessage(userId, paperId, assistantMessage);

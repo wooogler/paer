@@ -9,5 +9,6 @@ export interface ChatMessage {
   timestamp: number;
   blockId?: string;
   messageType?: MessageType;
+  userName?: string;
   // senderId?: string;
 }

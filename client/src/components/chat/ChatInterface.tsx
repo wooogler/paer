@@ -11,8 +11,9 @@ import { useAppStore } from "../../store/useAppStore";
 import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
-import { FiUsers } from "react-icons/fi";
+import { FiUsers, FiShare2, FiCheck, FiX } from "react-icons/fi";
 import CollaboratorModal from "./CollaboratorModal";
+import ShareChatModal from "./ShareChatModal";
 
 const ChatInterface: React.FC = () => {
   const {
@@ -25,7 +26,7 @@ const ChatInterface: React.FC = () => {
     fetchMessages,
   } = useChatStore();
   const { selectedContent, content: rootContent, selectedPaperId } = useContentStore();
-  const { userId } = useAppStore();
+  const { userId, userName } = useAppStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -34,6 +35,9 @@ const ChatInterface: React.FC = () => {
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
+  const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   // Load messages when component mounts or selectedPaperId changes
   useEffect(() => {
@@ -153,16 +157,14 @@ const ChatInterface: React.FC = () => {
   }, [filteredMessages, scrollToBottom]);
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const button = e.nativeEvent.submitter as HTMLButtonElement; // Get the button that triggered the submit
-      const action = button?.value; // Get the value of the button
+      // Get the button that was clicked
+      const submitter = (e as any).nativeEvent.submitter;
+      const action = submitter?.value;
 
-      let messageType = "chat";
-      if (action == "sendAsComment") {
-        messageType = "comment";
-      }
+      const messageType = action === "sendAsComment" ? "comment" as const : "chat" as const;
 
       if (input.trim()) {
         const message = {
@@ -172,9 +174,9 @@ const ChatInterface: React.FC = () => {
           timestamp: Date.now(),
           userId: userId || "",
           paperId: rootContent?._id || "",
-          userName: "User",
+          userName: userName || "You",
           blockId: selectedContent?.["block-id"],
-          messageType: messageType,
+          messageType,
         };
         await addMessage(message);
         setInput("");
@@ -185,7 +187,7 @@ const ChatInterface: React.FC = () => {
         }, 0);
       }
     },
-    [input, addMessage, userId, rootContent, selectedContent]
+    [input, addMessage, userId, userName, rootContent, selectedContent]
   );
 
   // Submit with Enter, line break with Shift+Enter
@@ -193,10 +195,14 @@ const ChatInterface: React.FC = () => {
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !isComposing.current) {
         e.preventDefault();
-        handleSubmit(e as unknown as React.FormEvent);
+        const form = e.currentTarget.closest('form');
+        if (form) {
+          const submitEvent = new Event('submit', { bubbles: true });
+          form.dispatchEvent(submitEvent);
+        }
       }
     },
-    [handleSubmit]
+    []
   );
 
   const handleCompositionStart = useCallback(() => {
@@ -212,103 +218,210 @@ const ChatInterface: React.FC = () => {
     setInput(target.value);
   }, []);
 
+  const handleMessageSelect = useCallback((messageId: string) => {
+    setSelectedMessageIds(prev => {
+      if (prev.includes(messageId)) {
+        return prev.filter(id => id !== messageId);
+      } else {
+        return [...prev, messageId];
+      }
+    });
+  }, []);
+
+  const selectedMessages = useMemo(() => {
+    return messages.filter(msg => selectedMessageIds.includes(msg.id));
+  }, [messages, selectedMessageIds]);
+
+  // Add function to handle sharing complete history
+  const handleShareComplete = useCallback(() => {
+    setSelectedMessageIds(messages.map(msg => msg.id));
+    setIsShareModalOpen(true);
+  }, [messages]);
+
+  // Add function to select/deselect all messages
+  const handleSelectAll = useCallback(() => {
+    if (selectedMessageIds.length === messages.length) {
+      setSelectedMessageIds([]);
+    } else {
+      setSelectedMessageIds(messages.map(msg => msg.id));
+    }
+  }, [messages, selectedMessageIds]);
+
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-white">
+    <div className="flex flex-col h-full overflow-hidden bg-white max-h-screen">
+      {/* Persistent header */}
+      <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
+        <h2 className="text-lg font-medium text-gray-800">Chat</h2>
+        <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={() => setIsSelectionMode(true)}
+            className="px-4 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center whitespace-nowrap"
+          >
+            <FiShare2 className="mr-1.5" size={14} />
+            Share Messages
+          </button>
+        </div>
+      </div>
+
+      {/* Selection mode header */}
+      {isSelectionMode && (
+        <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => {
+                setIsSelectionMode(false);
+                setSelectedMessageIds([]);
+              }}
+              className="text-gray-600 hover:text-gray-800 px-2 py-1"
+            >
+              Cancel
+            </button>
+            <span className="font-medium text-gray-700">
+              {selectedMessageIds.length === 0 
+                ? "Select Messages" 
+                : `${selectedMessageIds.length} Selected`}
+            </span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleSelectAll}
+              className={`px-4 py-1.5 text-sm rounded-full transition-colors
+                ${selectedMessageIds.length === messages.length
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'text-blue-500 hover:bg-blue-50'}`}
+            >
+              {selectedMessageIds.length === messages.length ? 'Deselect All' : 'Select All'}
+            </button>
+            {selectedMessageIds.length > 0 && (
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-600 flex items-center"
+              >
+                <FiShare2 className="mr-1.5" size={14} />
+                Share
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Error message */}
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 text-sm">
+        <div className="bg-red-50 text-red-600 p-3 text-sm flex-shrink-0">
           {error}
         </div>
       )}
 
       {/* Message display area */}
-      <div className="flex-1 overflow-y-auto p-4 bg-white">
-        {!userId ? (
-          <div className="text-center text-gray-500 mt-4">
-            Please enter a User ID to use the chat feature
-          </div>
-        ) : !rootContent ? (
-          <div className="text-center text-gray-500 mt-4">
-            <p>No paper available. Please input a paper first.</p>
-            <p className="mt-2">Use the import button to upload a paper or create a new one.</p>
-          </div>
-        ) : (
-          <>
-            {filteredMessages.map((message, index) => (
-              <ChatMessage key={`${message.id}-${index}`} message={message} />
-            ))}
-            {isLoading && (
-              <div className="flex justify-start mb-4">
-                <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none p-3">
-                  <div className="flex space-x-2">
-                    <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: "0ms" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: "150ms" }}
-                    ></div>
-                    <div
-                      className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: "300ms" }}
-                    ></div>
+      <div className="flex-1 overflow-y-auto p-4 bg-white min-h-0">
+        <div className="max-w-3xl mx-auto">
+          {!userId ? (
+            <div className="text-center text-gray-500 mt-4">
+              Please enter a User ID to use the chat feature
+            </div>
+          ) : !rootContent ? (
+            <div className="text-center text-gray-500 mt-4">
+              <p>No paper available. Please input a paper first.</p>
+              <p className="mt-2">Use the import button to upload a paper or create a new one.</p>
+            </div>
+          ) : (
+            <>
+              {filteredMessages.map((message, index) => (
+                <ChatMessage 
+                  key={`${message.id}-${index}`} 
+                  message={message}
+                  isSelected={selectedMessageIds.includes(message.id)}
+                  onSelect={handleMessageSelect}
+                  selectionMode={isSelectionMode}
+                />
+              ))}
+              {isLoading && (
+                <div className="flex justify-start mb-4">
+                  <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none p-3">
+                    <div className="flex space-x-2">
+                      <div
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "0ms" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "150ms" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                        style={{ animationDelay: "300ms" }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </>
-        )}
-        <div ref={messagesEndRef} />
+              )}
+            </>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input area */}
-      <div className="border-t border-gray-200 p-4 bg-white">
-        {/* 선택된 콘텐츠 정보 표시 - textarea 위에 배치 */}
-        {rootContent && <ContentInfo content={selectedContent} />}
+      <div className="border-t border-gray-200 p-3 bg-white flex-shrink-0">
+        <div className="max-w-3xl mx-auto">
+          {rootContent && <ContentInfo content={selectedContent} />}
 
-        <form onSubmit={handleSubmit} className="flex items-start space-x-4">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={handleInput}
-            onKeyDown={handleKeyDown}
-            onCompositionStart={handleCompositionStart}
-            onCompositionEnd={handleCompositionEnd}
-            disabled={isLoading || !rootContent}
-            placeholder={
-              rootContent
-                ? "Type a message... (Press Enter to send, Shift+Enter for line break)"
-                : "Please input a paper first..."
-            }
-            className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[120px] max-h-[200px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
-          />
-          <div className="flex flex-col space-y-2">
-            <button
-              type="submit"
-              name="action"
-              value="send"
-              disabled={!input.trim() || isLoading || !rootContent}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
-            >
-              Chat
-            </button>
-            <button
-              type="submit"
-              name="action"
-              value="sendAsComment"
-              disabled={!input.trim() || isLoading || !rootContent}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
-            >
-              Comment
-            </button>
-          </div>
-        </form>
+          <form onSubmit={handleSubmit} className="flex items-start space-x-3 mt-2">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              onCompositionStart={handleCompositionStart}
+              onCompositionEnd={handleCompositionEnd}
+              disabled={isLoading || !rootContent}
+              placeholder={
+                rootContent
+                  ? "Type a message... (Press Enter to send, Shift+Enter for line break)"
+                  : "Please input a paper first..."
+              }
+              className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
+            />
+            <div className="flex flex-col space-y-2">
+              <button
+                type="submit"
+                name="action"
+                value="send"
+                disabled={!input.trim() || isLoading || !rootContent}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                Chat
+              </button>
+              <button
+                type="submit"
+                name="action"
+                value="sendAsComment"
+                disabled={!input.trim() || isLoading || !rootContent}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:bg-yellow-300 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                Comment
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
       <CollaboratorModal
         isOpen={isCollaboratorModalOpen}
         onClose={() => setIsCollaboratorModalOpen(false)}
+        selectedPaperId={selectedPaperId || ""}
+        authorId={userId || ""}
+      />
+
+      <ShareChatModal
+        isOpen={isShareModalOpen}
+        onClose={() => {
+          setIsShareModalOpen(false);
+          setIsSelectionMode(false);
+          setSelectedMessageIds([]);
+        }}
+        selectedMessages={selectedMessages}
       />
     </div>
   );

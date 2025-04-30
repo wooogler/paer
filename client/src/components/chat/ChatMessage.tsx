@@ -1,18 +1,28 @@
 import React, { useMemo } from "react";
-import { Message } from "../../api/chatApi";
+import { Message, MessageType } from "../../api/chatApi";
 import { useContentStore } from "../../store/useContentStore";
 import ContentInfo from "../ui/ContentInfo";
 import { Content } from "@paer/shared";
+import { FiCheck, FiMessageSquare, FiMessageCircle } from 'react-icons/fi';
 
 export type MessageRole = "user" | "assistant" | "system";
 
 interface ChatMessageProps {
   message: Message;
+  isSelected: boolean;
+  onSelect: (messageId: string) => void;
+  selectionMode: boolean;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ 
+  message, 
+  isSelected, 
+  onSelect,
+  selectionMode 
+}) => {
   const isUser = message.role === "user";
   const { content } = useContentStore();
+  const isComment = message.messageType === "comment";
 
   // 메시지에 연결된 blockId가 있는지 확인
   const hasBlockReference = !!message.blockId;
@@ -40,37 +50,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     return findContentByBlockId(content);
   }, [message.blockId, content]);
 
-  // 사용자 메시지 - 회색 배경으로 오른쪽 정렬
-  if (isUser) {
-    return (
-      <div className="flex w-full mb-4 justify-end">
-        <div className="max-w-[80%] p-3 rounded-lg bg-gray-100 text-gray-800">
-          {/* 연결된 콘텐츠 정보 표시 - blockId가 있고 해당 콘텐츠가 존재할 때만 */}
-          {hasBlockReference && linkedContent && (
-            <div className="mb-1">
-              <ContentInfo
-                content={linkedContent}
-                lightText={false}
-                isClickable={true}
-              />
-            </div>
-          )}
+  const SelectionCircle = () => (
+    <div 
+      className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer
+        ${isSelected 
+          ? 'border-blue-500 bg-blue-500 text-white scale-110' 
+          : 'border-gray-400 bg-gray-50 hover:bg-gray-100'
+        }`}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(message.id);
+      }}
+    >
+      {isSelected && <FiCheck size={16} className="stroke-[3]" />}
+    </div>
+  );
 
-          <p className="text-sm whitespace-pre-wrap break-words">
-            {message.content}
-          </p>
-          <div className="text-xs mt-1 opacity-70 text-right">
-            {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 에이전트 메시지 - 배경 없이 전체 폭을 채움
-  return (
-    <div className="w-full mb-4 px-4">
-      {/* 연결된 콘텐츠 정보 표시 - blockId가 있고 해당 콘텐츠가 존재할 때만 */}
+  const MessageContent = () => (
+    <>
       {hasBlockReference && linkedContent && (
         <div className="mb-1">
           <ContentInfo
@@ -80,12 +77,61 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           />
         </div>
       )}
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2 text-xs font-medium text-gray-500 mb-1">
+          <span>{message.userName || (isUser ? "You" : "Assistant")}</span>
+          {isComment ? (
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">
+              <FiMessageSquare size={12} />
+              <span className="text-xs">Comment</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
+              <FiMessageCircle size={12} />
+              <span className="text-xs">Chat</span>
+            </div>
+          )}
+        </div>
+        <p className="text-sm whitespace-pre-wrap break-words">
+          {message.content}
+        </p>
+        <div className="text-xs mt-1 opacity-70 text-right">
+          {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
+        </div>
+      </div>
+    </>
+  );
 
-      <p className="text-sm whitespace-pre-wrap break-words text-gray-800">
-        {message.content}
-      </p>
-      <div className="text-xs mt-1 opacity-70 text-right">
-        {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
+  // 사용자 메시지 - 회색 배경으로 오른쪽 정렬
+  if (isUser) {
+    return (
+      <div className="flex w-full mb-4 items-start space-x-3 min-w-0">
+        {selectionMode && <div className="pt-2"><SelectionCircle /></div>}
+        <div className="flex flex-grow justify-end min-w-0">
+          <div className={`max-w-[85%] p-3 rounded-lg transition-all
+            ${isComment 
+              ? 'bg-yellow-50 text-yellow-900' 
+              : 'bg-gray-100 text-gray-800'}
+            ${isSelected ? 'opacity-90' : ''}`}>
+            <MessageContent />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 에이전트 메시지 - 배경 없이 전체 폭을 채움
+  return (
+    <div className="flex w-full mb-4 items-start space-x-3 min-w-0">
+      {selectionMode && <div className="pt-2"><SelectionCircle /></div>}
+      <div className="flex-grow min-w-0">
+        <div className={`max-w-[85%] p-3 rounded-lg transition-all
+          ${isComment 
+            ? 'bg-yellow-50 text-yellow-900' 
+            : 'bg-white text-gray-800'}
+          ${isSelected ? 'opacity-90' : ''}`}>
+          <MessageContent />
+        </div>
       </div>
     </div>
   );
