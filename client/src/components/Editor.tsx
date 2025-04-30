@@ -124,9 +124,10 @@ const Editor: React.FC<EditorProps> = () => {
       if (
         selectedBlock.type === "paper" ||
         selectedBlock.type === "section" ||
-        selectedBlock.type === "subsection"
+        selectedBlock.type === "subsection" ||
+        selectedBlock.type === "subsubsection"
       ) {
-        // For paper, section, and subsection, get all child content
+        // For paper, section, subsection, and subsubsection, get all child content
         if (Array.isArray(selectedBlock.content)) {
           renderedContent = selectedBlock.content
             .map((item: any) => {
@@ -163,13 +164,11 @@ const Editor: React.FC<EditorProps> = () => {
 
       // Send the rendered content to the backend to generate new summaries and intents
       const response = await api.post("/papers/update-rendered-summaries", {
+        authorId: userId,
+        paperId,
         renderedContent: renderedContent.trim(),
         blockId: selectedBlock["block-id"],
-        userId,
-        paperId
       });
-
-      console.log("OpenAI API 요청 결과:", response.data);
 
       if (!response.data.success) {
         throw new Error(response.data.error || "Failed to update summaries");

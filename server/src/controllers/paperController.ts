@@ -29,7 +29,7 @@ export class PaperController {
       const { authorId } = request.query;
       
       if (!authorId || !paperId) {
-        return reply.code(400).send({ error: "authorId와 paperId are required" });
+        return reply.code(400).send({ error: "authorId와 paperId are required4" });
       }
       
       const paper = await this.paperService.getPaperById(authorId, paperId);
@@ -279,7 +279,7 @@ export class PaperController {
       const { authorId, paperId, parentBlockId, prevBlockId, blockType } = request.body;
       
       if (!authorId || !paperId) {
-        return reply.code(400).send({ error: "authorId와 paperId are required" });
+        return reply.code(400).send({ error: "authorId와 paperId are required3" });
       }
       
       const newBlockId = await this.paperService.addBlock(
@@ -459,7 +459,7 @@ export class PaperController {
       const { authorId, paperId } = request.query;
       
       if (!authorId || !paperId) {
-        return reply.code(400).send({ error: "authorId와 paperId are required" });
+        return reply.code(400).send({ error: "authorId와 paperId are required2" });
       }
       
       // Get latest paper data
@@ -497,12 +497,11 @@ export class PaperController {
   ) {
     try {
       const { authorId, paperId, renderedContent, blockId } = request.body;
-      
-      if (!authorId || !paperId) {
-        return reply.code(400).send({ error: "authorId와 paperId are required" });
+      if (!authorId || !paperId || !renderedContent || !blockId) {
+        return reply.code(400).send({ error: "authorId, paperId, renderedContent, and blockId are required" });
       }
       
-      const result = await this.paperService.updateRenderedSummaries(
+      const result = await this.llmService.updateRenderedSummaries(
         authorId,
         paperId,
         renderedContent,
@@ -567,7 +566,7 @@ export class PaperController {
       const { authorId } = request.query;
 
       if (!authorId || !paperId) {
-        return reply.code(400).send({ error: "authorId와 paperId are required" });
+        return reply.code(400).send({ error: "authorId와 paperId are required1" });
       }
 
       const collaborators = await this.paperService.getCollaborators(authorId, paperId);

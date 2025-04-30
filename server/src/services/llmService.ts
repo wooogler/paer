@@ -1,5 +1,7 @@
 import OpenAI from "openai";
 import { Content } from "@paer/shared";
+import { PaperModel } from '../models/Paper';
+import { PaperRepository } from '../repositories/paperRepository';
 
 type Message = {
   role: "system" | "user" | "assistant";
@@ -12,6 +14,7 @@ export class LLMService {
   private summaryCache: Map<string, string>;
   private intentCache: Map<string, string>;
   private conversationHistory: Message[];
+  private paperRepository: PaperRepository;
 
   constructor() {
     this.client = new OpenAI({
@@ -20,6 +23,7 @@ export class LLMService {
     this.summaryCache = new Map();
     this.intentCache = new Map();
     this.conversationHistory = [];
+    this.paperRepository = new PaperRepository();
   }
 
   async initializeConversation(paperContent: string): Promise<void> {
@@ -116,56 +120,22 @@ export class LLMService {
     this.conversationHistory = [];
   }
 
-  async updateRenderedSummaries(block: Content): Promise<any> {
+  async updateRenderedSummaries(
+    authorId: string,
+    paperId: string,
+    renderedContent: string,
+    blockId: string
+  ): Promise<any> {
     try {
-      // Recursive function to order properties in nested objects
-      const orderProperties = (obj: any): any => {
-        if (typeof obj !== "object" || obj === null) return obj;
+      const prompt = `You are a helpful peer reader for academic writing. Analyze the following content and provide an intent. The intent should be a single sentence that captures the main idea of the content.
+Content: ${renderedContent}
 
-        if (Array.isArray(obj)) {
-          return obj.map((item) => orderProperties(item));
-        }
+Please provide your response as a JSON object with the following structure:
+{
+  "intent": "The writer's purpose and rhetorical strategy"
+}
 
-        const orderedObj: any = {};
-        // Define the order of properties
-        const propertyOrder = [
-          "type",
-          "block-id",
-          "title",
-          "content",
-          "summary",
-          "intent",
-        ];
-
-        // Add properties in the specified order
-        propertyOrder.forEach((prop) => {
-          if (prop === "block-id") {
-            if (obj["block-id"] !== undefined) {
-              orderedObj["block-id"] = orderProperties(obj["block-id"]);
-            }
-          } else if (obj[prop] !== undefined) {
-            orderedObj[prop] = orderProperties(obj[prop]);
-          }
-        });
-
-        return orderedObj;
-      };
-
-      const orderedBlock = orderProperties(block);
-
-      const prompt = `You are a helpful peer reader for academic writing. Analyze the following content block from paper.json and fill in all empty summary and intent fields.
-Here is the block from paper.json:
-${JSON.stringify(orderedBlock, null, 2)}
-
-Please provide your response as a raw JSON object (without any markdown formatting or code blocks) with the same structure as the input, but with all empty summary and intent fields filled in. For each block:
-- Summary should be 20 words or less, capturing the main content
-- Intent should reflect the writer's purpose and rhetorical strategy
-- For content with LaTeX commands or references, focus on the actual text content
-- For chat messages or system messages, provide appropriate summaries and intents
-- For sentence blocks, provide short 5-10 word summaries and clear intent statements
-- For blocks with nested content, consider the combined text of all child blocks`;
-
-      console.log("Prompt sent to OpenAI API:", prompt);
+IMPORTANT: Return ONLY the JSON object, without any markdown formatting or additional text.`;
 
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
@@ -173,20 +143,25 @@ Please provide your response as a raw JSON object (without any markdown formatti
         temperature: 0,
       });
 
-      const result = JSON.parse(
-        response.choices[0].message?.content?.trim() ?? "{}"
-      );
-      console.log("OpenAI API response:", JSON.stringify(result, null, 2));
+      // Clean the response by removing any markdown formatting
+      const rawResponse = response.choices[0].message?.content?.trim() ?? "{}";
+      const cleanedResponse = rawResponse
+        .replace(/```json/g, '')
+        .replace(/```/g, '')
+        .trim();
 
-      return {
-        prompt,
-        apiResponse: {
-          model: response.model,
-          usage: response.usage,
-          content: response.choices[0].message?.content,
-          parsedResult: result,
-        },
-      };
+      let result;
+      try {
+        result = JSON.parse(cleanedResponse);
+      } catch (parseError) {
+        console.error("Error parsing LLM response:", parseError);
+        console.error("Raw response:", rawResponse);
+        console.error("Cleaned response:", cleanedResponse);
+        throw new Error("Failed to parse LLM response");
+      }
+      console.log("result:::", result.intent);
+
+      return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", result.intent);
     } catch (error) {
       console.error("Error in updateRenderedSummaries:", error);
       throw error;
