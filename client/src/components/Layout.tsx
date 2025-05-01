@@ -194,7 +194,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   timestamp: Date.now(),
                   userId: userId || "",
                   paperId: "",
-                  userName: "System"
+                  userName: "System",
+                  messageType: "comment",
+                  viewAccess: "private",
                 },
               ]);
             }
