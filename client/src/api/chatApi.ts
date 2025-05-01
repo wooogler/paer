@@ -12,7 +12,12 @@ export interface Message {
   paperId: string;
   userName: string;
   messageType?: MessageType;
-  viewAccess?: boolean;  // Whether the message is shared with collaborators
+  viewAccess: string;
+}
+
+export interface MessageAccessList {
+  "private": string[];
+  "public": string[];
 }
 
 /**
@@ -107,6 +112,18 @@ export const deleteMessage = async (paperId: string, messageId: string, userId: 
     return false;
   }
 };
+
+/**
+ * update message access
+ */
+export const updateMessageAccess = async (paperId: string, userId: string, messageAccessList: MessageAccessList): Promise<void> => {
+  try {
+    await api.patch(`/chat/${paperId}/messages/access`, { userId, messageAccessList });
+  } catch (error) {
+    console.error("Error updating message access:", error);
+    throw error;
+  }
+}
 
 export const chatApi = {
   fetchAllMessages: async (paperId: string) => {

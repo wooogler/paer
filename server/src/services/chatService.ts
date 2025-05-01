@@ -1,5 +1,5 @@
 import { ChatRepository } from "../repositories/chatRepository";
-import { ChatMessage } from "../types/chat";
+import { ChatMessage, MessageAccessList } from "../types/chat";
 
 export class ChatService {
   private chatRepository: ChatRepository;
@@ -49,4 +49,12 @@ export class ChatService {
   async deleteMessage(userId: string, paperId: string, messageId: string): Promise<void> {
     await this.chatRepository.deleteMessageById(userId, paperId, messageId);
   }
+
+  /**
+   * Update message access
+   */
+  async updateMessageAccess(userId: string, paperId: string, messageAccessList: MessageAccessList): Promise<void> {
+    await this.chatRepository.updateMessageAccess(userId, paperId, messageAccessList);
+  }
 }
+
