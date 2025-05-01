@@ -4,6 +4,8 @@ import { FiX, FiUser, FiPlus, FiTrash2 } from "react-icons/fi";
 import { getCollaborators, addCollaborator, removeCollaborator } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
 import { toast } from "react-hot-toast";
+import { useAppStore } from "../../store/useAppStore"; // Import your Zustand store
+import { useContentStore } from "../../store/useContentStore";
 
 interface Collaborator {
   userId: string;
@@ -31,6 +33,9 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
   const [isAdding, setIsAdding] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
+  const { userId } = useAppStore(); // Get the current user's ID
+  const ownerId = useContentStore().content?.authorId; // Get the current paper's owner ID
 
   useEffect(() => {
     const fetchCollaborators = async () => {
@@ -196,34 +201,36 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
               
               <div className="mt-4">
                 {/* Add collaborator dropdown */}
-                <div className="mb-4">
-                  <div className="flex items-center space-x-2">
-                    <select
-                      value={selectedUser}
-                      onChange={(e) => setSelectedUser(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      disabled={loading}
-                    >
-                      <option value="">Select a user</option>
-                      {filteredUsers.length > 0 ? (
-                        filteredUsers.map((user) => (
-                          <option key={user._id} value={user._id}>
-                            {user.username} ({user.email || 'No email'})
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>No users available</option>
-                      )}
-                    </select>
-                    <button
-                      onClick={handleAddCollaborator}
-                      disabled={!selectedUser || isAdding}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                    >
-                      {isAdding ? "Adding..." : "Add"}
-                    </button>
+                { ( userId == ownerId ) ? (
+                  <div className="mb-4">
+                    <div className="flex items-center space-x-2">
+                      <select
+                        value={selectedUser}
+                        onChange={(e) => setSelectedUser(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={loading}
+                      >
+                        <option value="">Select a user</option>
+                        {filteredUsers.length > 0 ? (
+                          filteredUsers.map((user) => (
+                            <option key={user._id} value={user._id}>
+                              {user.username} ({user.email || 'No email'})
+                            </option>
+                          ))
+                        ) : (
+                          <option value="" disabled>No users available</option>
+                        )}
+                      </select>
+                      <button
+                        onClick={handleAddCollaborator}
+                        disabled={!selectedUser || isAdding}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                      >
+                        {isAdding ? "Adding..." : "Add"}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ) : (<></>)}
 
                 {loading ? (
                   <div className="py-4 text-center text-gray-500">
