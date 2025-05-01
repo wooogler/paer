@@ -12,6 +12,7 @@ export interface Message {
   paperId: string;
   userName: string;
   messageType?: MessageType;
+  viewAccess?: boolean;  // Whether the message is shared with collaborators
 }
 
 /**

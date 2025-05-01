@@ -11,9 +11,15 @@ import { useAppStore } from "../../store/useAppStore";
 import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
-import { FiUsers, FiShare2, FiCheck, FiX } from "react-icons/fi";
-import CollaboratorModal from "./CollaboratorModal";
-import ShareChatModal from "./ShareChatModal";
+import { FiUsers, FiShare2, FiCheck, FiX, FiChevronDown } from "react-icons/fi";
+import { getCollaborators } from "../../api/paperApi";
+import { getAllUsers } from "../../api/userApi";
+import { toast } from "react-hot-toast";
+
+interface ViewingMode {
+  userId: string;
+  userName: string;
+}
 
 const ChatInterface: React.FC = () => {
   const {
@@ -34,10 +40,38 @@ const ChatInterface: React.FC = () => {
   const isComposing = useRef(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
   const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [collaborators, setCollaborators] = useState<ViewingMode[]>([]);
+  const [currentView, setCurrentView] = useState<ViewingMode>({ userId, userName });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Load collaborators
+  useEffect(() => {
+    const loadCollaborators = async () => {
+      if (!selectedPaperId || !userId) return;
+      
+      try {
+        const collaboratorsData = await getCollaborators(selectedPaperId, userId);
+        const userResponse = await getAllUsers();
+        
+        const collaboratorsWithUsernames = collaboratorsData.map((collaboratorId: string) => {
+          const user = userResponse.users.find((u: any) => u._id === collaboratorId);
+          return {
+            userId: collaboratorId,
+            userName: user ? user.username : 'Unknown User'
+          };
+        });
+        
+        setCollaborators(collaboratorsWithUsernames);
+      } catch (err) {
+        console.error("Failed to load collaborators:", err);
+      }
+    };
+
+    loadCollaborators();
+  }, [selectedPaperId, userId]);
 
   // Load messages when component mounts or selectedPaperId changes
   useEffect(() => {
@@ -93,59 +127,81 @@ const ChatInterface: React.FC = () => {
     }
   }, [isLoadingMessages, messages.length, setMessages, rootContent, userId]);
 
+  const handleSelectAll = useCallback(() => {
+    if (selectedMessageIds.length === messages.length) {
+      setSelectedMessageIds([]);
+    } else {
+      setSelectedMessageIds(messages.map(msg => msg.id));
+    }
+  }, [messages, selectedMessageIds]);
+
+  const isViewingOwnChat = currentView.userId === userId;
+
   // Calculate filtered messages list
   const filteredMessages = useMemo(() => {
-    if (!isFilteringEnabled || !filterBlockId) return messages;
+    // First filter by blockId if filtering is enabled
+    let filtered = messages;
+    if (isFilteringEnabled && filterBlockId) {
+      // Get only messages matching the filtered blockId
+      // Include child content blockIds recursively
+      const blockIds = new Set<string | undefined>([filterBlockId]);
 
-    // Get only messages matching the filtered blockId
-    // Include child content blockIds recursively
-    const blockIds = new Set<string | undefined>([filterBlockId]);
+      // Recursive function to collect child content blockIds
+      const collectChildBlockIds = (content: any) => {
+        if (!content) return;
 
-    // Recursive function to collect child content blockIds
-    const collectChildBlockIds = (content: any) => {
-      if (!content) return;
-
-      // Add current content's blockId
-      if (content["block-id"]) {
-        blockIds.add(content["block-id"]);
-      }
-
-      // Process child content recursively if it's an array
-      if (content.content && Array.isArray(content.content)) {
-        content.content.forEach((child: any) => {
-          collectChildBlockIds(child);
-        });
-      }
-    };
-
-    // Find content by blockId
-    const findContentByBlockId = (content: any, blockId: string): any => {
-      if (!content) return null;
-
-      // Check if current content matches the blockId
-      if (content["block-id"] === blockId) {
-        return content;
-      }
-
-      // Search child content
-      if (content.content && Array.isArray(content.content)) {
-        for (const child of content.content) {
-          const found = findContentByBlockId(child, blockId);
-          if (found) return found;
+        // Add current content's blockId
+        if (content["block-id"]) {
+          blockIds.add(content["block-id"]);
         }
-      }
 
-      return null;
-    };
+        // Process child content recursively if it's an array
+        if (content.content && Array.isArray(content.content)) {
+          content.content.forEach((child: any) => {
+            collectChildBlockIds(child);
+          });
+        }
+      };
 
-    // Find filtered blockId content in root content
-    const filteredContent = findContentByBlockId(rootContent, filterBlockId);
+      // Find content by blockId
+      const findContentByBlockId = (content: any, blockId: string): any => {
+        if (!content) return null;
 
-    // Collect all child blockIds of found content
-    collectChildBlockIds(filteredContent);
+        // Check if current content matches the blockId
+        if (content["block-id"] === blockId) {
+          return content;
+        }
 
-    return messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
-  }, [messages, filterBlockId, rootContent, isFilteringEnabled]);
+        // Search child content
+        if (content.content && Array.isArray(content.content)) {
+          for (const child of content.content) {
+            const found = findContentByBlockId(child, blockId);
+            if (found) return found;
+          }
+        }
+
+        return null;
+      };
+
+      // Find filtered blockId content in root content
+      const filteredContent = findContentByBlockId(rootContent, filterBlockId);
+
+      // Collect all child blockIds of found content
+      collectChildBlockIds(filteredContent);
+
+      filtered = messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
+    }
+
+    // Then filter by viewing mode
+    if (!isViewingOwnChat) {
+      // When viewing collaborator's messages, only show messages shared by that specific collaborator
+      filtered = filtered.filter(msg => 
+        msg.userId === currentView.userId && msg.viewAccess
+      );
+    }
+
+    return filtered;
+  }, [messages, filterBlockId, rootContent, isFilteringEnabled, isViewingOwnChat, currentView.userId]);
 
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {
@@ -232,40 +288,116 @@ const ChatInterface: React.FC = () => {
     return messages.filter(msg => selectedMessageIds.includes(msg.id));
   }, [messages, selectedMessageIds]);
 
-  // Add function to handle sharing complete history
-  const handleShareComplete = useCallback(() => {
-    setSelectedMessageIds(messages.map(msg => msg.id));
-    setIsShareModalOpen(true);
-  }, [messages]);
-
-  // Add function to select/deselect all messages
-  const handleSelectAll = useCallback(() => {
-    if (selectedMessageIds.length === messages.length) {
-      setSelectedMessageIds([]);
-    } else {
-      setSelectedMessageIds(messages.map(msg => msg.id));
+  const handleShare = useCallback(async () => {
+    if (!selectedPaperId || !userId) {
+      toast.error("Cannot update permissions: No paper selected");
+      return;
     }
-  }, [messages, selectedMessageIds]);
+
+    try {
+      setIsSharing(true);
+      const collaborators = await getCollaborators(selectedPaperId, userId);
+      
+      if (collaborators.length === 0) {
+        toast.error("No collaborators found to share with");
+        return;
+      }
+
+      // Get all messages that should be shared (selected) and unshared (unselected)
+      const messagesToShare = selectedMessageIds;
+      const messagesToUnshare = messages
+        .filter(msg => msg.viewAccess && !selectedMessageIds.includes(msg.id))
+        .map(msg => msg.id);
+
+      // TODO: Implement backend API call to update message permissions
+      // await updateMessagePermissions(selectedPaperId, messagesToShare, messagesToUnshare);
+      
+      toast.success('Message permissions updated');
+      
+      // Close selection mode after updating permissions
+      setIsSelectionMode(false);
+      setSelectedMessageIds([]);
+    } catch (error) {
+      console.error("Error updating message permissions:", error);
+      toast.error("Failed to update message permissions");
+    } finally {
+      setIsSharing(false);
+    }
+  }, [selectedPaperId, userId, selectedMessageIds, messages]);
+
+  // Load initial shared state when entering selection mode
+  useEffect(() => {
+    if (isSelectionMode) {
+      // Here we'll load the currently shared messages and pre-select them
+      // For now, we'll simulate this with messages that have viewAccess=true
+      const sharedMessages = messages.filter(msg => msg.viewAccess);
+      setSelectedMessageIds(sharedMessages.map(msg => msg.id));
+    }
+  }, [isSelectionMode, messages]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white max-h-screen">
-      {/* Persistent header */}
+      {/* Persistent header with dropdown */}
       <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
-        <h2 className="text-lg font-medium text-gray-800">Chat</h2>
-        <div className="flex items-center space-x-2">
+        <div className="relative">
           <button
-            type="button"
-            onClick={() => setIsSelectionMode(true)}
-            className="px-4 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center whitespace-nowrap"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center space-x-2 text-lg font-medium text-gray-800 hover:text-gray-600"
           >
-            <FiShare2 className="mr-1.5" size={14} />
-            Share Messages
+            <span>{currentView.userId === userId ? "My Chat" : `${currentView.userName}'s Shared Messages`}</span>
+            <FiChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
+          
+          {isDropdownOpen && (
+            <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+              <button
+                onClick={() => {
+                  setCurrentView({ userId, userName });
+                  setIsDropdownOpen(false);
+                }}
+                className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2
+                  ${currentView.userId === userId ? 'bg-blue-50 text-blue-600' : ''}`}
+              >
+                <span>My Chat</span>
+                {currentView.userId === userId && <FiCheck className="ml-auto" />}
+              </button>
+              
+              <div className="border-t border-gray-200 my-1"></div>
+              
+              {collaborators.map((collaborator) => (
+                <button
+                  key={collaborator.userId}
+                  onClick={() => {
+                    setCurrentView(collaborator);
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2
+                    ${currentView.userId === collaborator.userId ? 'bg-blue-50 text-blue-600' : ''}`}
+                >
+                  <span>{collaborator.userName}'s Shared Messages</span>
+                  {currentView.userId === collaborator.userId && <FiCheck className="ml-auto" />}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+        
+        {isViewingOwnChat && (
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => setIsSelectionMode(true)}
+              className="px-4 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center whitespace-nowrap"
+            >
+              <FiShare2 className="mr-1.5" size={14} />
+              Manage Shared Messages
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Selection mode header */}
-      {isSelectionMode && (
+      {/* Selection mode header - only show in own chat */}
+      {isViewingOwnChat && isSelectionMode && (
         <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center space-x-4">
             <button
@@ -279,8 +411,8 @@ const ChatInterface: React.FC = () => {
             </button>
             <span className="font-medium text-gray-700">
               {selectedMessageIds.length === 0 
-                ? "Select Messages" 
-                : `${selectedMessageIds.length} Selected`}
+                ? "Select messages to share" 
+                : `${selectedMessageIds.length} messages will be shared`}
             </span>
           </div>
           <div className="flex items-center space-x-3">
@@ -291,17 +423,16 @@ const ChatInterface: React.FC = () => {
                   ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   : 'text-blue-500 hover:bg-blue-50'}`}
             >
-              {selectedMessageIds.length === messages.length ? 'Deselect All' : 'Select All'}
+              {selectedMessageIds.length === messages.length ? 'Unshare All' : 'Share All'}
             </button>
-            {selectedMessageIds.length > 0 && (
-              <button
-                onClick={() => setIsShareModalOpen(true)}
-                className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-600 flex items-center"
-              >
-                <FiShare2 className="mr-1.5" size={14} />
-                Share
-              </button>
-            )}
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-600 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FiShare2 className="mr-1.5" size={14} />
+              {isSharing ? 'Updating...' : 'Update Permissions'}
+            </button>
           </div>
         </div>
       )}
@@ -327,15 +458,24 @@ const ChatInterface: React.FC = () => {
             </div>
           ) : (
             <>
-              {filteredMessages.map((message, index) => (
-                <ChatMessage 
-                  key={`${message.id}-${index}`} 
-                  message={message}
-                  isSelected={selectedMessageIds.includes(message.id)}
-                  onSelect={handleMessageSelect}
-                  selectionMode={isSelectionMode}
-                />
-              ))}
+              {/* Show different message if viewing collaborator's empty shared messages */}
+              {!isViewingOwnChat && messages.length === 0 ? (
+                <div className="text-center text-gray-500 mt-4">
+                  <p>{currentView.userName} hasn't shared any messages yet.</p>
+                </div>
+              ) : (
+                <>
+                  {filteredMessages.map((message, index) => (
+                    <ChatMessage 
+                      key={`${message.id}-${index}`} 
+                      message={message}
+                      isSelected={selectedMessageIds.includes(message.id)}
+                      onSelect={handleMessageSelect}
+                      selectionMode={isViewingOwnChat && isSelectionMode}
+                    />
+                  ))}
+                </>
+              )}
               {isLoading && (
                 <div className="flex justify-start mb-4">
                   <div className="bg-gray-200 text-gray-800 rounded-lg rounded-tl-none p-3">
@@ -362,67 +502,52 @@ const ChatInterface: React.FC = () => {
         </div>
       </div>
 
-      {/* Input area */}
-      <div className="border-t border-gray-200 p-3 bg-white flex-shrink-0">
-        <div className="max-w-3xl mx-auto">
-          {rootContent && <ContentInfo content={selectedContent} />}
+      {/* Input area - only show in own chat */}
+      {isViewingOwnChat && (
+        <div className="border-t border-gray-200 p-3 bg-white flex-shrink-0">
+          <div className="max-w-3xl mx-auto">
+            {rootContent && <ContentInfo content={selectedContent} />}
 
-          <form onSubmit={handleSubmit} className="flex items-start space-x-3 mt-2">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={handleInput}
-              onKeyDown={handleKeyDown}
-              onCompositionStart={handleCompositionStart}
-              onCompositionEnd={handleCompositionEnd}
-              disabled={isLoading || !rootContent}
-              placeholder={
-                rootContent
-                  ? "Type a message... (Press Enter to send, Shift+Enter for line break)"
-                  : "Please input a paper first..."
-              }
-              className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
-            />
-            <div className="flex flex-col space-y-2">
-              <button
-                type="submit"
-                name="action"
-                value="send"
-                disabled={!input.trim() || isLoading || !rootContent}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed whitespace-nowrap"
-              >
-                Chat
-              </button>
-              <button
-                type="submit"
-                name="action"
-                value="sendAsComment"
-                disabled={!input.trim() || isLoading || !rootContent}
-                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:bg-yellow-300 disabled:cursor-not-allowed whitespace-nowrap"
-              >
-                Comment
-              </button>
-            </div>
-          </form>
+            <form onSubmit={handleSubmit} className="flex items-start space-x-3 mt-2">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                onCompositionStart={handleCompositionStart}
+                onCompositionEnd={handleCompositionEnd}
+                disabled={isLoading || !rootContent}
+                placeholder={
+                  rootContent
+                    ? "Type a message... (Press Enter to send, Shift+Enter for line break)"
+                    : "Please input a paper first..."
+                }
+                className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px] max-h-[160px] overflow-y-auto disabled:bg-gray-100 disabled:text-gray-400"
+              />
+              <div className="flex flex-col space-y-2">
+                <button
+                  type="submit"
+                  name="action"
+                  value="send"
+                  disabled={!input.trim() || isLoading || !rootContent}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  Chat
+                </button>
+                <button
+                  type="submit"
+                  name="action"
+                  value="sendAsComment"
+                  disabled={!input.trim() || isLoading || !rootContent}
+                  className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:bg-yellow-300 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                  Comment
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-
-      <CollaboratorModal
-        isOpen={isCollaboratorModalOpen}
-        onClose={() => setIsCollaboratorModalOpen(false)}
-        selectedPaperId={selectedPaperId || ""}
-        authorId={userId || ""}
-      />
-
-      <ShareChatModal
-        isOpen={isShareModalOpen}
-        onClose={() => {
-          setIsShareModalOpen(false);
-          setIsSelectionMode(false);
-          setSelectedMessageIds([]);
-        }}
-        selectedMessages={selectedMessages}
-      />
+      )}
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { Message, MessageType } from "../../api/chatApi";
 import { useContentStore } from "../../store/useContentStore";
 import ContentInfo from "../ui/ContentInfo";
 import { Content } from "@paer/shared";
-import { FiCheck, FiMessageSquare, FiMessageCircle } from 'react-icons/fi';
+import { FiCheck, FiMessageSquare, FiMessageCircle, FiShare2 } from 'react-icons/fi';
 
 export type MessageRole = "user" | "assistant" | "system";
 
@@ -55,7 +55,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer
         ${isSelected 
           ? 'border-blue-500 bg-blue-500 text-white scale-110' 
-          : 'border-gray-400 bg-gray-50 hover:bg-gray-100'
+          : message.viewAccess 
+            ? 'border-green-500 bg-green-50 hover:bg-green-100'
+            : 'border-gray-400 bg-gray-50 hover:bg-gray-100'
         }`}
       onClick={(e) => {
         e.stopPropagation();
@@ -63,6 +65,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       }}
     >
       {isSelected && <FiCheck size={16} className="stroke-[3]" />}
+      {!isSelected && message.viewAccess && <FiShare2 size={14} className="text-green-600" />}
     </div>
   );
 
@@ -80,17 +83,25 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       <div className="flex flex-col">
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500 mb-1">
           <span>{message.userName || (isUser ? "You" : "Assistant")}</span>
-          {isComment ? (
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">
-              <FiMessageSquare size={12} />
-              <span className="text-xs">Comment</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
-              <FiMessageCircle size={12} />
-              <span className="text-xs">Chat</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {isComment ? (
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">
+                <FiMessageSquare size={12} />
+                <span className="text-xs">Comment</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
+                <FiMessageCircle size={12} />
+                <span className="text-xs">Chat</span>
+              </div>
+            )}
+            {!selectionMode && message.viewAccess && (
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-100 text-green-800">
+                <FiShare2 size={12} />
+                <span className="text-xs">Shared</span>
+              </div>
+            )}
+          </div>
         </div>
         <p className="text-sm whitespace-pre-wrap break-words">
           {message.content}
@@ -112,7 +123,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             ${isComment 
               ? 'bg-yellow-50 text-yellow-900' 
               : 'bg-gray-100 text-gray-800'}
-            ${isSelected ? 'opacity-90' : ''}`}>
+            ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
+            ${!selectionMode && message.viewAccess ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
             <MessageContent />
           </div>
         </div>
@@ -129,7 +141,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           ${isComment 
             ? 'bg-yellow-50 text-yellow-900' 
             : 'bg-white text-gray-800'}
-          ${isSelected ? 'opacity-90' : ''}`}>
+          ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
+          ${!selectionMode && message.viewAccess ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
           <MessageContent />
         </div>
       </div>
