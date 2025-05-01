@@ -232,7 +232,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     Params: { id: string };
     Body: { authorId: string; collaboratorId: string };
   }>(
-    "/:id/collaborator",
+    "/:id/collaborators",
     async (request, reply) => {
       return paperController.removeCollaborator(request, reply);
     }

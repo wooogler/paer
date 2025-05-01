@@ -268,13 +268,13 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
                               <p className="text-xs text-gray-500 mt-1">ID: {collaborator.userId}</p>
                             </div>
                           </div>
-                          <button
+                          { (userId === ownerId) && (<button
                             onClick={() => handleRemoveCollaborator(collaborator.userId)}
                             className="text-red-500 hover:text-red-700 focus:outline-none"
                             disabled={isAdding}
                           >
                             <FiTrash2 size={18} />
-                          </button>
+                          </button>)}
                         </div>
                       </li>
                     ))}
