@@ -58,7 +58,17 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
             };
           });
         
-        setCollaborators(uniqueCollaborators);
+        // Add owner to the list if ownerId exists
+        if (ownerId && typeof ownerId === 'string' && userId !== ownerId) {
+          const owner = userResponse.users.find((u: User) => u._id === ownerId);
+          const ownerCollaborator = {
+            userId: ownerId,
+            username: owner ? owner.username : 'Unknown Owner'
+          };
+          setCollaborators([ownerCollaborator, ...uniqueCollaborators]);
+        } else {
+          setCollaborators(uniqueCollaborators);
+        }
       } catch (err) {
         console.error("Failed to fetch collaborators:", err);
         setError("Failed to fetch collaborators.");

@@ -28,7 +28,7 @@ export class PaperRepository {
 
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
-        authorId: userObjectId
+        // authorId: userObjectId
       });
 
       if (!paper) {
