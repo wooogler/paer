@@ -167,7 +167,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
                     content.type === "paragraph"
                       ? "text-xs" // paragraph 타입의 경우 더 작은 폰트 사이즈 적용
                       : "text-sm font-bold"
-                  } ${isSelectedContent ? "text-blue-800" : ""} ${
+                  } ${isSelectedContent ? "" : ""} ${
                     isSelectedContent ? "" : "truncate"
                   }`}
                   title={isSelectedContent ? "" : displayTitle}
