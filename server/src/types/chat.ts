@@ -11,7 +11,7 @@ export interface ChatMessage {
   messageType?: MessageType;
   userName?: string;
   userId?: string;
-  viewAccess?: boolean;
+  viewAccess: string;
 }
 
 export interface MessageAccessList {

@@ -160,14 +160,15 @@ export class ChatRepository {
       // update access
       await Chat.updateOne(
         { userId, paperId },
-        { $set: { "messages.$[elem].acess": "public" } },
+        { $set: { "messages.$[elem].viewAccess": "public" } },
         { arrayFilters: [{ "elem.id": { $in: messageAccessList["public"] } }] }
       );
       await Chat.updateOne(
         { userId, paperId },
-        { $set: { "messages.$[elem].access": "private" } },
+        { $set: { "messages.$[elem].viewAccess": "private" } },
         { arrayFilters: [{ "elem.id": { $in: messageAccessList["private"] } }] }
       );
+
       console.log(`Updated message access for userId (${userId}) and paperId (${paperId})`);
       return;
  

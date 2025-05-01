@@ -12,6 +12,12 @@ export interface Message {
   paperId: string;
   userName: string;
   messageType?: MessageType;
+  viewAccess: string;
+}
+
+export interface MessageAccessList {
+  "private": string[];
+  "public": string[];
 }
 
 /**
@@ -106,11 +112,6 @@ export const deleteMessage = async (paperId: string, messageId: string, userId: 
     return false;
   }
 };
-
-interface MessageAccessList {
-  "private": string[];
-  "public": string[];
-}
 
 /**
  * update message access

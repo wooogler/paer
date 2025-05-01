@@ -147,7 +147,8 @@ export class ChatController {
           content: response.choices[0].message.content,
           timestamp: Date.now(),
           blockId: message.blockId,
-          userName: "Assistant"
+          userName: "Assistant",
+          viewAccess: "private",
         };
 
         await this.chatService.addMessage(userId, paperId, assistantMessage);
