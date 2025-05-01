@@ -55,7 +55,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       className={`flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer
         ${isSelected 
           ? 'border-blue-500 bg-blue-500 text-white scale-110' 
-          : message.viewAccess 
+          : message.viewAccess === "public"
             ? 'border-green-500 bg-green-50 hover:bg-green-100'
             : 'border-gray-400 bg-gray-50 hover:bg-gray-100'
         }`}
@@ -65,7 +65,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       }}
     >
       {isSelected && <FiCheck size={16} className="stroke-[3]" />}
-      {!isSelected && message.viewAccess && <FiShare2 size={14} className="text-green-600" />}
+      {!isSelected && message.viewAccess === "public" && <FiShare2 size={14} className="text-green-600" />}
     </div>
   );
 
@@ -95,7 +95,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                 <span className="text-xs">Chat</span>
               </div>
             )}
-            {!selectionMode && message.viewAccess && (
+            {!selectionMode && message.viewAccess === "public" && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-green-100 text-green-800">
                 <FiShare2 size={12} />
                 <span className="text-xs">Shared</span>
@@ -124,7 +124,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
               ? 'bg-yellow-50 text-yellow-900' 
               : 'bg-gray-100 text-gray-800'}
             ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
-            ${!selectionMode && message.viewAccess ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
+            ${!selectionMode && message.viewAccess === "public" ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
             <MessageContent />
           </div>
         </div>
@@ -142,7 +142,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             ? 'bg-yellow-50 text-yellow-900' 
             : 'bg-white text-gray-800'}
           ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
-          ${!selectionMode && message.viewAccess ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
+          ${!selectionMode && message.viewAccess === "public" ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
           <MessageContent />
         </div>
       </div>

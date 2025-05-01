@@ -40,26 +40,20 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
         setLoading(true);
         setError(null);
         const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
-        // 협업자 데이터에 username 추가
-        const collaboratorsWithUsername = await Promise.all(
-          collaboratorsData.map(async (collaboratorId: string) => {
-            try {
-              const userResponse = await getAllUsers();
-              const user = userResponse.users.find((u: User) => u._id === collaboratorId);
-              return {
-                userId: collaboratorId,
-                username: user ? user.username : 'Unknown User'
-              };
-            } catch (err) {
-              console.error("Failed to fetch user details:", err);
-              return {
-                userId: collaboratorId,
-                username: 'Unknown User'
-              };
-            }
-          })
-        );
-        setCollaborators(collaboratorsWithUsername);
+        const userResponse = await getAllUsers();
+        
+        // Filter out duplicates and the current user
+        const uniqueCollaborators = Array.from(new Set(collaboratorsData as string[]))
+          .filter(collaboratorId => collaboratorId !== authorId)
+          .map(collaboratorId => {
+            const user = userResponse.users.find((u: User) => u._id === collaboratorId);
+            return {
+              userId: collaboratorId,
+              username: user ? user.username : 'Unknown User'
+            };
+          });
+        
+        setCollaborators(uniqueCollaborators);
       } catch (err) {
         console.error("Failed to fetch collaborators:", err);
         setError("Failed to fetch collaborators.");
@@ -114,9 +108,21 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
       const response = await addCollaborator(selectedPaperId, authorId, selectedUser);
       if (response.success) {
         toast.success("Collaborator added successfully");
-        // Refresh collaborators list
-        const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
-        setCollaborators(Array.isArray(collaboratorsData) ? collaboratorsData : []);
+        // Get the user details from allUsers
+        const addedUser = allUsers.find(user => user._id === selectedUser);
+        if (addedUser) {
+          // Add the new collaborator to the list if not already present
+          setCollaborators(prev => {
+            const exists = prev.some(c => c.userId === selectedUser);
+            if (!exists) {
+              return [...prev, {
+                userId: selectedUser,
+                username: addedUser.username
+              }];
+            }
+            return prev;
+          });
+        }
         setSelectedUser("");
       } else {
         throw new Error(response.error || "Failed to add collaborator");
@@ -137,9 +143,8 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
       const response = await removeCollaborator(selectedPaperId, authorId, collaboratorId);
       if (response.success) {
         toast.success("Collaborator removed successfully");
-        // Refresh collaborators list
-        const collaboratorsData = await getCollaborators(selectedPaperId, authorId);
-        setCollaborators(Array.isArray(collaboratorsData) ? collaboratorsData : []);
+        // Remove the collaborator from the local state
+        setCollaborators(prev => prev.filter(c => c.userId !== collaboratorId));
       } else {
         throw new Error(response.error || "Failed to remove collaborator");
       }

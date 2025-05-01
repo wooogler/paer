@@ -15,6 +15,7 @@ import { FiUsers, FiShare2, FiCheck, FiX, FiChevronDown } from "react-icons/fi";
 import { getCollaborators } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
 import { toast } from "react-hot-toast";
+import { updateMessageAccess } from "../../api/chatApi";
 
 interface ViewingMode {
   userId: string;
@@ -56,13 +57,16 @@ const ChatInterface: React.FC = () => {
         const collaboratorsData = await getCollaborators(selectedPaperId, userId);
         const userResponse = await getAllUsers();
         
-        const collaboratorsWithUsernames = collaboratorsData.map((collaboratorId: string) => {
-          const user = userResponse.users.find((u: any) => u._id === collaboratorId);
-          return {
-            userId: collaboratorId,
-            userName: user ? user.username : 'Unknown User'
-          };
-        });
+        // Filter out the current user and map collaborators to include usernames
+        const collaboratorsWithUsernames = collaboratorsData
+          .filter((collaboratorId: string) => collaboratorId !== userId)
+          .map((collaboratorId: string) => {
+            const user = userResponse.users.find((u: any) => u._id === collaboratorId);
+            return {
+              userId: collaboratorId,
+              userName: user ? user.username : 'Unknown User'
+            };
+          });
         
         setCollaborators(collaboratorsWithUsernames);
       } catch (err) {
@@ -198,7 +202,7 @@ const ChatInterface: React.FC = () => {
     if (!isViewingOwnChat) {
       // When viewing collaborator's messages, only show messages shared by that specific collaborator
       filtered = filtered.filter(msg => 
-        msg.userId === currentView.userId && msg.viewAccess
+        msg.userId === currentView.userId && msg.viewAccess === "public"
       );
     }
 
@@ -309,11 +313,17 @@ const ChatInterface: React.FC = () => {
       // Get all messages that should be shared (selected) and unshared (unselected)
       const messagesToShare = selectedMessageIds;
       const messagesToUnshare = messages
-        .filter(msg => msg.viewAccess && !selectedMessageIds.includes(msg.id))
+        .filter(msg => msg.viewAccess === "public" && !selectedMessageIds.includes(msg.id))
         .map(msg => msg.id);
 
-      // TODO: Implement backend API call to update message permissions
-      // await updateMessagePermissions(selectedPaperId, messagesToShare, messagesToUnshare);
+      // Update message access using the backend API
+      await updateMessageAccess(selectedPaperId, userId, {
+        private: messagesToUnshare,
+        public: messagesToShare
+      });
+      
+      // Refresh messages to get updated access permissions
+      await fetchMessages();
       
       toast.success('Message permissions updated');
       
@@ -326,14 +336,13 @@ const ChatInterface: React.FC = () => {
     } finally {
       setIsSharing(false);
     }
-  }, [selectedPaperId, userId, selectedMessageIds, messages]);
+  }, [selectedPaperId, userId, selectedMessageIds, messages, fetchMessages]);
 
   // Load initial shared state when entering selection mode
   useEffect(() => {
     if (isSelectionMode) {
-      // Here we'll load the currently shared messages and pre-select them
-      // For now, we'll simulate this with messages that have viewAccess=true
-      const sharedMessages = messages.filter(msg => msg.viewAccess);
+      // Pre-select messages that are currently shared (public)
+      const sharedMessages = messages.filter(msg => msg.viewAccess === "public");
       setSelectedMessageIds(sharedMessages.map(msg => msg.id));
     }
   }, [isSelectionMode, messages]);
