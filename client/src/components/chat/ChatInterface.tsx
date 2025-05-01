@@ -85,7 +85,9 @@ const ChatInterface: React.FC = () => {
         timestamp: Date.now(),
         userId: userId || "",
         paperId: "",
-        userName: "System"
+        userName: "System",
+        messageType: "chat" as const,
+        viewAccess: "private",
       };
 
       // Add directly through setMessages function
