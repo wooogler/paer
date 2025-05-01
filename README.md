@@ -2,6 +2,17 @@
 
 Paer is a web application for writing and managing academic papers.
 
+## Live Demo Instructions
+**Date:** May 6, 2025
+
+### Setup 
+
+1. **User login**: Log in the system with your name ***as appears in the presentation sign-up sheet***.
+2. **Start a project**.
+3. (owner only) **Invite collaborators**.
+
+### Task
+
 ## Tech Stack
 
 - **Frontend**: React, TypeScript, TailwindCSS, Vite
@@ -94,14 +105,21 @@ The application allows users to write and structure documents while getting real
      MONGODB_URI=mongodb://localhost:27017/paer
      ```
 
-4. **Start MongoDB**
+4. (Optional) **Populate the Database**
+   * To populate the database for live demo in CS6724, run 
+      ```bash
+      pnpm seed:user
+      ```
+
+
+5. **Start MongoDB**
 
    - If not already running, start MongoDB:
      - **macOS**: `brew services start mongodb-community`
      - **Windows**: MongoDB service should be running automatically
      - **Linux**: `sudo systemctl start mongodb`
 
-5. **Verify MongoDB Connection**
+6. **Verify MongoDB Connection**
 
    - Check if MongoDB is running:
      ```bash
@@ -247,6 +265,7 @@ railway up
 - `pnpm start`: Run production server
 - `pnpm lint`: Run code linting
 - `pnpm test`: Run tests
+- `pnpm seed:users` Populate the database with seed users for CS6724
 
 ## License
 
