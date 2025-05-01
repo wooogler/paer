@@ -28,7 +28,7 @@ export class PaperRepository {
 
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
-        // authorId: userObjectId
+        authorId: userObjectId
       });
 
       if (!paper) {
@@ -401,7 +401,7 @@ export class PaperRepository {
       // Find the paper (only owner can add collaborators)
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
-        // authorId: authorObjectId
+        authorId: authorObjectId
       });
 
       if (!paper) {
@@ -409,7 +409,7 @@ export class PaperRepository {
       }
 
       // Check if collaborator already exists
-      const collaboratorExists = paper.collaboratorIds.some(id => 
+      const collaboratorExists = (collaboratorId == authorId) || paper.collaboratorIds.some(id => 
         (id as any)?.toString() === collaboratorId
       );
       
@@ -443,7 +443,7 @@ export class PaperRepository {
       // Find the paper (only owner can remove collaborators)
       const paper = await PaperModel.findOne({
         _id: paperObjectId,
-        // authorId: authorObjectId
+        authorId: authorObjectId
       });
 
       if (!paper) {
