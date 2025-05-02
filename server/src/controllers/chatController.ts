@@ -132,10 +132,24 @@ export class ChatController {
       // Initialize conversation (if needed)
       await this.llmService.initializeConversation(JSON.stringify(paper.content));
 
+      let renderedContent = "";
+
+      // find the content of a block by blockId
+      if (message.blockId) {
+        const block = await this.paperService.findBlockById(userId, paperId, message.blockId);
+        if (block && block.content) {
+          if (Array.isArray(block.content)) {
+            renderedContent = JSON.stringify(block.content);
+          } else {
+            renderedContent = block.content;
+          }
+        }
+      }
+
       // Call OpenAI API
       const response = await this.llmService.askLLM(
         message.content,
-        message.blockId ? JSON.stringify(paper.content) : undefined,
+        message.blockId ? renderedContent : undefined,
         message.blockId
       );
 

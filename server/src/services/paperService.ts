@@ -263,7 +263,7 @@ export class PaperService {
   /**
    * Find block by specific ID
    */
-  private async findBlockById(authorId: string, paperId: string, blockId: string): Promise<Content | null> {
+  async findBlockById(authorId: string, paperId: string, blockId: string): Promise<Content | null> {
     const paper = await this.getPaperById(authorId, paperId);
     if (!paper) return null;
 
