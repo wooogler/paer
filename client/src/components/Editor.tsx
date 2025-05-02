@@ -127,25 +127,70 @@ const Editor: React.FC<EditorProps> = () => {
         selectedBlock.type === "subsection" ||
         selectedBlock.type === "subsubsection"
       ) {
-        // For paper, section, subsection, and subsubsection, get all child content
-        if (Array.isArray(selectedBlock.content)) {
-          renderedContent = selectedBlock.content
-            .map((item: any) => {
-              if (item.type === "paragraph") {
-                // For paragraphs, get all sentence contents
-                if (Array.isArray(item.content)) {
-                  return item.content
-                    .filter((s: any) => s && s.type === "sentence")
-                    .map((s: any) => s.content)
-                    .join(" ");
-                }
-                return item.content;
-              }
-              return "";
-            })
-            .filter(Boolean)
-            .join("\n\n");
+        const asteriskDict = {
+          "paper": "",
+          "section": "*",
+          "subsection": "**",
+          "subsubsection": "***",
+          "paragraph": "",
+          "sentence": "",
         }
+
+        // flatten nested content
+        let sentenceList: string[] = 
+          selectedBlock.title 
+          ? [ asteriskDict[selectedBlock.type] + selectedBlock.title + asteriskDict[selectedBlock.type] + "\n" ]
+          : [];
+        // deep copy of selectedBlock.content
+        let selectedBlockCopy = JSON.parse(
+          JSON.stringify(selectedBlock.content)
+        ) as Content[];
+        // while selectedBlockCopy has content, depth first expansion of nested blocks
+        // while current block is not of type paragraph, further expand its content
+        const newLineContent : Content = {
+          type: "sentence",
+          content: "\n",
+          summary: "",
+          intent: "",
+        };
+
+        if (selectedBlockCopy.length > 0) {
+          let currentBlock = selectedBlockCopy.shift();
+          while (selectedBlockCopy) {
+            if (!currentBlock) break;
+            if (currentBlock.type === "sentence" && typeof currentBlock.content === "string") {
+              // For sentences, get the content
+              sentenceList.push(currentBlock.content);
+            } else if (currentBlock.type === "paragraph") {
+              // For paragraphs, get all sentence contents
+              if (Array.isArray(currentBlock.content)) {
+                sentenceList = [
+                  ...sentenceList,
+                  ...currentBlock.content
+                    .filter((s: any) => s && s.type === "sentence")
+                    .map((s: any) => s.content),
+                ];
+              }
+              selectedBlockCopy.unshift(newLineContent);
+            } else if (Array.isArray(currentBlock.content)) {
+              // selectedBlockCopy.unshift(newLineContent);
+
+              const titleContent : Content = {
+                type: "sentence",
+                content: asteriskDict[currentBlock.type] + currentBlock.title + asteriskDict[currentBlock.type],
+                summary: "",
+                intent: "",
+              };
+              selectedBlockCopy.unshift(...currentBlock.content);
+              selectedBlockCopy.unshift(newLineContent);
+              selectedBlockCopy.unshift(titleContent);
+            }
+
+            currentBlock = selectedBlockCopy.shift();
+          }
+        }
+        console.log("sentenceList", sentenceList);
+        renderedContent = sentenceList.join(" ");
       } else if (selectedBlock.type === "paragraph") {
         // For paragraphs, get all sentence contents
         if (Array.isArray(selectedBlock.content)) {
@@ -158,9 +203,9 @@ const Editor: React.FC<EditorProps> = () => {
         }
       }
 
-      // if (!renderedContent.trim()) {
-      //   throw new Error("No content found to generate summary and intent");
-      // }
+      if (!renderedContent.trim()) {
+        throw new Error("No content found to generate summary and intent");
+      }
 
       // Send the rendered content to the backend to generate new summaries and intents
       const response = await api.post("/papers/update-rendered-summaries", {
