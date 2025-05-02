@@ -47,7 +47,7 @@ export class LLMService {
       this.conversationHistory = [
         {
           role: "system",
-          content: `You are a helpful peer reader for academic writing. Here is the context of the paper you are helping with:\n\n${paperText}\n\nPlease provide your response based on this context.`,
+          content: `You are a helpful peer reader for academic writing. The paper reads:\n\n${paperText}\n\n.Please respond to user questions based on local context. Refer to the paper if needed.`,
         },
       ];
     } catch (error) {
@@ -56,7 +56,7 @@ export class LLMService {
       this.conversationHistory = [
         {
           role: "system",
-          content: "You are a helpful peer reader for academic writing. Please provide your response based on the user's question.",
+          content: "You are a helpful peer reader for academic writing. Please respond to user questions based on local context. Refer to the paper if needed.",
         },
       ];
     }
@@ -75,19 +75,19 @@ export class LLMService {
         conversationHistory: this.conversationHistory
       });
 
-      this.conversationHistory.push({
-        role: "user",
-        content: text,
-        blockId,
-      });
-
       if (renderedContent) {
         this.conversationHistory.push({
           role: "system",
-          content: `Here is the currently visible content in the editor:\n\n${renderedContent}\n\nPlease consider this content when providing your response.`,
+          content: `Context:\n${renderedContent}`,
           blockId,
         });
       }
+
+      this.conversationHistory.push({
+        role: "user",
+        content: `User:\n${text}\nYour response:`,
+        blockId,
+      });
 
       console.log('OpenAI Request:', {
         model: "gpt-4o",
