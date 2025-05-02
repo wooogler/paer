@@ -127,41 +127,49 @@ export class LLMService {
     blockId: string
   ): Promise<any> {
     try {
-      const prompt = `You are a helpful peer reader for academic writing. Analyze the following content and provide an intent. The intent should be a single sentence that captures the main idea of the content.
-Content: ${renderedContent}
+//       const prompt = `You are a helpful peer reader for academic writing. Analyze the following content and provide an intent. The intent should be a single sentence that captures the main idea of the content.
+// Content: ${renderedContent}
 
-Please provide your response as a JSON object with the following structure:
-{
-  "intent": "The writer's purpose and rhetorical strategy"
-}
+// Please provide your response as a JSON object with the following structure:
+// {
+//   "intent": "The writer's purpose and rhetorical strategy"
+// }
 
-IMPORTANT: Return ONLY the JSON object, without any markdown formatting or additional text.`;
+// IMPORTANT: Return ONLY the JSON object, without any markdown formatting or additional text.`;
 
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+          {
+            role: "system",
+            content: `You are a helpful peer reader for academic writing. Describe the intent of the text in less than 10 words.`,
+          },
+          { role: "user", content: `Text:\n${renderedContent}` },
+          { role: "system", content: "Intent:\n"}
+        ],
         temperature: 0,
       });
 
-      // Clean the response by removing any markdown formatting
-      const rawResponse = response.choices[0].message?.content?.trim() ?? "{}";
-      const cleanedResponse = rawResponse
-        .replace(/```json/g, '')
-        .replace(/```/g, '')
-        .trim();
+      // // Clean the response by removing any markdown formatting
+      // const rawResponse = response.choices[0].message?.content?.trim() ?? "{}";
+      // const cleanedResponse = rawResponse
+      //   .replace(/```json/g, '')
+      //   .replace(/```/g, '')
+      //   .trim();
 
-      let result;
-      try {
-        result = JSON.parse(cleanedResponse);
-      } catch (parseError) {
-        console.error("Error parsing LLM response:", parseError);
-        console.error("Raw response:", rawResponse);
-        console.error("Cleaned response:", cleanedResponse);
-        throw new Error("Failed to parse LLM response");
-      }
-      console.log("result:::", result.intent);
+      // let result;
+      // try {
+      //   result = JSON.parse(cleanedResponse);
+      // } catch (parseError) {
+      //   console.error("Error parsing LLM response:", parseError);
+      //   console.error("Raw response:", rawResponse);
+      //   console.error("Cleaned response:", cleanedResponse);
+      //   throw new Error("Failed to parse LLM response");
+      // }
+      // console.log("result:::", result.intent);
 
-      return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", result.intent);
+      // return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", result.intent);
+      return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", response.choices[0].message.content || "");
     } catch (error) {
       console.error("Error in updateRenderedSummaries:", error);
       throw error;
