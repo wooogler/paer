@@ -47,6 +47,10 @@ const ChatInterface: React.FC = () => {
   const [collaborators, setCollaborators] = useState<ViewingMode[]>([]);
   const [currentView, setCurrentView] = useState<ViewingMode>({ userId, userName });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [members, setMembers] = useState<ViewingMode[]>([]);
+
+  //const { userId } = useAppStore(); // Get the current user's ID
+  const ownerId = useContentStore().content?.authorId; // Get the current paper's owner ID
 
   // Load collaborators
   useEffect(() => {
@@ -75,6 +79,35 @@ const ChatInterface: React.FC = () => {
     };
 
     loadCollaborators();
+  }, [selectedPaperId, userId]);
+
+  // Load members
+  useEffect(() => {
+    const loadMembers = async () => {
+      if (!selectedPaperId || !userId) return;
+
+      try {
+        const membersData = await getMembers(selectedPaperId, userId);
+        const userResponse = await getAllUsers();
+
+        // Filter out the current user and map members to include usernames
+        const membersWithUsernames = membersData
+          .filter((memberId: string) => memberId !== userId)
+          .map((memberId: string) => {
+            const user = userResponse.users.find((u: any) => u._id === memberId);
+            return {
+              userId: memberId,
+              userName: user ? user.username : 'Unknown User'
+            };
+          });
+
+        setMembers(membersWithUsernames);
+      } catch (err) {
+        console.error("Failed to load members:", err);
+      }
+    };
+
+    loadMembers();
   }, [selectedPaperId, userId]);
 
   // Load messages when component mounts or selectedPaperId changes

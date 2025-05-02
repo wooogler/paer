@@ -251,6 +251,18 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>("/:id/summaries", async (request, reply) => {
     return paperController.updateRenderedSummaries(request, reply);
   });
+
+  // This API endpoint gets all members of a paper
+  // GET /api/papers/:paperId/members
+  fastify.get<{
+    Params: { paperId: string };
+    Querystring: { authorId: string };
+  }>(
+    "/:paperId/members",
+    async (request, reply) => {
+      return paperController.getMembers(request, reply);
+    }
+  );
 };
 
 export default paperRoutes;
