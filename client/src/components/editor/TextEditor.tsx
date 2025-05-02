@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
 import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
@@ -478,6 +478,27 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       }
     }, [content["block-id"], isActiveMessageFilter, setFilterBlockId]);
 
+    useEffect(() => {
+      // Adjust textarea height on initial render or when content changes
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto"; // Reset height
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight+5}px`; // Adjust to content
+      }
+    }, [localValue]); // Run this effect whenever `localValue` changes
+
+    /**
+     * It handles the textarea resize. Notice that the subtracted number on
+     * `e.target.scrollHeight - 16` is the sum of top and bottom padding.
+     * It's important to keep it up-to-date to avoid flickering.
+     */
+    const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${e.target.scrollHeight}px`;
+      }
+      setLocalValue(e.target.value); // Update local value
+    };
+
     return (
       <div
         className="relative"
@@ -585,12 +606,13 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           <div>
             <textarea
               ref={textareaRef}
-              value={localValue}
+              value={localValue || ""}
               onChange={handleChange}
               onFocus={handleFocus}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className={`w-full min-h-[80px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm ${selectedContentBorderStyle}`}
+              onInput={handleInput}
+              className={`w-full min-h-[0px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm ${selectedContentBorderStyle}`}
             />
 
             {/* Show button when focused (regardless of content changes) */}
