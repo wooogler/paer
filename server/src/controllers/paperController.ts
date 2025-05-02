@@ -602,4 +602,30 @@ export class PaperController {
       return reply.code(500).send({ error: "Failed to remove collaborator" });
     }
   }
+
+  /**
+   * Get all members of a paper
+   */
+  async getMembers(
+    request: FastifyRequest<{
+      Params: { paperId: string };
+      Querystring: { authorId: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { paperId } = request.params;
+      const { authorId } = request.query;
+
+      if (!authorId || !paperId) {
+        return reply.code(400).send({ error: "authorId and paperId are required" });
+      }
+
+      const members = await this.paperService.getMembers(authorId, paperId);
+      return reply.send(members);
+    } catch (error) {
+      console.error("Error in getMembers:", error);
+      return reply.code(500).send({ error: "Failed to get members" });
+    }
+  }
 }

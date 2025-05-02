@@ -809,4 +809,25 @@ export class PaperRepository {
       throw new Error(`Failed to delete paper: ${(error as Error).message}`);
     }
   }
+
+  // get members of a paper
+  async getMembers(paperId: string): Promise<string[]> {
+    try {
+      if (!isValidObjectId(paperId)) {
+        throw new Error("Invalid paperId");
+      }
+
+      const paper = await PaperModel.findById(paperId);
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
+
+      const members = [paper.authorId, ...paper.collaboratorIds];
+      return members.map((member: any) => member.toString());
+    } catch (error) {
+      console.error("Error getting members:", error);
+      throw new Error("Failed to get members");
+    }
+  }
+
 }

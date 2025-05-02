@@ -493,4 +493,31 @@ export class PaperService {
       throw error;
     }
   }
+
+  /**
+   * call paperRepository to get all members (author + collaborators)
+   */
+  async getMembers(authorId: string, paperId: string): Promise<string[]> {
+    try {
+      // check if paper exists
+      // get member
+      // if requestor is a member, return all members
+      // otherwise, throw error
+      const paper = await this.paperRepository.getPaper(authorId, paperId);
+      if (!paper) {
+        throw new Error("Paper not found");
+      }
+      const members = await this.paperRepository.getMembers(paperId);
+      if (authorId !== paper.authorId && !paper.collaboratorIds.includes(authorId)) {
+        throw new Error("You are not authorized to access this paper's members");
+      }
+      if (!members) {
+        throw new Error("No members found");
+      }
+      return members;
+    } catch (error) {
+      console.error("Error in getMembers:", error);
+      throw error;
+    }
+  }
 }

@@ -12,7 +12,7 @@ import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
 import { FiUsers, FiShare2, FiCheck, FiX, FiChevronDown } from "react-icons/fi";
-import { getCollaborators } from "../../api/paperApi";
+import { getCollaborators, getMembers } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
 import { toast } from "react-hot-toast";
 import { updateMessageAccess } from "../../api/chatApi";

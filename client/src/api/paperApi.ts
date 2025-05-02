@@ -258,6 +258,20 @@ export const getCollaborators = async (paperId: string, authorId: string) => {
   }
 };
 
+// get teammates (author + collaborators - self)
+// /api/papers/:id/members
+export const getMembers = async (paperId: string, authorId: string) => {
+  try {
+    const response = await api.get(`/papers/${paperId}/members`, {
+      params: { authorId }
+    });
+    return response.data.remove(authorId);
+  } catch (error) {
+    console.error("Error getting teammates:", error);
+    throw error;
+  }
+};
+
 export const addCollaborator = async (paperId: string, authorId: string, collaboratorId: string) => {
   try {
     const response = await api.post(`/papers/${paperId}/collaborators`, {
