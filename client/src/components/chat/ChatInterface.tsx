@@ -54,11 +54,11 @@ const ChatInterface: React.FC = () => {
       if (!selectedPaperId || !userId) return;
       
       try {
-        const collaboratorsData = await getCollaborators(selectedPaperId, userId);
         const userResponse = await getAllUsers();
+        const membersResponse = await getMembers(selectedPaperId, userId);
         
         // Filter out the current user and map collaborators to include usernames
-        const collaboratorsWithUsernames = collaboratorsData
+        const collaboratorsWithUsernames = membersResponse
           .filter((collaboratorId: string) => collaboratorId !== userId)
           .map((collaboratorId: string) => {
             const user = userResponse.users.find((u: any) => u._id === collaboratorId);
@@ -309,12 +309,6 @@ const ChatInterface: React.FC = () => {
 
     try {
       setIsSharing(true);
-      const collaborators = await getCollaborators(selectedPaperId, userId);
-      
-      if (collaborators.length === 0) {
-        toast.error("No collaborators found to share with");
-        return;
-      }
 
       // 자신의 메시지만 필터링
       const myMessages = messages.filter(msg => msg.userId === userId);

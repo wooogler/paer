@@ -251,6 +251,17 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   }>("/:id/summaries", async (request, reply) => {
     return paperController.updateRenderedSummaries(request, reply);
   });
+
+  // get members
+  fastify.get<{
+    Params: { paperId: string };
+    Querystring: { authorId: string }
+  }>(
+    "/:paperId/members",
+    async (request, reply) => {
+      return paperController.getMembers(request, reply);
+    }
+  );
 };
 
 export default paperRoutes;

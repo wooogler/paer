@@ -265,7 +265,8 @@ export const getMembers = async (paperId: string, authorId: string) => {
     const response = await api.get(`/papers/${paperId}/members`, {
       params: { authorId }
     });
-    return response.data.remove(authorId);
+    console.log(paperId, authorId);
+    return response.data;
   } catch (error) {
     console.error("Error getting teammates:", error);
     throw error;
