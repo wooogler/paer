@@ -585,7 +585,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             )}
 
             {/* Intent Field - sentence 타입인 경우에만 표시하고, intent가 있을 때만 아이콘 표시 */}
-            {content.type === "sentence" && (
+            {/* {content.type === "sentence" && (
               <EditableField
                 value={localIntent}
                 onChange={setLocalIntent}
@@ -601,7 +601,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                 onKeyDown={handleIntentKeyDown}
                 isLoading={isUpdating}
               />
-            )}
+            )} */}
           </div>
           <div>
             <textarea

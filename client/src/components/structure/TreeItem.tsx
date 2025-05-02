@@ -212,7 +212,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
             </div>
 
             {/* Display summary or intent for non-paragraph types */}
-            {content.type !== "paragraph" && (
+            {/* {content.type !== "paragraph" && (
               <span
                 className={`text-gray-600 text-xs ${
                   isSelectedContent ? "break-words" : "truncate block"
@@ -221,7 +221,8 @@ const TreeItem: React.FC<TreeItemProps> = memo(
               >
                 {displayText}
               </span>
-            )}
+            )} */}
+
           </div>
         </div>
 
