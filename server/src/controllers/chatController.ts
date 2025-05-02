@@ -85,12 +85,12 @@ export class ChatController {
   ): Promise<any> {
     try {
       const { paperId } = request.params;
-      const { userId, ...message } = request.body;
+      const { userId, ...messageData } = request.body;
 
       console.log('ChatController - Received message:', {
         paperId,
         userId,
-        message
+        messageData
       });
 
       if (!userId) {
@@ -99,13 +99,15 @@ export class ChatController {
 
       // Before saving the message, validate messageType and senderId
       // if messageType is not specified, set it to "chat"
-      if (!message.messageType) {
-        message.messageType = "chat";
+      if (!messageData.messageType) {
+        messageData.messageType = "chat";
       }
-      // // if senderId is not specified, set it to userId
-      // if (!message.senderId) {
-      //   message.senderId = userId;
-      // }
+
+      // Create message object with userId
+      const message: ChatMessage = {
+        ...messageData,
+        userId: userId
+      };
 
       // Save user message
       await this.chatService.addMessage(userId, paperId, message);
@@ -148,6 +150,7 @@ export class ChatController {
           timestamp: Date.now(),
           blockId: message.blockId,
           userName: "Assistant",
+          userId: userId,
           viewAccess: "private",
         };
 

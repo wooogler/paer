@@ -1,6 +1,7 @@
 import { ChatMessage, MessageAccessList } from "../types/chat";
 import { Chat, IChat } from "../models/Chat";
 import mongoose, { isValidObjectId } from "mongoose";
+import { PaperModel } from "../models/Paper";
 
 export class ChatRepository {
   /**
@@ -13,16 +14,43 @@ export class ChatRepository {
         return [];
       }
 
-      const chat = await Chat.findOne({
-        userId,
-        paperId
-      });
-
-      if (!chat) {
+      // Get the paper to check collaboratorIds
+      const paper = await PaperModel.findOne({ _id: paperId });
+      if (!paper) {
         return [];
       }
 
-      return chat.messages;
+      // Check if the user is the author or a collaborator
+      const isAuthorOrCollaborator = 
+        userId === paper.authorId.toString() || 
+        paper.collaboratorIds.some(id => id.toString() === userId);
+
+      if (!isAuthorOrCollaborator) {
+        return [];
+      }
+
+      // Get all chats where:
+      // 1. paperId matches
+      // 2. userId is either the author or a collaborator
+      const chats = await Chat.find({
+        paperId,
+        userId: { 
+          $in: [paper.authorId, ...paper.collaboratorIds]
+        }
+      });
+
+      // Combine all messages and filter based on viewAccess
+      const allMessages = chats.flatMap(chat => 
+        chat.messages.filter(message => 
+          // Private messages are only visible to their owner
+          // Public messages are visible to all collaborators
+          message.viewAccess === "public" || 
+          (message.userId && message.userId.toString() === userId)
+        )
+      );
+
+      // Sort messages by timestamp
+      return allMessages.sort((a, b) => a.timestamp - b.timestamp);
     } catch (error) {
       console.error("Failed to read chat data:", error);
       return [];
@@ -99,16 +127,44 @@ export class ChatRepository {
         return [];
       }
 
-      const chat = await Chat.findOne({
-        userId,
-        paperId
-      });
-
-      if (!chat) {
+      // Get the paper to check collaboratorIds
+      const paper = await PaperModel.findOne({ _id: paperId });
+      if (!paper) {
         return [];
       }
 
-      return chat.messages.filter(message => message.blockId === blockId);
+      // Check if the user is the author or a collaborator
+      const isAuthorOrCollaborator = 
+        userId === paper.authorId.toString() || 
+        paper.collaboratorIds.some(id => id.toString() === userId);
+
+      if (!isAuthorOrCollaborator) {
+        return [];
+      }
+
+      // Get all chats where:
+      // 1. paperId matches
+      // 2. userId is either the author or a collaborator
+      const chats = await Chat.find({
+        paperId,
+        userId: { 
+          $in: [paper.authorId, ...paper.collaboratorIds]
+        }
+      });
+
+      // Combine all messages and filter based on viewAccess and blockId
+      const allMessages = chats.flatMap(chat => 
+        chat.messages.filter(message => 
+          message.blockId === blockId &&
+          // Private messages are only visible to their owner
+          // Public messages are visible to all collaborators
+          (message.viewAccess === "public" || 
+           (message.userId && message.userId.toString() === userId))
+        )
+      );
+
+      // Sort messages by timestamp
+      return allMessages.sort((a, b) => a.timestamp - b.timestamp);
     } catch (error) {
       console.error("Error getting messages by blockId:", error);
       return [];

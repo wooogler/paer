@@ -10,7 +10,7 @@ export interface ChatMessage {
   blockId?: string;
   messageType?: MessageType;
   userName?: string;
-  userId?: string;
+  userId: string;
   viewAccess: string;
 }
 

@@ -8,7 +8,8 @@ export interface IMessage {
   timestamp: number;
   blockId?: string;
   messageType?: MessageType;
-  userId?: string;
+  userName?: string;
+  userId: string;
   viewAccess: string;
 }
 
@@ -54,7 +55,7 @@ const MessageSchema = new Schema<IMessage>({
   },
   userId: {
     type: String,
-    required: false
+    required: true
   },
 }, { _id: false });
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { FiX, FiBook, FiTrash2 } from "react-icons/fi";
+import { FiX, FiBook, FiTrash2, FiUsers } from "react-icons/fi";
 import { getPapers, deletePaper } from "../../api/paperApi";
 import { useAppStore } from "../../store/useAppStore";
 import { useContentStore } from "../../store/useContentStore";
@@ -92,6 +92,16 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  // 사용자가 논문의 작성자인지 확인
+  const isAuthor = (paper: Paper) => {
+    return paper.authorId === userId;
+  };
+
+  // 사용자가 논문의 협업자인지 확인
+  const isCollaborator = (paper: Paper) => {
+    return paper.collaboratorIds && paper.collaboratorIds.includes(userId || "");
+  };
+
   return (
     <Transition show={isOpen} as={React.Fragment}>
       <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={onClose}>
@@ -158,7 +168,15 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
                               <FiBook className="text-blue-500" size={18} />
                             </div>
                             <div className="ml-3 flex-1">
-                              <p className="text-sm font-medium text-gray-900">{paper.title || "No title"}</p>
+                              <p className="text-sm font-medium text-gray-900">
+                                {paper.title || "No title"}
+                                {isCollaborator(paper) && !isAuthor(paper) && (
+                                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                    <FiUsers size={12} className="mr-1" />
+                                    Collaborator
+                                  </span>
+                                )}
+                              </p>
                               <p className="text-xs text-gray-500 mt-1">
                                 {paper.updatedAt 
                                   ? `Last modified: ${formatDate(new Date(paper.updatedAt))}` 
@@ -166,13 +184,15 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
                               </p>
                             </div>
                           </div>
-                          <button
-                            onClick={(e) => handleDeletePaper(paper._id, e)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-opacity"
-                            title="Delete paper"
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
+                          {isAuthor(paper) && (
+                            <button
+                              onClick={(e) => handleDeletePaper(paper._id, e)}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 transition-opacity"
+                              title="Delete paper"
+                            >
+                              <FiTrash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       </li>
                     ))}

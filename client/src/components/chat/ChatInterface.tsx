@@ -398,8 +398,11 @@ const ChatInterface: React.FC = () => {
           <div className="flex items-center space-x-2">
             <button
               type="button"
-              onClick={() => setIsSelectionMode(true)}
-              className="px-4 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center whitespace-nowrap"
+              onClick={() => setIsSelectionMode(!isSelectionMode)}
+              className={`px-4 py-1.5 text-sm rounded-full transition-colors flex items-center justify-center whitespace-nowrap
+                ${isSelectionMode 
+                  ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               <FiShare2 className="mr-1.5" size={14} />
               Manage Shared Messages
@@ -411,22 +414,11 @@ const ChatInterface: React.FC = () => {
       {/* Selection mode header - only show in own chat */}
       {isViewingOwnChat && isSelectionMode && (
         <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => {
-                setIsSelectionMode(false);
-                setSelectedMessageIds([]);
-              }}
-              className="text-gray-600 hover:text-gray-800 px-2 py-1"
-            >
-              Cancel
-            </button>
-            <span className="font-medium text-gray-700">
-              {selectedMessageIds.length === 0 
-                ? "Select messages to share" 
-                : `${selectedMessageIds.length} messages will be shared`}
-            </span>
-          </div>
+          <span className="font-medium text-gray-700">
+            {selectedMessageIds.length === 0 
+              ? "Select messages to share" 
+              : `${selectedMessageIds.length} messages will be shared`}
+          </span>
           <div className="flex items-center space-x-3">
             <button
               onClick={handleSelectAll}
