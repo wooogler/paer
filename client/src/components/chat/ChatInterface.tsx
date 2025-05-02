@@ -410,13 +410,11 @@ const ChatInterface: React.FC = () => {
               type="button"
               onClick={() => setIsSelectionMode(!isSelectionMode)}
               className={`px-4 py-1.5 text-sm rounded-full transition-colors flex items-center justify-center whitespace-nowrap
-                ${isSelectionMode 
+                ${!isSelectionMode 
                   ? 'bg-blue-500 text-white hover:bg-blue-600' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
-              <FiShare2 className="mr-1.5" size={14} />
-              Manage Shared Messages
-            </button>
+            {isSelectionMode ? 'Cancel' : <><FiShare2 className="mr-1.5" size={14} /> Share Messages</>}            </button>
           </div>
         )}
       </div>
