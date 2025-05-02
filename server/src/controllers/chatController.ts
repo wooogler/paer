@@ -264,4 +264,41 @@ export class ChatController {
       return reply.code(500).send({ error: "Failed to update message access" });
     }
   }
+
+  /**
+   * Get teammate's public messages
+   * This API endpoint retrieves a specific user's public chat history
+   */
+  async getUserMessages(
+    request: FastifyRequest<{
+      Params: { paperId: string; teammateId: string };
+      Querystring: { userId: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { paperId, teammateId } = request.params;
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      }
+
+      // validates that paper exists
+      const paper = await this.paperService.getPaperById(userId, paperId);
+      if (!paper) {
+        return reply.code(404).send({ error: "Paper not found" });
+      }
+      // validates that userId is an author/collaborator of the paper
+      if ((paper.authorId != userId) && (!paper.collaboratorIds.includes(userId))) {
+        return reply.code(403).send({ error: "You are not authorized to access this user's messages" });
+      }
+
+      const messages = await this.chatService.getUserMessages(userId, paperId, teammateId);
+      return { success: true, messages };
+    } catch (error) {
+      console.error("Error getting teammate messages:", error);
+      return reply.code(500).send({ error: "Failed to get teammate messages" });
+    }
+  }
 }

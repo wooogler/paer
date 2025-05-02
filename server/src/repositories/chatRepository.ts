@@ -176,4 +176,33 @@ export class ChatRepository {
       console.error("Error updating message access:", error);
     }
   }
+
+  /**
+   * Get all public messages for a specific user and paper
+   * getTeammateMessages(userId, paperId, teammateId);
+   */
+  async getUserMessages(requestorId: string, paperId: string, requesteeId: string): Promise<ChatMessage[]> {
+    try {
+      if (!isValidObjectId(requesteeId) || !isValidObjectId(paperId)) {
+        console.error(`Invalid userId (${requesteeId}) or paperId (${paperId})`);
+        return [];
+      }
+
+      const chat = await Chat.findOne({
+        userId: requesteeId,
+        paperId: paperId,
+      });
+
+      console.log(`Chat: ${chat}`);
+
+      if (!chat) {
+        return [];
+      }
+      console.log(`Chat messages: ${chat.messages.filter(message => message.viewAccess === "public")}`);
+      return chat.messages.filter(message => message.viewAccess === "public");
+    } catch (error) {
+      console.error("Error getting teammate messages:", error);
+      return [];
+    }
+  }
 }

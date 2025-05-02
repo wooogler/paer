@@ -125,6 +125,21 @@ export const updateMessageAccess = async (paperId: string, userId: string, messa
   }
 }
 
+/**
+ * get teammate's public messages
+ */
+export const getTeammateMessages = async (paperId: string, teammateId: string, userId: string): Promise<Message[]> => {
+  try {
+    const response = await api.get(`/chat/${paperId}/teammate/${teammateId}`, {
+      params: { userId }
+    });
+    return response.data.messages;
+  } catch (error) {
+    console.error("Error fetching teammate's messages:", error);
+    throw error;
+  }
+};
+
 export const chatApi = {
   fetchAllMessages: async (paperId: string) => {
     const response = await api.get(`/chat/${paperId}/messages`);

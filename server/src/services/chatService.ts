@@ -56,5 +56,13 @@ export class ChatService {
   async updateMessageAccess(userId: string, paperId: string, messageAccessList: MessageAccessList): Promise<void> {
     await this.chatRepository.updateMessageAccess(userId, paperId, messageAccessList);
   }
+
+  /**
+   * Get all public messages for a teammate and document
+   * getTeammateMessages(userId, paperId, teammateId);
+   */
+  async getUserMessages(requestorId: string, paperId: string, requesteeId: string): Promise<ChatMessage[]> {
+    return this.chatRepository.getUserMessages(requestorId, paperId, requesteeId);
+  }
 }
 

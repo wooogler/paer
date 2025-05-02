@@ -114,6 +114,17 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
+  // This API endpoints request a specific user's public message history
+  // GET /api/chat/:paperId/teammate/:teammateId
+  fastify.get<{
+    Params: { paperId: string; teammateId: string };
+    Querystring: { userId: string };
+  }>(
+    "/:paperId/teammate/:teammateId",
+    async (request, reply) => {
+      return chatController.getUserMessages(request, reply);
+    }
+  );
 };
 
 export default chatRoutes;
