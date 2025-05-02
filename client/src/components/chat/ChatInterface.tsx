@@ -316,11 +316,19 @@ const ChatInterface: React.FC = () => {
         return;
       }
 
-      // Get all messages that should be shared (selected) and unshared (unselected)
-      const messagesToShare = selectedMessageIds;
-      const messagesToUnshare = messages
+      // 자신의 메시지만 필터링
+      const myMessages = messages.filter(msg => msg.userId === userId);
+      
+      // 현재 공개된 메시지 중 선택되지 않은 메시지들을 private로 변경
+      const messagesToUnshare = myMessages
         .filter(msg => msg.viewAccess === "public" && !selectedMessageIds.includes(msg.id))
         .map(msg => msg.id);
+
+      // 선택된 메시지들을 public으로 변경
+      const messagesToShare = selectedMessageIds.filter(id => {
+        const message = myMessages.find(msg => msg.id === id);
+        return message && message.userId === userId;
+      });
 
       // Update message access using the backend API
       await updateMessageAccess(selectedPaperId, userId, {

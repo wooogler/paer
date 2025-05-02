@@ -260,6 +260,26 @@ export class ChatController {
         return reply.code(400).send({ error: "paperId and userId are required" });
       }
 
+      // Get all messages from the chat
+      const chat = await this.chatService.getMessages(userId, paperId);
+      if (!chat) {
+        return reply.code(404).send({ error: "Chat not found" });
+      }
+
+      // Verify that all messages in the access list belong to the requesting user
+      const allMessageIds = [...messageAccessList.private, ...messageAccessList.public];
+      const invalidMessages = allMessageIds.filter(messageId => {
+        const message = chat.find(msg => msg.id === messageId);
+        return !message || message.userId !== userId;
+      });
+
+      if (invalidMessages.length > 0) {
+        return reply.code(403).send({ 
+          error: "Cannot update access for messages that don't belong to you",
+          invalidMessageIds: invalidMessages
+        });
+      }
+
       await this.chatService.updateMessageAccess(userId, paperId, messageAccessList);
       return { success: true };
     } catch (error) {
