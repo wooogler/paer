@@ -134,12 +134,14 @@ const ChatInterface: React.FC = () => {
   }, [isLoadingMessages, messages.length, setMessages, rootContent, userId]);
 
   const handleSelectAll = useCallback(() => {
-    if (selectedMessageIds.length === messages.length) {
+    if (selectedMessageIds.length === messages.filter(msg => msg.userId === userId).length) {
       setSelectedMessageIds([]);
     } else {
-      setSelectedMessageIds(messages.map(msg => msg.id));
+      // 자신의 메시지만 선택
+      const myMessages = messages.filter(msg => msg.userId === userId);
+      setSelectedMessageIds(myMessages.map(msg => msg.id));
     }
-  }, [messages, selectedMessageIds]);
+  }, [messages, selectedMessageIds.length, userId]);
 
   const isViewingOwnChat = currentView.userId === userId;
 
@@ -282,6 +284,10 @@ const ChatInterface: React.FC = () => {
   }, []);
 
   const handleMessageSelect = useCallback((messageId: string) => {
+    // 자신의 메시지만 선택 가능하도록 수정
+    const message = messages.find(msg => msg.id === messageId);
+    if (!message || message.userId !== userId) return;
+
     setSelectedMessageIds(prev => {
       if (prev.includes(messageId)) {
         return prev.filter(id => id !== messageId);
@@ -289,7 +295,7 @@ const ChatInterface: React.FC = () => {
         return [...prev, messageId];
       }
     });
-  }, []);
+  }, [messages, userId]);
 
   const selectedMessages = useMemo(() => {
     return messages.filter(msg => selectedMessageIds.includes(msg.id));
@@ -341,11 +347,13 @@ const ChatInterface: React.FC = () => {
   // Load initial shared state when entering selection mode
   useEffect(() => {
     if (isSelectionMode) {
-      // Pre-select messages that are currently shared (public)
-      const sharedMessages = messages.filter(msg => msg.viewAccess === "public");
+      // Pre-select messages that are currently shared (public) and owned by the user
+      const sharedMessages = messages.filter(msg => 
+        msg.viewAccess === "public" && msg.userId === userId
+      );
       setSelectedMessageIds(sharedMessages.map(msg => msg.id));
     }
-  }, [isSelectionMode, messages]);
+  }, [isSelectionMode, messages, userId]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white max-h-screen">
@@ -423,11 +431,11 @@ const ChatInterface: React.FC = () => {
             <button
               onClick={handleSelectAll}
               className={`px-4 py-1.5 text-sm rounded-full transition-colors
-                ${selectedMessageIds.length === messages.length
+                ${selectedMessageIds.length > 0
                   ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   : 'text-blue-500 hover:bg-blue-50'}`}
             >
-              {selectedMessageIds.length === messages.length ? 'Unshare All' : 'Share All'}
+              {selectedMessageIds.length > 0 ? 'Unselect All' : 'Share All'}
             </button>
             <button
               onClick={handleShare}
