@@ -213,7 +213,7 @@ export class PaperRepository {
         type: blockType,
         // For paragraph type, set summary to "Empty Summary"
         summary: blockType === "paragraph" ? "Empty Summary" : "",
-        intent: "Empty Intent",
+        intent: "",
         // For paragraph type, initialize with an array containing an empty sentence
         content:
           blockType === "sentence"

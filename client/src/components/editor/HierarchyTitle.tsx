@@ -86,20 +86,29 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       if (content.type === "paragraph") {
         // For paragraphs, show summary or intent based on display mode
         return displayMode === "summary"
-          ? content.summary || "Empty Summary"
-          : content.intent || "Empty Intent";
+          ? content.summary || `Paragraph ${Array.isArray((content as any).path) ? (content as any).path.map((idx: number) => idx + 1).join(".") : ''}`
+          : content.intent || `Paragraph ${Array.isArray((content as any).path) ? (content as any).path.map((idx: number) => idx + 1).join(".") : ''}`;
+      }
+      // For subsection and subsubsection, show label if title is empty
+      if (content.type === "subsection") {
+        return (
+          content.title && content.title.trim() !== ""
+            ? content.title
+            : `Subsection ${Array.isArray((content as any).path) ? (content as any).path.map((idx: number) => idx + 1).join(".") : ''}`
+        );
+      }
+      if (content.type === "subsubsection") {
+        return (
+          content.title && content.title.trim() !== ""
+            ? content.title
+            : `Subsubsection ${Array.isArray((content as any).path) ? (content as any).path.map((idx: number) => idx + 1).join(".") : ''}`
+        );
       }
       return (
         content.title ||
         content.type.charAt(0).toUpperCase() + content.type.slice(1)
       );
-    }, [
-      content.type,
-      content.title,
-      content.summary,
-      content.intent,
-      displayMode,
-    ]);
+    }, [content.type, content.title, content.summary, content.intent, displayMode]);
 
     // Handle delete block
     const handleDeleteBlock = useCallback(() => {
@@ -221,15 +230,20 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     // isParagraph for special handling
     const isParagraph = content.type === "paragraph";
 
-    // Render the delete button with appropriate styling
-    const renderDeleteButton = useCallback(
-      (className = "") =>
-        showDeleteButton && isHovered ? (
-          <DeleteBlockButton
-            contentType={content.type}
-            onDelete={handleDeleteBlock}
-            className={className}
-          />
+    // Render the delete button absolutely in the top-right corner, only on hover
+    const renderFloatingDeleteButton = useCallback(
+      () =>
+        showDeleteButton && isHovered && (content.type === "paragraph" || content.type === "subsection" || content.type === "subsubsection") ? (
+          <span
+            title={`Delete ${content.type}`}
+            className="absolute top-2 right-2 z-10"
+          >
+            <DeleteBlockButton
+              contentType={content.type}
+              onDelete={handleDeleteBlock}
+              className="p-2 rounded-full bg-white shadow hover:bg-red-100 text-red-600 text-xl transition-colors"
+            />
+          </span>
         ) : null,
       [showDeleteButton, isHovered, content.type, handleDeleteBlock]
     );
@@ -279,6 +293,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {renderFloatingDeleteButton()}
         {/* Vertical level indicator lines */}
         {renderLines && (
           <LevelLines level={level} iconColorClass={iconColorClass} />
@@ -294,7 +309,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
           {/* Normal type title display */}
           {!isParagraph && (
             <div
-              className={`${titleSizeClass} font-bold flex items-center gap-2 group relative`}
+              className={`${titleSizeClass} font-bold flex items-center gap-2 group relative pr-12`}
             >
               {isEditableBlock ? (
                 <div className={`${iconColorClass} flex-grow w-full`}>
@@ -311,19 +326,15 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                     {
                       fontSize: titleSizeClass,
                       fontWeight: "font-bold",
-                      extraButton: renderDeleteButton(
-                        "opacity-0 group-hover:opacity-100 transition-opacity ml-1"
-                      ),
+                      extraButton: null,
                     }
                   )}
                 </div>
               ) : (
                 <>
-                  <span className={`${iconColorClass} break-words`}>
+                  <span className={`${iconColorClass} break-words overflow-hidden text-ellipsis whitespace-nowrap block`}>
                     {getDisplayTitle()}
                   </span>
-                  {/* Action buttons */}
-                  {renderDeleteButton()}
                 </>
               )}
             </div>
@@ -350,9 +361,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                       {
                         fontSize: titleSizeClass,
                         fontWeight: "font-bold",
-                        extraButton: renderDeleteButton(
-                          "opacity-0 group-hover:opacity-100 transition-opacity ml-1"
-                        ),
+                        extraButton: renderFloatingDeleteButton(),
                       }
                     )}
                   </div>
@@ -388,11 +397,11 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             )} */}
 
             {/* Display intent for all types */}
-            <div className="flex items-center gap-2 w-full mb-2">
+            <div className="flex items-center gap-2 w-full mb-2 justify-between">
               <span className="font-medium flex-shrink-0">🎯</span>
-              {isEditableBlock ? (
-                <div className="flex-grow w-full">
-                  {renderEditableField(
+              <div className="flex-grow">
+                {isEditableBlock ? (
+                  renderEditableField(
                     localIntent,
                     setLocalIntent,
                     handleIntentUpdate,
@@ -402,21 +411,19 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                     intentInputRef,
                     "Empty Intent",
                     handleIntentKeyDown,
-                    // { icon: "" },
                     {
                       fontSize: titleSizeClass,
-                      fontWeight: "font-bold",
-                      extraButton: renderDeleteButton(
-                        "opacity-0 group-hover:opacity-100 transition-opacity ml-1"
-                      ),
+                      fontWeight: "font-bold"
                     }
-                  )}
-                </div>
-              ) : (
-                <span className="break-words">
-                  {content.intent || "Empty Intent"}
-                </span>
-              )}
+                  )
+                ) : (
+                  <span className="break-words">
+                    {content.type === "paragraph" && (!content.intent || content.intent.trim() === "")
+                      ? `Paragraph ${Array.isArray((content as any).path) ? (content as any).path.map((idx: number) => idx + 1).join(".") : ''} — Empty Intent`
+                      : content.intent || "Empty Intent"}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>

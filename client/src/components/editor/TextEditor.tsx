@@ -535,15 +535,46 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           contentType={content.type || ""}
         />
 
-        {/* Delete button - only show for sentences when hovered */}
+        {/* Filter (message) icon button - absolutely positioned, outside text fields */}
+        {isSelectedContent && content["block-id"] && (
+          <button
+            onClick={handleShowMessages}
+            className={`absolute top-2 right-2 z-10 ${
+              isActiveMessageFilter
+                ? "text-blue-500 bg-blue-50"
+                : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
+            } transition-colors p-1 rounded-full`}
+            title={
+              isActiveMessageFilter
+                ? "Show all messages"
+                : "Show related messages"
+            }
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+          </button>
+        )}
+
+        {/* Delete button - only show for sentences when hovered, in the true top-left corner */}
         {isHovered && content.type === "sentence" && content["block-id"] && (
           <button
             onClick={handleDelete}
-            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-10"
+            className="absolute -top-3 -left-3 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-20 shadow border border-white"
             title="Delete sentence"
             disabled={isDeleting}
           >
-            {isDeleting ? <ClipLoader size={10} color="#ffffff" /> : "✕"}
+            {isDeleting ? <ClipLoader size={10} color="#ffffff" /> : <span className="text-base">✕</span>}
           </button>
         )}
 
@@ -553,41 +584,10 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           }}
         >
           <div
-            className={`flex flex-col py-1 px-2 rounded-t-lg ${
+            className={`flex flex-col py-1 px-2 rounded-t-lg pr-10 ${
               isSelectedContent ? "bg-blue-100" : bgColorClass
             } relative`}
           >
-            {/* 메시지 아이콘 버튼 - 선택된 항목일 때만 표시 */}
-            {isSelectedContent && content["block-id"] && (
-              <button
-                onClick={handleShowMessages}
-                className={`absolute top-1 right-1 z-10 ${
-                  isActiveMessageFilter
-                    ? "text-blue-500 bg-blue-50"
-                    : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
-                } transition-colors p-1 rounded-full mr-4`}
-                title={
-                  isActiveMessageFilter
-                    ? "Show all messages"
-                    : "Show related messages"
-                }
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                </svg>
-              </button>
-            )}
-
             {/* Summary Field - sentence 타입이 아닐 경우에만 표시 */}
             {content.type !== "sentence" && (
               <EditableField
@@ -639,7 +639,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
               onInput={handleInput}
-              className={`w-full min-h-[0px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm ${selectedContentBorderStyle}`}
+              className={`w-full min-h-[0px] p-2 rounded-b-lg font-inherit resize-vertical border text-sm pr-10 ${selectedContentBorderStyle}`}
             />
 
             {/* Show button when focused (regardless of content changes) */}

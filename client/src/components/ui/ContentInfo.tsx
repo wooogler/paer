@@ -5,12 +5,14 @@ import { getTypeColor } from "../../utils/contentUtils";
 
 interface ContentInfoProps {
   content: Content | null;
+  path?: number[]; // Add path prop for hierarchical label
   lightText?: boolean; // 밝은 배경에 어두운 텍스트 또는 그 반대
   isClickable?: boolean; // 클릭 가능 여부
 }
 
 const ContentInfo: React.FC<ContentInfoProps> = ({
   content,
+  path,
   lightText = false,
   isClickable = false,
 }) => {
@@ -29,15 +31,14 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
   // 콘텐츠 타입에 따라 표시할 텍스트 결정
   let contentTitle = "No title";
 
-  if (content.title) {
-    // title이 있으면 title 사용
+  if (content.title && content.title.trim() !== "") {
     contentTitle = content.title;
+  } else if (content.intent && content.intent.trim() !== "") {
+    contentTitle = content.intent;
   } else if (content.type === "sentence") {
-    // sentence인 경우 summary가 있으면 summary, 없으면 content 사용
-    if (content.summary) {
+    if (content.summary && content.summary.trim() !== "") {
       contentTitle = content.summary;
     } else if (typeof content.content === "string") {
-      // content를 사용하되 길이를 제한하고 말줄임표 사용
       contentTitle =
         content.content.length > 60
           ? content.content.substring(0, 60) + "..."
@@ -46,8 +47,49 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
       contentTitle = "No content";
     }
   } else if (content.type === "paragraph") {
-    // paragraph는 summary 사용
-    contentTitle = content.summary || "No summary";
+    // Only use summary if it's non-empty and not 'Empty Summary'
+    if (content.summary && content.summary.trim() !== "" && content.summary !== "Empty Summary") {
+      contentTitle = content.summary;
+    } else {
+      // Use path prop if available
+      const paragraphPath = path || (content as any).path;
+      if (Array.isArray(paragraphPath)) {
+        contentTitle = `Paragraph ${paragraphPath.map((idx: number) => idx + 1).join(".")}`;
+      } else {
+        contentTitle = "Paragraph";
+      }
+    }
+  } else if (content.type === "subsection") {
+    contentTitle = content.title && content.title.trim() !== "" ? content.title : "";
+    if (!contentTitle) {
+      const subsectionPath = path || (content as any).path;
+      if (Array.isArray(subsectionPath)) {
+        contentTitle = `Subsection ${subsectionPath.map((idx: number) => idx + 1).join(".")}`;
+      } else {
+        contentTitle = "Subsection";
+      }
+    }
+  } else if (content.type === "subsubsection") {
+    contentTitle = content.title && content.title.trim() !== "" ? content.title : "";
+    if (!contentTitle) {
+      const subsubsectionPath = path || (content as any).path;
+      if (Array.isArray(subsubsectionPath)) {
+        contentTitle = `Subsubsection ${subsubsectionPath.map((idx: number) => idx + 1).join(".")}`;
+      } else {
+        contentTitle = "Subsubsection";
+      }
+    }
+  } else if (content.summary && content.summary.trim() !== "") {
+    contentTitle = content.summary;
+  }
+  // If still no title, fallback to type + path
+  if (!contentTitle || contentTitle === "No summary" || contentTitle === "No title") {
+    const fallbackPath = path || (content as any).path;
+    if (Array.isArray(fallbackPath)) {
+      contentTitle = `${contentType} ${fallbackPath.map((idx: number) => idx + 1).join(".")}`;
+    } else {
+      contentTitle = contentType;
+    }
   }
 
   // 클릭 핸들러 - 콘텐츠 선택 및 스크롤

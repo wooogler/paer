@@ -32,7 +32,7 @@ const ChatInterface: React.FC = () => {
     isFilteringEnabled,
     fetchMessages,
   } = useChatStore();
-  const { selectedContent, content: rootContent, selectedPaperId } = useContentStore();
+  const { selectedContent, content: rootContent, selectedPaperId, selectedPath } = useContentStore();
   const { userId, userName } = useAppStore();
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -518,7 +518,7 @@ const ChatInterface: React.FC = () => {
       {isViewingOwnChat && (
         <div className="border-t border-gray-200 p-3 bg-white flex-shrink-0">
           <div className="max-w-3xl mx-auto">
-            {rootContent && <ContentInfo content={selectedContent} />}
+            {rootContent && <ContentInfo content={selectedContent} path={selectedPath || undefined} />}
 
             <form onSubmit={handleSubmit} className="flex items-start space-x-3 mt-2">
               <textarea

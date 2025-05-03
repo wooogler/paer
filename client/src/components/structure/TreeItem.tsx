@@ -87,7 +87,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
       const getDisplayTitle = () => {
         if (content.type === "paragraph") {
           // For paragraphs, show summary in summary mode, otherwise show intent
-          // Summary가 비어있을 경우 기본 텍스트 표시
+          // If intent is empty, show the paragraph label
           if (displayMode === "summary") {
             return (
               content.summary ||
@@ -95,17 +95,31 @@ const TreeItem: React.FC<TreeItemProps> = memo(
             );
           } else {
             return (
-              content.intent ||
-              `Paragraph ${path.map((idx) => idx + 1).join(".")}`
+              content.intent && content.intent.trim() !== ""
+                ? content.intent
+                : `Paragraph ${path.map((idx) => idx + 1).join(".")}`
             );
           }
         }
-
+        // For subsection and subsubsection, show label if title is empty
+        if (content.type === "subsection") {
+          return (
+            content.title && content.title.trim() !== ""
+              ? content.title
+              : `Subsection ${path.map((idx) => idx + 1).join(".")}`
+          );
+        }
+        if (content.type === "subsubsection") {
+          return (
+            content.title && content.title.trim() !== ""
+              ? content.title
+              : `Subsubsection ${path.map((idx) => idx + 1).join(".")}`
+          );
+        }
         // content.type이 없는 경우 기본값 처리
         if (!content.type) {
           return `Unknown ${path.map((idx) => idx + 1).join(".")}`;
         }
-
         return (
           content.title ||
           `${
