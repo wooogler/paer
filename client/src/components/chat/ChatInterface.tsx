@@ -147,8 +147,8 @@ const ChatInterface: React.FC = () => {
 
   // Calculate filtered messages list
   const filteredMessages = useMemo(() => {
-    // First filter by blockId if filtering is enabled
     let filtered = messages;
+    // First filter by blockId if filtering is enabled
     if (isFilteringEnabled && filterBlockId) {
       // Get only messages matching the filtered blockId
       // Include child content blockIds recursively
@@ -200,16 +200,19 @@ const ChatInterface: React.FC = () => {
       filtered = messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
     }
 
-    // Then filter by viewing mode
-    if (!isViewingOwnChat) {
-      // When viewing collaborator's messages, only show messages shared by that specific collaborator
+    // Always filter based on current view
+    if (isViewingOwnChat) {
+      // When viewing own chat, show all messages
+      filtered = filtered.filter(msg => msg.userId === userId);
+    } else {
+      // When viewing collaborator's messages, only show their public messages
       filtered = filtered.filter(msg => 
         msg.userId === currentView.userId && msg.viewAccess === "public"
       );
     }
 
     return filtered;
-  }, [messages, filterBlockId, rootContent, isFilteringEnabled, isViewingOwnChat, currentView.userId]);
+  }, [messages, filterBlockId, rootContent, isFilteringEnabled, isViewingOwnChat, currentView.userId, userId]);
 
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {
