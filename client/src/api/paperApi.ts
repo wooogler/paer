@@ -86,6 +86,7 @@ export const updateSentenceContent = async (
     content,
     summary,
     intent,
+    lastModifiedBy: authorId
   });
   return response.data;
 };

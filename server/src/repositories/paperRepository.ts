@@ -119,7 +119,8 @@ export class PaperRepository {
     blockId: string,
     content: string,
     summary: string,
-    intent: string
+    intent: string,
+    lastModifiedBy: string
   ): Promise<void> {
     try {
       console.log('updateSentence called with:', { authorId, paperId, blockId });
@@ -152,7 +153,8 @@ export class PaperRepository {
         blockId,
         content,
         summary,
-        intent
+        intent,
+        lastModifiedBy
       );
 
       if (!updated) {
@@ -520,20 +522,22 @@ export class PaperRepository {
     blockId: string,
     content: string,
     summary: string,
-    intent: string
+    intent: string,
+    lastModifiedBy: string
   ) {
     // Check if current object is the target sentence
     if (obj && obj.type === "sentence" && obj["block-id"] === blockId) {
       obj.content = content;
       obj.summary = summary;
       obj.intent = intent;
+      obj.lastModifiedBy = lastModifiedBy;
       return obj;
     }
 
     // If content array exists, search recursively
     if (obj && obj.content && Array.isArray(obj.content)) {
       for (const child of obj.content) {
-        if (this.findAndUpdateSentence(child, blockId, content, summary, intent)) {
+        if (this.findAndUpdateSentence(child, blockId, content, summary, intent, lastModifiedBy)) {
           return obj;
         }
       }

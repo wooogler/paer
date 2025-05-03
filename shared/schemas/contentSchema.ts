@@ -29,6 +29,7 @@ export interface Content {
   summary: string;
   intent: string;
   "block-id"?: string;
+  lastModifiedBy?: string;
 }
 
 // Define recursive content schema
@@ -42,5 +43,6 @@ export const ContentSchema: z.ZodType<Content> = z.lazy(() =>
     summary: z.string(),
     intent: z.string(),
     "block-id": z.string().optional(),
+    lastModifiedBy: z.string().optional(),
   })
 );

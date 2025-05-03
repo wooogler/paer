@@ -15,6 +15,7 @@ import LevelIndicator, {
   getBackgroundColorClass,
   getBorderColorClass,
 } from "./LevelIndicator";
+import { getUserInfo } from "../../api/userApi";
 
 interface TextEditorProps {
   content: Content;
@@ -77,6 +78,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         : content.summary || ""
     );
 
+    // State for username
+    const [lastModifiedUsername, setLastModifiedUsername] = useState<string>("");
+
     // Update local state only when content prop changes
     useEffect(() => {
       const newValue =
@@ -97,6 +101,24 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         setLocalSummary(content.summary);
       }
     }, [content.intent, content.summary]);
+
+    // Fetch username when lastModifiedBy changes
+    useEffect(() => {
+      const fetchUsername = async () => {
+        if (content.type === "sentence" && content.lastModifiedBy) {
+          try {
+            const userInfo = await getUserInfo(content.lastModifiedBy);
+            if (userInfo.success && userInfo.user) {
+              setLastModifiedUsername(userInfo.user.username);
+            }
+          } catch (error) {
+            console.error("Error fetching username:", error);
+          }
+        }
+      };
+
+      fetchUsername();
+    }, [content.lastModifiedBy, content.type]);
 
     // Focus the textarea
     const focus = useCallback(() => {
@@ -604,6 +626,11 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             )} */}
           </div>
           <div>
+            {content.type === "sentence" && lastModifiedUsername && (
+              <div className="text-xs text-gray-500 mb-1">
+                Last modified by: {lastModifiedUsername}
+              </div>
+            )}
             <textarea
               ref={textareaRef}
               value={localValue || ""}

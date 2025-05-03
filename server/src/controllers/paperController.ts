@@ -231,12 +231,13 @@ export class PaperController {
         content: string;
         summary: string;
         intent: string;
+        lastModifiedBy: string;
       };
     }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { authorId, paperId, blockId, content, summary, intent } = request.body;
+      const { authorId, paperId, blockId, content, summary, intent, lastModifiedBy } = request.body;
 
       if (!authorId || !paperId || !blockId || !content) {
         return reply.code(400).send({ error: "authorId, paperId, blockId, content are required" });
@@ -248,7 +249,8 @@ export class PaperController {
         blockId,
         content,
         summary,
-        intent
+        intent,
+        lastModifiedBy
       );
 
       return reply.send({ success: true });

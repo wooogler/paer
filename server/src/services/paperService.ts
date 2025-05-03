@@ -403,7 +403,8 @@ export class PaperService {
     blockId: string,
     content: string,
     summary?: string,
-    intent?: string
+    intent?: string,
+    lastModifiedBy?: string
   ): Promise<void> {
     try {
       await this.paperRepository.updateSentence(
@@ -412,7 +413,8 @@ export class PaperService {
         blockId,
         content,
         summary || '',
-        intent || ''
+        intent || '',
+        lastModifiedBy || authorId
       );
     } catch (error) {
       console.error("Error in updateSentence:", error);

@@ -53,6 +53,7 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       content: string;
       summary: string;
       intent: string;
+      lastModifiedBy: string;
     };
   }>(
     "/sentence",
