@@ -298,3 +298,21 @@ export const removeCollaborator = async (paperId: string, authorId: string, coll
     throw error;
   }
 };
+
+export const getEditHistoryByBlock = async( 
+  paperId: string,
+  blockId: string,
+  userId: string
+) => {
+  try {
+    const response = await api.get(`/papers/${paperId}/blocks/${blockId}/edit-history`, {
+      params: {
+        userId
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error getting edit history:", error);
+    throw error;
+  }
+}

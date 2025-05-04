@@ -630,4 +630,30 @@ export class PaperController {
       return reply.code(500).send({ error: "Failed to get members" });
     }
   }
+
+  /**
+   * Get edit history
+   */
+  async getEditHistory(
+    request: FastifyRequest<{
+      Params: { paperId: string; blockId: string };
+      Querystring: { userId: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { paperId, blockId } = request.params;  
+      const { userId } = request.query;
+
+      if (!userId) {
+        return reply.code(400).send({ error: "userId is required" });
+      } 
+
+      const editHistory = await this.paperService.getEditHistory(paperId, blockId, userId);
+      return reply.send(editHistory);
+    } catch (error) {
+      console.error("Error in getEditHistory:", error);
+      return reply.code(500).send({ error: "Failed to get edit history" });
+    }
+  }
 }

@@ -534,4 +534,11 @@ export class PaperService {
       throw error;
     }
   }
+
+  /**
+   * Get edit history
+   */
+  async getEditHistory(paperId: string, blockId: string, userId: string): Promise<any> {
+    return this.paperRepository.getEditHistory(paperId, blockId, userId);
+  }
 }

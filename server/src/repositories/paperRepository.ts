@@ -906,4 +906,41 @@ export class PaperRepository {
       throw new Error(`Failed to add edit history for block ${targetBlockId}`);
     }
   }
+
+  // get edit history
+  async getEditHistory(paperId: string, blockId: string, userId: string): Promise<any> {
+    try {
+      if (!isValidObjectId(paperId) || !isValidObjectId(blockId)) {
+        throw new Error("Invalid paperId or blockId");
+      }
+
+      const paperObjectId = new mongoose.Types.ObjectId(paperId);
+
+      // check the paper exists
+      const paper = await PaperModel.findOne({
+        _id: paperObjectId,
+        // authorId: userObjectId
+      });
+      if (!paper) {
+        throw new Error("Paper not found");
+      }
+
+      // check the user has permission to access the paper
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const authorObjectId = new mongoose.Types.ObjectId(paper.authorId);
+      const hasPermission = authorObjectId.equals(userObjectId) || paper.collaboratorIds.includes(userObjectId.toString());
+      if (!hasPermission) {
+        throw new Error("User does not have permission to access this paper");
+      }
+      
+      const editHistory = await EditHistory.find({ paperId, blockId })
+        .sort({ _id: -1 })
+        .select('authorId key value timestamp')
+        .lean();
+      return editHistory;
+    } catch (error) {
+      console.error("Error getting edit history:", error);
+      throw new Error("Failed to get edit history");
+    }
+  }
 }
