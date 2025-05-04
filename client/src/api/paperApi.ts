@@ -1,4 +1,4 @@
-import { type Paper, ContentType } from "@paer/shared";
+import { type Paper } from "@paer/shared";
 import axios from "axios";
 import { useAppStore } from "../store/useAppStore";
 import { useContentStore } from "../store/useContentStore";

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { Message } from "../api/chatApi";
-import { getMessages, getMessagesByBlockId, addMessage, clearMessages } from "../api/chatApi";
+import { getMessages, getMessagesByBlockId, clearMessages } from "../api/chatApi";
 import { useAppStore } from "./useAppStore";
 import { useContentStore } from "./useContentStore";
 import { chatApi } from "../api/chatApi";
@@ -21,8 +21,8 @@ interface ChatState {
   isChatVisible: boolean;
   toggleChatVisibility: () => void;
   setLoading: (isLoading: boolean) => void;
-  updateMessage: (id: string, content: string) => void;
-  deleteMessage: (id: string) => void;
+  // updateMessage: (id: string, content: string) => void;
+  // deleteMessage: (id: string) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -111,7 +111,7 @@ export const useChatStore = create<ChatState>()(
           }
           
           // 사용자 메시지 전송
-          const response = await chatApi.addMessage(message.paperId, { ...message, userId });
+          await chatApi.addMessage(message.paperId, { ...message, userId });
           
           // 메시지 전송 성공 후 모든 메시지 다시 불러오기
           await get().fetchMessages();
@@ -150,13 +150,13 @@ export const useChatStore = create<ChatState>()(
         set({ isLoading });
       },
 
-      updateMessage: (id: string, content: string) => {
-        // Implementation of updateMessage function
-      },
+      // updateMessage: (id: string, content: string) => {
+      //   // Implementation of updateMessage function
+      // },
 
-      deleteMessage: (id: string) => {
-        // Implementation of deleteMessage function
-      },
+      // deleteMessage: (id: string) => {
+      //   // Implementation of deleteMessage function
+      // },
     }),
     { name: "Chat Store" }
   )

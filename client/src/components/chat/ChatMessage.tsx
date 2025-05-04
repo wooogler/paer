@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Message, MessageType } from "../../api/chatApi";
+import { Message } from "../../api/chatApi";
 import { useContentStore } from "../../store/useContentStore";
 import ContentInfo from "../ui/ContentInfo";
 import { Content } from "@paer/shared";

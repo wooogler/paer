@@ -12,11 +12,11 @@ interface ContentInfoProps {
 
 const ContentInfo: React.FC<ContentInfoProps> = ({
   content,
-  path,
+  path = [],
   lightText = false,
   isClickable = false,
 }) => {
-  const { setSelectedBlock, setSelectedContent } = useContentStore();
+  const { setSelectedBlock } = useContentStore();
 
   if (!content) return null;
 
@@ -152,7 +152,7 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
           // 상위 paragraph가 있으면 selectedBlock으로 설정
           if (paragraphContent && paragraphContent.type === "paragraph") {
             // 먼저 content를 sentence로 설정 (Block 설정 전에)
-            setSelectedContent(content, path);
+            setSelectedBlock(content, path);
 
             // 그 다음 block을 paragraph로 설정 (이렇게 하면 selectedContent를 다시 덮어쓰지 않음)
             // useContentStore 내부의 로직을 우회하기 위해 직접 state 설정
@@ -162,7 +162,7 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
             });
           } else {
             // paragraph를 찾을 수 없으면 sentence 자체를 content와 block으로 설정
-            setSelectedContent(content, path);
+            setSelectedBlock(content, path);
             useContentStore.setState({
               selectedBlock: content,
               selectedBlockPath: path,
@@ -170,7 +170,7 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
           }
         } else {
           // 경로가 너무 짧으면 그냥 sentence 자체를 content와 block으로 설정
-          setSelectedContent(content, path);
+          setSelectedBlock(content, path);
           useContentStore.setState({
             selectedBlock: content,
             selectedBlockPath: path,
@@ -178,7 +178,6 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
         }
       } else {
         // Sentence가 아닌 경우, 일반적인 방식으로 처리
-        setSelectedContent(content, path);
         setSelectedBlock(content, path);
       }
 

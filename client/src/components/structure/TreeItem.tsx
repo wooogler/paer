@@ -77,7 +77,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
       : isSelectedContent || isSelectedBlock; // 일반 모드: 선택된 아이템만 아이콘 표시
 
     // 스타일과 표시 텍스트 메모이제이션
-    const { contentColorClass, displayTitle, displayText } = useMemo(() => {
+    const { contentColorClass, displayTitle } = useMemo(() => {
       // Get color class based on content type
       const getColorClass = () => {
         return getTypeColor(content.type as ContentType).main;
@@ -128,30 +128,9 @@ const TreeItem: React.FC<TreeItemProps> = memo(
         );
       };
 
-      // Get the display text based on display mode
-      const getDisplayText = () => {
-        // content.type이 없는 경우 기본값 처리
-        if (!content.type) {
-          return `Unknown ${path.map((idx) => idx + 1).join(".")}`;
-        }
-
-        // 비어있는 경우 기본 텍스트 제공
-        const text = displayMode === "summary" ? content.summary : content.intent;
-        
-        // text가 있는 경우 반환
-        if (text) {
-          return text;
-        }
-
-        // 기본 텍스트 생성
-        const typeText = content.type.charAt(0).toUpperCase() + content.type.slice(1);
-        return `${typeText} ${path.map((idx) => idx + 1).join(".")}`;
-      };
-
       return {
         contentColorClass: getColorClass(),
         displayTitle: getDisplayTitle(),
-        displayText: getDisplayText(),
       };
     }, [content.type, content.summary, content.intent, content.title, displayMode, path]);
 

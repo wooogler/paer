@@ -31,14 +31,13 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
   }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [editingIntent, setEditingIntent] = useState(false);
-    const [editingSummary, setEditingSummary] = useState(false);
+    // const [editingSummary, setEditingSummary] = useState(false);
     const [editingTitle, setEditingTitle] = useState(false);
     const [localIntent, setLocalIntent] = useState(content.intent || "");
-    const [localSummary, setLocalSummary] = useState(content.summary || "");
+    const [_, setLocalSummary] = useState(content.summary || "");
     const [localTitle, setLocalTitle] = useState(content.title || "");
 
     const intentInputRef = useRef<HTMLInputElement>(null);
-    const summaryInputRef = useRef<HTMLInputElement>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
 
     const updateBlockIntentMutation = useUpdateBlockIntent();
@@ -134,7 +133,6 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             updateBlockIntentMutation.mutate({
               parentBlockId,
               targetBlockId: content["block-id"],
-              blockType: content.type as ContentType,
               intent: value,
             });
           } else if (property === "summary") {
@@ -147,9 +145,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
           } else {
             // Use dedicated API for title updates
             updateBlockTitleMutation.mutate({
-              parentBlockId,
               targetBlockId: content["block-id"],
-              blockType: content.type as ContentType,
               title: value,
             });
           }
@@ -185,22 +181,14 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     );
 
     // Handlers for summary updates
-    const handleSummaryUpdate = useCallback(() => {
-      handleBlockUpdate("summary", localSummary, setEditingSummary);
-    }, [handleBlockUpdate, localSummary]);
+    // const handleSummaryUpdate = useCallback(() => {
+    //   handleBlockUpdate("summary", localSummary, setEditingSummary);
+    // }, [handleBlockUpdate, localSummary]);
 
-    const handleSummaryCancel = useCallback(() => {
-      setLocalSummary(content.summary || "");
-      setEditingSummary(false);
-    }, [content.summary]);
-
-    const handleSummaryKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") handleSummaryUpdate();
-        else if (e.key === "Escape") handleSummaryCancel();
-      },
-      [handleSummaryUpdate, handleSummaryCancel]
-    );
+    // const handleSummaryCancel = useCallback(() => {
+    //   setLocalSummary(content.summary || "");
+    //   setEditingSummary(false);
+    // }, [content.summary]);
 
     // Handlers for title updates
     const handleTitleUpdate = useCallback(() => {

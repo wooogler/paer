@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Structure from "./Structure";
-import Editor from "./Editor";
 import Pane from "./layout/Pane";
 import ToggleSwitch from "./ui/ToggleSwitch";
 import ChatInterface from "./chat/ChatInterface";
@@ -18,27 +17,24 @@ import { useNavigate } from "react-router-dom";
 import PaperListModal from "./paperList/PaperListModal";
 import CollaboratorModal from "./chat/CollaboratorModal";
 
-interface LayoutProps {
+interface LayoutProps { 
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { 
-    displayMode, 
     showHierarchy, 
     setShowHierarchy, 
     userName, 
     userId, 
     logout,
     isStructureVisible,
-    toggleStructureVisibility 
   } = useAppStore();
   const {
     filterBlockId,
     isFilteringEnabled,
     toggleFiltering,
     isChatVisible,
-    toggleChatVisibility,
   } = useChatStore();
   const { content: rootContent, setContent } = useContentStore();
   const queryClient = useQueryClient();
@@ -47,7 +43,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
 
   // Fetching data from server using React Query
-  const { data: paperData, refetch } = usePaperQuery();
+  const { refetch } = usePaperQuery();
 
   // Get filtered content information
   const filteredContent = useMemo(() => {
@@ -148,79 +144,79 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   // Paper and chat initialization function
-  const handleInitialize = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to initialize paper and chat history?"
-      )
-    ) {
-      try {
-        const { setLoading } = useContentStore.getState();
-        setLoading(true);
+  // const handleInitialize = async () => {
+  //   if (
+  //     window.confirm(
+  //       "Are you sure you want to initialize paper and chat history?"
+  //     )
+  //   ) {
+  //     try {
+  //       const { setLoading } = useContentStore.getState();
+  //       setLoading(true);
 
-        // Request to initialize data on server
-        const response = await fetch("/api/paper/initialize", {
-          method: "POST",
-        });
-        const data = await response.json();
+  //       // Request to initialize data on server
+  //       const response = await fetch("/api/paper/initialize", {
+  //         method: "POST",
+  //       });
+  //       const data = await response.json();
 
-        if (!data.success) {
-          throw new Error(data.error || "Failed to initialize data");
-        }
+  //       if (!data.success) {
+  //         throw new Error(data.error || "Failed to initialize data");
+  //       }
 
-        // Reset content store
-        const contentStore = useContentStore.getState();
-        if (contentStore) {
-          // Reset selected content/block
-          if (typeof contentStore.setSelectedBlock === "function") {
-            contentStore.setSelectedBlock(null, null);
-          }
-        }
+  //       // Reset content store
+  //       const contentStore = useContentStore.getState();
+  //       if (contentStore) {
+  //         // Reset selected content/block
+  //         if (typeof contentStore.setSelectedBlock === "function") {
+  //           contentStore.setSelectedBlock(null, null);
+  //         }
+  //       }
 
-        // Reset chat store
-        try {
-          const chatStore = useChatStore.getState();
-          if (chatStore && typeof chatStore.clearMessages === "function") {
-            await chatStore.clearMessages();
+  //       // Reset chat store
+  //       try {
+  //         const chatStore = useChatStore.getState();
+  //         if (chatStore && typeof chatStore.clearMessages === "function") {
+  //           await chatStore.clearMessages();
 
-            // Manually add initial welcome message
-            if (typeof chatStore.setMessages === "function") {
-              chatStore.setMessages([
-                {
-                  id: "system-welcome-" + Date.now(),
-                  role: "system",
-                  content:
-                    "Hello! Do you need help with writing your document? How can I assist you?",
-                  timestamp: Date.now(),
-                  userId: userId || "",
-                  paperId: "",
-                  userName: "System",
-                  messageType: "comment",
-                  viewAccess: "private",
-                },
-              ]);
-            }
-          }
-        } catch (e) {
-          console.log("Chat store reset failed", e);
-        }
+  //           // Manually add initial welcome message
+  //           if (typeof chatStore.setMessages === "function") {
+  //             chatStore.setMessages([
+  //               {
+  //                 id: "system-welcome-" + Date.now(),
+  //                 role: "system",
+  //                 content:
+  //                   "Hello! Do you need help with writing your document? How can I assist you?",
+  //                 timestamp: Date.now(),
+  //                 userId: userId || "",
+  //                 paperId: "",
+  //                 userName: "System",
+  //                 messageType: "comment",
+  //                 viewAccess: "private",
+  //               },
+  //             ]);
+  //           }
+  //         }
+  //       } catch (e) {
+  //         console.log("Chat store reset failed", e);
+  //       }
 
-        // Invalidate queries to refresh data without page reload
-        queryClient.invalidateQueries({ queryKey: ["paper"] });
-        queryClient.invalidateQueries({ queryKey: ["chats"] });
-      } catch (error) {
-        console.error("Error initializing data:", error);
-        alert(
-          `Error during initialization: ${
-            error instanceof Error ? error.message : "Unknown error"
-          }`
-        );
-      } finally {
-        const { setLoading } = useContentStore.getState();
-        setLoading(false);
-      }
-    }
-  };
+  //       // Invalidate queries to refresh data without page reload
+  //       queryClient.invalidateQueries({ queryKey: ["paper"] });
+  //       queryClient.invalidateQueries({ queryKey: ["chats"] });
+  //     } catch (error) {
+  //       console.error("Error initializing data:", error);
+  //       alert(
+  //         `Error during initialization: ${
+  //           error instanceof Error ? error.message : "Unknown error"
+  //         }`
+  //       );
+  //     } finally {
+  //       const { setLoading } = useContentStore.getState();
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
 
   const handleLogout = () => {
     logout();
@@ -290,7 +286,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         }
       >
-        <Editor userName={userName} />
+        {children}
       </Pane>
 
       {/* Chat Pane */}
