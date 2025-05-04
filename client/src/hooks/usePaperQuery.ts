@@ -209,12 +209,10 @@ export function useUpdateBlockIntent() {
   return useMutation({
     mutationFn: async ({
       targetBlockId,
-      blockType,
       intent,
     }: {
       parentBlockId: string | null;
       targetBlockId: string;
-      blockType: ContentType;
       intent: string;
     }) => {
       await updateBlockIntent(userId, selectedPaperId, targetBlockId, intent);
@@ -315,12 +313,9 @@ export function useUpdateBlockTitle() {
   return useMutation({
     mutationFn: async ({
       targetBlockId,
-      blockType,
       title,
     }: {
-      parentBlockId: string | null;
       targetBlockId: string;
-      blockType: ContentType;
       title: string;
     }) => {
       await updateBlockTitle(userId, selectedPaperId, targetBlockId, title);
@@ -394,7 +389,7 @@ export function useAddBlock() {
     }) => {
       return await addBlock(parentBlockId, prevBlockId, blockType);
     },
-    onSuccess: async (newBlockId) => {
+    onSuccess: async (_) => {
       try {
         const newData = await getPapers(userId);
         const selectedPaper = selectedPaperId 

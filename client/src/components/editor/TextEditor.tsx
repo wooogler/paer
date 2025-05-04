@@ -64,7 +64,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const isDeleting = deleteSentenceMutation.isPending;
 
     // State for editable fields
-    const [editingIntent, setEditingIntent] = useState(false);
+    const [editingIntent, _] = useState(false);
     const [editingSummary, setEditingSummary] = useState(false);
     const [localIntent, setLocalIntent] = useState(content.intent || "");
     const [localSummary, setLocalSummary] = useState(content.summary || "");
@@ -79,7 +79,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     );
 
     // State for username
-    const [lastModifiedUsername, setLastModifiedUsername] = useState<string>("");
+    const [lastModifiedBy, setLastModifiedBy] = useState<string>("");
 
     // Update local state only when content prop changes
     useEffect(() => {
@@ -104,20 +104,13 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // Fetch username when lastModifiedBy changes
     useEffect(() => {
-      const fetchUsername = async () => {
+      const fetchUserInfo = async () => {
         if (content.type === "sentence" && content.lastModifiedBy) {
-          try {
-            const userInfo = await getUserInfo(content.lastModifiedBy);
-            if (userInfo.success && userInfo.user) {
-              setLastModifiedUsername(userInfo.user.username);
-            }
-          } catch (error) {
-            console.error("Error fetching username:", error);
-          }
+          const userInfo = await getUserInfo(content.lastModifiedBy);
+          setLastModifiedBy(userInfo.user.username);
         }
       };
-
-      fetchUsername();
+      fetchUserInfo();
     }, [content.lastModifiedBy, content.type]);
 
     // Focus the textarea
@@ -384,29 +377,29 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     );
 
     // Handlers for editable fields
-    const handleIntentUpdate = useCallback(() => {
-      if (content.type === "sentence" && content["block-id"]) {
-        const blockId = content["block-id"] as string;
-        updateSentenceMutation.mutate(
-          {
-            blockId,
-            intent: localIntent,
-          },
-          {
-            onSuccess: () => {
-              updateContent(blockId, { intent: localIntent });
-              setEditingIntent(false);
-            },
-          }
-        );
-      }
-    }, [
-      content.type,
-      content["block-id"],
-      localIntent,
-      updateSentenceMutation,
-      updateContent,
-    ]);
+    // const handleIntentUpdate = useCallback(() => {
+    //   if (content.type === "sentence" && content["block-id"]) {
+    //     const blockId = content["block-id"] as string;
+    //     updateSentenceMutation.mutate(
+    //       {
+    //         blockId,
+    //         intent: localIntent,
+    //       },
+    //       {
+    //         onSuccess: () => {
+    //           updateContent(blockId, { intent: localIntent });
+    //           setEditingIntent(false);
+    //         },
+    //       }
+    //     );
+    //   }
+    // }, [
+    //   content.type,
+    //   content["block-id"],
+    //   localIntent,
+    //   updateSentenceMutation,
+    //   updateContent,
+    // ]);
 
     const handleSummaryUpdate = useCallback(() => {
       if (content.type === "sentence" && content["block-id"]) {
@@ -432,26 +425,26 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       updateContent,
     ]);
 
-    const handleIntentCancel = useCallback(() => {
-      setLocalIntent(content.intent || "");
-      setEditingIntent(false);
-    }, [content.intent]);
+    // const handleIntentCancel = useCallback(() => {
+    //   setLocalIntent(content.intent || "");
+    //   setEditingIntent(false);
+    // }, [content.intent]);
 
     const handleSummaryCancel = useCallback(() => {
       setLocalSummary(content.summary || "");
       setEditingSummary(false);
     }, [content.summary]);
 
-    const handleIntentKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          handleIntentUpdate();
-        } else if (e.key === "Escape") {
-          handleIntentCancel();
-        }
-      },
-      [handleIntentUpdate, handleIntentCancel]
-    );
+    // const handleIntentKeyDown = useCallback(
+    //   (e: React.KeyboardEvent<HTMLInputElement>) => {
+    //     if (e.key === "Enter") {
+    //       handleIntentUpdate();
+    //     } else if (e.key === "Escape") {
+    //       handleIntentCancel();
+    //     }
+    //   },
+    //   [handleIntentUpdate, handleIntentCancel]
+    // );
 
     const handleSummaryKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -626,9 +619,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             )} */}
           </div>
           <div>
-            {content.type === "sentence" && lastModifiedUsername && (
+            {content.type === "sentence" && lastModifiedBy && (
               <div className="text-xs text-gray-500 mb-1">
-                Last modified by: {lastModifiedUsername}
+                Last modified by: {lastModifiedBy}
               </div>
             )}
             <textarea

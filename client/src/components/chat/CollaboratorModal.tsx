@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { FiX, FiUser, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiX, FiUser, FiTrash2 } from "react-icons/fi";
 import { getCollaborators, addCollaborator, removeCollaborator } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
 import { toast } from "react-hot-toast";
