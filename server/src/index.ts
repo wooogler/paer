@@ -7,7 +7,8 @@ import chatRoutes from "./routes/chat";
 import userRoutes from "./routes/users";
 import OpenAI from "openai";
 import fs from "fs";
-import { connectDB, closeDB } from "./config/database";
+import connectDB from "./config/database";
+import { closeDB } from "./config/database";
 
 // Load environment variables from .env file in development
 if (process.env.NODE_ENV !== "production") {
@@ -37,12 +38,6 @@ fastify.register(cors, {
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
-
-// MongoDB 연결
-connectDB().catch(err => {
-  console.error("MongoDB connection error:", err);
-  process.exit(1);
 });
 
 // Register API routes
@@ -77,8 +72,8 @@ if (process.env.NODE_ENV === "production") {
       try {
         const indexContent = fs.readFileSync(path.join(clientDistPath, "index.html"));
         reply.type("text/html").send(indexContent);
-      } catch (err) {
-        console.error("Error serving index.html:", err);
+      } catch (error: unknown) {
+        console.error("Error serving index.html:", error);
         reply.status(500).send({ error: "Failed to serve index.html" });
       }
       return reply;
@@ -96,40 +91,31 @@ if (process.env.NODE_ENV === "production") {
       try {
         const indexContent = fs.readFileSync(path.join(clientDistPath, "index.html"));
         reply.type("text/html").send(indexContent);
-      } catch (err) {
-        console.error(`Error serving index.html for ${request.url}:`, err);
+      } catch (error: unknown) {
+        console.error(`Error serving index.html for ${request.url}:`, error);
         reply.status(500).send({ error: "Failed to serve index.html" });
       }
-      return reply;
     });
   }
-} else {
-  console.log("Skipping static file serving setup - not in production mode");
-  // 개발 모드에서도 루트 경로에 대한 응답 제공
-  fastify.get("/", async (request, reply) => {
-    return {
-      status: "development",
-      message:
-        "Server running in development mode. Static files are not served.",
-    };
-  });
 }
 
 // Graceful shutdown
-process.on("SIGINT", async () => {
-  console.log("Shutting down server...");
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received. Shutting down gracefully...");
   await closeDB();
-  await fastify.close();
-  process.exit(0);
+  fastify.close(() => {
+    console.log("Server closed");
+    process.exit(0);
+  });
 });
 
-// Start server
 const start = async () => {
   try {
+    await connectDB();
     await fastify.listen({ port, host: "0.0.0.0" });
     console.log(`Server is running on port ${port}`);
-  } catch (err) {
-    console.error("Error starting server:", err);
+  } catch (error: unknown) {
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 };
