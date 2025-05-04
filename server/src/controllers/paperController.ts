@@ -5,16 +5,19 @@ import { PaperService } from "../services/paperService";
 import { extractTitle, processLatexContent } from "../utils/paperUtils";
 import { PaperRepository } from "../repositories/paperRepository";
 import mongoose, { Types } from "mongoose";
+import { RAGService } from "../services/ragService";
 
 export class PaperController {
   private paperService: PaperService;
   private llmService: LLMService;
   private paperRepository: PaperRepository;
+  private ragService: RAGService;
 
   constructor() {
     this.paperService = new PaperService();
     this.llmService = new LLMService();
     this.paperRepository = new PaperRepository();
+    this.ragService = new RAGService();
   }
 
   /**
@@ -60,9 +63,7 @@ export class PaperController {
         return reply.status(400).send({ error: "Invalid author ID format" });
       }
 
-      console.log("Query:", { authorId: authorIdObj });
       const papers = await this.paperService.getUserPapers(authorIdObj);
-      console.log("Found papers:", papers);
       return papers;
     } catch (error) {
       console.error("Error in getUserPapers:", error);
@@ -166,6 +167,17 @@ export class PaperController {
       console.log('Creating paper without ID. Repository will generate a new ID.');
       
       const savedPaper = await this.paperService.savePaper(paperToSave as any);
+
+      // Process the paper with RAG service after successful creation
+      try {
+        console.log('Starting RAG processing for paper:', savedPaper._id);
+        await this.ragService.processPaper(savedPaper._id, savedPaper.content);
+        console.log('RAG processing completed for paper:', savedPaper._id);
+      } catch (ragError) {
+        console.error('Error in RAG processing:', ragError);
+        // Don't fail the paper creation if RAG processing fails
+      }
+
       return reply.code(201).send({ 
         message: 'Paper created successfully',
         paperId: savedPaper._id
