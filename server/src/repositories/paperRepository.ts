@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import mongoose, { isValidObjectId, Types } from "mongoose";
 import { UserService } from "../services/userService";
 import { ObjectId } from "mongodb";
+import { EditHistory } from "../models/EditHistory";
 
 export class PaperRepository {
   private userService: UserService;
@@ -166,6 +167,16 @@ export class PaperRepository {
         {"_id": paperObjectId,},
         updated
       );
+
+      // Add the record to edit history
+      await this.addEditHistory(
+        authorId,
+        paperId,
+        blockId,
+        "content",
+        content
+      );
+
     } catch (error) {
       console.error("Error updating sentence content:", error);
       throw new Error("Failed to update sentence content");
@@ -834,4 +845,65 @@ export class PaperRepository {
     }
   }
 
+  // add edit history
+  // example usage:
+  // await this.paperRepository.addEditHistory(
+  //   authorId,
+  //   paperId,
+  //   targetBlockId,
+  //   keyToUpdate,
+  //   updatedValue
+  // );
+  async addEditHistory(
+    authorId: string,
+    paperId: string,
+    targetBlockId: string,
+    keyToUpdate: string,
+    updatedValue: string
+  ): Promise<void> {
+    try {
+      if (!isValidObjectId(authorId) || !isValidObjectId(paperId)) {
+        throw new Error("Invalid authorId or paperId");
+      }
+
+      const userObjectId = new mongoose.Types.ObjectId(authorId);
+      const paperObjectId = new mongoose.Types.ObjectId(paperId);
+
+      // Find the paper
+      const paper = await PaperModel.findOne({
+        _id: paperObjectId,
+        // authorId: userObjectId
+      });
+
+      if (!paper) {
+        throw new Error(`Paper not found`);
+      }
+
+      // Find the block
+      const targetBlock = this.findBlockById(paper, targetBlockId);
+
+      if (!targetBlock) {
+        throw new Error(`Block with ID ${targetBlockId} not found`);
+      }
+
+      // Add edit history, primarily identified by paperId and targetBlockId
+      // records userId, blockId, and the key-value pair that was updated
+      const editHistory = {
+        paperId: paperObjectId,
+        blockId: targetBlockId,
+        authorId: userObjectId,
+        key: keyToUpdate,
+        value: updatedValue
+      };
+
+      // Save edit history to the database
+      const newEditHistory = new EditHistory(editHistory);
+      // insert the record into the database (edit history collection)
+      EditHistory.insertOne(editHistory);
+      console.log("Edit history added successfully:", newEditHistory);
+    } catch (error) {
+      console.error("Error adding edit history:", error);
+      throw new Error(`Failed to add edit history for block ${targetBlockId}`);
+    }
+  }
 }
