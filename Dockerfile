@@ -49,8 +49,8 @@ RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
 RUN mkdir -p /app/server/dist/data
 
 # Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
+ENV NODE_ENV production
+ENV PORT 3000
 
 # Expose port
 EXPOSE 3000
