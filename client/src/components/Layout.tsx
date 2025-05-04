@@ -16,6 +16,7 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import PaperListModal from "./paperList/PaperListModal";
 import CollaboratorModal from "./chat/CollaboratorModal";
+import Resizer from "./layout/Resizer";
 
 interface LayoutProps { 
   children: React.ReactNode;
@@ -29,18 +30,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     userId, 
     logout,
     isStructureVisible,
+    isChatVisible,
+    toggleStructureVisibility,
+    toggleChatVisibility,
   } = useAppStore();
   const {
     filterBlockId,
     isFilteringEnabled,
     toggleFiltering,
-    isChatVisible,
   } = useChatStore();
   const { content: rootContent, setContent } = useContentStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isPaperListOpen, setIsPaperListOpen] = useState(false);
   const [isCollaboratorModalOpen, setIsCollaboratorModalOpen] = useState(false);
+
+  // State for dynamic widths
+  const [structureWidth, setStructureWidth] = useState("20%");
+  const [chatWidth, setChatWidth] = useState("25%");
 
   // Fetching data from server using React Query
   const { refetch } = usePaperQuery();
@@ -218,6 +225,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   //   }
   // };
 
+  // Calculate editor width based on visible panes and resizers
+  const getEditorWidth = () => {
+    const resizerWidth = "8px";
+    const totalResizerWidth = `calc(${resizerWidth} + ${resizerWidth})`; // Both resizers are always present
+    if (!isStructureVisible && !isChatVisible) return `calc(100% - ${totalResizerWidth})`;
+    if (!isStructureVisible) return `calc(100% - ${chatWidth} - ${totalResizerWidth})`;
+    if (!isChatVisible) return `calc(100% - ${structureWidth} - ${totalResizerWidth})`;
+    return `calc(100% - ${structureWidth} - ${chatWidth} - ${totalResizerWidth})`;
+  };
+
   const handleLogout = () => {
     logout();
     localStorage.removeItem("user-storage");
@@ -227,12 +244,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-white text-gray-800">
+    <div className="flex h-screen w-full bg-white text-gray-800 p-0 m-0 overflow-hidden">
       {/* Structure Pane */}
       {isStructureVisible && (
         <Pane
           title="Structure"
-          width="20%"
+          width={structureWidth}
           rightContent={
             <div className="flex items-center space-x-2">
               <button
@@ -260,16 +277,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* 논문 목록 모달 */}
       <PaperListModal isOpen={isPaperListOpen} onClose={() => setIsPaperListOpen(false)} />
 
+      {/* Left Resizer - Always visible */}
+      <Resizer
+        onDrag={(delta) => {
+          if (!isStructureVisible) return;
+          const totalWidth = window.innerWidth;
+          const currentWidth = parseInt(structureWidth);
+          const newWidth = Math.max(15, Math.min(30, currentWidth + (delta / totalWidth) * 100));
+          setStructureWidth(`${newWidth}%`);
+        }}
+        onToggle={toggleStructureVisibility}
+        isCollapsed={!isStructureVisible}
+        direction="left"
+      />
+      
       {/* Editor Pane */}
       <Pane
         title="Editor"
-        width={
-          !isStructureVisible && !isChatVisible
-            ? "100%"
-            : !isStructureVisible || !isChatVisible
-            ? "80%"
-            : "55%"
-        }
+        width={getEditorWidth()}
         rightContent={
           <div className="flex items-center space-x-2">
             <ToggleSwitch
@@ -289,11 +314,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </Pane>
 
+      {/* Right Resizer - Always visible */}
+      <Resizer
+        onDrag={(delta) => {
+          if (!isChatVisible) return;
+          const totalWidth = window.innerWidth;
+          const currentWidth = parseInt(chatWidth);
+          const newWidth = Math.max(20, Math.min(35, currentWidth - (delta / totalWidth) * 100));
+          setChatWidth(`${newWidth}%`);
+        }}
+        onToggle={toggleChatVisibility}
+        isCollapsed={!isChatVisible}
+        direction="right"
+      />
+
       {/* Chat Pane */}
       {isChatVisible && (
         <Pane
           title="Chat"
-          width="25%"
+          width={chatWidth}
           isLast
           rightContent={
             <div className="flex items-center space-x-4">

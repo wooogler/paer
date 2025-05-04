@@ -7,6 +7,7 @@ interface AppState {
   displayMode: "sentence" | "hierarchy";
   showHierarchy: boolean;
   isStructureVisible: boolean;
+  isChatVisible: boolean;
 
   // User related states
   user: {
@@ -21,12 +22,18 @@ interface AppState {
   setDisplayMode: (mode: "sentence" | "hierarchy") => void;
   setShowHierarchy: (show: boolean) => void;
   toggleStructureVisibility: () => void;
+  toggleChatVisibility: () => void;
   setUser: (name: string) => void;
   setUserName: (name: string) => void;
   setUserId: (id: string) => void;
   login: () => void;
   logout: () => void;
 }
+
+// // Calculate initial widths based on typical screen width (1920px) and original ratios
+// const INITIAL_SCREEN_WIDTH = 1920;
+// const INITIAL_STRUCTURE_WIDTH = Math.round(INITIAL_SCREEN_WIDTH * 0.2); // 20%
+// const INITIAL_CHAT_WIDTH = Math.round(INITIAL_SCREEN_WIDTH * 0.25); // 25%
 
 export const useAppStore = create<AppState>()(
   devtools(
@@ -37,6 +44,7 @@ export const useAppStore = create<AppState>()(
         displayMode: "sentence",
         showHierarchy: false,
         isStructureVisible: true,
+        isChatVisible: true,
         user: {
           name: "",
           isLoggedIn: false,
@@ -49,6 +57,7 @@ export const useAppStore = create<AppState>()(
         setDisplayMode: (mode) => set({ displayMode: mode }),
         setShowHierarchy: (show) => set({ showHierarchy: show }),
         toggleStructureVisibility: () => set((state) => ({ isStructureVisible: !state.isStructureVisible })),
+        toggleChatVisibility: () => set((state) => ({ isChatVisible: !state.isChatVisible })),
         setUser: (name: string) =>
           set((state) => ({
             user: {
