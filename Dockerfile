@@ -20,13 +20,13 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build shared package
-RUN pnpm build:shared
+RUN cd shared && pnpm install && pnpm run build
 
 # Build client
-RUN pnpm build:client
+RUN cd client && pnpm install && pnpm run build
 
 # Build server
-RUN pnpm build:server
+RUN cd server && pnpm install && pnpm run build
 
 # Create production image
 FROM node:20-alpine
