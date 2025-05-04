@@ -7,18 +7,18 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: path.join(__dirname, '../../../.env') });
 }
 
-export const connectDB = async (): Promise<void> => {
+const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/paer';
-    
-    await mongoose.connect(mongoURI);
-    
-    console.log('MongoDB Connected Successfully');
+    const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:27017/paer';
+    await mongoose.connect(mongoUri);
+    console.log('MongoDB connected successfully');
   } catch (error) {
-    console.error('MongoDB Connection Error:', error);
+    console.error('MongoDB connection error:', error);
     process.exit(1);
   }
 };
+
+export default connectDB;
 
 export const closeDB = async (): Promise<void> => {
   await mongoose.connection.close();
