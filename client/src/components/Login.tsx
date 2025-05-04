@@ -8,7 +8,7 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { setUserName, setUserId } = useAppStore();
+  const { setUserName, setUserId, login } = useAppStore();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -23,34 +23,26 @@ const Login: React.FC = () => {
     }
 
     try {
-      // Check if user exists
-      const userResponse = await getUserIdByUsername(username);
+      // First try to create or get user
+      toast.loading('Processing...');
+      const createResponse = await createUser(username);
       
-      if (userResponse.success) {
-        // User exists
+      if (createResponse.success) {
         setUserName(username);
-        setUserId(userResponse.userId || '');
+        setUserId(createResponse.userId || '');
         localStorage.setItem('username', username);
-        localStorage.setItem('userId', userResponse.userId || '');
+        localStorage.setItem('userId', createResponse.userId || '');
+        login();
+        toast.dismiss();
         toast.success('Login successful!');
         navigate('/');
       } else {
-        // User doesn't exist, create new one
-        const createResponse = await createUser(username);
-        
-        if (createResponse.success) {
-          setUserName(username);
-          setUserId(createResponse.userId || '');
-          localStorage.setItem('username', username);
-          localStorage.setItem('userId', createResponse.userId || '');
-          toast.success('New account created!');
-          navigate('/');
-        } else {
-          setError(createResponse.error || 'Failed to create account.');
-        }
+        toast.dismiss();
+        setError(createResponse.error || 'Failed to login.');
       }
     } catch (error) {
       console.error('Login error:', error);
+      toast.dismiss();
       setError('An error occurred during login.');
     } finally {
       setIsLoading(false);
@@ -95,7 +87,7 @@ const Login: React.FC = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
             >
-              {isLoading ? 'Loading...' : 'Login'}
+              {isLoading ? 'Processing...' : 'Login'}
             </button>
           </div>
           
