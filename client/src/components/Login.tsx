@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
-import { getUserIdByUsername, createUser } from '../api/userApi';
+import {  createUser } from '../api/userApi';
 import { toast } from 'react-hot-toast';
 
 const Login: React.FC = () => {
