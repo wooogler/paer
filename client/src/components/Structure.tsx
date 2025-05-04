@@ -11,9 +11,11 @@ const Structure: React.FC<StructureProps> = memo(({ displayMode }) => {
   const { content, isLoading } = useContentStore();
 
   return (
-    <div className="p-2 flex flex-col h-full overflow-hidden">
+    <div className="p-2 flex flex-col h-full overflow-x-hidden">
       {/* Scrollable content tree */}
-      <div className="overflow-y-auto flex-grow">
+      <div className="overflow-y-auto overflow-x-hidden flex-grow">
+      {/* Content tree */}
+      {/* <div className="overflow-hidden flex-grow"> */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full">
             <ClipLoader size={50} color="#3B82F6" />

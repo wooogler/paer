@@ -21,7 +21,7 @@ function App() {
   }, [setUserName, setUserId]);
 
   return (
-    <div className="h-screen w-screen bg-gray-50">
+    <div className="h-full w-full bg-gray-50 overflow-hidden">
       <Router>
         <Routes>
           <Route 
