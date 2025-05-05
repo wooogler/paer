@@ -6,17 +6,23 @@ import { extractTitle, processLatexContent } from "../utils/paperUtils";
 import { PaperRepository } from "../repositories/paperRepository";
 import mongoose, { Types } from "mongoose";
 import { RAGService } from "../services/ragService";
+import { UserService } from "../services/userService";
+import { ChatService } from "../services/chatService";
 
 export class PaperController {
   private paperService: PaperService;
   private llmService: LLMService;
   private paperRepository: PaperRepository;
+  private userService: UserService;
+  private chatService: ChatService;
   private ragService: RAGService;
 
   constructor() {
     this.paperService = new PaperService();
     this.llmService = new LLMService();
     this.paperRepository = new PaperRepository();
+    this.userService = new UserService();
+    this.chatService = new ChatService();
     this.ragService = new RAGService();
   }
 
@@ -232,29 +238,40 @@ export class PaperController {
   }
 
   /**
-   * Update sentence
+   * Update sentence content
    */
   async updateSentence(
     request: FastifyRequest<{
+      Params: { paperId: string };
       Body: {
         authorId: string;
-        paperId: string;
         blockId: string;
         content: string;
-        summary: string;
-        intent: string;
-        lastModifiedBy: string;
+        summary?: string;
+        intent?: string;
+        lastModifiedBy?: string;
+        previousContent?: string;
       };
     }>,
     reply: FastifyReply
   ): Promise<any> {
     try {
-      const { authorId, paperId, blockId, content, summary, intent, lastModifiedBy } = request.body;
+      const { paperId } = request.params;
+      const { authorId, blockId, content, summary, intent, lastModifiedBy, previousContent } = request.body;
 
-      if (!authorId || !paperId || !blockId || !content) {
-        return reply.code(400).send({ error: "authorId, paperId, blockId, content are required" });
+      if (!authorId) {
+        return reply.code(400).send({ error: "authorId is required" });
       }
 
+      if (!blockId) {
+        return reply.code(400).send({ error: "blockId is required" });
+      }
+
+      if (!content) {
+        return reply.code(400).send({ error: "content is required" });
+      }
+
+      // Update sentence content
       await this.paperService.updateSentence(
         authorId,
         paperId,
@@ -265,12 +282,32 @@ export class PaperController {
         lastModifiedBy
       );
 
-      return reply.send({ success: true });
+      // Add edit history as chat message
+      if (previousContent) {
+        const user = await this.userService.getUserById(authorId);
+        if (user) {
+          const editMessage = {
+            id: `edit-${Date.now()}`,
+            role: "user" as const,
+            content: `Updated sentence in block ${blockId}`,
+            timestamp: Date.now(),
+            blockId,
+            messageType: "edit" as const,
+            userName: user.username,
+            userId: authorId,
+            viewAccess: "private",
+            previousSentence: previousContent,
+            updatedSentence: content
+          };
+
+          await this.chatService.addMessage(authorId, paperId, editMessage);
+        }
+      }
+
+      return { success: true };
     } catch (error) {
-      console.error("Error in updateSentence:", error);
-      return reply
-        .code(500)
-        .send({ error: "Failed to update sentence" });
+      console.error("Error updating sentence:", error);
+      return reply.code(500).send({ error: "Failed to update sentence" });
     }
   }
 

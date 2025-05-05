@@ -2,6 +2,7 @@ import { type Paper } from "@paer/shared";
 import axios from "axios";
 import { useAppStore } from "../store/useAppStore";
 import { useContentStore } from "../store/useContentStore";
+import { Content } from "@paer/shared";
 
 // API instance 생성
 export const api = axios.create({
@@ -70,7 +71,8 @@ export const updateSentenceContent = async (
   blockId: string,
   content: string,
   summary: string,
-  intent: string
+  intent: string,
+  previousContent?: string
 ) => {
   const authorId = useAppStore.getState().userId;
   const paperId = useContentStore.getState().selectedPaperId;
@@ -79,15 +81,16 @@ export const updateSentenceContent = async (
     throw new Error("Author ID or Paper ID is missing");
   }
 
-  const response = await api.patch("/papers/sentence", {
+  const response = await api.patch(`/papers/${paperId}/sentence`, {
     authorId,
-    paperId,
     blockId,
     content,
     summary,
     intent,
-    lastModifiedBy: authorId
+    lastModifiedBy: authorId,
+    previousContent
   });
+  
   return response.data;
 };
 
@@ -315,4 +318,15 @@ export const getEditHistoryByBlock = async(
     console.error("Error getting edit history:", error);
     throw error;
   }
+}
+
+export interface Paper {
+  id: string;
+  title: string;
+  authorId: string;
+  content: Content[];
+  createdAt: number;
+  updatedAt: number;
+  collaboratorIds: string[];
+  isPublic: boolean;
 }

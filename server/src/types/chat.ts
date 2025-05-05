@@ -1,6 +1,6 @@
 export type MessageRole = "user" | "system" | "assistant";
 
-export type MessageType = "chat" | "comment";
+export type MessageType = "chat" | "comment" | "edit";
 
 export interface ChatMessage {
   id: string;
@@ -9,9 +9,11 @@ export interface ChatMessage {
   timestamp: number;
   blockId?: string;
   messageType?: MessageType;
-  userName?: string;
+  userName: string;
   userId: string;
   viewAccess: string;
+  previousSentence?: string;
+  updatedSentence?: string;
 }
 
 export interface MessageAccessList {

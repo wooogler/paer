@@ -18,6 +18,7 @@
     "@types/react-split-pane": "^0.1.67",
     "@types/uuid": "^10.0.0",
     "axios": "^1.6.2",
+    "diff-match-patch": "^1.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.2",
@@ -32,6 +33,7 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@types/diff-match-patch": "^1.0.36",
     "@types/react": "^18.2.80",
     "@types/react-dom": "^18.2.29",
     "@vitejs/plugin-react": "^4.3.4",

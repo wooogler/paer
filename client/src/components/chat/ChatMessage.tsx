@@ -3,7 +3,9 @@ import { Message } from "../../api/chatApi";
 import { useContentStore } from "../../store/useContentStore";
 import ContentInfo from "../ui/ContentInfo";
 import { Content } from "@paer/shared";
-import { FiCheck, FiMessageSquare, FiMessageCircle, FiShare2 } from 'react-icons/fi';
+import { FiCheck, FiMessageSquare, FiMessageCircle, FiShare2, FiEdit } from 'react-icons/fi';
+import { Paper } from "../../api/paperApi";
+import { diff_match_patch } from "diff-match-patch";
 
 export type MessageRole = "user" | "assistant" | "system";
 
@@ -12,17 +14,20 @@ interface ChatMessageProps {
   isSelected: boolean;
   onSelect: (messageId: string) => void;
   selectionMode: boolean;
+  linkedPaper?: Paper;
 }
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ 
   message, 
   isSelected, 
   onSelect,
-  selectionMode 
+  selectionMode,
+  linkedPaper
 }) => {
   const isUser = message.role === "user";
   const { content } = useContentStore();
   const isComment = message.messageType === "comment";
+  const isEdit = message.messageType === "edit";
 
   // 메시지에 연결된 blockId가 있는지 확인
   const hasBlockReference = !!message.blockId;
@@ -49,6 +54,31 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
     return findContentByBlockId(content);
   }, [message.blockId, content]);
+
+  const renderDiff = (previous: string, updated: string) => {
+    const dmp = new diff_match_patch();
+    const diffs = dmp.diff_main(previous, updated);
+    dmp.diff_cleanupSemantic(diffs);
+
+    return diffs.map((diff, index) => {
+      const [type, text] = diff;
+      if (type === 0) {
+        return <span key={index}>{text}</span>;
+      } else if (type === 1) {
+        return (
+          <span key={index} className="font-bold underline">
+            {text}
+          </span>
+        );
+      } else {
+        return (
+          <span key={index} className="line-through text-gray-500">
+            {text}
+          </span>
+        );
+      }
+    });
+  };
 
   const SelectionCircle = () => (
     <div 
@@ -82,12 +112,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       )}
       <div className="flex flex-col">
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500 mb-1">
-          <span>{message.userName || (isUser ? "You" : "Assistant")}</span>
+          <span>{isUser ? (message.userName || "You") : "Assistant"}</span>
           <div className="flex items-center gap-2">
             {isComment ? (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">
                 <FiMessageSquare size={12} />
                 <span className="text-xs">Comment</span>
+              </div>
+            ) : isEdit ? (
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 text-purple-800">
+                <FiEdit size={12} />
+                <span className="text-xs">Edit</span>
               </div>
             ) : (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
@@ -103,9 +138,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             )}
           </div>
         </div>
-        <p className="text-sm whitespace-pre-wrap break-words">
-          {message.content}
-        </p>
+        {isEdit && message.previousSentence && message.updatedSentence ? (
+          <div className="space-y-2">
+            <div className="text-sm whitespace-pre-wrap break-words">
+              {renderDiff(message.previousSentence, message.updatedSentence)}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm whitespace-pre-wrap break-words">
+            {message.content}
+          </p>
+        )}
         <div className="text-xs mt-1 opacity-70 text-right">
           {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
         </div>
@@ -122,7 +165,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
           <div className={`max-w-[85%] p-3 rounded-lg transition-all
             ${isComment 
               ? 'bg-yellow-50 text-yellow-900' 
-              : 'bg-gray-100 text-gray-800'}
+              : isEdit
+                ? 'bg-purple-50 text-purple-900'
+                : 'bg-gray-100 text-gray-800'}
             ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
             ${!selectionMode && message.viewAccess === "public" ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
             <MessageContent />
@@ -137,10 +182,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     <div className="flex w-full mb-4 items-start space-x-3 min-w-0">
       {selectionMode && <div className="pt-2"><SelectionCircle /></div>}
       <div className="flex-grow min-w-0">
-        <div className={`max-w-[85%] p-3 rounded-lg transition-all
+        <div className={`p-3 rounded-lg transition-all
           ${isComment 
             ? 'bg-yellow-50 text-yellow-900' 
-            : 'bg-white text-gray-800'}
+            : isEdit
+              ? 'bg-purple-50 text-purple-900'
+              : 'bg-white text-gray-800'}
           ${isSelected ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
           ${!selectionMode && message.viewAccess === "public" ? 'ring-1 ring-green-500 ring-opacity-30' : ''}`}>
           <MessageContent />

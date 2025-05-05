@@ -1,6 +1,6 @@
 import { api } from "./paperApi";
 
-export type MessageType = "chat" | "comment";
+export type MessageType = "chat" | "comment" | "edit";
 
 export interface Message {
   id: string;
@@ -13,6 +13,8 @@ export interface Message {
   userName: string;
   messageType?: MessageType;
   viewAccess: string;
+  previousSentence?: string;
+  updatedSentence?: string;
 }
 
 export interface MessageAccessList {
