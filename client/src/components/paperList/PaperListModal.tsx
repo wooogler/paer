@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { FiX, FiBook, FiTrash2, FiUsers } from "react-icons/fi";
+import { FiX, FiBook, FiTrash2, FiUsers, FiCheck } from "react-icons/fi";
 import { getPapers, deletePaper } from "../../api/paperApi";
 import { useAppStore } from "../../store/useAppStore";
 import { useContentStore } from "../../store/useContentStore";
@@ -28,7 +28,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useAppStore();
-  const { setContent, setSelectedPaperId } = useContentStore();
+  const { setContent, setSelectedPaperId, selectedPaperId } = useContentStore();
 
   // 논문 목록 가져오기
   useEffect(() => {
@@ -81,6 +81,13 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
       if (response.success) {
         // 삭제된 논문을 목록에서 제거
         setPapers(papers.filter(paper => paper._id !== paperId));
+        
+        // 삭제된 논문이 현재 선택된 논문인 경우 초기화
+        if (paperId === selectedPaperId) {
+          setSelectedPaperId(null);
+          setContent(null);
+        }
+        
         toast.success("Paper deleted successfully.");
         onClose(); // 삭제 성공 후 모달 닫기
       } else {
@@ -100,6 +107,11 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
   // 사용자가 논문의 협업자인지 확인
   const isCollaborator = (paper: Paper) => {
     return paper.collaboratorIds && paper.collaboratorIds.includes(userId || "");
+  };
+
+  // 현재 선택된 논문인지 확인
+  const isSelected = (paper: Paper) => {
+    return paper._id === selectedPaperId;
   };
 
   return (
@@ -159,21 +171,27 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
                     {papers.map((paper) => (
                       <li 
                         key={paper._id} 
-                        className="py-3 px-2 hover:bg-gray-50 cursor-pointer transition-colors rounded group"
+                        className={`py-3 px-2 hover:bg-gray-50 cursor-pointer transition-colors rounded group ${isSelected(paper) ? 'bg-blue-50' : ''}`}
                         onClick={() => handleSelectPaper(paper)}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex items-start">
                             <div className="flex-shrink-0 pt-1">
-                              <FiBook className="text-blue-500" size={18} />
+                              <FiBook className={`${isSelected(paper) ? 'text-blue-600' : 'text-blue-500'}`} size={18} />
                             </div>
                             <div className="ml-3 flex-1">
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className={`text-sm font-medium ${isSelected(paper) ? 'text-blue-700' : 'text-gray-900'}`}>
                                 {paper.title || "No title"}
                                 {isCollaborator(paper) && !isAuthor(paper) && (
                                   <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                                     <FiUsers size={12} className="mr-1" />
                                     Collaborator
+                                  </span>
+                                )}
+                                {isSelected(paper) && (
+                                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                    <FiCheck size={12} className="mr-1" />
+                                    Current
                                   </span>
                                 )}
                               </p>

@@ -39,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     isFilteringEnabled,
     toggleFiltering,
   } = useChatStore();
-  const { content: rootContent, setContent } = useContentStore();
+  const { content: rootContent, setContent, setSelectedPaperId } = useContentStore();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isPaperListOpen, setIsPaperListOpen] = useState(false);
@@ -105,6 +105,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         // 새로 생성된 논문을 가져옵니다
         const newPaper = await getPaperById(response.paperId, userId);
         setContent(newPaper);
+        // 새로 생성된 논문을 자동으로 선택합니다
+        setSelectedPaperId(response.paperId);
         // 데이터 캐시 무효화하여 UI 업데이트
         await queryClient.invalidateQueries({
           queryKey: ["papers", userId],
