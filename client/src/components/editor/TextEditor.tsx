@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
+import React, { useCallback, useEffect, useState, useRef, ChangeEvent, useMemo } from "react";
 import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
@@ -15,7 +15,6 @@ import LevelIndicator, {
   getBackgroundColorClass,
   getBorderColorClass,
 } from "./LevelIndicator";
-import { getUserInfo } from "../../api/userApi";
 import { FiMoreVertical, FiFilter, FiTrash2, FiClock } from "react-icons/fi";
 import {
   useFloating,
@@ -29,6 +28,8 @@ import {
   autoUpdate
 } from "@floating-ui/react";
 import EditHistoryModal from "./EditHistoryModal";
+import { Message } from "../../api/chatApi";
+import ActivityStats from "./ActivityStats";
 
 interface TextEditorProps {
   content: Content;
@@ -38,6 +39,11 @@ interface TextEditorProps {
   showHierarchy?: boolean;
   onNextFocus?: () => void;
   onAddNewSentence?: () => void;
+}
+
+// 메시지 팝업 컴포넌트 인터페이스는 남겨둠 (다른 곳에서 참조할 수 있으므로)
+interface MessagePopupProps {
+  message: Message;
 }
 
 const TextEditor: React.FC<TextEditorProps> = React.memo(
@@ -104,9 +110,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         : content.summary || ""
     );
 
-    // State for username
-    const [lastModifiedBy, setLastModifiedBy] = useState<string>("");
-
     // State for history modal
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
@@ -132,17 +135,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         setLocalSummary(content.summary);
       }
     }, [content.intent, content.summary]);
-
-    // Fetch username when lastModifiedBy changes
-    useEffect(() => {
-      const fetchUserInfo = async () => {
-        if (content.type === "sentence" && content.lastModifiedBy) {
-          const userInfo = await getUserInfo(content.lastModifiedBy);
-          setLastModifiedBy(userInfo.user.username);
-        }
-      };
-      fetchUserInfo();
-    }, [content.lastModifiedBy, content.type]);
 
     // Focus the textarea
     const focus = useCallback(() => {
@@ -675,9 +667,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             )} */}
           </div>
           <div>
-            {content.type === "sentence" && lastModifiedBy && (
-              <div className="text-xs text-gray-500 mb-1">
-                Last modified by: {lastModifiedBy}
+            {content.type === "sentence" && (
+              <div className="flex items-center">
+                <ActivityStats blockId={content["block-id"]} />
               </div>
             )}
             <textarea
