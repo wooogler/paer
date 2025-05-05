@@ -303,11 +303,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               leftLabel="Sentence"
               rightLabel="Hierarchy"
             />
-            {isFilteringEnabled && (
-              <div className="text-sm text-gray-500">
-                Filtering: {filteredContent?.title || "No content"}
-              </div>
-            )}
           </div>
         }
       >
@@ -365,13 +360,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 title="View collaborators"
               >
                 <FiUsers />
-              </button>
-              <button
-                onClick={() => toggleChatVisibility()}
-                className="p-1.5 text-gray-600 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
-                title={isChatVisible ? "Hide chat" : "Show chat"}
-              >
-                {isChatVisible ? <FiMessageSquare /> : <FiMessageSquare />}
               </button>
               <button
                 onClick={handleToggleFiltering}
