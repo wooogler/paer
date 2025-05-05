@@ -13,7 +13,7 @@ const MessagePopup: React.FC<MessagePopupProps> = ({ messages }) => {
   );
 
   return (
-    <div className="shadow-lg border border-gray-200 rounded-lg overflow-hidden max-w-xs">
+    <div className="shadow-lg border border-gray-200 rounded-lg overflow-hidden max-w-xs p-0.5">
       {sortedMessages.map((message, index) => (
         <MessageBubble 
           key={index}
