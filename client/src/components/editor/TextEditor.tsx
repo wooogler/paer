@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef, ChangeEvent, useMemo } from "react";
+import React, { useCallback, useEffect, useState, useRef, ChangeEvent } from "react";
 import { Content } from "@paer/shared";
 import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
@@ -28,7 +28,6 @@ import {
   autoUpdate
 } from "@floating-ui/react";
 import EditHistoryModal from "./EditHistoryModal";
-import { Message } from "../../api/chatApi";
 import ActivityStats from "./ActivityStats";
 
 interface TextEditorProps {
@@ -39,11 +38,6 @@ interface TextEditorProps {
   showHierarchy?: boolean;
   onNextFocus?: () => void;
   onAddNewSentence?: () => void;
-}
-
-// 메시지 팝업 컴포넌트 인터페이스는 남겨둠 (다른 곳에서 참조할 수 있으므로)
-interface MessagePopupProps {
-  message: Message;
 }
 
 const TextEditor: React.FC<TextEditorProps> = React.memo(
