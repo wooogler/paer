@@ -11,12 +11,13 @@ import { useAppStore } from "../../store/useAppStore";
 import ChatMessage from "./ChatMessage";
 import ContentInfo from "../ui/ContentInfo";
 import { v4 as uuidv4 } from "uuid";
-import { FiShare2, FiCheck, FiChevronDown } from "react-icons/fi";
+import { FiShare2, FiCheck, FiChevronDown, FiFilter } from "react-icons/fi";
 import { getMembers } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
 import { toast } from "react-hot-toast";
 import { updateMessageAccess } from "../../api/chatApi";
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react";
+import { MessageType } from "../../api/chatApi";
 
 interface ViewingMode {
   userId: string;
@@ -47,6 +48,7 @@ const ChatInterface: React.FC = () => {
   const [isSharing, setIsSharing] = useState(false);
   const [collaborators, setCollaborators] = useState<ViewingMode[]>([]);
   const [selectedViews, setSelectedViews] = useState<ViewingMode[]>([{ userId, userName }]);
+  const [selectedMessageTypes, setSelectedMessageTypes] = useState<MessageType[]>(['chat', 'comment']);
 
   const isOnlyMyChatSelected = useMemo(() => 
     selectedViews.length === 1 && selectedViews[0].userId === userId,
@@ -220,8 +222,13 @@ const ChatInterface: React.FC = () => {
       );
     }
 
+    // Filter by message types
+    filtered = filtered.filter(msg => 
+      selectedMessageTypes.includes(msg.messageType || 'chat')
+    );
+
     return filtered;
-  }, [messages, filterBlockId, rootContent, isFilteringEnabled, selectedViews, userId]);
+  }, [messages, filterBlockId, rootContent, isFilteringEnabled, selectedViews, userId, selectedMessageTypes]);
 
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {
@@ -370,54 +377,41 @@ const ChatInterface: React.FC = () => {
     setSelectedViews(newViews);
   };
 
+  const handleMessageTypeChange = (newTypes: MessageType[]) => {
+    setSelectedMessageTypes(newTypes);
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white max-h-screen">
       {/* Persistent header with dropdown */}
       <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
-        <div className="relative">
-          <Listbox 
-            value={selectedViews} 
-            onChange={handleViewChange} 
-            multiple
-            by={(a, b) => a.userId === b.userId}
-          >
-            <div className="relative">
-              <ListboxButton className="flex items-center space-x-2 text-lg font-medium text-gray-800 hover:text-gray-600">
-                <span>
-                  {selectedViews.length === 1 && selectedViews[0].userId === userId
-                    ? "My Chat"
-                    : selectedViews.length === 1
-                    ? `${selectedViews[0].userName}'s Messages`
-                    : `${selectedViews.length} Users Selected`}
-                </span>
-                <FiChevronDown className="transition-transform ui-open:rotate-180" />
-              </ListboxButton>
-              <ListboxOptions anchor="bottom" className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                <ListboxOption
-                  value={{ userId, userName }}
-                  className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
-                >
-                  {({ selected }) => (
-                    <>
-                      <span className="block truncate">{userName} (Me)</span>
-                      {selected && (
-                        <span className="absolute inset-y-0 right-0 flex items-center pr-3">
-                          <FiCheck className="h-5 w-5" />
-                        </span>
-                      )}
-                    </>
-                  )}
-                </ListboxOption>
-                <div className="border-t border-gray-200 my-1"></div>
-                {collaborators.map((collaborator) => (
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <Listbox 
+              value={selectedViews} 
+              onChange={handleViewChange} 
+              multiple
+              by={(a, b) => a.userId === b.userId}
+            >
+              <div className="relative">
+                <ListboxButton className="flex items-center space-x-2 text-lg font-medium text-gray-800 hover:text-gray-600">
+                  <span>
+                    {selectedViews.length === 1 && selectedViews[0].userId === userId
+                      ? "My Chat"
+                      : selectedViews.length === 1
+                      ? `${selectedViews[0].userName}'s Messages`
+                      : `${selectedViews.length} Users Selected`}
+                  </span>
+                  <FiChevronDown className="transition-transform ui-open:rotate-180" />
+                </ListboxButton>
+                <ListboxOptions anchor="bottom" className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                   <ListboxOption
-                    key={collaborator.userId}
-                    value={collaborator}
+                    value={{ userId, userName }}
                     className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
                   >
                     {({ selected }) => (
                       <>
-                        <span className="block truncate">{collaborator.userName}</span>
+                        <span className="block truncate">{userName} (Me)</span>
                         {selected && (
                           <span className="absolute inset-y-0 right-0 flex items-center pr-3">
                             <FiCheck className="h-5 w-5" />
@@ -426,10 +420,101 @@ const ChatInterface: React.FC = () => {
                       </>
                     )}
                   </ListboxOption>
-                ))}
-              </ListboxOptions>
-            </div>
-          </Listbox>
+                  <div className="border-t border-gray-200 my-1"></div>
+                  {collaborators.map((collaborator) => (
+                    <ListboxOption
+                      key={collaborator.userId}
+                      value={collaborator}
+                      className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span className="block truncate">{collaborator.userName}</span>
+                          {selected && (
+                            <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                              <FiCheck className="h-5 w-5" />
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </ListboxOption>
+                  ))}
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
+          <div className="relative">
+            <Listbox 
+              value={selectedMessageTypes} 
+              onChange={handleMessageTypeChange} 
+              multiple
+            >
+              <div className="relative">
+                <ListboxButton className="flex items-center space-x-2 text-sm font-medium text-gray-600 hover:text-gray-800">
+                  <FiFilter className="text-gray-500" />
+                  <span>
+                    {selectedMessageTypes.length === 3 
+                      ? "All Types" 
+                      : selectedMessageTypes.length === 2 && selectedMessageTypes.includes('chat') && selectedMessageTypes.includes('comment')
+                      ? "Chats & Comments"
+                      : selectedMessageTypes.length === 1
+                      ? selectedMessageTypes[0] === 'chat' ? "Chats" : 
+                        selectedMessageTypes[0] === 'comment' ? "Comments" : "Edits"
+                      : `${selectedMessageTypes.length} Types`}
+                  </span>
+                  <FiChevronDown className="transition-transform ui-open:rotate-180" size={14} />
+                </ListboxButton>
+                <ListboxOptions anchor="bottom" className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <ListboxOption
+                    value="chat"
+                    className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className="block truncate">Chats</span>
+                        {selected && (
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <FiCheck className="h-5 w-5" />
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </ListboxOption>
+                  <ListboxOption
+                    value="comment"
+                    className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className="block truncate">Comments</span>
+                        {selected && (
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <FiCheck className="h-5 w-5" />
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </ListboxOption>
+                  <ListboxOption
+                    value="edit"
+                    className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className="block truncate">Edits</span>
+                        {selected && (
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <FiCheck className="h-5 w-5" />
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
         </div>
         
         {isOnlyMyChatSelected && (
@@ -442,7 +527,7 @@ const ChatInterface: React.FC = () => {
                   ? 'bg-blue-500 text-white hover:bg-blue-600' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
-              {isSelectionMode ? 'Cancel' : <><FiShare2 className="mr-1.5" size={14} /> Share Messages</>}
+              {isSelectionMode ? 'Cancel' : <><FiShare2 className="mr-1.5" size={14} /> Messages</>}
             </button>
             {!isSelectionMode && (
               <button

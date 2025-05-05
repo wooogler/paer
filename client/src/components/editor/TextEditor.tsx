@@ -40,7 +40,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const { updateContent, setSelectedContent, selectedContent } =
       useContentStore();
     const { showHierarchy: appShowHierarchy } = useAppStore();
-    const { filterBlockId, isFilteringEnabled, setFilterBlockId } =
+    const { filterBlockId, isFilteringEnabled, setFilterBlockId, toggleFiltering } =
       useChatStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
@@ -490,12 +490,14 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         if (isActiveMessageFilter) {
           // 이미 active 상태일 경우, 필터링 해제
           setFilterBlockId(null);
+          toggleFiltering(false);
         } else {
           // active 상태가 아닐 경우, 해당 블록으로 필터링
           setFilterBlockId(content["block-id"]);
+          toggleFiltering(true);
         }
       }
-    }, [content["block-id"], isActiveMessageFilter, setFilterBlockId]);
+    }, [content["block-id"], isActiveMessageFilter, setFilterBlockId, toggleFiltering]);
 
     useEffect(() => {
       // Adjust textarea height on initial render or when content changes
@@ -533,7 +535,8 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
         />
 
         {/* Filter (message) icon button - absolutely positioned, outside text fields */}
-        {isSelectedContent && content["block-id"] && (
+        {((isFilteringEnabled && content["block-id"] === filterBlockId) || 
+          (!isFilteringEnabled && isSelectedContent)) && content["block-id"] && (
           <button
             onClick={handleShowMessages}
             className={`absolute top-2 right-2 z-10 ${

@@ -20,7 +20,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
       setSelectedBlock,
       isBlockUpdating,
     } = useContentStore();
-    const { setFilterBlockId, isFilteringEnabled, filterBlockId } =
+    const { setFilterBlockId, isFilteringEnabled, filterBlockId, toggleFiltering } =
       useChatStore();
 
     // 현재 항목이 selectedBlock인지 확인
@@ -62,9 +62,11 @@ const TreeItem: React.FC<TreeItemProps> = memo(
         if (isActiveMessageFilter) {
           // 이미 active 상태일 경우, 필터링 해제
           setFilterBlockId(null);
+          toggleFiltering(false);
         } else {
           // active 상태가 아닐 경우, 해당 블록으로 필터링
           setFilterBlockId(content["block-id"]);
+          toggleFiltering(true);
         }
       }
     };
