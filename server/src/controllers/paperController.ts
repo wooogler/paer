@@ -552,7 +552,7 @@ export class PaperController {
         return reply.code(400).send({ error: "authorId, paperId, renderedContent, and blockId are required" });
       }
       
-      const result = await this.llmService.updateRenderedSummaries(
+      const result = await this.paperService.updateRenderedSummaries(
         authorId,
         paperId,
         renderedContent,

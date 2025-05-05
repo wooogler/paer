@@ -153,13 +153,93 @@ export class LLMService {
   }
 
   async updateRenderedSummaries(
-    authorId: string,
-    paperId: string,
-    renderedContent: string,
-    blockId: string
+    block: Content
   ): Promise<any> {
     try {
+      // Recursive function to order properties in nested objects
+      const orderProperties = (obj: any): any => {
+        if (typeof obj !== "object" || obj === null) return obj;
 
+        if (Array.isArray(obj)) {
+          return obj.map((item) => orderProperties(item));
+        }
+
+        const orderedObj: any = {};
+        // Define the order of properties (summary 속성 제거)
+        const propertyOrder = [
+          "type",
+          "block-id",
+          "title",
+          "content",
+          "intent",
+        ];
+
+        // Add properties in the specified order
+        propertyOrder.forEach((prop) => {
+          // sentence 타입인 경우 intent 제외, 모든 타입에서 summary 제외
+          if (prop === "block-id") {
+            if (obj["block-id"] !== undefined) {
+              orderedObj["block-id"] = orderProperties(obj["block-id"]);
+            }
+          } else if (prop === "summary") {
+            // summary 속성 처리하지 않음 (완전히 제거)
+          } else if (prop === "intent" && obj.type === "sentence") {
+            // sentence 타입인 경우 intent 처리하지 않음
+          } else if (obj[prop] !== undefined) {
+            orderedObj[prop] = orderProperties(obj[prop]);
+          }
+        });
+
+        return orderedObj;
+      };
+
+      const orderedBlock = orderProperties(block);
+
+      const prompt = `You are a helpful peer reader for academic writing. Analyze the following content block from paper.json and fill in all empty intent fields (ignore summary fields completely).
+Here is the block from paper.json:
+${JSON.stringify(orderedBlock, null, 2)}
+
+Please provide your response as a raw JSON object (without any markdown formatting or code blocks) with the same structure as the input, but with all empty intent fields filled in. For each block:
+- Intent should reflect the writer's purpose and rhetorical strategy
+- For content with LaTeX commands or references, focus on the actual text content
+- Skip intent for sentence blocks completely
+- For blocks with nested content, consider the combined text of all child blocks`;
+
+      console.log("OpenAI API에 보내는 프롬프트:", prompt);
+
+      const response = await this.client.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0,
+      });
+
+      const result = JSON.parse(
+        response.choices[0].message?.content?.trim() ?? "{}"
+      );
+      console.log("OpenAI API 응답: ", JSON.stringify(result, null, 2));
+
+      return {
+        prompt,
+        apiResponse: {
+          model: response.model,
+          usage: response.usage,
+          content: response.choices[0].message?.content,
+          parsedResult: result,
+        },
+      };
+    } catch (error) {
+      console.error("Error in updateRenderedSummaries:", error);
+      throw error;
+    }
+  }
+
+  async updateBlockIntent(
+    authorId: string,
+    paperId: string,
+    blockId: string,
+    renderedContent: string
+  ): Promise<any> {
+    try {
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
@@ -175,7 +255,7 @@ export class LLMService {
 
       return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", response.choices[0].message.content || "");
     } catch (error) {
-      console.error("Error in updateRenderedSummaries:", error);
+      console.error("Error in updateBlockIntent:", error);
       throw error;
     }
   }
