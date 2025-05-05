@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useCallback } from "react";
 import { Content, ContentType } from "@paer/shared";
 import EditableField from "./EditableField";
-import DeleteBlockButton from "./DeleteBlockButton";
 import LevelLines from "./LevelLines";
 import { getTypeColor } from "../../utils/contentUtils";
 import {
@@ -242,9 +241,6 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
       },
       [handleTitleUpdate, handleTitleCancel]
     );
-
-    // Display delete for any content type except paper and placeholder content
-    const showDeleteButton = content.type !== "paper" && !isPlaceholder;
 
     // Only allow editing for non-sentence blocks
     const isEditableBlock =

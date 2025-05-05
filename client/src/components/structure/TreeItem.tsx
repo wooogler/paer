@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { useContentStore } from "../../store/useContentStore";
 import { Content, ContentType } from "@paer/shared";
 import { isSelectableContent, getTypeColor } from "../../utils/contentUtils";

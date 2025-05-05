@@ -10,7 +10,7 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { importPaper, getPaperById } from "../api/paperApi";
-import { FiDownload, FiTrash2, FiLogOut, FiList, FiUsers, FiMessageSquare } from "react-icons/fi";
+import { FiDownload, FiLogOut, FiList, FiUsers } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";

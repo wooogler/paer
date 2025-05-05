@@ -88,7 +88,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // State for loading indicators
     const isUpdating = updateSentenceMutation.isPending;
-    const isDeleting = deleteSentenceMutation.isPending;
 
     // State for editable fields
     const [editingIntent, _] = useState(false);

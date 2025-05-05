@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getEditHistoryByBlock } from "../../api/paperApi";
 import { getUserInfo } from "../../api/userApi";
 import { ClipLoader } from "react-spinners";

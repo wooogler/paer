@@ -2,9 +2,8 @@ import React, { useMemo } from "react";
 import { Message } from "../../api/chatApi";
 import { useContentStore } from "../../store/useContentStore";
 import ContentInfo from "../ui/ContentInfo";
-import { Content } from "@paer/shared";
+import { Content, Paper } from "@paer/shared";
 import { FiCheck, FiMessageSquare, FiMessageCircle, FiShare2, FiEdit } from 'react-icons/fi';
-import { Paper } from "../../api/paperApi";
 import { diff_match_patch } from "diff-match-patch";
 
 export type MessageRole = "user" | "assistant" | "system";
@@ -22,7 +21,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   isSelected, 
   onSelect,
   selectionMode,
-  linkedPaper
 }) => {
   const isUser = message.role === "user";
   const { content } = useContentStore();

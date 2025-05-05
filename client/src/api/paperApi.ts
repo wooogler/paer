@@ -1,8 +1,7 @@
-import { type Paper } from "@paer/shared";
 import axios from "axios";
 import { useAppStore } from "../store/useAppStore";
 import { useContentStore } from "../store/useContentStore";
-import { Content } from "@paer/shared";
+import { Paper } from "@paer/shared";
 
 // API instance 생성
 export const api = axios.create({
@@ -318,15 +317,4 @@ export const getEditHistoryByBlock = async(
     console.error("Error getting edit history:", error);
     throw error;
   }
-}
-
-export interface Paper {
-  id: string;
-  title: string;
-  authorId: string;
-  content: Content[];
-  createdAt: number;
-  updatedAt: number;
-  collaboratorIds: string[];
-  isPublic: boolean;
 }
