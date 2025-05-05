@@ -152,7 +152,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 ) : papers.length === 0 ? (
                   <div className="py-4 text-center text-gray-500">
-                    No papers registered.
+                    No papers imported.
                   </div>
                 ) : (
                   <ul className="divide-y divide-gray-200 max-h-80 overflow-y-auto">
