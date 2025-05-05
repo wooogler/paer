@@ -8,9 +8,11 @@ export interface IMessage {
   timestamp: number;
   blockId?: string;
   messageType?: MessageType;
-  userName?: string;
+  userName: string;
   userId: string;
   viewAccess: string;
+  previousSentence?: string;
+  updatedSentence?: string;
 }
 
 export interface IChat extends Document {
@@ -45,8 +47,12 @@ const MessageSchema = new Schema<IMessage>({
   },
   messageType: {
     type: String,
-    enum: ['chat', 'comment'],
+    enum: ['chat', 'comment', 'edit'],
     default: 'chat'
+  },
+  userName: {
+    type: String,
+    required: true
   },
   viewAccess: {
     type: String,
@@ -57,6 +63,12 @@ const MessageSchema = new Schema<IMessage>({
     type: String,
     required: true
   },
+  previousSentence: {
+    type: String
+  },
+  updatedSentence: {
+    type: String
+  }
 }, { _id: false });
 
 const ChatSchema = new Schema<IChat>(

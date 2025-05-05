@@ -3,16 +3,19 @@ import { ChatService } from "../services/chatService";
 import { ChatMessage, MessageAccessList } from "../types/chat";
 import { PaperService } from "../services/paperService";
 import { LLMService } from "../services/llmService";
+import { UserService } from "../services/userService";
 
 export class ChatController {
   private chatService: ChatService;
   private paperService: PaperService;
   private llmService: LLMService;
+  private userService: UserService;
 
   constructor() {
     this.chatService = new ChatService();
     this.paperService = new PaperService();
     this.llmService = new LLMService();
+    this.userService = new UserService();
   }
 
   /**
@@ -97,16 +100,23 @@ export class ChatController {
         return reply.code(400).send({ error: "userId is required" });
       }
 
+      // Get user information
+      const user = await this.userService.getUserById(userId);
+      if (!user) {
+        return reply.code(404).send({ error: "User not found" });
+      }
+
       // Before saving the message, validate messageType and senderId
       // if messageType is not specified, set it to "chat"
       if (!messageData.messageType) {
         messageData.messageType = "chat";
       }
 
-      // Create message object with userId
+      // Create message object with userId and username
       const message: ChatMessage = {
         ...messageData,
-        userId: userId
+        userId: userId,
+        userName: user.username
       };
 
       // Save user message

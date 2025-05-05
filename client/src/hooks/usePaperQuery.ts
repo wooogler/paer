@@ -100,18 +100,21 @@ export const useUpdateSentence = () => {
       content,
       summary,
       intent,
+      previousContent
     }: {
       blockId: string;
       content?: string;
       summary?: string;
       intent?: string;
+      previousContent?: string;
     }) => {
       // Make a single API call to update all fields
       await updateSentenceContent(
         blockId,
         content || "",
         summary || "",
-        intent || ""
+        intent || "",
+        previousContent
       );
     },
     onSuccess: async () => {

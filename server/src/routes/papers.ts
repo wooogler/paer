@@ -46,17 +46,18 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
 
   // PATCH /api/papers/sentence - 문장 업데이트
   fastify.patch<{
+    Params: { paperId: string };
     Body: {
       authorId: string;
-      paperId: string;
       blockId: string;
       content: string;
-      summary: string;
-      intent: string;
-      lastModifiedBy: string;
+      summary?: string;
+      intent?: string;
+      lastModifiedBy?: string;
+      previousContent?: string;
     };
   }>(
-    "/sentence",
+    "/:paperId/sentence",
     async (request, reply) => {
       return paperController.updateSentence(request, reply);
     }

@@ -16,6 +16,7 @@ import { getMembers } from "../../api/paperApi";
 import { getAllUsers } from "../../api/userApi";
 import { toast } from "react-hot-toast";
 import { updateMessageAccess } from "../../api/chatApi";
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react";
 
 interface ViewingMode {
   userId: string;
@@ -45,8 +46,12 @@ const ChatInterface: React.FC = () => {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [collaborators, setCollaborators] = useState<ViewingMode[]>([]);
-  const [currentView, setCurrentView] = useState<ViewingMode>({ userId, userName });
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedViews, setSelectedViews] = useState<ViewingMode[]>([{ userId, userName }]);
+
+  const isOnlyMyChatSelected = useMemo(() => 
+    selectedViews.length === 1 && selectedViews[0].userId === userId,
+    [selectedViews, userId]
+  );
 
   // Load collaborators
   useEffect(() => {
@@ -143,7 +148,7 @@ const ChatInterface: React.FC = () => {
     }
   }, [messages, selectedMessageIds.length, userId]);
 
-  const isViewingOwnChat = currentView.userId === userId;
+  const isViewingOwnChat = selectedViews.some(view => view.userId === userId);
 
   // Calculate filtered messages list
   const filteredMessages = useMemo(() => {
@@ -200,19 +205,23 @@ const ChatInterface: React.FC = () => {
       filtered = messages.filter((msg) => !msg.blockId || blockIds.has(msg.blockId));
     }
 
-    // Always filter based on current view
-    if (isViewingOwnChat) {
-      // When viewing own chat, show all messages
-      filtered = filtered.filter(msg => msg.userId === userId);
-    } else {
-      // When viewing collaborator's messages, only show their public messages
+    // Filter based on selected views
+    if (selectedViews.length > 0) {
       filtered = filtered.filter(msg => 
-        msg.userId === currentView.userId && msg.viewAccess === "public"
+        selectedViews.some(view => {
+          if (view.userId === userId) {
+            // For own messages, show all
+            return msg.userId === userId;
+          } else {
+            // For collaborators, only show public messages
+            return msg.userId === view.userId && msg.viewAccess === "public";
+          }
+        })
       );
     }
 
     return filtered;
-  }, [messages, filterBlockId, rootContent, isFilteringEnabled, isViewingOwnChat, currentView.userId, userId]);
+  }, [messages, filterBlockId, rootContent, isFilteringEnabled, selectedViews, userId]);
 
   // Scroll to bottom when messages are added
   const scrollToBottom = useCallback(() => {
@@ -356,54 +365,74 @@ const ChatInterface: React.FC = () => {
     }
   }, [isSelectionMode, messages, userId]);
 
+  const handleViewChange = (newViews: ViewingMode[]) => {
+    // 선택된 뷰가 없는 경우에도 빈 배열로 설정
+    setSelectedViews(newViews);
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden bg-white max-h-screen">
       {/* Persistent header with dropdown */}
       <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
         <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center space-x-2 text-lg font-medium text-gray-800 hover:text-gray-600"
+          <Listbox 
+            value={selectedViews} 
+            onChange={handleViewChange} 
+            multiple
+            by={(a, b) => a.userId === b.userId}
           >
-            <span>{currentView.userId === userId ? "My Chat" : `${currentView.userName}'s Shared Messages`}</span>
-            <FiChevronDown className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
-          
-          {isDropdownOpen && (
-            <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-              <button
-                onClick={() => {
-                  setCurrentView({ userId, userName });
-                  setIsDropdownOpen(false);
-                }}
-                className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2
-                  ${currentView.userId === userId ? 'bg-blue-50 text-blue-600' : ''}`}
-              >
-                <span>My Chat</span>
-                {currentView.userId === userId && <FiCheck className="ml-auto" />}
-              </button>
-              
-              <div className="border-t border-gray-200 my-1"></div>
-              
-              {collaborators.map((collaborator) => (
-                <button
-                  key={collaborator.userId}
-                  onClick={() => {
-                    setCurrentView(collaborator);
-                    setIsDropdownOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-2
-                    ${currentView.userId === collaborator.userId ? 'bg-blue-50 text-blue-600' : ''}`}
+            <div className="relative">
+              <ListboxButton className="flex items-center space-x-2 text-lg font-medium text-gray-800 hover:text-gray-600">
+                <span>
+                  {selectedViews.length === 1 && selectedViews[0].userId === userId
+                    ? "My Chat"
+                    : selectedViews.length === 1
+                    ? `${selectedViews[0].userName}'s Messages`
+                    : `${selectedViews.length} Users Selected`}
+                </span>
+                <FiChevronDown className="transition-transform ui-open:rotate-180" />
+              </ListboxButton>
+              <ListboxOptions anchor="bottom" className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <ListboxOption
+                  value={{ userId, userName }}
+                  className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
                 >
-                  <span>{collaborator.userName}'s Shared Messages</span>
-                  {currentView.userId === collaborator.userId && <FiCheck className="ml-auto" />}
-                </button>
-              ))}
+                  {({ selected }) => (
+                    <>
+                      <span className="block truncate">{userName} (Me)</span>
+                      {selected && (
+                        <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                          <FiCheck className="h-5 w-5" />
+                        </span>
+                      )}
+                    </>
+                  )}
+                </ListboxOption>
+                <div className="border-t border-gray-200 my-1"></div>
+                {collaborators.map((collaborator) => (
+                  <ListboxOption
+                    key={collaborator.userId}
+                    value={collaborator}
+                    className="relative cursor-pointer select-none py-2 pl-4 pr-10 data-focus:bg-blue-50 data-focus:text-blue-600 data-selected:bg-blue-50 data-selected:text-blue-600"
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span className="block truncate">{collaborator.userName}</span>
+                        {selected && (
+                          <span className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <FiCheck className="h-5 w-5" />
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </ListboxOption>
+                ))}
+              </ListboxOptions>
             </div>
-          )}
+          </Listbox>
         </div>
         
-        {isViewingOwnChat && (
+        {isOnlyMyChatSelected && (
           <div className="flex items-center space-x-2">
             <button
               type="button"
@@ -413,13 +442,40 @@ const ChatInterface: React.FC = () => {
                   ? 'bg-blue-500 text-white hover:bg-blue-600' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
-            {isSelectionMode ? 'Cancel' : <><FiShare2 className="mr-1.5" size={14} /> Share Messages</>}            </button>
+              {isSelectionMode ? 'Cancel' : <><FiShare2 className="mr-1.5" size={14} /> Share Messages</>}
+            </button>
+            {!isSelectionMode && (
+              <button
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to clear all chat messages?")) {
+                    useChatStore.getState().clearMessages();
+                  }
+                }}
+                className="p-1.5 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 transition-colors"
+                title="Clear chat messages"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* Selection mode header - only show in own chat */}
-      {isViewingOwnChat && isSelectionMode && (
+      {isOnlyMyChatSelected && isSelectionMode && (
         <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
           <span className="font-medium text-gray-700">
             {selectedMessageIds.length === 0 
@@ -467,12 +523,21 @@ const ChatInterface: React.FC = () => {
               <p>No paper available. Please input a paper first.</p>
               <p className="mt-2">Use the import button to upload a paper or create a new one.</p>
             </div>
+          ) : selectedViews.length === 0 ? (
+            <div className="text-center text-gray-500 mt-4">
+              <p>Please select a user to view their messages.</p>
+              <p className="mt-2">Use the dropdown menu above to select users.</p>
+            </div>
           ) : (
             <>
               {/* Show different message if viewing collaborator's empty shared messages */}
               {!isViewingOwnChat && messages.length === 0 ? (
                 <div className="text-center text-gray-500 mt-4">
-                  <p>{currentView.userName} hasn't shared any messages yet.</p>
+                  <p>
+                    {selectedViews.length === 1 
+                      ? `${selectedViews[0].userName} hasn't shared any messages yet.`
+                      : 'No messages available in selected views.'}
+                  </p>
                 </div>
               ) : (
                 <>

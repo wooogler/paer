@@ -200,6 +200,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             content: localValue,
             summary: localSummary,
             intent: localIntent,
+            previousContent: initialContent
           },
           {
             onSuccess: () => {
@@ -242,6 +243,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       localSummary,
       localIntent,
       updateContent,
+      initialContent
     ]);
 
     // Update with shift+Enter handler (새 문장 추가 또는 다음 문장으로 포커스 이동)
@@ -258,6 +260,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
             content: localValue,
             summary: localSummary,
             intent: localIntent,
+            previousContent: initialContent
           },
           {
             onSuccess: () => {
@@ -300,6 +303,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       onAddNewSentence,
       onNextFocus,
       isUpdating,
+      initialContent
     ]);
 
     // Cancel button handler

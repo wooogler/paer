@@ -1,7 +1,8 @@
 import { ChatMessage, MessageAccessList } from "../types/chat";
 import { Chat, IChat } from "../models/Chat";
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId, Document } from "mongoose";
 import { PaperModel } from "../models/Paper";
+import { User, IUser } from "../models/User";
 
 export class ChatRepository {
   /**
@@ -39,15 +40,57 @@ export class ChatRepository {
         }
       });
 
+      // Get all unique user IDs from messages
+      const userIds = new Set<string>();
+      chats.forEach(chat => {
+        chat.messages.forEach(message => {
+          if (message.userId) {
+            userIds.add(message.userId.toString());
+          }
+        });
+      });
+
+      // Get all users as lean objects (plain JavaScript objects)
+      const users = await User.find({ _id: { $in: Array.from(userIds) } }).lean();
+      
+      // Create a map of userIds to usernames
+      const userMap = new Map<string, string>();
+      for (const user of users) {
+        if (user && user._id) {
+          userMap.set(user._id.toString(), user.username || "Unknown");
+        }
+      }
+
       // Combine all messages and filter based on viewAccess
-      const allMessages = chats.flatMap(chat => 
-        chat.messages.filter(message => 
-          // Private messages are only visible to their owner
-          // Public messages are visible to all collaborators
-          message.viewAccess === "public" || 
-          (message.userId && message.userId.toString() === userId)
-        )
-      );
+      const allMessages: ChatMessage[] = [];
+      
+      chats.forEach(chat => {
+        chat.messages.forEach(message => {
+          // Check if message should be included based on viewAccess
+          if (message.viewAccess === "public" || 
+              (message.userId && message.userId.toString() === userId)) {
+            
+            // Create a plain object with all message properties
+            const plainMessage: ChatMessage = {
+              id: message.id,
+              role: message.role,
+              content: message.content,
+              timestamp: message.timestamp,
+              blockId: message.blockId,
+              messageType: message.messageType,
+              userId: message.userId,
+              viewAccess: message.viewAccess,
+              userName: message.userId ? 
+                userMap.get(message.userId.toString()) || "Unknown" : 
+                "Unknown",
+              previousSentence: message.previousSentence,
+              updatedSentence: message.updatedSentence
+            };
+            
+            allMessages.push(plainMessage);
+          }
+        });
+      });
 
       // Sort messages by timestamp
       return allMessages.sort((a, b) => a.timestamp - b.timestamp);
@@ -152,16 +195,58 @@ export class ChatRepository {
         }
       });
 
+      // Get all unique user IDs from messages
+      const userIds = new Set<string>();
+      chats.forEach(chat => {
+        chat.messages.forEach(message => {
+          if (message.userId) {
+            userIds.add(message.userId.toString());
+          }
+        });
+      });
+
+      // Get all users as lean objects (plain JavaScript objects)
+      const users = await User.find({ _id: { $in: Array.from(userIds) } }).lean();
+      
+      // Create a map of userIds to usernames
+      const userMap = new Map<string, string>();
+      for (const user of users) {
+        if (user && user._id) {
+          userMap.set(user._id.toString(), user.username || "Unknown");
+        }
+      }
+
       // Combine all messages and filter based on viewAccess and blockId
-      const allMessages = chats.flatMap(chat => 
-        chat.messages.filter(message => 
-          message.blockId === blockId &&
-          // Private messages are only visible to their owner
-          // Public messages are visible to all collaborators
-          (message.viewAccess === "public" || 
-           (message.userId && message.userId.toString() === userId))
-        )
-      );
+      const allMessages: ChatMessage[] = [];
+      
+      chats.forEach(chat => {
+        chat.messages.forEach(message => {
+          // Check if message should be included
+          if (message.blockId === blockId &&
+              (message.viewAccess === "public" || 
+              (message.userId && message.userId.toString() === userId))) {
+            
+            // Create a plain object with all message properties
+            const plainMessage: ChatMessage = {
+              id: message.id,
+              role: message.role,
+              content: message.content,
+              timestamp: message.timestamp,
+              blockId: message.blockId,
+              messageType: message.messageType,
+              userId: message.userId,
+              viewAccess: message.viewAccess,
+              userName: message.userId ? 
+                userMap.get(message.userId.toString()) || "Unknown" : 
+                "Unknown",
+              previousSentence: message.previousSentence,
+              updatedSentence: message.updatedSentence
+            };
+            
+            allMessages.push(plainMessage);
+          }
+        });
+      });
 
       // Sort messages by timestamp
       return allMessages.sort((a, b) => a.timestamp - b.timestamp);

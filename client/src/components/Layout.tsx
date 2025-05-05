@@ -10,7 +10,7 @@ import { useContentStore } from "../store/useContentStore";
 import { usePaperQuery } from "../hooks/usePaperQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { importPaper, getPaperById } from "../api/paperApi";
-import { FiDownload, FiTrash2, FiLogOut, FiList, FiUsers } from "react-icons/fi";
+import { FiDownload, FiTrash2, FiLogOut, FiList, FiUsers, FiMessageSquare } from "react-icons/fi";
 import ContentInfo from "./ui/ContentInfo";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -367,15 +367,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <FiUsers />
               </button>
               <button
-                onClick={() => {
-                  if (window.confirm("Are you sure you want to clear all chat messages?")) {
-                    useChatStore.getState().clearMessages();
-                  }
-                }}
-                className="p-1.5 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 transition-colors"
-                title="Clear chat messages"
+                onClick={() => toggleChatVisibility()}
+                className="p-1.5 text-gray-600 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+                title={isChatVisible ? "Hide chat" : "Show chat"}
               >
-                <FiTrash2 />
+                {isChatVisible ? <FiMessageSquare /> : <FiMessageSquare />}
               </button>
               {isFilteringEnabled && filterBlockId && (
                 <button
