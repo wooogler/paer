@@ -910,11 +910,12 @@ export class PaperRepository {
   // get edit history
   async getEditHistory(paperId: string, blockId: string, userId: string): Promise<any> {
     try {
-      if (!isValidObjectId(paperId) || !isValidObjectId(blockId)) {
-        throw new Error("Invalid paperId or blockId");
-      }
-
       const paperObjectId = new mongoose.Types.ObjectId(paperId);
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+
+      if (!isValidObjectId(paperObjectId) || !isValidObjectId(userObjectId)) {
+        throw new Error("Invalid paperId or userId");
+      }
 
       // check the paper exists
       const paper = await PaperModel.findOne({
@@ -925,8 +926,13 @@ export class PaperRepository {
         throw new Error("Paper not found");
       }
 
+      // check the block also exists
+      const targetBlock = this.findBlockById(paper, blockId);
+      if (!targetBlock) {
+        throw new Error(`Block with ID ${blockId} not found`);
+      }
+
       // check the user has permission to access the paper
-      const userObjectId = new mongoose.Types.ObjectId(userId);
       const authorObjectId = new mongoose.Types.ObjectId(paper.authorId);
       const hasPermission = authorObjectId.equals(userObjectId) || paper.collaboratorIds.includes(userObjectId.toString());
       if (!hasPermission) {

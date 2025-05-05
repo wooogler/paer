@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { Content } from "@paer/shared";
 import { PaperModel } from '../models/Paper';
 import { PaperRepository } from '../repositories/paperRepository';
+import { RAGService } from './ragService';
 
 type Message = {
   role: "system" | "user" | "assistant";
@@ -15,6 +16,7 @@ export class LLMService {
   private intentCache: Map<string, string>;
   private conversationHistory: Message[];
   private paperRepository: PaperRepository;
+  private ragService: RAGService;
 
   constructor() {
     this.client = new OpenAI({
@@ -24,6 +26,7 @@ export class LLMService {
     this.intentCache = new Map();
     this.conversationHistory = [];
     this.paperRepository = new PaperRepository();
+    this.ragService = new RAGService();
   }
 
   async initializeConversation(paperContent: string): Promise<void> {
@@ -65,41 +68,70 @@ export class LLMService {
   async askLLM(
     text: string,
     renderedContent?: string,
-    blockId?: string
+    blockId?: string,
+    paperId?: string,
+    userId?: string
   ): Promise<any> {
     try {
-      console.log('OpenAI Input:', {
-        text,
-        renderedContent,
-        blockId,
-        conversationHistory: this.conversationHistory
-      });
+      // If we have a paperId, use RAG to retrieve relevant information
+      let relevantContext = '';
+      if (paperId) {
+        // Limit to top 3 most relevant chunks to avoid token limit
+        const similarChunks = await this.ragService.findSimilarChunks(paperId, text, 3);
+        if (similarChunks.length > 0) {
+          // Only include chunks with high similarity scores
+          const highSimilarityChunks = similarChunks.filter(chunk => (chunk.similarity ?? 0) > 0.7);
+          if (highSimilarityChunks.length > 0) {
+            relevantContext = `Relevant information from the paper:\n${highSimilarityChunks.map(chunk => chunk.content).join('\n\n')}\n\n`;
+          }
+        }
+      }
 
-      if (renderedContent) {
+      // Add relevant context from RAG if available
+      if (relevantContext) {
         this.conversationHistory.push({
           role: "system",
-          content: `Context:\n${renderedContent}`,
+          content: relevantContext,
           blockId,
         });
       }
 
+      // Add block-specific context if available and not too long
+      if (renderedContent && renderedContent.length < 1000) {
+        this.conversationHistory.push({
+          role: "system",
+          content: `Context from the current block:\n${renderedContent}`,
+          blockId,
+        });
+      }
+
+      // Add user's question
       this.conversationHistory.push({
         role: "user",
-        content: `User:\n${text}\nYour response:`,
+        content: text,
         blockId,
       });
 
-      console.log('OpenAI Request:', {
-        model: "gpt-4o",
-        messages: this.conversationHistory
-      });
+      // Keep conversation history manageable
+      if (this.conversationHistory.length > 15) {
+        // Keep the first system message and last 9 messages
+        this.conversationHistory = [
+          this.conversationHistory[0],
+          ...this.conversationHistory.slice(-14)
+        ];
+      }
 
       const response = await this.client.chat.completions.create({
-        model: "gpt-4o",
-        messages: this.conversationHistory,
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful AI assistant. Use the provided context to answer questions accurately. If the context doesn't contain relevant information, say so. Always cite specific parts of the text when possible."
+          },
+          ...this.conversationHistory
+        ],
+        temperature: 0.7,
       });
-      
-      console.log('OpenAI Response:', response);
       
       if (response.choices[0].message?.content) {
         this.conversationHistory.push({
@@ -127,15 +159,6 @@ export class LLMService {
     blockId: string
   ): Promise<any> {
     try {
-//       const prompt = `You are a helpful peer reader for academic writing. Analyze the following content and provide an intent. The intent should be a single sentence that captures the main idea of the content.
-// Content: ${renderedContent}
-
-// Please provide your response as a JSON object with the following structure:
-// {
-//   "intent": "The writer's purpose and rhetorical strategy"
-// }
-
-// IMPORTANT: Return ONLY the JSON object, without any markdown formatting or additional text.`;
 
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
@@ -150,25 +173,6 @@ export class LLMService {
         temperature: 0,
       });
 
-      // // Clean the response by removing any markdown formatting
-      // const rawResponse = response.choices[0].message?.content?.trim() ?? "{}";
-      // const cleanedResponse = rawResponse
-      //   .replace(/```json/g, '')
-      //   .replace(/```/g, '')
-      //   .trim();
-
-      // let result;
-      // try {
-      //   result = JSON.parse(cleanedResponse);
-      // } catch (parseError) {
-      //   console.error("Error parsing LLM response:", parseError);
-      //   console.error("Raw response:", rawResponse);
-      //   console.error("Cleaned response:", cleanedResponse);
-      //   throw new Error("Failed to parse LLM response");
-      // }
-      // console.log("result:::", result.intent);
-
-      // return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", result.intent);
       return this.paperRepository.updateBlock(authorId, paperId, blockId, "intent", response.choices[0].message.content || "");
     } catch (error) {
       console.error("Error in updateRenderedSummaries:", error);
