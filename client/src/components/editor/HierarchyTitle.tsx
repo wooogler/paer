@@ -10,6 +10,22 @@ import {
   useUpdateBlockTitle,
   useDeleteBlock,
 } from "../../hooks/usePaperQuery";
+import { FiClock, FiMoreVertical, FiFilter, FiTrash2 } from "react-icons/fi";
+import EditHistoryModal from "./EditHistoryModal";
+import {
+  useFloating,
+  useClick,
+  useDismiss,
+  useInteractions,
+  FloatingPortal,
+  offset,
+  flip,
+  shift,
+  autoUpdate
+} from "@floating-ui/react";
+import { useChatStore } from "../../store/useChatStore";
+import { useContentStore } from "../../store/useContentStore";
+import { useAppStore } from "../../store/useAppStore";
 
 interface HierarchyTitleProps {
   content: Content;
@@ -36,6 +52,22 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     const [localIntent, setLocalIntent] = useState(content.intent || "");
     const [_, setLocalSummary] = useState(content.summary || "");
     const [localTitle, setLocalTitle] = useState(content.title || "");
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { filterBlockId, isFilteringEnabled, setFilterBlockId } = useChatStore();
+    const { refs, floatingStyles, context } = useFloating({
+      open: isMenuOpen,
+      onOpenChange: setIsMenuOpen,
+      placement: "bottom-end",
+      middleware: [offset(5), flip(), shift()],
+      whileElementsMounted: autoUpdate
+    });
+    const click = useClick(context);
+    const dismiss = useDismiss(context);
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      click,
+      dismiss,
+    ]);
 
     const intentInputRef = useRef<HTMLInputElement>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
@@ -47,6 +79,9 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
 
     // Logic to extract parent block ID (actual implementation depends on application structure)
     const parentBlockId = null; // This part should be modified according to actual implementation
+
+    const paperId = useContentStore(state => state.selectedPaperId);
+    const userId = useAppStore(state => state.userId);
 
     // Update local intent and summary state when content props change
     React.useEffect(() => {
@@ -218,25 +253,97 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     // isParagraph for special handling
     const isParagraph = content.type === "paragraph";
 
-    // Render the delete button absolutely in the top-right corner, only on hover, for all block types except paper/root
-    const renderFloatingDeleteButton = useCallback(
-      () =>
-        showDeleteButton && isHovered && ["section", "subsection", "subsubsection", "paragraph"].includes(content.type) ? (
-          <span
-            title={`Delete ${content.type}`}
-            className="absolute -top-3 -right-3 z-10"
-          >
-            <DeleteBlockButton
-              contentType={content.type}
-              onDelete={handleDeleteBlock}
-              className="p-2 rounded-full bg-white shadow hover:bg-red-100 text-red-600 text-xl transition-colors"
-            />
-          </span>
-        ) : null,
-      [showDeleteButton, isHovered, content.type, handleDeleteBlock]
+    // Menu action handlers
+    const handleHistory = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsHistoryModalOpen(true);
+      setIsMenuOpen(false);
+    };
+
+    const handleDelete = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      handleDeleteBlock();
+      setIsMenuOpen(false);
+    };
+
+    const handleFilter = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (content["block-id"]) {
+        if (isActiveMessageFilter) {
+          setFilterBlockId(null);
+        } else {
+          setFilterBlockId(content["block-id"]);
+        }
+      }
+      setIsMenuOpen(false);
+    };
+
+    // Check if this block is currently being filtered
+    const isActiveMessageFilter = content["block-id"] === filterBlockId && isFilteringEnabled;
+
+    // Render the menu button and dropdown
+    const renderBlockActionsMenu = () => (
+      <div className="absolute top-2 right-2 z-20">
+        <button
+          ref={refs.setReference}
+          {...getReferenceProps()}
+          className="p-1.5 rounded-full bg-white shadow hover:bg-gray-100 text-gray-600 transition-colors"
+          title="Block actions"
+          onClick={e => { e.stopPropagation(); setIsMenuOpen(v => !v); }}
+        >
+          <FiMoreVertical size={16} />
+        </button>
+        {isMenuOpen && (
+          <FloatingPortal>
+            <div
+              ref={refs.setFloating}
+              style={floatingStyles}
+              {...getFloatingProps()}
+              className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-48 mt-2"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700 flex items-center gap-2"
+                onClick={handleHistory}
+              >
+                <FiClock />
+                View Edit History
+              </button>
+              {content.type === "sentence" && (
+                <>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700 flex items-center gap-2"
+                    onClick={handleFilter}
+                  >
+                    <FiFilter className={isActiveMessageFilter ? "text-blue-500" : ""} />
+                    {isActiveMessageFilter ? "Show All Messages" : "Show Related Messages"}
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2"
+                    onClick={handleDelete}
+                  >
+                    <FiTrash2 />
+                    Delete
+                  </button>
+                </>
+              )}
+              {content.type !== "sentence" && (
+                <>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2"
+                    onClick={handleDelete}
+                  >
+                    <FiTrash2 />
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
+          </FloatingPortal>
+        )}
+      </div>
     );
 
-    // Render editable field for summary or intent
     const renderEditableField = useCallback(
       (
         value: string,
@@ -275,13 +382,21 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
 
     return (
       <div
-        className={`relative ${
-          isCurrentSelected ? "bg-blue-50 rounded-md" : ""
-        }`}
+        className={`relative group ${isCurrentSelected ? "bg-blue-50 rounded-md" : ""}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {renderFloatingDeleteButton()}
+        <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+          {renderBlockActionsMenu()}
+        </div>
+        {isHistoryModalOpen && (
+          <EditHistoryModal
+            block={content}
+            paperId={paperId || ''}
+            userId={userId || ''}
+            onClose={() => setIsHistoryModalOpen(false)}
+          />
+        )}
         {/* Vertical level indicator lines */}
         {renderLines && (
           <LevelLines level={level} iconColorClass={iconColorClass} />
@@ -388,7 +503,7 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
             <div className="flex items-center gap-2 w-full mb-2 justify-between">
               <span className="font-medium flex-shrink-0">🎯</span>
               <div className="flex-grow">
-                {isEditableBlock ? (
+              {isEditableBlock ? (
                   renderEditableField(
                     localIntent,
                     setLocalIntent,
@@ -404,13 +519,13 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
                       fontWeight: "font-bold"
                     }
                   )
-                ) : (
-                  <span className="break-words">
+              ) : (
+                <span className="break-words">
                     {content.type === "paragraph" && (!content.intent || content.intent.trim() === "")
                       ? `Paragraph ${Array.isArray((content as any).path) ? (content as any).path.map((idx: number) => idx + 1).join(".") : ''} — Empty Intent`
                       : content.intent || "Empty Intent"}
-                  </span>
-                )}
+                </span>
+              )}
               </div>
             </div>
           </div>
