@@ -592,13 +592,6 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                     View Edit History
                   </button>
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700 flex items-center gap-2"
-                    onClick={handleFilter}
-                  >
-                    <FiFilter className={isActiveMessageFilter ? "text-blue-500" : ""} />
-                    {isActiveMessageFilter ? "Show All Messages" : "Show Related Messages"}
-                  </button>
-                  <button
                     className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2"
                     onClick={handleDeleteMenu}
                   >
@@ -668,7 +661,16 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           </div>
           <div>
             {content.type === "sentence" && (
-              <div className="flex items-center">
+              <div className={`flex items-center pl-2 ${isSelectedContent ? "bg-blue-100" : "bg-gray-50"}`}>
+                {isSelectedContent && (!isFilteringEnabled || isActiveMessageFilter) && (
+                  <button
+                    className="mr-2 hover:bg-gray-100 text-gray-600 transition-colors"
+                    title={isActiveMessageFilter ? "Show All Messages" : "Show Related Messages"}
+                    onClick={handleFilter}
+                  >
+                    <FiFilter className={isActiveMessageFilter ? "text-blue-500" : ""} />
+                  </button>
+                )}
                 <ActivityStats blockId={content["block-id"]} />
               </div>
             )}

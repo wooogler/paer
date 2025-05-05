@@ -382,7 +382,7 @@ const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col bg-white max-h-[calc(100vh-56px)] h-[calc(100vh-56px)] overflow-hidden">
+    <div className={`flex flex-col bg-white ${isFilteringEnabled && filterBlockId ? 'max-h-[calc(100vh-96px)] h-[calc(100vh-96px)]' : 'max-h-[calc(100vh-56px)] h-[calc(100vh-56px)]'} overflow-hidden`}>
       {/* Persistent header with dropdown */}
       <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-4">
@@ -524,7 +524,7 @@ const ChatInterface: React.FC = () => {
               onClick={() => setIsSelectionMode(!isSelectionMode)}
               className={`px-4 py-1.5 text-sm rounded-full transition-colors flex items-center justify-center whitespace-nowrap
                 ${!isSelectionMode 
-                  ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                  ? 'bg-green-500 text-white hover:bg-green-600' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               {isSelectionMode ? 'Cancel' : <><FiShare2 className="mr-1.5" size={14} /> Messages</>}
@@ -580,7 +580,7 @@ const ChatInterface: React.FC = () => {
             <button
               onClick={handleShare}
               disabled={isSharing}
-              className="px-4 py-1.5 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-600 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-1.5 text-sm bg-green-500 text-white rounded-full hover:bg-green-600 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FiShare2 className="mr-1.5" size={14} />
               {isSharing ? 'Updating...' : 'Update Permissions'}

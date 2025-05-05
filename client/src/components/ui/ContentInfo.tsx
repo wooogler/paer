@@ -201,7 +201,7 @@ const ContentInfo: React.FC<ContentInfoProps> = ({
 
   // 항상 블록 형태로 표시 (배경색 적용)
   return (
-    <div className={`border-b border-gray-200 p-2 text-sm text-gray-600`}>
+    <div className={`border-b border-gray-200 p-2 text-sm text-gray-600 h-10`}>
       <div className="flex items-center">
         <span
           className={`font-medium ${colorClass} px-2 py-0.5 rounded text-xs mr-2 border border-current ${

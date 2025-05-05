@@ -85,7 +85,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   // 선택 및 공유 상태에 따른 테두리 설정
   const getRingStyle = () => {
     if (isSelected) return 'ring-2 ring-blue-500 ring-opacity-50';
-    if (message.viewAccess === "public") return 'ring-1 ring-green-500 ring-opacity-30';
+    if (message.viewAccess === "public") return 'ring-2 ring-green-500 ring-opacity-70';
     return '';
   };
 

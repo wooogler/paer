@@ -51,6 +51,21 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }, [blockId, messages]);
 
+  // 메시지 타입별로 그룹화
+  const groupedMessages = useMemo(() => {
+    const groups: Record<string, Message[]> = {};
+    
+    relatedMessages.forEach((msg) => {
+      const type = msg.messageType || 'unknown';
+      if (!groups[type]) {
+        groups[type] = [];
+      }
+      groups[type].push(msg);
+    });
+    
+    return groups;
+  }, [relatedMessages]);
+
   // 메시지 타입별 색상 설정
   const getMessageColor = (type?: string) => {
     switch (type) {
@@ -67,15 +82,15 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
 
   return (
     <div className="flex items-center justify-end gap-1 mb-1">
-      {/* 메시지를 역순으로 표시하여 최신 메시지가 오른쪽에 배치되도록 함 */}
-      {relatedMessages.slice(0, 10).map((msg, i) => (
+      {/* 메시지 타입별로 그룹화하여 표시 */}
+      {Object.entries(groupedMessages).map(([type, msgs], groupIndex) => (
         <div 
-          key={i}
-          ref={hoveredMessage === msg ? refs.setReference : undefined}
-          {...(hoveredMessage === msg ? getReferenceProps() : {})}
-          className={`w-3 h-3 ${getMessageColor(msg.messageType)} border cursor-pointer hover:ring-2 hover:ring-white hover:ring-opacity-70`}
+          key={groupIndex}
+          ref={hoveredMessage && msgs.includes(hoveredMessage) ? refs.setReference : undefined}
+          {...(hoveredMessage && msgs.includes(hoveredMessage) ? getReferenceProps() : {})}
+          className={`w-4 h-4 ${getMessageColor(type)} border rounded-sm cursor-pointer hover:ring-1 hover:ring-gray-500`}
           onMouseEnter={() => {
-            setHoveredMessage(msg);
+            setHoveredMessage(msgs[0]); // 그룹의 첫 번째 메시지로 설정
             setOpen(true);
           }}
           onMouseLeave={() => {
@@ -84,8 +99,6 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
         />
       ))}
       
-      {/* 숫자 표시 제거 */}
-
       {/* 메시지 팝업 */}
       {open && hoveredMessage && (
         <FloatingPortal>
@@ -95,7 +108,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
             {...getFloatingProps()}
             className="z-50"
           >
-            <MessagePopup message={hoveredMessage} />
+            <MessagePopup messages={groupedMessages[hoveredMessage.messageType || 'unknown'] || []} />
           </div>
         </FloatingPortal>
       )}
