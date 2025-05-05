@@ -16,6 +16,19 @@ import LevelIndicator, {
   getBorderColorClass,
 } from "./LevelIndicator";
 import { getUserInfo } from "../../api/userApi";
+import { FiMoreVertical, FiFilter, FiTrash2, FiClock } from "react-icons/fi";
+import {
+  useFloating,
+  useClick,
+  useDismiss,
+  useInteractions,
+  FloatingPortal,
+  offset,
+  flip,
+  shift,
+  autoUpdate
+} from "@floating-ui/react";
+import EditHistoryModal from "./EditHistoryModal";
 
 interface TextEditorProps {
   content: Content;
@@ -39,11 +52,25 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
   }) => {
     const { updateContent, setSelectedContent, selectedContent } =
       useContentStore();
-    const { showHierarchy: appShowHierarchy } = useAppStore();
+    const { showHierarchy: appShowHierarchy, userId } = useAppStore();
     const { filterBlockId, isFilteringEnabled, setFilterBlockId, toggleFiltering } =
       useChatStore();
     const updateSentenceMutation = useUpdateSentence();
     const deleteSentenceMutation = useDeleteSentence();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { refs, floatingStyles, context } = useFloating({
+      open: isMenuOpen,
+      onOpenChange: setIsMenuOpen,
+      placement: "bottom-end",
+      middleware: [offset(5), flip(), shift()],
+      whileElementsMounted: autoUpdate
+    });
+    const click = useClick(context);
+    const dismiss = useDismiss(context);
+    const { getReferenceProps, getFloatingProps } = useInteractions([
+      click,
+      dismiss,
+    ]);
 
     // 현재 렌더링되는 문장이 selectedContent인지 확인
     const isSelectedContent =
@@ -80,6 +107,11 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
 
     // State for username
     const [lastModifiedBy, setLastModifiedBy] = useState<string>("");
+
+    // State for history modal
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+
+    const paperId = useContentStore(state => state.selectedPaperId);
 
     // Update local state only when content prop changes
     useEffect(() => {
@@ -484,20 +516,31 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       ? "border-blue-600 border-2"
       : borderColorClass;
 
-    // 채팅 필터링 활성화/비활성화 토글 처리
-    const handleShowMessages = useCallback(() => {
+    // Menu action handlers
+    const handleFilter = (e: React.MouseEvent) => {
+      e.stopPropagation();
       if (content["block-id"]) {
         if (isActiveMessageFilter) {
-          // 이미 active 상태일 경우, 필터링 해제
           setFilterBlockId(null);
           toggleFiltering(false);
         } else {
-          // active 상태가 아닐 경우, 해당 블록으로 필터링
           setFilterBlockId(content["block-id"]);
           toggleFiltering(true);
         }
       }
-    }, [content["block-id"], isActiveMessageFilter, setFilterBlockId, toggleFiltering]);
+      setIsMenuOpen(false);
+    };
+    const handleDeleteMenu = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      handleDelete();
+      setIsMenuOpen(false);
+    };
+
+    const handleHistory = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setIsHistoryModalOpen(true);
+      setIsMenuOpen(false);
+    };
 
     useEffect(() => {
       // Adjust textarea height on initial render or when content changes
@@ -521,12 +564,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     };
 
     return (
-      <div
-        className="relative"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        data-block-id={content["block-id"] || undefined}
-      >
+      <div className="relative group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} data-block-id={content["block-id"] || undefined}>
         {/* Vertical level indicator lines */}
         <LevelIndicator
           level={level}
@@ -534,48 +572,60 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
           contentType={content.type || ""}
         />
 
-        {/* Filter (message) icon button - absolutely positioned, outside text fields */}
-        {((isFilteringEnabled && content["block-id"] === filterBlockId) || 
-          (!isFilteringEnabled && isSelectedContent)) && content["block-id"] && (
-          <button
-            onClick={handleShowMessages}
-            className={`absolute top-2 right-2 z-10 ${
-              isActiveMessageFilter
-                ? "text-blue-500 bg-blue-50"
-                : "text-gray-500 hover:text-blue-500 hover:bg-blue-50"
-            } transition-colors p-1 rounded-full`}
-            title={
-              isActiveMessageFilter
-                ? "Show all messages"
-                : "Show related messages"
-            }
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {/* Floating menu button for sentences */}
+        {content.type === "sentence" && (
+          <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              ref={refs.setReference}
+              {...getReferenceProps()}
+              className="p-1.5 rounded-full bg-white shadow hover:bg-gray-100 text-gray-600 transition-colors"
+              title="Sentence actions"
+              onClick={e => { e.stopPropagation(); setIsMenuOpen(v => !v); }}
             >
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-          </button>
-        )}
-
-        {/* Delete button - only show for sentences when hovered, in the true top-left corner */}
-        {isHovered && content.type === "sentence" && content["block-id"] && (
-          <button
-            onClick={handleDelete}
-            className="absolute -top-3 -left-3 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center z-20 shadow border border-white"
-            title="Delete sentence"
-            disabled={isDeleting}
-          >
-            {isDeleting ? <ClipLoader size={10} color="#ffffff" /> : <span className="text-base">✕</span>}
-          </button>
+              <FiMoreVertical size={16} />
+            </button>
+            {isMenuOpen && (
+              <FloatingPortal>
+                <div
+                  ref={refs.setFloating}
+                  style={floatingStyles}
+                  {...getFloatingProps()}
+                  className="bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-48 mt-2"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700 flex items-center gap-2"
+                    onClick={handleHistory}
+                  >
+                    <FiClock />
+                    View Edit History
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700 flex items-center gap-2"
+                    onClick={handleFilter}
+                  >
+                    <FiFilter className={isActiveMessageFilter ? "text-blue-500" : ""} />
+                    {isActiveMessageFilter ? "Show All Messages" : "Show Related Messages"}
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-2"
+                    onClick={handleDeleteMenu}
+                  >
+                    <FiTrash2 />
+                    Delete
+                  </button>
+                </div>
+              </FloatingPortal>
+            )}
+            {isHistoryModalOpen && (
+              <EditHistoryModal
+                block={content}
+                paperId={paperId || ''}
+                userId={userId || ''}
+                onClose={() => setIsHistoryModalOpen(false)}
+              />
+            )}
+          </div>
         )}
 
         <div

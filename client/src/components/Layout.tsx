@@ -273,10 +273,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex h-screen w-full bg-white text-gray-800 p-0 m-0 overflow-hidden">
       {/* Structure Pane */}
       {isStructureVisible && (
-        <Pane
-          title="Structure"
+      <Pane
+        title="Structure"
           width={structureWidth}
-          rightContent={
+        rightContent={
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setIsPaperListOpen(true)}
@@ -297,7 +297,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           }
         >
           <Structure displayMode="intent" />
-        </Pane>
+      </Pane>
       )}
 
       {/* 논문 목록 모달 */}
@@ -323,9 +323,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         width={getEditorWidth()}
         rightContent={
           <div className="flex items-center space-x-2">
-            <ToggleSwitch
-              checked={showHierarchy}
-              onChange={setShowHierarchy}
+          <ToggleSwitch
+            checked={showHierarchy}
+            onChange={setShowHierarchy}
               leftLabel="Sentence"
               rightLabel="Hierarchy"
             />
@@ -351,11 +351,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Chat Pane */}
       {isChatVisible && (
-        <Pane
+      <Pane
           title="Chat"
           width={chatWidth}
-          isLast
-          rightContent={
+        isLast
+        rightContent={
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-600">{userName}</span>
@@ -426,10 +426,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
             )}
             <div className="flex-1">
-              <ChatInterface />
+          <ChatInterface />
             </div>
-          </div>
-        </Pane>
+        </div>
+      </Pane>
       )}
 
       <CollaboratorModal
