@@ -323,7 +323,6 @@ export class PaperService {
     try {
       console.log("Getting papers for authorId:", authorId);
       const papers = await this.paperRepository.getUserPapers(authorId);
-      console.log("Found papers:", papers);
       return papers;
     } catch (error) {
       console.error("Error in getUserPapers:", error);
