@@ -236,9 +236,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleLogout = () => {
+    // Clear all stores
     logout();
+    
+    // Clear all relevant localStorage items
     localStorage.removeItem("user-storage");
     localStorage.removeItem("content-storage");
+    localStorage.removeItem("chat-storage");
+    localStorage.removeItem("app-storage");
+    localStorage.removeItem("paper-storage");
+    localStorage.removeItem("query-client");
+
+    // Clear React Query cache
+    queryClient.clear();
+    queryClient.removeQueries();
+    queryClient.resetQueries();
+
+    // Reset content store
+    useContentStore.getState().setContent(null);
+    useContentStore.getState().setSelectedContent(null, null);
+    useContentStore.getState().setSelectedBlock(null, null);
+    useContentStore.getState().setSelectedPaperId(null);
+
+    // Reset chat store
+    useChatStore.getState().setMessages([]);
+    useChatStore.getState().setFilterBlockId(null);
+    useChatStore.getState().toggleFiltering(false);
+
     navigate("/login");
     toast.success("Logged out successfully.");
   };
