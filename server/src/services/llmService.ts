@@ -259,4 +259,26 @@ Please provide your response as a raw JSON object (without any markdown formatti
       throw error;
     }
   }
+
+  async summarize(prompt: string): Promise<any> {
+    try {
+      console.log("summarize prompt: ", prompt);
+      const response = await this.client.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant. Please summarize the information provided in 1-2 concise sentences."
+          },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.3,
+      });
+      
+      return response;
+    } catch (error) {
+      console.error("Error in summarize:", error);
+      throw error;
+    }
+  }
 }

@@ -127,6 +127,27 @@ export const updateMessageAccess = async (paperId: string, userId: string, messa
   }
 }
 
+/**
+ * 특정 블록과 관련된 메시지를 요약하고 결과를 블록의 summary 필드에 저장합니다
+ */
+export const summarizeMessages = async (messages: Message[], blockId: string, paperId?: string, userId?: string): Promise<{ summary: string; summaryUpdated: boolean }> => {
+  try {
+    const response = await api.post('/chat/summarize-messages', { messages, blockId, paperId, userId });
+    
+    if (response.data && response.data.success && response.data.summary) {
+      return { 
+        summary: response.data.summary,
+        summaryUpdated: response.data.summaryUpdated || false
+      };
+    } else {
+      throw new Error('Invalid summary response');
+    }
+  } catch (error) {
+    console.error("Error summarizing messages:", error);
+    throw error;
+  }
+};
+
 export const chatApi = {
   fetchAllMessages: async (paperId: string) => {
     const response = await api.get(`/chat/${paperId}/messages`);

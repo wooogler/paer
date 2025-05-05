@@ -114,6 +114,24 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
+  // POST /api/chat/summarize-messages - 메시지 요약하기
+  fastify.post<{
+    Body: { messages: ChatMessage[], blockId: string };
+  }>(
+    "/summarize-messages",
+    async (request, reply) => {
+      try {
+        const result = await chatController.summarizeMessages(request, reply);
+        return reply.send(result);
+      } catch (error) {
+        console.error("Error in /chat/summarize-messages:", error);
+        return reply
+          .status(500)
+          .send({ success: false, error: "Failed to summarize messages" });
+      }
+    }
+  );
+
 };
 
 export default chatRoutes;

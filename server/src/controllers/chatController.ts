@@ -311,4 +311,85 @@ export class ChatController {
       return reply.code(500).send({ error: "Failed to update message access" });
     }
   }
+
+  /**
+   * Summarize messages related to a block
+   */
+  async summarizeMessages(
+    request: FastifyRequest<{
+      Body: { messages: ChatMessage[], blockId: string, paperId?: string, userId?: string };
+    }>,
+    reply: FastifyReply
+  ): Promise<any> {
+    try {
+      const { messages, blockId, paperId, userId } = request.body;
+
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return reply.code(400).send({ error: "Valid messages array is required" });
+      }
+
+      if (!blockId) {
+        return reply.code(400).send({ error: "blockId is required" });
+      }
+
+      // 메시지를 시간 순서대로 정렬 (오래된 메시지부터)
+      const sortedMessages = [...messages].sort((a, b) => 
+        (a.timestamp || 0) - (b.timestamp || 0)
+      );
+
+      // Format messages for OpenAI - "userName: [messageType] messageContent" 형식으로 변경
+      const formattedMessages = sortedMessages.map(msg => {
+        // role이 assistant나 system인 경우 무조건 'AI'로 설정
+        const userName = (msg.role === 'system' || msg.role === 'assistant') 
+          ? 'AI' 
+          : (msg.userName || 'User');
+        const messageType = msg.messageType || 'chat';
+        
+        // Edit 타입일 경우 previousSentence와 updatedSentence를 사용
+        if (messageType === 'edit' && msg.previousSentence && msg.updatedSentence) {
+          return `${userName}: [${messageType}] Changed "${msg.previousSentence}" to "${msg.updatedSentence}"`;
+        }
+        
+        return `${userName}: [${messageType}] ${msg.content}`;
+      }).join('\n');
+
+      // Call OpenAI for summarization
+      const summaryPrompt = `Below are a series of messages related to a specific block of text in a document.
+        Please summarize the activity and key points discussed in 1-2 concise sentences.
+        
+<Messages>
+${formattedMessages}
+</Messages>
+      `;
+
+      const response = await this.llmService.summarize(summaryPrompt);
+      
+      if (!response || !response.choices || !response.choices[0].message) {
+        throw new Error("Invalid response from OpenAI");
+      }
+
+      const summary = response.choices[0].message.content.trim();
+
+      // 블록의 summary 필드에 요약 결과 저장 (paperId와 userId가 제공된 경우)
+      if (paperId && userId && blockId) {
+        try {
+          await this.paperService.updateBlock(userId, paperId, blockId, "summary", summary);
+        } catch (updateError) {
+          console.error("Error updating block summary:", updateError);
+          // 요약은 성공했지만 저장에 실패했다는 것을 클라이언트에 알림
+          return { 
+            success: true, 
+            summary, 
+            summaryUpdated: false, 
+            error: "Failed to update block summary in database" 
+          };
+        }
+      }
+
+      return { success: true, summary, summaryUpdated: true };
+    } catch (error) {
+      console.error("Error summarizing messages:", error);
+      return reply.code(500).send({ error: "Failed to summarize messages" });
+    }
+  }
 }

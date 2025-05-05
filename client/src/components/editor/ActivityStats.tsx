@@ -4,6 +4,8 @@ import { useContentStore } from "../../store/useContentStore";
 import { useAppStore } from "../../store/useAppStore";
 import { useChatStore } from "../../store/useChatStore";
 import MessagePopup from "./MessagePopup";
+import { FiFileText } from "react-icons/fi";
+import { summarizeMessages } from "../../api/chatApi";
 import {
   useFloating,
   useDismiss,
@@ -31,9 +33,20 @@ interface MessageGroup {
 const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
   const [hoveredGroup, setHoveredGroup] = useState<MessageGroup | null>(null);
   const [open, setOpen] = useState(false);
+  const [summary, setSummary] = useState<string>("");
+  const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  
   const { refs, floatingStyles, context } = useFloating({
     open,
     onOpenChange: setOpen,
+    middleware: [offset(5), flip(), shift()],
+    placement: 'bottom'
+  });
+
+  const { refs: summaryRefs, floatingStyles: summaryFloatingStyles, context: summaryContext } = useFloating({
+    open: summaryOpen,
+    onOpenChange: setSummaryOpen,
     middleware: [offset(5), flip(), shift()],
     placement: 'bottom'
   });
@@ -47,9 +60,18 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     hover, focus, dismiss
   ]);
 
+  const summaryHover = useHover(summaryContext, {
+    restMs: 25
+  });
+  const summaryFocus = useFocus(summaryContext);
+  const summaryDismiss = useDismiss(summaryContext);
+  const { getReferenceProps: getSummaryReferenceProps, getFloatingProps: getSummaryFloatingProps } = useInteractions([
+    summaryHover, summaryFocus, summaryDismiss
+  ]);
+
   // useChatStore에서 메시지 가져오기
   const { messages } = useChatStore();
-  const { selectedPaperId } = useContentStore();
+  const { selectedPaperId, content: rootContent, updateContent } = useContentStore();
   const { userId } = useAppStore();
 
   // 이 블록에 관련된 메시지 필터링
@@ -142,6 +164,76 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     }
   };
 
+  // blockId로 콘텐츠 찾기
+  const linkedContent = useMemo((): any | null => {
+    if (!blockId || !rootContent) return null;
+
+    // 헬퍼 함수로 콘텐츠 트리를 재귀적으로 탐색
+    const findContentByBlockId = (node: any): any | null => {
+      if (node && node["block-id"] === blockId) {
+        return node;
+      }
+
+      if (node && node.content && Array.isArray(node.content)) {
+        for (const child of node.content) {
+          const result = findContentByBlockId(child);
+          if (result) return result;
+        }
+      }
+
+      return null;
+    };
+
+    return findContentByBlockId(rootContent);
+  }, [blockId, rootContent]);
+
+  // 블록에 이미 저장된 요약이 있는지 확인
+  const blockSummary = useMemo(() => {
+    return linkedContent?.summary || "";
+  }, [linkedContent]);
+
+  // 메시지 요약 함수
+  const handleSummarize = async () => {
+    if (!blockId || relatedMessages.length === 0) return;
+    
+    try {
+      setIsSummarizing(true);
+      const result = await summarizeMessages(relatedMessages, blockId, selectedPaperId || undefined, userId || undefined);
+      setSummary(result.summary);
+      
+      // summary가 성공적으로 업데이트되었으면 contentStore의 updateContent 호출하여 리렌더링
+      if (result.summaryUpdated && blockId) {
+        // 블록 ID로 콘텐츠 찾기
+        const updateBlock = (node: any): boolean => {
+          if (node && node["block-id"] === blockId) {
+            // 현재 노드가 찾는 블록이면 summary 업데이트
+            updateContent(blockId, { summary: result.summary });
+            return true;
+          }
+
+          // 재귀적으로 자식 노드 검색
+          if (node && node.content && Array.isArray(node.content)) {
+            for (const child of node.content) {
+              if (updateBlock(child)) return true;
+            }
+          }
+          
+          return false;
+        };
+
+        // 전체 콘텐츠 트리에서 blockId에 해당하는 노드 찾아 업데이트
+        if (rootContent) {
+          updateBlock(rootContent);
+        }
+      }
+    } catch (error) {
+      console.error("메시지 요약 오류:", error);
+      setSummary("요약을 생성하는 데 문제가 발생했습니다.");
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
+
   if (relatedMessages.length === 0) {
     return null;
   }
@@ -164,6 +256,20 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
           }}
         />
       ))}
+
+      {/* 요약 버튼 */}
+      {(blockSummary || summary) && (
+        <button 
+          ref={summaryRefs.setReference}
+          {...getSummaryReferenceProps()}
+          className="ml-2 text-gray-500 hover:text-blue-500 flex items-center text-xs"
+          onClick={handleSummarize}
+          disabled={isSummarizing}
+        >
+          <FiFileText className="mr-1" size={14} />
+          {isSummarizing ? 'Summarizing...' : 'Summarize'}
+        </button>
+      )}
       
       {/* 메시지 팝업 */}
       {open && hoveredGroup && (
@@ -175,6 +281,22 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
             className="z-50"
           >
             <MessagePopup messages={hoveredGroup.messages} />
+          </div>
+        </FloatingPortal>
+      )}
+
+      {/* 요약 팝업 */}
+      {summaryOpen && (blockSummary || summary) && (
+        <FloatingPortal>
+          <div
+            ref={summaryRefs.setFloating}
+            style={summaryFloatingStyles}
+            {...getSummaryFloatingProps()}
+            className="z-50 bg-white p-2 rounded shadow-lg border border-gray-200 max-w-xs"
+          >
+            <div className="text-sm text-gray-700">
+              {blockSummary || summary}
+            </div>
           </div>
         </FloatingPortal>
       )}
