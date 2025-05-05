@@ -382,7 +382,7 @@ const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-white max-h-screen">
+    <div className="flex flex-col bg-white max-h-[calc(100vh-56px)] h-[calc(100vh-56px)] overflow-hidden">
       {/* Persistent header with dropdown */}
       <div className="bg-white border-b border-gray-200 p-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-4">
