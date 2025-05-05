@@ -156,6 +156,39 @@ export class LLMService {
     block: Content
   ): Promise<any> {
     try {
+      // Generate a cache key based on the block's content
+      const generateCacheKey = (block: any): string => {
+        if (typeof block !== "object" || block === null) return "";
+        
+        // For sentences, use the content directly
+        if (block.type === "sentence") {
+          return block.content || "";
+        }
+        
+        // For other blocks, combine title and content
+        let key = block.title || "";
+        if (Array.isArray(block.content)) {
+          key += block.content.map(generateCacheKey).join(" ");
+        }
+        return key;
+      };
+
+      const cacheKey = generateCacheKey(block);
+      
+      // Check cache first
+      if (this.intentCache.has(cacheKey)) {
+        console.log("Using cached intent for block");
+        return {
+          prompt: "Using cached intent",
+          apiResponse: {
+            model: "cache",
+            usage: { total_tokens: 0 },
+            content: "",
+            parsedResult: this.intentCache.get(cacheKey)
+          }
+        };
+      }
+
       // Recursive function to order properties in nested objects
       const orderProperties = (obj: any): any => {
         if (typeof obj !== "object" || obj === null) return obj;
@@ -165,7 +198,7 @@ export class LLMService {
         }
 
         const orderedObj: any = {};
-        // Define the order of properties (summary 속성 제거)
+        // Define the order of properties
         const propertyOrder = [
           "type",
           "block-id",
@@ -182,9 +215,9 @@ export class LLMService {
               orderedObj["block-id"] = orderProperties(obj["block-id"]);
             }
           } else if (prop === "summary") {
-            // summary 속성 처리하지 않음 (완전히 제거)
+            // Skip summary
           } else if (prop === "intent" && obj.type === "sentence") {
-            // sentence 타입인 경우 intent 처리하지 않음
+            // Skip intent for sentences
           } else if (obj[prop] !== undefined) {
             orderedObj[prop] = orderProperties(obj[prop]);
           }
@@ -205,7 +238,7 @@ Please provide your response as a raw JSON object (without any markdown formatti
 - Skip intent for sentence blocks completely
 - For blocks with nested content, consider the combined text of all child blocks`;
 
-      console.log("OpenAI API에 보내는 프롬프트:", prompt);
+      console.log("Sending optimized prompt to OpenAI API");
 
       const response = await this.client.chat.completions.create({
         model: "gpt-4o-mini",
@@ -216,7 +249,10 @@ Please provide your response as a raw JSON object (without any markdown formatti
       const result = JSON.parse(
         response.choices[0].message?.content?.trim() ?? "{}"
       );
-      console.log("OpenAI API 응답: ", JSON.stringify(result, null, 2));
+      
+      // Cache the result
+      this.intentCache.set(cacheKey, result);
+      console.log("Cached intent for block");
 
       return {
         prompt,
