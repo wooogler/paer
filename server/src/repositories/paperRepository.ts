@@ -704,8 +704,8 @@ export class PaperRepository {
         const existingPaper = await PaperModel.findOne({
           _id: paperData._id,
           $or: [
-            { authorId: authorId },
-            { authorId: userObjectId }
+            { authorId: userObjectId },
+            { collaboratorIds: userObjectId }
           ]
         });
 
