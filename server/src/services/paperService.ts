@@ -58,6 +58,7 @@ export class PaperService {
 
   /**
    * Update block
+   * THIS IS NOT USED FOR UPDATING SENTENCE CONTENT!
    */
   async updateBlock(
     authorId: string,
@@ -67,6 +68,7 @@ export class PaperService {
     updatedValue: any
   ): Promise<void> {
     try {
+      // Update the block itself
       await this.paperRepository.updateBlock(
         authorId,
         paperId,
@@ -74,6 +76,16 @@ export class PaperService {
         keyToUpdate,
         updatedValue
       );
+
+      // // Add the record to edit history
+      // await this.paperRepository.addEditHistory(
+      //   authorId,
+      //   paperId,
+      //   targetBlockId,
+      //   keyToUpdate,
+      //   updatedValue
+      // );
+
     } catch (error) {
       console.error("Error in updateBlock:", error);
       throw error;
@@ -520,5 +532,12 @@ export class PaperService {
       console.error("Error in getMembers:", error);
       throw error;
     }
+  }
+
+  /**
+   * Get edit history
+   */
+  async getEditHistory(paperId: string, blockId: string, userId: string): Promise<any> {
+    return this.paperRepository.getEditHistory(paperId, blockId, userId);
   }
 }

@@ -218,13 +218,13 @@ const HierarchyTitle: React.FC<HierarchyTitleProps> = React.memo(
     // isParagraph for special handling
     const isParagraph = content.type === "paragraph";
 
-    // Render the delete button absolutely in the top-right corner, only on hover
+    // Render the delete button absolutely in the top-right corner, only on hover, for all block types except paper/root
     const renderFloatingDeleteButton = useCallback(
       () =>
-        showDeleteButton && isHovered && (content.type === "paragraph" || content.type === "subsection" || content.type === "subsubsection") ? (
+        showDeleteButton && isHovered && ["section", "subsection", "subsubsection", "paragraph"].includes(content.type) ? (
           <span
             title={`Delete ${content.type}`}
-            className="absolute top-2 right-2 z-10"
+            className="absolute -top-3 -right-3 z-10"
           >
             <DeleteBlockButton
               contentType={content.type}

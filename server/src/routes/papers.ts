@@ -263,6 +263,18 @@ const paperRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       return paperController.getMembers(request, reply);
     }
   );
+
+  // get edit history
+  // (`/papers/${paperId}/blocks/${blockId}/edit-history`);
+  fastify.get<{
+    Params: { paperId: string; blockId: string };
+    Querystring: { userId: string }
+  }>(
+    "/:paperId/blocks/:blockId/edit-history",
+    async (request, reply) => {
+      return paperController.getEditHistory(request, reply);
+    }
+  );
 };
 
 export default paperRoutes;
