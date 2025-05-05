@@ -9,7 +9,11 @@ export interface IDocumentChunk extends Document {
     startIndex: number;
     endIndex: number;
     blockId?: string;
+    pageNumber?: number;
+    section?: string;
+    [key: string]: any;
   };
+  similarity?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +26,9 @@ const DocumentChunkSchema = new Schema<IDocumentChunk>({
   metadata: {
     startIndex: { type: Number, required: true },
     endIndex: { type: Number, required: true },
-    blockId: { type: String }
+    blockId: { type: String },
+    pageNumber: { type: Number },
+    section: { type: String },
   }
 }, {
   timestamps: true

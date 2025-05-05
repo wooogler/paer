@@ -76,9 +76,14 @@ export class LLMService {
       // If we have a paperId, use RAG to retrieve relevant information
       let relevantContext = '';
       if (paperId) {
-        const similarChunks = await this.ragService.findSimilarChunks(paperId, text);
+        // Limit to top 3 most relevant chunks to avoid token limit
+        const similarChunks = await this.ragService.findSimilarChunks(paperId, text, 3);
         if (similarChunks.length > 0) {
-          relevantContext = `Relevant information from the paper:\n${similarChunks.map(chunk => chunk.content).join('\n\n')}\n\n`;
+          // Only include chunks with high similarity scores
+          const highSimilarityChunks = similarChunks.filter(chunk => (chunk.similarity ?? 0) > 0.7);
+          if (highSimilarityChunks.length > 0) {
+            relevantContext = `Relevant information from the paper:\n${highSimilarityChunks.map(chunk => chunk.content).join('\n\n')}\n\n`;
+          }
         }
       }
 
@@ -91,8 +96,8 @@ export class LLMService {
         });
       }
 
-      // Add block-specific context if available
-      if (renderedContent) {
+      // Add block-specific context if available and not too long
+      if (renderedContent && renderedContent.length < 1000) {
         this.conversationHistory.push({
           role: "system",
           content: `Context from the current block:\n${renderedContent}`,
@@ -107,8 +112,17 @@ export class LLMService {
         blockId,
       });
 
+      // Keep conversation history manageable
+      if (this.conversationHistory.length > 15) {
+        // Keep the first system message and last 9 messages
+        this.conversationHistory = [
+          this.conversationHistory[0],
+          ...this.conversationHistory.slice(-14)
+        ];
+      }
+
       const response = await this.client.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
