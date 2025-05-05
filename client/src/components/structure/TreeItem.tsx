@@ -78,63 +78,53 @@ const TreeItem: React.FC<TreeItemProps> = memo(
       ? content["block-id"] === filterBlockId // 필터링 모드: 필터링된 아이템만 아이콘 표시
       : isSelectedContent || isSelectedBlock; // 일반 모드: 선택된 아이템만 아이콘 표시
 
-    // 스타일과 표시 텍스트 메모이제이션
-    const { contentColorClass, displayTitle } = useMemo(() => {
-      // Get color class based on content type
-      const getColorClass = () => {
-        return getTypeColor(content.type as ContentType).main;
-      };
+    // Get color class based on content type
+    const contentColorClass = getTypeColor(content.type as ContentType).main;
 
-      // Determine how to display the title
-      const getDisplayTitle = () => {
-        if (content.type === "paragraph") {
-          // For paragraphs, show summary in summary mode, otherwise show intent
-          // If intent is empty, show the paragraph label
-          if (displayMode === "summary") {
-            return (
-              content.summary ||
-              `Paragraph ${path.map((idx) => idx + 1).join(".")}`
-            );
-          } else {
-            return (
-              content.intent && content.intent.trim() !== ""
-                ? content.intent
-                : `Paragraph ${path.map((idx) => idx + 1).join(".")}`
-            );
-          }
-        }
-        // For subsection and subsubsection, show label if title is empty
-        if (content.type === "subsection") {
+    // Determine how to display the title
+    const displayTitle = (() => {
+      if (content.type === "paragraph") {
+        // For paragraphs, show summary in summary mode, otherwise show intent
+        // If intent is empty, show the paragraph label
+        if (displayMode === "summary") {
           return (
-            content.title && content.title.trim() !== ""
-              ? content.title
-              : `Subsection ${path.map((idx) => idx + 1).join(".")}`
+            content.summary ||
+            `Paragraph ${path.map((idx) => idx + 1).join(".")}`
+          );
+        } else {
+          return (
+            content.intent && content.intent.trim() !== ""
+              ? content.intent
+              : `Paragraph ${path.map((idx) => idx + 1).join(".")}`
           );
         }
-        if (content.type === "subsubsection") {
-          return (
-            content.title && content.title.trim() !== ""
-              ? content.title
-              : `Subsubsection ${path.map((idx) => idx + 1).join(".")}`
-          );
-        }
-        // content.type이 없는 경우 기본값 처리
-        if (!content.type) {
-          return `Unknown ${path.map((idx) => idx + 1).join(".")}`;
-        }
+      }
+      // For subsection and subsubsection, show label if title is empty
+      if (content.type === "subsection") {
         return (
-          content.title ||
-          `${
-            content.type.charAt(0).toUpperCase() + content.type.slice(1)
-          } ${path.map((idx) => idx + 1).join(".")}`
+          content.title && content.title.trim() !== ""
+            ? content.title
+            : `Subsection ${path.map((idx) => idx + 1).join(".")}`
         );
-      };
-
-      return {
-        contentColorClass: getColorClass(),
-        displayTitle: getDisplayTitle(),
-      };
-    }, [content.type, content.summary, content.intent, content.title, displayMode, path]);
+      }
+      if (content.type === "subsubsection") {
+        return (
+          content.title && content.title.trim() !== ""
+            ? content.title
+            : `Subsubsection ${path.map((idx) => idx + 1).join(".")}`
+        );
+      }
+      // content.type이 없는 경우 기본값 처리
+      if (!content.type) {
+        return `Unknown ${path.map((idx) => idx + 1).join(".")}`;
+      }
+      return (
+        content.title ||
+        `${
+          content.type.charAt(0).toUpperCase() + content.type.slice(1)
+        } ${path.map((idx) => idx + 1).join(".")}`
+      );
+    })();
 
     return (
       <div>
