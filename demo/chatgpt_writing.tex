@@ -1,0 +1,1669 @@
+%%
+%% This is file `sample-manuscript.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `manuscript')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-manuscript.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%%
+%% The first command in your LaTeX source must be the \documentclass command.
+%%%% Small single column format, used for CIE, CSUR, DTRAP, JACM, JDIQ, JEA, JERIC, JETC, PACMCGIT, TAAS, TACCESS, TACO, TALG, TALLIP (formerly TALIP), TCPS, TDSCI, TEAC, TECS, TELO, THRI, TIIS, TIOT, TISSEC, TIST, TKDD, TMIS, TOCE, TOCHI, TOCL, TOCS, TOCT, TODAES, TODS, TOIS, TOIT, TOMACS, TOMM (formerly TOMCCAP), TOMPECS, TOMS, TOPC, TOPLAS, TOPS, TOS, TOSEM, TOSN, TQC, TRETS, TSAS, TSC, TSLP, TWEB.
+%\documentclass[acmsmall]{acmart}
+
+%%%% Large single column format, used for IMWUT, JOCCH, PACMPL, POMACS, TAP, PACMHCI
+%\documentclass[acmlarge,screen]{acmart}
+
+%%%% Large double column format, used for TOG
+%\documentclass[acmtog, authorversion]{acmart}
+
+%%%% Generic manuscript mode, required for submission
+%%%% and peer review
+
+%Anonymous review document class
+ % \documentclass[manuscript,review,anonymous]{acmart}
+\documentclass[manuscript,screen,acmsmall]{acmart}
+
+%Camera Ready Version document class
+%\documentclass[sigconf]{acmart}
+% \usepackage{ragged2e}
+
+\usepackage{ragged2e}
+\usepackage{natbib}  
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{array}
+\usepackage{subcaption}
+\usepackage{svg}
+
+
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmcopyright}
+\copyrightyear{2023}
+
+
+%%
+%% These commands are for a JOURNAL article.
+\acmVolume{1}
+\acmNumber{1}
+\acmArticle{}
+\acmMonth{12}
+
+%%
+    %% end of the preamble, start of the body of the document source.
+\begin{document}
+
+\input{0commands}
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{An Empirical Study to Understand How Students Use ChatGPT for Writing Essays}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+\author{Andrew Jelson}
+\email{jelson9854@vt.edu}
+\affiliation{%
+  \institution{Virginia Tech}
+  \city{Blacksburg}
+  \state{Virginia}
+  \country{USA}
+  \postcode{24061}
+}
+
+\author{Daniel Manesh}
+\email{danielmanesh@vt.edu}
+\affiliation{%
+  \institution{Virginia Tech}
+  \city{Blacksburg}
+  \state{Virginia}
+  \country{USA}
+  \postcode{24061}
+}
+
+\author{Alice Jang}
+\email{ajjang@vt.edu}
+\affiliation{%
+  \institution{Virginia Tech}
+  \city{Blacksburg}
+  \state{Virginia}
+  \country{USA}
+  \postcode{24061}
+}
+
+\author{Daniel Dunlap}
+\email{dunlapd@vt.edu}
+\affiliation{%
+  \institution{Virginia Tech}
+  \city{Blacksburg}
+  \state{Virginia}
+  \country{USA}
+  \postcode{24061}
+}
+
+\author{Sang Won Lee}
+\email{sangwonlee@vt.edu}
+\affiliation{%
+  \institution{Virginia Tech}
+  \city{Blacksburg}
+  \state{Virginia}
+  \country{USA}
+  \postcode{24061}
+}
+
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+\renewcommand{\shortauthors}{Jelson, Manesh, Lee}
+
+\acmArticleType{Review}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+
+%TC:ignore
+\begin{abstract}
+    As large language models (LLMs) advance and become widespread, students increasingly turn to systems like ChatGPT for assistance with writing tasks. Educators are concerned with students' usage of ChatGPT beyond cheating; using ChatGPT may reduce their critical engagement with writing, hindering students' learning processes. The negative or positive impact of using LLM-powered tools for writing will depend on how students use them; however, how students use ChatGPT remains largely unknown, resulting in a limited understanding of its impact on learning. To better understand how students use these tools, we conducted an online study (n=$70$) where students were given an essay-writing task using a custom platform we developed to capture the queries they made to ChatGPT.
+    % We categorized the queries qualitatively and analyzed the relationship between ChatGPT usage and students' perceived value of the essay.
+    To characterize their ChatGPT usage, we categorized each of the queries students made to ChatGPT.
+    We then analyzed the relationship between ChatGPT usage and a variety of other metrics, including students' self-perception, attitudes towards AI, and the resulting essay itself.
+    % Further analysis identifies potential predictors such as gender or race towards AI usage, and ways that a person could utilize these findings for reflection and growth
+    % \sang{a few sentences that summarize the result}
+    % \danny{Possible results to mention: women more likely to use ChatGPT to review/revise; SEWS predicts query count and ChatGPT words; }
+    % SHIPPING!!!!!!!!!!!!!!!!!!!!
+    We found that factors such as gender, race, and perceived self-efficacy can help predict different AI usage patterns.
+    Additionally, we found that different usage patterns were associated with varying levels of enjoyment and perceived ownership over the essay.
+    % We found that:
+    %   women were more likely to use ChatGPT for reviewing/revising
+    %   self-efficacy for writing was a common predictor for using ChatGPT and incorporating the responses into their essays
+    The results of this study contribute to discussions about how writing education should incorporate generative AI-powered tools in the classroom.
+\end{abstract}
+
+% We found that:
+%   women were more likely to use ChatGPT for reviewing/revising
+%   self-efficacy for writing was a common predictor for using ChatGPT and incorporating the responses into their essays
+% 
+
+% Through a qualitative analysis, we categorized the queries students made to characterize their ChatGPT usage.
+
+% to characterize student's 
+% To better understand how students use these tools, we conducted an online study (n=$70$) where students wrote essays using a custom online platform we developed to capture the queriesthey made to ChatGPT.
+
+% Through a qualitative categorization of the ChatGPT queries, we were able to derive five clusters categorizing student usage of ChatGPT.
+
+
+% We categorized the queries to ChatGPT and analyzed the relationship between ChatGPT usage and students' perceived value of the essay. 
+
+% We compared these usage categories to a variety of metrics involving students self-perception, their perception of technology, and to the resulting essay itself.
+% We found that: same number of user-added words; 
+
+
+
+
+% We analyzed the queries they sent with ChatGPT and  
+% We developed a writing platform integrating ChatGPT which allowed us to track their queries
+
+% We were able to analyze the relationship between students' perceptions (SE, TAM), their ChatGPT usage, the final essay, and the their perception of the essay's value (PO, CSI). 
+
+% As large language models (LLMs) advance and become widespread, students increasingly turn to systems like ChatGPT for assistance with writing tasks. Educators are concerned that using ChatGPT may hinder students' learning processes and reduce the critical engagement with writing that they would experience without such tools. However, how students use ChatGPT remains largely unknown, resulting in a limited understanding of its impact on learning. To better understand how students use these tools, we conducted an online study (n=$53$), analyzing the queries they submitted to ChatGPT and the responses they received while writing an essay. We developed a writing platform that integrates ChatGPT to track their queries, categorized the queries qualitatively, and analyzed the relationship between ChatGPT usage and the participants' perceived values of their writing. The results of this study contribute to discussions about how writing education should incorporate generative AI-powered tools in the classroom.
+
+
+
+% As large language models (LLMs) advance and become widespread, students increasingly turn to systems like ChatGPT for assistance with writing tasks.
+% Educators have concerns with students using ChatGPT as it can be a barrier to students' learning process and may take away the critical engagement with the essay that students would have had without such tools. 
+% However, the ways in which students use ChatGPT are unknown thereby lacking understanding of its impact on learning. 
+% To gain a better knowledge of how students use these tools, we conducted an online study (n=$53$) analyzing the queries they made to ChatGPT and the responses it provided when they were asked to write an essay. We developed a writing platform that integrates ChatGPT for us to track their queries, categorized their queries qualitatively, and analyzed the relationship between how they used ChatGPT with their perceived values on the essay.  
+% The results of the studies contribute to anticipating how writing education should integrate generative AI-powered tools in their classrooms. 
+
+% Our user study  includes two surveys and an application that records the writing process, allowing participants to actively use ChatGPT as an AI assistant. The findings of this study will reveal the types of questions students frequently ask LLM systems when composing essays and how we can gain deeper insights into their use and impact in the future.
+
+
+
+
+%Roll of AI - writer, supporter, partner (fine to not fine) 
+
+%5.0 is the essay information - not interesting but context of result
+
+%5.1 - Queries to LLM
+
+% 5.3 - Correlation of each Survey response to each diagram 4  then do Diagram 7, also do correlation of each Pre to Post (scatter plots for these) (corr in sheets)
+
+%5.2 - descripitive stats of diagram - box plots (PTRA). Can we create a persona for each user type. Clustering with each 4 ... (last step)
+% Break digaram 3/4 into P,T,R,A,O (O is exclusive O)
+% Diagram - Percentage that is 4 (per category)
+% 5.2 - look at Diagram 7 and make a graph. Present as 4/5 (how much of GPT is being utilized). 7/5 is how much is thrown away.
+%TC:endignore
+
+\begin{CCSXML}
+<ccs2012>
+</ccs2012>
+\end{CCSXML}
+
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{education/learning, empirical study that tells us how people use a system}
+
+
+%%\received{20 February 2007}
+%%\received[revised]{12 March 2009}
+%%\received[accepted]{5 June 2009}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{Introduction}
+
+% e-commerce via chat, as well as other sectors such as education, entertainment, finance, health, news and productivity; programming; 
+
+The emergence of large language model (LLM)-powered tools, such as ChatGPT, has impacted numerous domains over the past few years.
+Among these domains, perhaps the most immediate impacts have been on writing practices, from drafting emails to proofreading text to generating outlines.
+Human-computer interaction (HCI) researchers have also examined how LLM-powered AI tools have influenced writers' creative processes.
+
+    % One thread of the research examines how AI . 
+    % For example, ChatGPT can assist in creating ideas or proofreading an article. On one extreme end, it can easily generate an entire essay based on a writer's request.
+    
+    % \sang{write about how educators would be concerned about students using ChatGPT first.}
+    Writing is central to education, enabling learners to critically engage with the topics they study. Accordingly, educators have expressed significant concerns about how learners use LLM-powered tools, especially when instructors rely on writing assignments (e.g., reflective essays) to facilitate students' critical engagement with a topic.
+Because students can use tools like ChatGPT to generate high-quality essays, its capabilities may diminish their motivation to engage in writing tasks independently or to use ChatGPT in ways that support, rather than compromise, their learning.
+Educators are also naturally concerned with ethical issues, such as how to grade submissions fairly, the practical challenges of detecting ChatGPT use, and strategies to prevent academic dishonesty. However, a more significant threat to the education system and society may be the loss of opportunities for students to construct knowledge by actively participating in the writing process.
+    
+Recently, researchers have studied the creation of policies and regulations regarding the use of LLM-powered tools in education. While it is natural for instructors to want to ban the use of LLM-powered tools, it is practically impossible to implement an effective ban on such tools so researchers have instead investigated the potential benefits of using these LLMs in educational environments. For example, instructors view the increasing use of these tools as inevitable and believe that students can still learn effectively through the thoughtful use of LLM-powered tools.  One common conclusion from these studies is that while the use of LLMs will become more prevalent in the future, instructors should prepare ways for students to use them effectively.
+
+One challenge in understanding the potential risks and benefits of using LLM-powered tools is that how students use these tools remains largely hidden. Therefore, we lack an understanding of how their use impacts students' learning beyond the obvious case, i.e., not engaging in writing at all, such as completely generating an essay from a ChatGPT prompt. While there may be less problematic usage of ChatGPT compared to generating an entire essay, even mild usage can still negatively impact the learning process. For example, asking it to choose one perspective on a divisive topic can deprive students of the opportunity to think critically about opposing viewpoints. On the other hand, if a learning objective is technical writing, asking ChatGPT to outline the flow of essay given a chosen perspective can be more problematic, even more so than not critically thinking about the topic. In the meantime, researchers anticipate some positive effects of using LLM-powered tools, including using it as an ideation partner for brainstorming; these expectations are speculative and not necessarily evidence-based. Therefore, it is important to observe and analyze how students use ChatGPT to enable educators to understand its impact on learning based on their objectives and usage patterns.
+
+% The lack of clear understanding of the students' usages for a writing assignment keeps educators from anticipating the impacts of LLM-powered tools in writing. 
+
+This study aims to understand how students use an LLM-powered tool, specifically ChatGPT, by observing them while writing an essay. We conducted an online study where 70 college students were asked to write an essay using ChatGPT, which was accessible on a custom online platform that we developed to capture the queries they made to ChatGPT --- queries that are typically hidden from instructors. This data will allow us to address the following research questions. 
+RQ1:How do students use ChatGPT in essay writing? 
+In particular, we categorized all the ChatGPT queries made by the students based on Flower and Hayes's cognitive writing model, which structures the cognitive process into three categories: Planning, Translating, and Reviewing. We also added another category, All, to represent cases when a student relies on ChatGPT for the entire writing process (e.g., `Write an essay in response to the following prompt.'). The dataset collected from the study will provide educators and researchers with a comprehensive view of how students can use ChatGPT, including aspects that they may find problematic or desirable for their learning. This will enable further studies on how instructors should incorporate LLM-powered tools into their pedagogy. 
+
+In addition, we investigated individual differences in how participants use ChatGPT and explored the relationship between students' characteristics and their usage patterns, as summarized in the following research question. 
+RQ2:What factors can predict how students use ChatGPT? 
+In particular, we used two specific constructs to account for individual differences, alongside demographic information: self-efficacy in writing and acceptance of ChatGPT. 
+Based on their usage of ChatGPT, we classified each participant into a group (e.g., Group N: those who never used ChatGPT for the essay) according to the primary query types. By tracking keystrokes and copy-paste history in the text editor, we analyzed the interaction traces to understand how the resulting essay was composed (e.g., the percentage of words pasted from ChatGPT) and how this varied by group, aiming to answer the following question.
+RQ3:How does students' ChatGPT usage manifest in their writing?
+The result of this question will characterize how each group used ChatGPT query results to write their essays.
+
+Lastly, we investigated how students' use of ChatGPT relates to their ability to reflect on their writing experience, as explored through the following research question: 
+RQ4: How does students' ChatGPT usage shape their perception of the writing experience?
+To address this question, we measured two perceived values: students' sense of ownership of the essay they wrote with ChatGPT's assistance,  and their reflection on how ChatGPT supported their writing practice, using the Creative Support Index.
+The findings will help researchers and educators understand the factors associated with students' ChatGPT usage and how students perceive their writing.
+
+
+%TC:ignore
+\begin{figure}[t!]
+    \centering
+    \includegraphics[width=\linewidth]{Images/RQs.png}
+    \caption{The overview of Research Questions}
+    \label{fig:rqs}
+\end{figure}
+%TC:endignore
+The results revealed distinct types of ChatGPT usage, categorized into four groups, reflecting varied perceptions of ChatGPT as an ideation partner, writer, and editor. Specifically, our findings indicate that self-efficacy for writing (SEWS) is a common predictor of both the frequency of ChatGPT usage and the likelihood of incorporating ChatGPT-generated content in their essays; students with higher confidence in writing tended to use ChatGPT less. Additionally, those who used ChatGPT primarily for planning were more likely to write their own content, while other types of users exhibited a wider range of behaviors. Finally, students who relied on ChatGPT to generate essays without incorporating their own ideas (Group A) reported lower perceived ownership of their work. 
+
+% We captured their essay editor activity as well as all kinds of queries that they make within the ChatGPT platform. 
+    % As LLMs serve as practical support tools and can produce work of comparable quality to that of humans, it can be a challenge for readers to consider these tools when they consume written content % they do not consistently achieve greatness. 
+
+    % One particular domain that shares such challenges is writing education. As these systems become stronger and more efficient, students might use ChatGPT to write their papers. 
+
+
+Our study provides a comprehensive set of examples illustrating how students might use ChatGPT in essay writing. It also offers insights for educators into which students may use it more frequently and how ChatGPT usage impacts students' perceived ownership of their work. This data can help evaluate the potential impact of LLM-powered tools on learning by sharing the pattern with educators: ChatGPT queries, responses, and how they use the responses. We anticipate that learning objectives will shape how educators view these interactions and whether they find them problematic. Furthermore, this research can enhance understanding of students' trust in LLMs and inform instructors about various strategies --- including policies, learning activities, and guidance on how to use ChatGPT for writing assignment --- to help students develop writing skills while effectively utilizing these tools.
+
+
+
+
+\section{Related Works} 
+% There has been a lot of research on different aspects of AI assistants in a variety of fields. Our related work section is broken up into three categories: AI assistants in education - focusing on how newer AI systems might effect teachers and students, AI writing support - focusing on different AI writing tools and their effectiveness, and Importance of AI - focusing on how AI is a growing field and how different groups of people might adopt tools and how we can improve trust in these tools.
+
+\subsection{AI Assistants in Education}
+
+    Prior research in HCI discusses and gives a general overview of how LLMs like ChatGPT might affect education.
+    Many works examine the opportunities and challenges that arise from these new systems and the impact that they might have in the classroom setting.
+    These works provide key insights into the different ways that educators might expect to see ChatGPT and other LLM powered tool usage from their students, and many provide recommendations for effective integration.
+    There are others in this category that review whether or not ChatGPT can be helpful to these students.
+    Other researchers have also look into implementation strategies that promote beneficial learning experiences, such as using ChatGPT to assist when stuck on a problem instead of asking it to do the work for them.
+    Jeon et al. looks at the effectiveness of LLMs in the classroom and discuss ways to foster a complementary relationship between students, teachers, and AI.
+    Schneider et al. and Khalil et al. look into if LLM-generated text triggers plagiarism detectors like Turnitin or iThenticate.
+    Schneider et al. further researches whether looking at log files will be an effective alternative to catch cheating. 
+    
+    Other papers look at ethical obligations that come from introducing these new systems in educational settings. The primary ethical concern tends to be plagiarism and cheating, or how students can improperly use LLM powered tools to do the work for them.
+    These papers address many of the concerns that instructors voice, and many of these use unique systems such as looking at log files to determine if edits made were considered plagarism or not.
+    
+    Lastly we have papers that provide an overview into the teacher and student readiness to use these tools and the perceptions that they have towards them. Ayanwale et al., in particular, looks at teachers intention to teach using AI, while others perform thematic analysis or interviews to get understand perception. Lastly Lo et al provides a general overview of the literature, providing a general overview and commentary on how ChatGPT will potentially impact the field of education.
+
+
+% Notes:
+%     All:
+%     What Is the Impact of ChatGPT on Education? A Rapid Review of the Literature: Overview \cite{lo_what_2023}
+    
+%     Opportunites and Challenges
+%     A review of opportunities and challenges of chatbots in education: overview paper on LLM in edu \cite{hwang_review_2021}
+%     AI in ediucation: book about benefits of AI \cite{holmes_artificial_nodate}
+%     ChatGPT for Education and Research: A Review of Benefits and Risks: overview paper ... \cite{sok_chatgpt_2023}
+%     ChatGPT for Good? On Opportunities and: overview paper ... \cite{kasneci_chatgpt_nodate}
+%     ChatGPT: Bullshit spewer or the end of traditional assessments in higher education?: overview paper \cite{rudolph_chatgpt_2023}
+%     Exploring the Role of ChatGPT in Education: Overview paper \cite{mosaiyebzadeh_exploring_2023}
+%      Role of chatGPT in edu: Overview paper \cite{biswas_role_2023}
+%      Shaping the future: overview \cite{grassini_shaping_2023}
+
+%     Ethics
+%     Artificial Intelligence and Teachers’ New Ethical Obligations: overview paper ... \cite{adams_artificial_2022}
+%     Exploring the Role of ChatGPT in Education: Overview paper \cite{mosaiyebzadeh_exploring_2023}
+%     Chatting and cheating: Ensuring academic integrity in the era of ChatGPT: trying to determine what is cheating and what isnt (education perception) \cite{cotton_chatting_2023}
+%     Detecting Plagiarism Based  on the Creation Process: using log files to look for cheating \cite{schneider_detecting_2018}
+
+%     Implementation:
+%     ChatGPT in education: Strategies for responsible implementation: overview paper \cite{halaweh_chatgpt_2023}
+%     Large language models in education: A focus on the complementary relationship: Effectiveness of AI in the classroom \cite{jeon_large_2023}
+%     Using AI to Implement Effective Teaching: Ways to use AI in edu \cite{mollick_using_2023}
+%     Detecting Plagiarism Based  on the Creation Process: using log files to look for cheating \cite{schneider_detecting_2018}
+
+%     Readiness to use
+%     Teachers’ readiness and intention to teach artificial intelligence in schools: Overview paper \cite{ayanwale_teachers_2022}
+%     Impact of ChatGPT on Learning Motivation: Teachers and Students' Voices: perception of GPT \cite{ali_impact_2023}
+%     More than model documentation: Interviewed middle and high school teachers to get feelings on ChatGPT in the classroom \cite{more_than_model}
+%     Comparing Student and Writing Instructor Perceptions of Academic Dishonesty \cite{gallagher_comparing_2024}
+%      Exploring Students’ Perceptions of ChatGPT: Thematic Analysis and Follow-Up Survey \cite{shoufan_exploring_2023}
+
+
+
+
+\subsection{AI Writing Support}
+
+    One of the first widely adopted AI assistants in the field of writing was Grammarly, and HCI researchers have looked at its' effectiveness in a variety of ways. One of the ways investigated is on how Grammarly affects plagiarism detectors, investigating whether or not students have to worry about using this writing assistant tool for school work. Another widely researched field is on how Grammarly affects the writing quality of English Second Language (ESL) users. Many of these findings show positive improvement in student work quality, proving that a AI reviewing assistant can be helpful to students. Interestingly, some of these papers report that students do not effectively use the tool, making only moderate changes to their drafts. Another interesting paper looked at things from the perspective of university students to see how well students like Grammarly as an assistant, finding positive perspectives from Grammarly users.
+
+    In more recent years, HCI researchers have looked towards more powerful AI assistants such as ChatGPT, some even developing new tools or systems for participants to use. The first category investigates where writers struggle, and how AI can be used as an assistant for them. They find a wide variety of results, stating that there is no clear and definitive answer to helping writers as each writer is different and will use the tool in their own way. Others have looked into how AI models can assist in ESL settings. Ito et al looks into a tool called Langsmith to investigate how Japanese non native English speakers complete writing tasks with an AI translator. Results from this study suggest that these users will rely on an AI translating assistant and focus more on the quality of the work, rather than attempting to translate things themselves. RECIPE, a tool developed by Han et al, is another tool that assists non native English speakers in English courses by providing them with an interactive ChatGPT platform, also receiving positive feedback on the tool as a helpful assistant. Liu et al have also looked at the academic writing scene, developing a tool (CheckGPT) that can detect ChatGPT generated academic writing.
+    
+    With these newer tools and AI assistants, research has been needed on assessing the work quality of LLM users. One category in education that has been researched is on Computer Science. These investigators have looked into how ChatGPT and other LLMs perform when given coding tasks and if the responses are detrimental to classrooms (learning?). Others have looked at how well ChatGPT performs in testing scenarios. Hilliger et al, uses the digital platform Open Learning Initiative (OLI) to see if ChatGPT can accurately assess student generated questions when compared to expert evaluators. Interestingly they find that ChatGPT is too lenient in it's evaluation and typically gives better scores than experts. Shoufan looks at things from the opposite perspective, wondering if students can use ChatGPT to answer test questions without prior knowledge. ChatGPT performs widely different depending on question type or content (something here about how ChatGPT is not a replacement to education?).
+
+    
+% Paper for notes:
+%     Writing Support:    
+%     can AI Support Fiction Writers Without Writing For Them?: identify wasys that AI can help fiction writers \cite{stark_can_nodate}
+%     Check Me If You Can: Detecting ChatGPT-Generated Academic Writing using CheckGPT \cite{liu_check_2023}
+%      RECIPE: Integration of ChatGPT in EFL Edu \cite{han_recipe_2023}
+%     Social Dynamics of AI Support in Creative Writing \cite{gero_social_2023}
+%      Use of an AI-powered Rewriting: Strategies of ESL to use AI for translation \cite{ito_use_2023}
+%      VISAR: Creating an AI support tool for writers \cite{zhang_visar_2023}
+
+%      Grammarly As a Tool to Improve Students’ Writing Quality: ESL Grammarly \cite{karyuatry_grammarly_2018}
+%     Student engagement with automated written corrective: Grammarly ESL \cite{koltovskaia_student_2020}
+%     Stop!: Grammarly in edu \cite{oneill_stop_2019}
+%     Using Grammarly to support students: How grammarly affects plagarism detectors \cite{dong_using_2021}
+%     The Effectiveness of Using Grammarly: ESL \cite{huang_effectiveness_2020}
+%     Effectiveness of Online Grammar Checker to Improve Secondary Students’ English Narrative Essay Writing: ESL Grammarly \cite{jayavalan_effectiveness_2018}
+
+      
+%     Work Quality:
+%     Assessing the Quality of Student-Generated  Short Answer Questions Using GPT-3: students generate question that is then eval by GPT and experts \cite{moore_assessing_2022}
+%     Can students without prior knowledge use ChatGPT to answer test questions? An empirical study: looked to see if ChatGPT can answer test questions for students wthout student knowledge \cite{shoufan_can_2023}
+%      Exploring the Role of AI Assistants in Computer Science Education: efficiency in CS \cite{wang_exploring_2023}
+%     studying the effect of AI Code Generators on Supporting Novice Learners in Introductory Programming \cite{kazemitabaar_studying_2023}
+%     Why Johnny Can’t Prompt: Ways to design better prompts, develop a tool \cite{zamfirescu-pereira_why_2023} (unused atm)
+    
+
+    
+
+
+\subsection{Exploring User Adoption and Trust in AI}
+
+    As artificial intelligence is a rapidly expanding topic, there is constant growth in the understanding of its usage. Some interesting research has been done into whether or not different educational groups are more likely to adopt such topics. They found that students were not only more likely to adopt these new tools, but had a more open minded attitude about its use. These ideas compliment the ideas above that show student's encourage using ChatGPT as an AI assistant. 
+
+    Other important research is on ways to improve the trust in ChatGPT. Both Ma et al. and Bucina et al. look at the different ways to identify what responses are perceived as `good' or `helpful', and what might be a 'poor' response or one that does not suit the needs of the inquirer. They also discuss ways that the user can improve the prompts to increase the likelihood of getting a good prompt. “What Can ChatGPT Do?” Analyzing Early Reactions to the Innovative AI Chatbot on Twitter, looked at the perceptions of tweets that were related to ChatGPT to see early impressions that the LLM had on a variety of categories, including news, technology, writing (creative, essay, prompt, or code), and answering questions. They found that this version of ChatGPT does not reliably answer questions correctly, thus leading to more questions than answers.
+
+
+% \jelson{This might belong in methods??}
+%     Psychological ownership is the perception of ownership that an individual feels towards their own creation. This phenomenon has been developed and investigated extensively in many different forms. We wanted to know whether or not students feel that a piece of writing is "theirs" and if the reliance on ChatGPT has any impact on that. We have found a number of surveys detailing the metrics that can be used to create a understanding of ownership. 
+
+\section{Methodology}
+We conducted an online study in which students were recruited to write an essay. We introduce the system developed for data collection, along with methodological details.
+
+
+\subsection{Writing Platform + ChatGPT Development}
+To understand how students use ChatGPT, we tracked their queries and the corresponding responses from ChatGPT. Since ChatGPT is an independent app, we built a system that integrated it within the writing platform using the default OpenAI API to record user interactions. This tool enabled us to collect three types of data: students' queries to ChatGPT, ChatGPT's responses, and a keystroke-level recording of their writing process.
+
+
+Our application has two main features: a text editor for essay writing and access to ChatGPT. To replicate the ChatGPT experience as closely as possible, we chose to create a web application that emulates its functionality. Additionally, we used tabs to simulate a web browser, keeping ChatGPT in a separate window from the editor rather than displaying them side by side.
+%Using a side by side format may make users feel like they needed to use ChatGPT, so we opted for a tab format to both simulate a web browser and keep ChatGPT available as an option, rather than a requirement
+
+%TC:ignore
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/Writ_page.png}
+    \caption{The editor view of the website}
+    \label{fig:writ_page}
+\end{figure}
+%TC:endignore
+
+The first tab (Fig~\ref{fig:writ_page})  of our application is a writing platform where participants were asked to respond to an essay prompt in the text editor. 
+The editor recorded all input operations and their sequence, including tracking cursor position, insertions, deletions, text selection, copy,  cut, and paste events. We also recorded the timestamps of each operation to determine when the user made each edit.
+% Copy events are also recorded, but we elected to track the entire webpage rather than just the editor to see where and when copy events might happen during an AI assisted writing session. 
+We recorded this data to observe and analyze the participants' writing processes after the study. The timestamps allowed us to see how they alternated between the editor and the in-house ChatGPT and how they integrated ChatGPT responses into their writing (e.g., pasted text). This data was sent to a server upon submission. These features were implemented using the CodeMirror 5 API and the CodeMirror-Record files. Additionally, a timer in the top right corner of the webpage helped users keep track of elapsed time.
+
+%TC:ignore
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Images/gpt_page.png}
+    \caption{The view of our ChatGPT page}
+    \label{fig:gpt_page}
+\end{figure}
+%TC:endignore
+
+To track how users interact with ChatGPT, we implemented a custom ChatGPT using the OpenAI API (model GPT-3.5-turbo), as shown in Fig~\ref{fig:gpt_page}. As mentioned above, we chose to simulate browser tabs to give participants the impression that ChatGPT is available to them without them being encouraged to use it. The participants were allowed to ask any questions to ChatGPT, and we decided not to pre-prompt the system (e.g., assigning it the role of a writing assistant) to make its behavior closely resemble that of ChatGPT. We recorded their queries and timestamps to analyze how and when ChatGPT was prompted for assistance during the writing process. All recorded data was stored locally on the user's machine and sent to our server upon submission of their essay.
+
+
+\subsection{Study Procedure}
+Before writing an essay, we had participants complete a pre-study survey to collect basic demographic information in an online survey created in QuestionPro.
+From the survey, we had them fill out two standard questionnaires: the Technology Acceptance Model (TAM)\cite{davis_perceived_1989}, which we adapted for ChatGPT, and a self-efficacy for writing questionnaire.
+
+The Technology Acceptance Model (TAM) is a framework used to understand how users come to accept and use technology. TAM has two subscales: perceived usefulness of technology (TAM PU) and perceived easy of use (TAM PEOU). TAM PU refers to the degree to which a person believes that using a particular technology will enhance their job performance or improve their productivity. TAM PEOU measures how easy a technology is to use based on the idea that they are more likely to accept it if they found technology easy to use.  
+%The data collected from this survey was for answering RQ2.
+The Self-Efficacy for Writing Scale (SEWS) is a measurement tool designed to assess an individual's beliefs in their writing abilities across various contexts and tasks.
+
+The participants were then redirected to our writing-ChatGPT platform to begin the essay writing task. Our essay question was from an ACT sample writing prompt, as most college students applying to universities in the United States are familiar with this format. The essay prompt addressed the issue of automation replacing humans with machines and included three perspectives on the topic. Participants were required to present their own perspective and analyze how it relates to at least one of the provided perspectives. The essay prompt is available in the Appendix~(\ref{app:writing}).
+
+We asked participants to spend approximately 30 minutes on the essay, as the ACT allows a maximum of 40 minutes for the essay response. During the study, they were neither encouraged nor discouraged from using ChatGPT. The study was advertised as ``a study investigating essay writing and ChatGPT." On the interface, participants were instructed as follows: ``If you wish to use ChatGPT, please click the ChatGPT tab and ask questions. Do not use ChatGPT in your browser; use the one we provided." We instructed them to write the essay as if it were "a class assignment that would be submitted for a grade."
+
+
+% as follows: ``Please imagine this is a class assignment that would be submitted for a grade. Try to do your best for a good grade.''
+    
+After submitting their essays, participants completed two additional questionnaires to help them reflect on their writing experience: their perceived ownership of the essay they had just written and their reflections on how effectively their writing practice was supported. We wanted to know whether or not students feel that a piece of writing is "theirs" and if the reliance on ChatGPT has any impact on that. We utilized a questionnaire that measures perceived ownership (PO) of a written artifact~. Additionally, we employed the Creativity Support Index (CSI) to assess how well ChatGPT supported their creativity. This will give us further insight into the perception of ChatGPT for these students.
+
+%     Psychological ownership is the perception of ownership that an individual feels towards their own creation. This phenomenon has been developed and investigated extensively in many different forms. We wanted to know whether or not students feel that a piece of writing is "theirs" and if the reliance on ChatGPT has any impact on that. We have found a number of surveys detailing the metrics that can be used to create a understanding of ownership. 
+
+
+\subsection{Recruitment}
+
+For recruitment, we posted our survey on various university mailing lists, targeting both undergraduate and graduate students. Additionally, we recruited participants through Prolific, an online crowdsourcing platform, with the screener of being a college student in the United States. All participants were entered into a raffle for a chance to win a \$10 gift card, with winning odds of 1 in 5. In total, we were able to recruit 70 participants. 
+%The participants' ages ranged between 18 and 55 ($\mu$ = $21.37$, $\sigma$ = $7.89$),
+The participants' ages were categorized into the following ranges: 56 participants (80\%) were aged 18-24, 9 participants (12.9\%) were aged 25-34, 2 participants (2.9\%) were aged 35-44, 1 participant (1.4\%) was aged 45-54, and 2 participants (2.9\%) were aged 55-64.
+Thirty-eight out of seventy participants identified as women, one identified as non-binary, and the remainder identified as men (44\%).
+The racial distribution of participants was as follows: 33 identified as White/Caucasian (47.1\%), 22 as Asian/Pacific Islander (31.4\%), 6 as Black or African American (8.6\%), 5 as Hispanic (7.1\%), and 4 as Other (5.7\%).
+
+
+
+
+
+
+
+
+ % \sang{fill this part out.}
+
+
+% \section{Data Analysis}
+% We analyzed our data in several ways. We first analyzed the 
+\subsection{Qualitative Analysis of ChatGPT queries}
+\label{sec:query-cats}
+
+To analyze the queries sent to ChatGPT, we used a deductive approach to label queries, using four categories and an inductive approach to code the queries within those categories.
+Not all queries or codes were associated with a category.
+The coding and categorization process was primarily done by the first author, who discussed with co-authors to reach agreement. 
+
+Of the four categories, three correspond to Flower and Hayes' three phases of the cognitive process of writing: Planning, Translating, and Reviewing.
+% First, we analyzed the queries made to ChatGPT. We used the three phases of the cognitive process of writing by Flower and Hayes' model comprising three key activities: Planning, Translating, and Reviewing.
+% Each category will be explained in the following subsections. 
+% The first author created and maintained a codebook, and matched all GPT quries with the codes.  
+Additionally we created the category All which encompasses all three phases of the cognitive process.
+% fit all three or none of the cognitive processes.
+Below, we explain each category in more detail.
+% We have categorized the queries made to ChatGPT according to this model, creating codes to better define the different queries at each activity. This will provide us with a better understanding of how people use ChatGPT in the essay creation process.
+
+\subsubsection{Planning (P)}
+According to the model, the goal of Planning is defined as ``to take information from the task environment and from long-term memory and to use it to set goals and to establish a writing plan to guide the production of a text that will meet those goals.''
+Main activities within planning include generating and organizing ideas and setting goals.
+Thus, this category covered cases such as asking for examples, seeking additional information, and asking for help structuring the essay.
+Excluded from this category are queries asking ChatGPT to write or rewrite chunks of the essay, even when the response might include new ideas---those cases were categorized as either Reviewing or All.
+% This category mainly consists of codes where participants searched for essay ideas.
+% This could involve using the LLM as a search engine or asking for examples to include in their essay. 
+% For example, if a participant asked ChatGPT to give examples of a particular perspective (e.g., `can u give me an example where machine automation benefits the world?'), we categorized it as planing stage and create a code: Seeking Essay Ideas (looking for examples).
+% This section also included cases where participants asked for an outline of the essay or help in understanding the prompt. 
+% Additionally, we found that some queries to ChatGPT involved asking it to compare the relationships between the perspectives given in the prompt. Finally, there were instances where users asked for synonyms, definitions, and usage examples for different words. We considered this part of the user's process in finding the right word for their essay, so it was assigned the Planning (P) code.
+
+ % We categorized queries that the participants asked to set the direction or an outline of the essay. 
+    
+\subsubsection{Translating (T)}
+The second category derived from the model is Translating, the process of turning ideas into text.
+% Translating is to produce text guided by the writing plan and information collected.
+Queries can be categorized as translation when they include both a request to generate text that can be used in the essay along with adequate context about the desired content of the generated text.
+Excluded from this category are requests asking to generate portions of the essay larger than a paragraph, which would instead be classified in the All category. 
+% We categorized GPT queries that asked to generate text, seemingly for the purpose of using the generated text in the essay. We made sure that the participants provided ChatGPT with a theme or viewpoint to differentiate from Planning activities. For example, a query that asked `what is a possible sentence that could connect these two sentences [two sentences pasted in two different lines]' and coded as `Connect two different parts of writing.
+% Another example can be when a participant asked the LLM to complete a paragraph or sentence after providing the beginning, where main ideas were provided of the paragraph, although it is subjective by its nature.  
+
+% We also used this category for instances where users gave ChatGPT examples or themes and asked it to incorporate them into their essay. These cases differ from "All" because they provided the idea and asked the tool to translate it into words. Similarly, rewriting a portion of their essay to include themes or examples is very similar to "Reviewing," but since the user provided the example and requested a new sentence, we considered this "Translating." 
+
+    
+\subsubsection{Reviewing (R)}
+The Reviewing category applied to any query that asked for evaluations or revisions of existing text, aligning with the two sub-processes of reviewing in Flower and Hayes' model.
+Queries involving evaluation can range from seeking targeted feedback to asking for a score or grade.
+Queries involving revision might ask to fix simple spelling and grammar mistakes, but may also have more complex goals, such as rewriting an essay in a particular style.
+Essentially, all queries where participants supplied the original text and requested an evaluation or a rewrite were classified as Reviewing.
+% A typical example of this would be asking ChatGPT to proofread their essay for mistakes in grammar or spelling (e.g., ``this is the final short essay... is there anything that you would revise for grammar only? [the entire survey].''). We also encountered cases where users asked ChatGPT to evaluate their essay for a grade or evaluate if it is appropriate for the educational level. All the queries that the participants supplied the original text and requested changes in structure or length were also categorized as Reviewing (R). 
+% These changes were more subtle than rewriting for a new theme.
+
+% Lastly, Reviewing consists of reading and editing to improve the quality of the text produced by the
+% Translating process. Typical requests that would be coded as Reviewing will be proofreading .  
+         
+\subsubsection{All (A)}
+The All category corresponded to queries asking ChatGPT to write either the entire essay or a portion of it (e.g., a paragraph).
+These queries can be seen as using ChatGPT to generate ideas, translate them into words, and revise them, essentially delegating all three activities: Planning, Translating, and Reviewing, to ChatGPT.
+Even asking ChatGPT to write a portion of the essay as small as a paragraph was categorized as All, so long as the query did not also contain the details of what should go in the paragraph (which would instead count as Translating).
+
+Notably, the responses to queries in the All category could be used directly as part of an essay, but alternatively they might be used only as ideation, an activity associated with Planning.
+Even if the query response seemed to be used primarily for ideation, we classified these queries as All in order to avoid significant ambiguity---the process of generating ideas can occur during any other writing process and we cannot read our participants minds.
+% We still classify these types of queries as All rather than Planning
+% Even when participants asked ChatGPT to write a small portion of the essay, such as a single paragraph, we categorized it as All category if they did not provide any ideas to the survey beyond the prompt itself. (e.g.,``Can you provide me with an introduction paragraph about the replacement of humans for machines in the workplace?'')
+
+% We differentiated this category for instances where users gave ChatGPT examples or themes and asked it to incorporate them into their essay. These cases differ from "All" because they provided the idea and asked the tool to translate it into words. 
+
+        
+% This differs from the "All" category because we reserved "Translating" for requests that were shorter than one paragraph. We decided that writing a full paragraph or more requires a significant amount of planning that would not be accounted for with just the "Translating" code.
+
+\subsubsection{Other Queries and Codes}
+Finally, not all queries fit into the previous categories.
+Queries might not be related to the writing task, as there was no constraints on the type of query users could send.
+
+For the codes, we associated each code with a category as appropriate.
+For example, the code looking for examples was associated with the Planning category.
+But some codes captured various aspects of queries which were not specific to any of the other categories.
+% For example, we had a code for when participants revised their query to get a better response, which could occur with any phase of 
+For example, we had a code for providing feedback which is not restricted to any particular phase of writing.
+
+
+% The final category we used was Other, which applied to queries that do not fit into any of the other categories.
+% Additionally, because we associated each code with a single category, we used the Other category to capture various aspects of queries which were not specific to any of the other categories---for example, to capture instances where queries included positive feedback.
+
+% There were other codes, referred as ``Other'' category, that we created to describe various types of interactions participants had with the tool. With a few exception, these codes were additional to one of the codes that corresponds to writing activities: P, T, R, A. We created these codes to capture a unique characteristics that can happen in any query. For example, a participant asked ``I really like that paragraph you wrote but can you slightly rewrite it to match my writing style a little more?'' where the second part of the query is categorized as Reviewing (R) but the first part was categorized as ``Other'' and coded as ``Feedback to AI''.
+% We also observed cases where users repeated an query with modifications when GPT's responses were not satisfying with their initial attempts. These interactions provide valuable insights into how participants engaged with the tool beyond the direct writing process. 
+% As such, this category is important for understanding how users responded to the AI's generated information and the steps they took to receive different or better results.
+\subsection{Quantitative Analysis}
+
+\subsubsection{Essay Writing Trace}
+As previously stated, the recording features tracked each user's inputs and stored them in our database with timestamps. With this data, we could analyze how ChatGPT responses contributed to the writing process by comparing the responses participants received with the new content added (e.g., pasted text) or revisions made immediately after receiving ChatGPT responses. In general, we have comprehensive, keystroke-level data that can asynchronously reproduce each writer's writing and ChatGPT interaction. Figure~\ref{fig:dataflow} illustrates the overall data flow in terms of word count. The following list provides examples of metrics calculated for each participant:
+
+\begin{itemize}
+    \item Number of queries made (per category: P, T, R, A) for the essay
+    \item Number of words manually entered (Figure~\ref{fig:dataflow}-$(1)$)
+    \item Number of words copy-pasted from ChatGPT into the essay (per query category: P, T, R, A) (Figure~\ref{fig:dataflow}-$(5)$)
+    \item Number and word count of Copy/Cut/Paste events in the Editor, Prompt, or ChatGPT query textbox
+    \item Final number of ChatGPT-generated words in the essay (Figure~\ref{fig:dataflow}-[$(5)-(6)$])
+    \item Final number of participant-written words in the essay (Figure~\ref{fig:dataflow}-[$(1)-(2)$])
+\end{itemize}
+
+\noindent Note that the observed metrics have limitations and cannot fully capture users' cognitive and behavioral processes. For example, if a participant writes words manually, we cannot determine whether these words were generated based on their memory and knowledge or derived from the ChatGPT response and rephrased in their own way (depicted as a gray dotted line that passes through the participant in Figure~\ref{fig:dataflow}-(1)). We used these metrics to provide insights into how users engage with LLM-powered tools and how their usage relates to other constructs.
+
+
+
+%TC:ignore
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\linewidth]{./Images/thruput.png}
+    \caption{Data Flow Diagram between Editor, Participant, and ChatGPT}
+    \label{fig:dataflow}
+\end{figure}
+%TC:endignore
+
+% The example metrics that we planned to use include the number of words copied ChatGPT and eventually contributed to the final text, the pace of writing, and the types of generation (e.g., keystroke, pasted text, deleted text, cut-and-pasted text) and how that correlates to ChatGPT usage.
+    
+% We looked at where users made changes to their writing. As ChatGPT is available throughout the creation process, understanding where the changes in the writing were made is important, for example, if users backtrack and use ChatGPT as a proofreader. This could cause changes to the first line of their writing at the end of the submission, and we will be able to visualize it. Other users could potentially ignore the ChatGPT response and continue with their writing task, so looking at the location will also increase our understanding of how users utilize the LLM in their writing. 
+    
+    % This will also increase our understanding of how users utilize the LLM in their writing. Some users may choose to only prompt ChatGPT towards the end of their submission, using ChatGPT as a proofreader. This could cause changes to the first line of their writing at the end of the submission, and we will be able to visualize it with the section graph.
+
+\subsubsection{Data Analysis for RQ2}\
+
+To understand the relationship between the variables that we measured and their ChatGPT usages, we conducted various statistical tests. 
+
+For RQ2, we examined whether Self-Efficacy for Writing (SEWS) and TAM scores could predict ChatGPT usage. We ran a generalized linear model (GLM) using the \texttt{glm} function in the R package. A Poisson model was chosen, as the predicted values were typically counts (e.g., the number of ChatGPT queries or the number of words written by the participant). For example, the relationship between the predictors and the expected count of ChatGPT queries ($\mu_i$) of participant($i$) can be expressed as follows: 
+\[
+\log(\mu_i) = \beta_0 + \beta_1 \cdot \text{SEWS}_i + \beta_2 \cdot \text{TAM PU}_i + \beta_3 \cdot \text{TAM PEOU}_i + \beta_4 \cdot \text{Gender}_i + \beta_5 \cdot \text{Race}_i + \beta_6 \cdot \text{Age}_i
+\]
+
+\noindent
+where:
+\begin{itemize}
+    \item $\text{Gender}_i = 1$ for Men, $0$ otherwise
+    \item $\text{Race}_i = 1$ for White, $0$ otherwise
+    \item $\text{Age}_i = 0$ for ages $18\text{--}24$, $1$ for $25\text{--}34$, $2$ for $35\text{--}44$, $3$ for $45\text{--}54$,  $4$ for $55$ or older
+        % \begin{itemize}
+        %     \item $0$ for ages $18\text{--}24$
+        %     \item $1$ for ages $25\text{--}34$
+        %     \item $2$ for ages $35\text{--}44$
+        %     \item $3$ for ages $45\text{--}54$
+        %     \item $4$ for ages $55 or older$
+        % \end{itemize}
+\end{itemize}
+\noindent The model uses a log link function to relate the expected query count for each type (P, T, R, A, and their total) per essay to the predictor variables.
+
+\subsubsection{Data Analysis for RQ3 and RQ4}
+\label{sec:analysis34}
+
+For RQ3 and RQ4, we aimed to analyze how ChatGPT usage relates to essay composition (RQ3) and to two constructs: participants' perceived ownership (PO) of their essay and the Creative Support Index (CSI). Since PO and CSI are non-parametric dependent variables that do not meet the normality assumption (e.g., average values of ordinal outcomes), we used non-parametric methods, specifically the Kruskal-Wallis Test. Participants were divided into groups based on how they primarily used ChatGPT, with each self-selecting their usage condition as described below.
+
+\begin{itemize}
+\justifying
+    \item Group N: Participants who did not use ChatGPT for the task ($n=6$).
+    \item Group P: Participants whose ChatGPT queries were primarily focused on Planning activities, with more than half of their queries in this category ($n=16$).
+    \item Group R: Participants whose ChatGPT queries were primarily focused on Reviewing activities, with more than half of their queries in this category ($n=13$).
+    \item Group A: Participants whose ChatGPT queries were primarily focused on All activities, with more than half of their queries in this category ($n=15$).
+    \item Group M: Participants with mixed behaviors, whose ChatGPT queries were distributed across categories without any one category exceeding 50\% ($n=20$).
+\end{itemize}
+
+\noindent Note that no participants used translation queries more than 50\% of the time, so Group T was not formed. We tested whether this factor was statistically significant for each dependent variable analyzed (e.g., the number of ChatGPT-generated words in an essay) at a significance level of $0.05$. If the result was significant, we conducted a post-hoc analysis using Dunn’s test with Bonferroni correction.
+
+
+% We conducted correlation and mediation analyses to examine the relationships between observed interactions (e.g., the number of final words, the number of user added words, the number of ChatGPT written words, etc.) and the constructs that we explored in RQ2 and RQ3. First, Pearson correlation coefficients were calculated to assess the strength and direction of associations between these variables. Following this, mediation analysis was performed to investigate whether any variable mediated the relationship between other variables. \sang{revise if we do not do path analysis}
+
+
+
+
+
+
+
+\section{Results}
+    The analysis of the essay responses yielded several descriptive statistics, providing information on the overall performance of the writing. On average, the participants produced $411.3$ words per essay, with a standard deviation of $269.2$ and a median of $354$ words, indicating variability in the length of the responses. The average time spent writing these essays was $25.97$ minutes, with a considerable standard deviation of $36.78$ minutes and a median time of $19.69$ minutes. Most of the essays were relatively brief, since the participants were instructed to allocate 30-40 minutes to the task, reflecting the time constraints similar to the 40-minute ACT writing test~\footnote{ACT Writing Test: \url{https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/writing-test-prep.html}}.
+    % One particularly noteworthy observation refers to the words per minute (WPM) data. 
+    % The average WPM of our users was $28.81$, with a standard deviation of $29.87$ and a median of $17.95$, which is not necessarily faster than the average typing speed of 40 WPM \cite{asaporg}. 
+    % 
+    %not necessarily faster than the average typing speed of 40 WPM, showing that different interactions, such as using ChatGPT or thinking up ideas, drastically effect writing speed.
+    % This reduced typing speed is likely attributable to the interactions of the participants with ChatGPT during the writing process. The large standard deviation in WPM further suggests variability, possibly due to paste events from ChatGPT or external sources.
+    Additionally, the average number of queries made to ChatGPT was 4.0 ($\sigma=4.8$). The distribution of each query per group is depicted in Figure~\ref{fig:Histogram}.
+    % found that most users asked between 0-3 questions, with an unexplained portion of users asking 7 questions. Very few participants asked more than 10 questions to the LLM. These results can be seen in \ref{tbd}. \sang{will we? }We had six users who did not use ChatGPT during the study (Group N).
+
+% \begin{table}[h!]
+% \centering
+% \caption{Planning, Translating, and Reviewing Codes}
+% \begin{tabular}{|l|l|r|}
+% \hline
+% Type & Codes & Unique Users \\
+% \hline
+% Planning & Seeking Essay Ideas (Looking For Examples) & 20.75\% \\
+% Planning & Seeking Essay Ideas (Information Search) & 13.21\% \\
+% Planning & Asking For Essay Structure & 9.43\% \\
+% Planning & Seeking Essay Ideas (Asking For Opinion On Issue) & 5.66\% \\
+% Planning & Compare To An Additional Perspective & 5.66\% \\
+% Planning & Seeking Essay Ideas (Looking For Arguments) & 5.66\% \\
+% Planning & Looking For Definitions/When It Is Used & 3.77\% \\
+% Planning & Identify Question & 1.89\% \\
+% Planning & Seeking Essay Ideas (Build Upon Viewpoint Or Theme) & 1.89\% \\
+% Planning & Seeking Essay Ideas (Comparing Relationships) & 1.89\% \\
+% Planning & Seeking Essay Ideas (Summarize The Prompt) & 1.89\% \\
+% Planning & Asking ChatGPT To Write Based On Sentence Fragment & 1.89\% \\
+% Planning & Looking For Synonyms & 1.89\% \\
+% Planning & Seeking Essay Ideas (Organize My Thoughts) & 1.89\% \\
+% Planning & Requesting Pros And Cons Of Viewpoint & 1.89\% \\
+% \hline
+% Translating & Complete An Incomplete Paragraph & 9.43\% \\
+% Translating & Write A Paragraph To A Viewpoint & 3.77\% \\
+% Translating & Rewrite Essay To A New Viewpoint (With A New Idea Or Theme?) & 3.77\% \\
+% Translating & Complete An Incomplete Sentence & 1.89\% \\
+% Translating & Rewrite Essay To A New Viewpoint (Based On Previous Comment) & 1.89\% \\
+% Translating & Add Examples To Essay & 1.89\% \\
+% Translating & Connect Two Sentences & 1.89\% \\
+% Translating & Connect Two Paragraphs & 1.89\% \\
+% Translating & Expand The Given Text Given An Idea & 1.89\% \\
+% \hline
+% Reviewing & Proofreading & 26.42\% \\
+% Reviewing & Revise A Paragraph & 13.21\% \\
+% Reviewing & Seeking Opinion (Evaluate The Essay) & 9.43\% \\
+% Reviewing & Adjust The Length & 9.43\% \\
+% Reviewing & Adjust The Writing Style & 5.66\% \\
+% Reviewing & Seeking Opinion (Does Question Answer Prompt/On Topic) & 3.77\% \\
+% Reviewing & Rewrite A Sentence & 3.77\% \\
+% Reviewing & Rewrite At A Different Education Level & 3.77\% \\
+% Reviewing & Translate A Foreign Language & 1.89\% \\
+% Reviewing & Seeking Opinion On Essay Structure & 1.89\% \\
+% Reviewing & Rewrite A Paragraph & 1.89\% \\
+% Reviewing & Seeking Opinion (Asking For Opinion On Issue) & 1.89\% \\
+% \hline
+% \end{tabular}
+% \label{tab:code_ids_part1}
+% \end{table}
+
+% \begin{table}[h!]
+% \centering
+% \caption{Other and All Codes}
+% \begin{tabular}{|l|l|r|}
+% \hline
+% Type & Codes & Unique Users \\
+% \hline
+% All & Asking ChatGPT To Write Essay & 28.30\% \\
+% All & Asking ChatGPT To Write Portion Of Essay When Given Essay & 11.32\% \\
+% All & Asking ChatGPT To Write Essay While Giving Theme And Viewpoint & 7.55\% \\
+% All & Asking ChatGPT To Write Portion Of Essay Given Viewpoint Or Topic & 3.77\% \\
+% \hline
+% Other & Revising The Query & 16.98\% \\
+% Other & Pasting The Prompt & 15.09\% \\
+% Other & Feedback To AI & 7.55\% \\
+% Other & Seeking Additional Ideas & 7.55\% \\
+% Other & Seeking Alternate Ideas & 7.55\% \\
+% Other & Question Not Related To Essay Writing & 5.66\% \\
+% Other & Question Sent By Mistake & 5.66\% \\
+% Other & Asking For What Was Changed ("Tell Me What You Did") & 3.77\% \\
+% Other & Giving Persona To Writing & 3.77\% \\
+% Other & Reprompting The AI & 3.77\% \\
+% Other & Asking Something Beyond ChatGPT Capabilities & 1.89\% \\
+% Other & Asking For Multiple Things In One Query & 1.89\% \\
+% Other & Give Me A Title & 1.89\% \\
+% Other & Identify ChatGPT Capabilities & 1.89\% \\
+% Other & Looking For More Elaborate Answers & 1.89\% \\
+% Other & Providing Context To Conversation & 1.89\% \\
+% Other & Unsatisfied With The Response Of ChatGPT & 1.89\% \\
+% \hline
+% \end{tabular}
+% \label{tab:code_ids_part2}
+% \end{table}
+
+
+\subsection{RQ1: Queries to the LLM}
+    % This section will focus on the thematic coding and our findings.
+    % As outlined in \ref{sec:query-cats}, we categorized each query into one of four categories corresponding to three phases of writing (Planning, Translating, Reviewing) or to the category All, capturing blah.
+    % three phases of writing in 
+    As described in \ref{sec:query-cats}, we categorized queries into four categories: Planning, Translating, Reviewing, and All.
+    % , with three categories corresponding to the Flower and Hayes cognitive process theory of writing (Planning, Translating, Reviewing) and another category to capture delegating large chunks of writing to ChatGPT (All).
+    In total, we had $313$ messages sent to ChatGPT and identified $57$ unique codes.
+    Below we discuss the most common codes across each category, which can also be found in Table \ref{tab:common_codes}.
+    % The most common codes can be found in Table \ref{tab:common_codes}, and below are discussed further.
+    
+    % used the Flower and Hayes cognitive process theory on writing to code the messages sent to ChatGPT, as well as adding an additional category All.
+    % In total, we had $213$ messages sent to ChatGPT and identified $57$ unique codes (as shown in Table \ref{tab:code_ids_part1} and Table \ref{tab:code_ids_part2}).
+
+    
+\begin{table}[t]
+\centering
+\caption{Common Codes by Category}
+\begin{tabular}{|l|l|c|}
+\hline
+Category & Codes & Unique Users \\
+\hline
+Planning & Asking for Examples & 15 (21.4\%) \\
+Planning & Information Search & 11 (15.7\%)\\
+Planning & Asking for Essay Structure & 9 (12.9\%) \\
+Planning & Asking for an Opinion or Argument & 8 (11.4\%) \\
+\hline
+Translating & Complete a Sentence/Paragraph & 9 (12.9\%) \\
+Translating & Write/rewrite to Include Something & 6 (8.6\%) \\
+\hline
+Reviewing & Proofreading & 21 (30\%) \\
+Reviewing & Seeking an Opinion & 10 (14.3\%) \\
+Reviewing & Revising a Paragraph & 7 (10.0\%) \\
+Reviewing & Adjusting the Length & 6 (8.6\%) \\
+Reviewing & Adjusting the Writing Style & 6 (8.6\%) \\
+\hline
+All & Generate Essay (Based on Prompt Only) & 13 (18.6\%) \\
+All & Generate Conclusion Paragraph & 11 (15.7\%) \\
+All & Generate Essay (Incorporating a Viewpoint) & 9 (12.9\%) \\
+All & Generate an Introduction/Body Paragraph & 6 (8.6\%) \\
+\hline
+(None) & Revising Query & 11 (15.7\%) \\
+(None) & Question Sent by Mistake & 7 (10.0\%) \\
+(None) & Providing Positive Feedback & 6 (8.6\%) \\
+\hline
+\end{tabular}
+\label{tab:common_codes}
+\end{table}
+
+    \subsubsection{Planning}
+        % The "Planning" category was the most diverse of our three cognitive processes. The two most common sub-codes in this category were cases where the user explicitly asked for essay ideas. This is further broken down to whether they used ChatGPT as a search engine or asked it for examples, similar to asking a colleague for advice. There were also five cases where users asked for help in generating an outline of the structure of their essay. These were given the 'Asking for essay structure' sub-code. Other sub-codes in this category had very few use cases. We found that $26$ participants used ChatGPT in this way.
+
+        Planning was the most represented query category, with 38 participants having at least one Planning query. 
+        % Participants used ChatGPT to plan out their writing in a variety of ways.
+        The most common Planning queries involved ideation about the essay topic, which we further categorized into more specific codes, including: asking for examples, information search, and asking for an opinion or argument.
+        
+        The most common type of ideation query was to ask for examples:
+        \begin{quote}
+            (P39) please list the jobs that could be replaced by machine automation.
+            % NOTE: they didn't use this, I think
+        \end{quote}
+        \begin{quote}
+            (P11) List me some pros and cons of automation and examples
+            % NOTE: The examples made it in passing to the essay
+        \end{quote}
+        \begin{quote}
+            (P04) Whats a good example in the labor market that shows how automation reveals our inefficiency, like the email example?
+            % NOTE: this turned into a paragraph in the essay
+        \end{quote}
+        Although the queries above are similar, participants used the responses in variable ways: P39 did not incorporate the response into their essay; P11 used the response to provide examples in passing; and P04 expanded upon the example given to create an entire paragraph in their essay.
+    
+        Another planning activity involved information search, where participants asked ChatGPT to generate information that could be used to inform or support their arguments.
+        Sometimes this meant asking for quantifiable statistics, exemplified by P60 who asked ``how many people have lost jobs due to automation?''
+        Other times the queries were more general, for example ``(P25) Do people with utilitarian views end up being workaholics?'' or ``(P46) What are some of the most dangerous professions?''
+        % \danny{TODO: nix P80 example; or explain how it's not `asking for example'}
+        % While information search and example generation queries are similar---and the results are often used similarly--we distinguish ``information search'' to mean queries which imply that the resulting answer should bring some additional layer of evidence.
+        % and the results might be used in similar ways
+        % % \danny{should we mention ``simile search'' etc.? }
+        % \begin{quote}
+        %     (P95) how many people have lost jobs do [sic] to automation?
+        %     % They use the resulting number in a paragraph as random support
+        % \end{quote}
+        % \begin{quote}
+        %     (P55) Do people with utilitarian views end up being workaholics?
+        %     % Note: they don't get a "statistic" about this or anything; but they use it as support in a paragraph (and is kind of a main point of the paragraph)
+        % \end{quote}
+        % \begin{quote}
+        %     (P80) What are some of the most dangerous professions for people to work around the world?
+        %     % This one really is close to asking for examples.
+        % \end{quote}
+        % Note that we differentiate information search from example generation: information search can involve XYZ (TODO: make sure we understand and can explain why ``please list the jobs that could be replaced by machine automation.'' is an example while ``What are some of the most dangerous professions for people to work around the world?'' is info retrieval).
+
+        Other notable types of ideation queries involved asking for an opinion or argument about an issue.
+        This could look like just pasting part of the essay prompt then asking for an opinion: 
+        \begin{quote}
+            (P12) Automation is generally seen as a sign of progress, but what is lost when we replace humans with machines? What do you think about this issue?
+        \end{quote}
+        We differentiate this situation from queries requesting to generate a part or whole of the essay;
+        instead, these queries were more similar to casually asking a colleague what they thought about a prompt before delving into writing. 
+        % was asking ChatGPT to generate an opinion or argument, often just asking the main question in the essay prompt. 
+        % Note that we differentiate this from asking ChatGPT to write the entire essay, as these questions did not ask for the response to be formatted as an essay.
+        % Thus, it might be more akin to casually asking a colleague what they think about the prompt before delving into the writing. 
+
+        Finally, rather than asking about the essay topic itself, some participants asked questions about how they might structure the essay.
+        \begin{quote}
+            (P04) What kind of essay format would be best for this prompt? [...] I was thinking the standard 5 paragraph approach, but that may be too much.
+        \end{quote}
+        \begin{quote}
+            (P52) what is a good way to organize my response?
+        \end{quote}
+        \begin{quote}
+            (P53) What is the general format/outline?
+        \end{quote}
+        We classify these queries as Planning rather than Translation or Revision because they ask about structure in general and not about how to structure or restructure specific ideas or existing writing.
+        
+
+    
+    \subsubsection{Translating}
+        Only 14 participants used ChatGPT to aid with the Translating phase of writing, making Translating the lease common type of query in our data set. 
+        % Of Flower and Hayes' three phases, Translating was the least common query category we found and was represented in queries from only 14 participants.
+        % To be classified as Translation, queries needed to include general context and ideas to be molded into writing.  
+        
+        The most common type of Translation was when users asked ChatGPT to complete sentences or paragraphs, which we saw with nine participants.
+        \begin{quote}
+            (P22) write a 2 sentence conclusion for this essay: [essay text]
+        \end{quote}
+        \begin{quote}
+             (P56) Write a good hook (not a question) that flows into the introduction paragraph
+        \end{quote}
+        We classified these as Translation because the query contained the context and main ideas which were to be summarized in new writing.
+
+        Four of our participants used ChatGPT to more directly translate their ideas into writing, asking ChatGPT to generate or regenerate chunks of writing but incorporating new information or a new perspective.
+        For example, P05 had query which asked to rewrite a portion of the essay and ``Include how the passion is lost when we replace machines with humans.''
+        % The other type of Translation we saw was when the user asked ChatGPT to regenerate parts of their essay, incorporating either new information or a new perspective.
+        % \begin{quote}
+        %     (P41) Include how the passion is lost when we replace machines with humans
+        % \end{quote}
+        % \begin{quote}
+        %     (P49) As the student, rewrite the essay adding more to the utilitarian and dystopian perspectives
+        % \end{quote}
+        % \danny{This is: ``Write/Rewrite a Paragraph to a Viewpoint'' -- make sure it matches the table. Also figure out a closing sentence.}
+
+        % \danny{arguably ``add examples to essay'' is also this and can be folded in. And possibly ``expand the given text given an idea''.}
+
+        
+        % The "Translating" category was the least used, having only $10$ participants using ChatGPT in this way. As mentioned before, "Translating" was reserved for cases where the user supplied the idea and the surrounding text, so these codes are mainly about finishing paragraphs. We saw this happen for five unique users. Other more common codes in this category are when the user asked the AI to write or rewrite a paragraph to a provided theme or viewpoint. Lastly, we had a small number of cases in which the LLM was prompted to write a transition or connecting sentence that added or connected different ideas.
+
+    
+        % TODO: make paragraph about 'finishing the sentence'
+        % \begin{itemize}
+        %     \item (P52) write a 2 sentence conclusion for this essay: [essay text]
+        %     \item (P91) Write a good hook (not a question) that flows into the introduction paragraph
+        %     \item (Possibly talk about the ones which are closer to ideation, saying ``finish the paragraph''.)
+        % \end{itemize}
+
+        % TODO: write para. Code: ``Write a paragraph to a viewpoint'' -- this is two examples where the query asks to generate new content, but supplies a bit of context. % note: ambiguous w/ planning
+
+        % TODO: write para. Code: ``Rewrite essay to a new viewpoint (with a new idea or theme?)''; i.e., clear commands to rewrite something w/ new content) TODO: make sure we say why this isn't revision.
+        % \begin{itemize}
+        %     \item (P41) Include how the passion is lost when we replace machines with humans
+        %     \item (P49) As the student, rewrite the essay adding more to the utilitarian and dystopian perspectives
+        % \end{itemize}
+    
+    \subsubsection{Reviewing}
+        % "Reviewing" was the most common code in our analysis, with $23$ participants using ChatGPT in this way. The biggest code in this data set would be 'proofreading', which included any time that the user asked for a grammar check, spell check, or used the term proofread. Another frequently used code was to ask the AI agent to evaluate the essay. This could be asking for a grade evaluation or to evaluate at a certain education level. These were then used to rewrite the essay to the aforementioned education level in some cases. Other common codes include adjusting the length or writing style of their essay to meet the criteria set by the user. Furthermore, we saw a small number of uses that fell out of the categories mentioned above, such as translating their essay to a different language or seeking an opinion on the structure of the essay.
+    We had 32 participants use ChatGPT for reviewing their writing.
+    % Reviewing was the most common way participants sought writing assistance from ChatGPT, with 32 participants using ChatGPT in this way.
+    % ``Reviewing'' was the most common code in our analysis, with $32$ participants using ChatGPT in this way.
+    The most common type of Reviewing query was proofreading, which we saw with 21 of our participants.
+    Participants sometimes asked for judgments on specific cases, for example ``(P60) how to spell sufisticated [sic]'' or ``(P63) is `extremely faster' correct?''
+    More commonly, participants asked for proofreading on chunks of their essay.
+    Proofreading queries ranged from vague questions and directives (P07: ``correct this''; P53: ``what changes could be made?'') to more targeted feedback (P03: ``Review this essay and make recommendations for grammar, spelling, punctuation and clarity of thought'').
+    % Participants either solicited specific feedback, such as ``(P27) Review this essay and make recommendations for grammar, spelling, punctuation and clarity of thought''---or at other times participants gave simpler queries, like ``(P31) correct this'' or ``(P88) what changes can be made?''.
+    % Proofreading queries ranged from vague questions and directives to soliciting feedback in specific categories:
+    % \begin{quote}
+    %     (P88) what changes can be made?
+    % \end{quote}
+    % \begin{quote}
+    %     (P31) correct this
+    % \end{quote}
+    % \begin{quote}
+    %     (P27) Review this essay and make recommendations for grammar, spelling, punctuation and clarity of thought
+    % \end{quote}
+ 
+    % ---``(P27) Review this essay and make recommendations for grammar, spelling, punctuation and clarity of thought''---to more general questions and directives---``(P88) what changes can be made?'' or``(P31) correct this.''
+    % Participants either solicited specific feedback, such as ``(P27) Review this essay and make recommendations for grammar, spelling, punctuation and clarity of thought''---or at other times participants gave simpler queries, like ``(P31) correct this'' or ``(P88) what changes can be made?''.
+
+    Ten participants queried ChatGPT to seek an opinion evaluating their essay.
+    Seven of the participants asked for general feedback evaluating the content of their essays, such as ``(P04) what do you think?'', ``(P06) Grade the essay out of 100'', and ``(P22) how is this first body paragraph?''.
+    Some participants asked for more specific feedback, for example asking if their essay adequately addressed the prompt (P02, P04) or asking for judgment about their essay structure (P04).
+
+
+    % \danny{Maybe write a paragraph about ``Revising a paragraph'' code, but it's hard to explain what it means.}
+    Seven participants requested that ChatGPT revise a paragraph in some way. 
+    % next most common type of revision was to request that ChatGPT revise a paragraph in some way, which we saw with 7 participants.
+    Some times participants gave general queries which left room for generating new content, such as ``(P18) make this paragraph stronger'' or ``(P38) Make it longer.''
+    Other times, participants gave more specific instructions, like asking to swap out one example for another (P19: ``don't include self driving cars, give another good example [...] like Siri by apple'')
+    or asking to change specific wordings (P44: ``Don't refer to my perspective as `perspective 1''').
+    % (P46) dont include self driving cars, give another good example that involves a readily applicaiton used by people daily. like siri by apple
+    % (P78) Don't refer to my perspective as "perspective 1"
+    
+    % \danny{TODO: Fold the rest of the codes into the above paragraphs if possible. Basically, organize by evaluation and revision.}
+
+    % \danny{TODO: write a paragraph about these three: }
+    % \begin{itemize}
+    %     \item Seeking opinion (evaluate the essay)
+    %     \item Adjust the length
+    %     \item Adjust the Writing style (combine w/ some others?)
+    % \end{itemize}
+    
+    
+    \subsubsection{All}
+    % 32 participants
+
+    The All category was used when participants asked ChatGPT to generate either the entire essay or a portion of the essay corresponding to a paragraph or more.
+    We had 32 participants with at least one All query.
+
+    We had 22 participants ask ChatGPT to generate an entire essay.
+    Of these participants, nine gave additional context about what they wanted in the essay, often adding a few sentences laying out the participant's opinion on the issue.
+    The remaining 13 participants simply asked ChatGPT to write an essay given the essay prompt.
+    In either case, this tended to be the first query these users issued to ChatGPT.
+    % Notably, not all participants used ChatGPT in this way ended up using 
+    % \danny{What happened after they asked???}
+
+    Participants also used ChatGPT to generate smaller portions of their essay.
+    In particular, 11 participants asked ChatGPT to write a conclusion paragraph for their essay, supplying what they had written so far as context.
+    We also saw three participants ask ChatGPT to write body paragraphs, and four participants ask ChatGPT to write introductory paragraphs.
+    Of the four who asked to write introductions, none of them supplied extra context to ChatGPT other than the prompt.
+    % , which might be seen as a sort of ideation activity.
+    Notably, P56 adopted a strategy where they asked ChatGPT to generate one paragraph at a time until the entire essay was completed.
+    % P91 asked ChatGPT to write the entire essay one paragraph at a time.
+        
+     % For the "All" category, we only had four codes. These codes are used exclusively for the case where the participant asked ChatGPT to generate either an entire essay or a portion of the essay. We define a 'portion of the essay' to be a full paragraph or more. We had a total of $21$ participants use this category, with $15$ users asking the AI to generate the entire article, the code most frequently in our data set based on the number of unique users.
+
+    \subsubsection{Other Codes}
+
+    Not all of the codes we used corresponded directly to one of the four categories.
+    % Never-the-less, we found it useful to code 
+    The most common example of these codes was when participants revised their query to get a different result.
+    This often manifested as an additional directive intended to steer the output towards a more desirable state, for example ``(P47) use simple and plain language'', or ``(P06) Do not write in the essay that you are a CS student.''
+    It could also look like repeating the same query but with additional context or sending a more fleshed out question after sending a partial question, presumably by mistake.
+    % \danny{See if other things fall in this paragraph?}
+    
+    % The most common case of Other was when participants revised their query to get a different result.
+    % This often manifested as an additional directive intended to steer the output towards a more desirable state, for example ``(P81) use simple and plain language'', or ``(P30) Do not write in the essay that you are a CS student.''
+    % It could also look like repeating the same query but with additional context (n=1), or sending a more fleshed out question after sending a partial question, presumably by mistake (n=2).
+    % \danny{See if other things fall in this paragraph?}
+
+    We also saw six participants give positive feedback as part of a query.
+    The positive feedback was in the context of trying to improve the query's response, for example, asking it to keep some aspect but change another:
+    \begin{quote}
+    % (P53) I think your revisions are good, but I think my original paragraph had more of a human touch to it. Do you think you can add that human touch back in to your revision?
+    (P34) I like how you briefly touched upon all topics, but try to also mainly focus on comparing and contrasting 2 views.
+    \end{quote}
+    \begin{quote}
+        (P46) I really like that paragraph you wrote but can you slightly rewrite it to match my writing style a little more?
+    \end{quote}
+
+    Finally, we saw seven participants send at least one question by mistake.
+    This was likely an artifact of our system design, as hitting the enter key sent the question instead of adding a new line to the query input box.
+
+        
+    % This could look like resending a full question after sending a partial question by mistake (n=2), repeating the same query but with additional context (n=1), or most commonly, adding a directive intended to steer the output towards something more desirable.
+    
+    
+    % While these types of codes often accompanied other code categories (Translating, Reviewing, etc.), they pertained to aspects  and often accompanied other categories.
+    
+    
+
+    
+        % Because the "Other" category looks into users reactions with the AI system, the codes in this often accompany one of the previous categories. For example, there are three different idea revision codes. The first is 'revising the query', which referred to cases where we saw repeated questions with some adjustments to receive a different response. 'Seeking additional ideas' was when the user asked the AI to generate an additional response to expand upon the original. 'Seeking alternative ideas' was for when the user asked for a different response or changed a part of the prompt to have a different meaning. This was commonly seen when the AI was asked to generate a response based on an example or theme before changing the example or theme. This category also has cases where the user asks for something not directly related to the essay writing process. For example, when the user asked the AI what changes it made during a revision or if the user sent a message that commented on things that did not pertain to the essay. Lastly, we had two interesting cases where the user gave the AI a persona, like a college student, to prompt a change in the response pattern. 
+
+
+
+\subsection{RQ2:  The relationship between ChatGPT Usage and Their perception towards their writing efficacy and technology acceptance}
+
+% To understand how their ChatGPT usage vary depending on their writing self-efficacy, i.e., their self-efficacy for writing (SEWS), and their acceptance towards ChatGPT measured by TAM PU and TAM PEOU.
+% \begin{itemize}
+%     \item Their writing self efficacy did not show any correlation with how they usage ChatGPT. 
+%     \item Their technical acceptance model was weak positive relationship with CSI. 
+% \end{itemize}
+
+We ran a generalized linear model (GLM) to understand relationship between ChatGPT queries (the total number and the count per each category) and users' characteristics which include demographics information and two constructs: Self Efficacy in Writing (SEWS) and TAM. The full table of these findings can be shown in Table~\ref{tab:glm}.
+
+The results from the GLM suggest that writing self-efficacy is a significant predictor of how often participants use ChatGPT during the session, with the exception of the All category. The negative coefficient indicates a negative association between writing self-efficacy and ChatGPT usage; specifically, lower self-efficacy in writing is associated with more frequent use of ChatGPT.
+
+Gender and Race were another significant predictor in three categories: total number of queries, translating queries, and reviewing queries. The results consistently showed that all coefficient estimates were negative, indicating that Men were associated with a lower number of ChatGPT usages. In the same categories, Race was a positive predictor, suggesting that White participants were associated with a higher number of ChatGPT usages.
+
+Lastly, age was a negative predictor in three categories: total number of queries, planning queries, and all queries; older participants used a lower number of queries on average. Interestingly, the Technology Acceptance Model (TAM) did not predict any of the query categories, suggesting that participants' usage of ChatGPT may occur regardless of their acceptance of the tool, if situated.
+
+
+% We also looked at the final GPT word count to see if there was a relationship there. 
+
+% Total GPT Query - Significant: SE (p < .001), Gender (p = .05), Age (.01) , Race (p = .05)
+% GPT Query P - Significant: SE (p = .05), Age (p = .05) Marginal: TAM PEOU
+% GPT Query T - Significant: SE (p = .01), Gender (p = .01), Race (p = .1) Marginal: TAM PU (p = .1)
+% GPT Query R - Significant: SE (p < .001), Gender (p < .001), Race (p < .001)
+% GPT Query A - Significant: Age (p = .05) Marginal: SE (p = .1)
+% GPT FINAL WORDS - All but TAM PEOU and Race significant (***)
+
+% \usepackage{multirow}
+
+
+% \usepackage{multirow}
+
+
+% \usepackage{array}
+% \usepackage{graphicx}
+% \usepackage{multirow}
+
+
+% \usepackage{graphicx}
+% \usepackage{multirow}
+
+%TC:ignore
+\begin{table}[t]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lclcccccc} 
+\toprule
+&           & (Intercept)                                          & SEWS                                & TAM - PU                           & TAM - PEOU & Gender(Men)                       & Age                                & Race(White)                         \\ 
+\midrule
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Total \# of\\ Query\end{tabular}}        & Estimate  & 2.64                                                 & -0.255                             & 0.105                              & -0.062     & -0.275                             & -0.401                             & 0.280                               \\
+& std error & 0.532                                                & 0.075                              & 0.067                              & 0.067      & 0.130                              & 0.135                              & 0.123                               \\
+& Z score   & 4.96                                                 & -3.42                              & 1.57                               & -0.915     & -2.12                              & -2.97                              & 2.29                                \\
+& p value   & \textbf{\textbf{\textbf{\textbf{\textless{}0.001}}}} & \textbf{0.001}            & 0.117                              & 0.360      & 0.034                     & 0.003                     & 0.022                      \\ 
+\hline
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Query P\\ Count\end{tabular}}      & Estimate  & 2.41                                                 & -0.318                             & 0.148                              & -0.210     & 0.258                              & -0.630                             & -0.152                              \\
+& std error & 0.973                                                & 0.134                              & 0.128                              & 0.120      & 0.218                              & 0.273                              & 0.221                               \\
+& Z score   & 2.48                                                 & -2.36                              & 1.16                               & -1.75      & 1.18                               & -2.31                              & -0.687                              \\
+& p value   & 0.013                                       & 0.018                     & 0.248                              & 0.08       & 0.236                              & 0.021                     & 0.492                               \\ 
+\hline
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Query T\\ Count\end{tabular}}      & Estimate  & -1.88                                                & -0.679                             & 0.494                              & 0.236      & -1.94                              & -0.896                             & 1.23                                \\
+& std error & 1.85                                                 & 0.218                              & 0.290                              & 0.272      & 0.650                              & 0.867                              & 0.450                               \\
+& Z score   & -1.02                                                & -3.12                              & 1.70                               & 0.967      & -2.98                              & -1.03                              & 2.74                                \\
+& p value   & 0.309                                                & 0.002                     & 0.089                              & 0.333      & 0.003                     & 0.301                              & 0.006                      \\ 
+\hline
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Query R\\ Count\end{tabular}}      & Estimate  & 2.53                                                 & -0.495                             & 0.072                              & 0.008      & -0.843                             & -0.057                             & 0.777                               \\
+& std error & 0.869                                                & 0.124                              & 0.106                              & 0.109      & 0.239                              & 0.189                              & 0.212                               \\
+& Z score   & 2.91                                                 & -3.99                              & 0.671                              & 0.071      & -3.52                              & -0.300                             & 3.66                                \\
+& p value   & .004                                        & \textbf{\textless{}0.001}          & 0.502                              & 0.943      & \textbf{\textbf{\textless{}0.001}} & 0.764                              & \textbf{\textbf{\textless{}0.001}}  \\ 
+\hline
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Query A\\ Count \end{tabular}}      & Estimate  & -1.37                                                & 0.274                              & 0.099                              & -0.115     & 0.061                              & -.556                              & -.045                               \\
+& std error & 1.13                                                 & 0.165                              & 0.132                              & 0.149      & 0.261                              & 0.276                              & 0.255                               \\
+& Z score   & -1.21                                                & 1.66                               & 0.747                              & -0.769     & 0.234                              & -2.01                              & -0.178                              \\
+& p value   & .226                                                 & 0.096                              & 0.455                              & 0.442      & 0.815                              & 0.044                     & 0.859                               \\ 
+% \hline
+% \multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}ChatGPT \\ Final \\ Words\end{tabular}} & Estimate  & 3.01                                                 & 0.079                              & 0.231                              & 0.002      & -0.362                             & 0.141                              & -0.007                              \\
+% & std error & .105                                                 & 0.016                              & 0.014                              & 0.015      & 0.027                              & 0.016                              & 0.025                               \\
+% & Z score   & 28.6                                                 & 5.04                               & 16.1                               & 0.100      & -13.5                              & 9.05                               & -0.256                              \\
+% & p value   & \textbf{\textbf{\textbf{\textbf{\textless{}0.001}}}} & \textbf{\textbf{\textless{}0.001}} & \textbf{\textbf{\textless{}0.001}} & 0.92       & \textbf{\textbf{\textless{}0.001}} & \textbf{\textbf{\textless{}0.001}} & 0.798                               \\
+\bottomrule
+\end{tabular}
+}
+\caption{Generalized Linear Model for Total Query
+and Query Counts by Code (P, T, R, A) 
+% and GPT Final Words. 
+Our predictors are the information from the Pre-study Survey (Self Efficacy in Writing, TAM, and Demographic Information)}
+\label{tab:glm}
+\end{table}
+%TC:endignore
+
+%TC:ignore
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth} 
+        \centering
+        \includegraphics[width=\linewidth]{Images/Group_dist.png}
+        \caption{Histogram of the Number of Queries asked sorted by group type}
+        \label{fig:Histogram} 
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[b]{0.45\textwidth}
+       \centering
+       \includegraphics[width=\linewidth]{Images/Essay_metrics.png}
+        \caption{Essay integration. \textsubscript{A} refers to additions, \textsubscript{D} refers to deletions}
+        \label{fig:EssayMetric}
+    \end{subfigure}
+    \caption{Histograms showing essay metrics}
+    \label{fig:two_figures2} % Label for referencing the whole figure
+\end{figure}
+%TC:endignore
+
+
+\subsection{RQ3: The relationship between ChatGPT Usage Behaviors}
+
+\subsubsection{Descriptive Statistics of Interaction Trace}
+\label{sec:interactiontrace}
+% \begin{itemize}
+%     \item the participants felt lower perceived ownership if they use GPT in particular ways (GPT - All category) 
+%     \item Those who used GPT for the entire essay do not feel that GPT helped their creative practice. 
+% \end{itemize}
+
+
+As stated in Section~\ref{sec:analysis34}, we classified each participant into one of five groups: N, P, R, A, or M, depending on the primary types of queries they used during the session. For context, we drew a histogram to show the distribution of the number of ChatGPT queries made by each group, as shown in Figure~\ref{fig:Histogram}. Overall, nearly half of the participants (33 out of 70) used ChatGPT once (14 participants) or twice (19 participants), while six participants, belonging to Group N, never used it. Meanwhile, some participants used it multiple times, with one participant in Group M using it 27 times, the maximum observation.
+
+We further analyzed the interaction trace to see how much each participant contributed to the essay by adding words, deleting words, or pasting ChatGPT responses into the editor, in comparison to the total word count of the final essay, as depicted in Figure~\ref{fig:EssayMetric}.
+In general, those who used ChatGPT queries wrote longer essays and generated more words than Group N. Group P had limited words pasted from ChatGPT to the editor compared to the other three groups (R, A, M). Additionally, Group R had higher counts of deleted user words and ChatGPT-pasted words, as users' own writing is often replaced with ChatGPT proofread/reviewed text.
+
+Interestingly, Group A showed varying behaviors. It seemed that not everyone in Group A generated the entire essay based one prompt. We further looked at the group categorization of those who had no words added/deleted manually to the editor, which means that their essay is entirely based on what ChatGPT generated and they never wrote anything. A total of 10 participants wrote nothing (i.e., Figure~\ref{fig:dataflow}-(1)) on their own for the essay, with 6 of them in Group A ($n=15$). This means that the remaining 9 participants in Group A contributed to the essays in some way. We manually inspected their work, which showed varying behaviors: some generated a portion of the essay and provided their own writing; others initially generated the entire essay but later decided to write their own; and some generated the entire essay as an initial draft and revised it directly to change the generated content into their own. Similarly, there were a number of participants who did not write anything on their own and were classified into other groups (M or R) as they had A-type queries accounting for less than 50\%. 
+% \sang{Danny \& Jelson could you review this and see if these are reasonable description of the nine people? Was there anything interesting that I am missing} 
+
+
+% With the data following the study we did Kruskal-Wallis tests to look for significant values between Writer Type and Post Study questionnaires.
+% Post Hoc Analysis was done through Dunn Test (dunn.test in R)
+
+%TC:ignore
+% Side by side version if it is preferred
+% \begin{figure}[h]
+%     \centering
+%     \begin{subfigure}[b]{0.45\textwidth} 
+%         \centering
+%         \includegraphics[width=\textwidth]{Images/PO_Final.png}
+%         \caption{Percieved Ownership} 
+%         \label{fig:sub1} 
+%     \end{subfigure}
+%     \hfill 
+%     \begin{subfigure}[b]{0.45\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{Images/CSI-Enjoy_Final.png} 
+%         \caption{CSI Enjoyment} 
+%         \label{fig:sub2} % Label for referencing
+%     \end{subfigure}
+%     \caption{Box Plots for significant Kruskal-Wallis tests with Post Hoc analysis}
+%     \label{fig:two_figures} % Label for referencing the whole figure
+% \end{figure}
+%TC:endignore
+
+
+% Next, we examined the input and output flow of the information in the essay. To achieve this, we categorized the operations into seven distinct types (as shown in Fig ...). The first type, "manual additions", refers to any content that the user adds to the essay, such as writing their own ideas or revising the text. "Manual deletions" denotes any removals made by the user, including 'cut' events, as these also involve user-initiated removal. "Pastes to GPT" are the number of words pasted into ChatGPT by the user, typically originating from either the essay prompt or the editor. "Pastes from GPT" represent paste events in the editor that are sourced from a ChatGPT response, whether full or partial. "External pastes" are paste events that do not match a ChatGPT response, and in our findings, these exclusively originated from the prompt. Using this information we were able to see how much of the final text was written manually by the user or from outside sources.
+    
+    % The final two operations focused on the acceptance or usage of the ChatGPT output. "GPT generation" refers to the number of words generated by ChatGPT, while "GPT unused words" is calculated as "GPT generation" minus "Pastes from GPT," indicating how many words generated by ChatGPT that were either stored in the user's memory for later use or discarded. We then investigated the acceptance ratio of ChatGPT responses per participant and found the average utilization percentage to be 38.92, with a standard deviation of 47.53\% and a median of 55.35\% (shown in fig....).
+
+\subsubsection{How does the essay composition vary per group?}
+
+We kept track of how many words were written by participants (User Final Word Count) and how many words were pasted from ChatGPT (ChatGPT Final Word Count); there were no words pasted from external sources. We ran a Kruskal-Wallis test on both dependent variables to determine if the group was a significant factor. For User Final Word Count, the effect of Group on User Final Word count was not significant (shown in Figure \ref{fig:user_final}. This result suggests that we could not find any evidence that the groups, at least as formed by the current classification scheme, wrote different amounts of text for their essays.
+
+%TC:ignore
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/user_final_word.png} 
+        \caption{User Final Words} 
+        \label{fig:user_final} 
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[b]{0.45\textwidth} 
+        \centering
+        \includegraphics[width=\textwidth]{Images/gpt_final_words.png}
+        \caption{Final number of ChatGPT-written words }
+        \label{fig:gpt_final} 
+    \end{subfigure}
+
+    \caption{Box Plots for significant Kruskal-Wallis tests with Post Hoc analysis (* indicates $p < 0.05$)}
+    \label{fig:final_words_box} 
+\end{figure}
+%TC:endignore
+
+For the ChatGPT Final Count, we found a statistically significant effect of Group on the number of ChatGPT-written words in the final essay. The test indicates a $H(2) = 16.945$ and $p = 0.00199$. Post-hoc analysis was then conducted using a Dunn's test with Bonferroni correction to reveal that we found four significant group pairings ($p < 0.05$) (shown in Figure \ref{fig:gpt_final}). These groups were as follows:
+\begin{itemize}
+    \item "All" group with "No query" group ($p = 0.0351$)
+    \item "Mixed" group with "No query" group ($p = 0.0299$)
+    \item "All" group with "Planning" group ($p = 0.0191$)
+    \item "Mixed" group with "Planning" group ($p = 0.0122$)
+\end{itemize}
+These findings suggest that the writer type significantly influences the number of pastes from ChatGPT in this dataset, with the "All" and "Mixed" categories being especially significant.
+
+% Kruskal-Wallis chi-squared = 16.935, df = 4, p-value = 0.00199
+
+% Dunns Test
+% 2        A - N  2.6957326 0.003511702 0.03511702
+% 3        M - N  2.7482822 0.002995421 0.02995421
+% 4        A - P  2.8923546 0.001911831 0.01911831
+% 5        M - P  3.0309116 0.001219083 0.01219083
+
+
+The results confirm the description stated in above. Groups N and P differed from Groups A and M in terms of the number of ChatGPT words. Those classified as Group P primarily used the words generated by ChatGPT, suggesting that they engaged with ChatGPT more as an ideation partner or search engine, rather than as a writer. In contrast, Group R exhibited widely different behaviors; the group was divisive, with some participants using ChatGPT-generated words entirely for their essay while others asked simple reviewing questions (e.g., grammar, word choices) and wrote their essays entirely on their own.
+
+\subsection{RQ4: The perceptions towards their writing experiences}
+
+    As previously mentioned, we asked users to complete a post study survey focusing on Perceived Ownership and the Creativity Support Index (CSI). We ran a Kruskall-Wallis tests on this data to see if there were any relationships between these surveys and the writer groupings. For perceived ownership, the group effects were significant, but we had no significance on the total CSI score. We then looked at the subcategories of CSI and found that CSI-Enjoyment is significant for the Mixed grouping. Following these results we conducted post hoc analysis through a Dunn-test similar to the previous section.  
+
+%TC:ignore
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth} 
+        \centering
+        \includegraphics[width=\linewidth]{Images/PO_Group.png}
+        \caption{Perceived Ownership with Writer Type}
+        \label{fig:PO_Box_Plot}
+    \end{subfigure}
+    \hfill 
+    \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+    \includegraphics[width=\linewidth]{Images/CSIEnjoy.png}
+    \caption{CSI - Enjoyment with Writer Type}
+    \label{fig:CSI_Box_Plot}
+    \end{subfigure}
+    \caption{Box Plots for significant Kruskal-Wallis tests with Post Hoc analysis ($* p < 0.05)$}
+    \label{fig:post_study_box}
+\end{figure}
+%TC:endignore
+
+    For the Perceived Ownership data, the test showed $H(2) = 14.642$ and $p = .0055$. Post-hoc analysis of this data revealed two statistically significant categories: the "All" group with both "Planning" and "No Query" (shown in Figure \ref{fig:PO_Box_Plot}).
+    These findings show that there was a significance difference in perceived ownership between the "All" group with other groups, and that the "Planning" group had a statistically high perceived ownership.
+    % This can be can potentially bad depending on the context of the assignment, which we further address in the discussion section. 
+
+% Kruskal-Wallis chi-squared = 14.642, df = 4, p-value = 0.005503
+% 2        A - N -2.7287907 0.0031783517 0.031783517
+% 4        A - P -3.2294283 0.0006201898 0.006201898
+% 5        M - P -2.3261946 0.0100040850 0.100040850
+
+    Additionally, CSI-Enjoyment had $H(2) = 9.486$ and $p = .0401$. Post-hoc analysis of this revealed only one significant grouping, "Mixed" with "No query" (shown in Figure \ref{fig:CSI_Box_Plot}). This produced some interesting results, showing that a more varied use of ChatGPT can improve enjoyment.
+    % we argue here that the "Mixed" group uses the system more effectively than the other groupings, as they used it for multiple types of question rather than primarily one question. This expertise is then shown to be more enjoyable, in regards to the CSI responses. 
+    From this we can argue that the "Mixed" group users have more of a positive feedback loop with ChatGPT than the other groupings. Further, this enjoyment likely reinforces the usage of ChatGPT as a writing assistant, something that could be good or bad based on context of the essay assignment. 
+% Kruskal-Wallis chi-squared = 9.4859, df = 4, p-value = 0.040053
+% 3        M - N  2.64687272 0.004061996 0.04061996
+
+% We also did Kruskal Wallis tests with Post Hoc analysis to see if there was significance with essay data by writer type. We found significance in \% of final words written by GPT and no significance in User Final Words 
+
+
+
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.8\linewidth]{Images/thruput.png}
+%     \caption{Writing Process}
+%     \label{fig:thru}
+% \end{figure}
+
+% \subsection{Editor Activity}
+%     To visualize the writing process, we created a diagram, shown in \ref{fig:IO}, to show the the various ways participants used our system. The main component of this diagram shows the potential flow of information. For example, users can add and remove their own words, or take the words directly from the editor and paste it to the ChatGPT for support. We further break down information related to ChatGPT down into their respective codes, Planning, Translating, Reviewing, and All. Additionally, we track what words in the final text were authored by ChatGPT or the participant. We omit Other during most of this analysis as most Other codes are used in combination with the previously listed codes. We can also use this information to help understand the writing process, for example a user's essay might have a lot of ChatGPT words in the final text, but that doesn't necessarily mean that ChatGPT wrote the entire essay. Looking at the total number of user written and deleted words provides us with more context to understand this writing process. 
+
+
+
+
+% \begin{itemize}
+%     \item Their writing self efficacy did not show any correlation with how they usage ChatGPT. 
+%     \item Their technical acceptance model was weak positive relationship with CSI. 
+% \end{itemize}
+    
+
+
+% \begin{table}[h!]
+% \centering
+% \resizebox{\textwidth}{!}{%
+% \begin{tabular}{lcccc}
+% \toprule
+% Comparisons & Correlation & P Score & Significance & Interpretation \\
+% \midrule
+% SELF EFFICACY WITH PO & 0.218 & 0.116 & Not Significant & Weak positive correlation \\
+% SELF EFFICACY WITH CSI & -0.052 & 0.709 & Not Significant & Weak negative correlation \\
+% TAM WITH PO & 0.182 & 0.191 & Not Significant & Weak positive correlation \\
+% TAM WITH CSI & 0.409 & 0.002 & Significant & Moderate positive correlation \\
+% \bottomrule
+% \end{tabular}
+% }
+% \caption{Pre- vs Post-Survey Correlations}
+% \label{tab:additional_comparisons}
+% % \end{table}
+
+% \subsection{Survey Information}
+%     Lastly, we wanted to see if there was any correlation between the use of ChatGPT and the pre/post surveys. We started by looking at the pre- and post-survey responses to see if we could find any correlations. As a reminder, the pre-study Survey consisted of a Self Efficacy in Writing Questionnaire and Technology Acceptance Model (TAM) section. The post-survey had Perceived Ownership (PO) and Creativity Support Index (CSI) sections. From our survey correlations, we were only able to find significance when comparing TAM and CSI responses. These had a moderate positive correlation, showing that having a higher technology acceptance score led to increased creativity support with our tool. These findings can be seen in Table \ref{tab:additional_comparisons} 
+
+%     Furthermore, we examined how the various input and output values compared with the different survey responses by analyzing their correlations. Additionally, we broke down the paste events to and from ChatGPT into categories based on the cognitive processes to which they referred. For the following tables, the term 'PASTE TO - A' refers to paste events to GPT in the all category. Similarly, 'PASTE FROM - A' can be used to identify cases where users pasted words from ChatGPT with the all category. The 'P', 'T', and 'R' is used to represent the Planning, Translating, and Reviewing codes, respectively. Lastly, we looked at all paste events to and from ChatGPT, representing these as 'GENERAL'.
+
+%     \begin{table}[h!]
+% \centering
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{lcccc}
+% \toprule
+% Comparisons & Correlation & P Score & Significance & Interpretation \\
+% \midrule
+% SELF EFFICACY & & & & \\
+% MANUAL ADD & 0.069 & 0.626 & Not Significant & Weak positive correlation \\
+% MANUAL DELETE & -0.232 & 0.094 & Not Significant & Weak negative correlation \\
+% PASTE TO - A & 0.145 & 0.299 & Not Significant & Weak positive correlation \\
+% PASTE TO - P & 0.122 & 0.383 & Not Significant & Weak positive correlation \\
+% PASTE TO - T & 0.158 & 0.259 & Not Significant & Weak positive correlation \\
+% PASTE TO - R & 0.152 & 0.276 & Not Significant & Weak positive correlation \\
+% PASTE TO GPT GENERAL & 0.242 & 0.081 & Not Significant & Weak positive correlation \\
+% PASTE FROM - A & -0.042 & 0.383 & Not Significant & Weak negative correlation \\
+% PASTE FROM - P & -0.118 & 0.402 & Not Significant & Weak negative correlation \\
+% PASTE FROM - T & 0.136 & 0.331 & Not Significant & Weak positive correlation \\
+% PASTE FROM - R & -0.027 & 0.848 & Not Significant & Weak negative correlation \\
+% PASTE FROM GPT GENERAL & -0.022 & 0.876 & Not Significant & Weak negative correlation \\
+% EXTERNAL PASTE & 0.169 & 0.227 & Not Significant & Weak positive correlation \\
+% GPT GENERATE & 0.043 & 0.761 & Not Significant & Weak positive correlation \\
+% GPT UNUSED & 0.065 & 0.644 & Not Significant & Weak positive correlation \\
+% \bottomrule
+% \end{tabular}
+% }
+% \caption{Self Efficacy}
+% \label{tab:self_efficacy}
+% \end{table}
+
+%     \subsubsection{Self Efficacy}
+%     The self efficacy correlations can be seen in Table \ref{tab:self_efficacy}. We found no significant correlations to show that the user self-established self-efficacy had an effect on the input and output flow.  
+    
+
+% \begin{table}[h!]
+% \centering
+% \resizebox{\textwidth}{!}{%
+% \begin{tabular}{lcccc}
+% \toprule
+% Comparisons & Correlation & P Score & Significance & Interpretation \\
+% \midrule
+% TAM & & & & \\
+% MANUAL ADD & 0.200 & 0.150 & Not Significant & Weak positive correlation \\
+% MANUAL DELETE & 0.138 & 0.324 & Not Significant & Weak positive correlation \\
+% PASTE TO - A & 0.108 & 0.441 & Not Significant & Weak positive correlation \\
+% PASTE TO - P & -0.017 & 0.906 & Not Significant & Weak negative correlation \\
+% PASTE TO - T & 0.205 & 0.140 & Not Significant & Weak positive correlation \\
+% PASTE TO - R & 0.018 & 0.899 & Not Significant & Weak positive correlation \\
+% PASTE TO GPT GENERAL & 0.126 & 0.368 & Not Significant & Weak positive correlation \\
+% PASTE FROM - A & 0.029 & 0.418 & Not Significant & Weak positive correlation \\
+% PASTE FROM - P & 0.104 & 0.461 & Not Significant & Weak positive correlation \\
+% PASTE FROM - T & 0.199 & 0.153 & Not Significant & Weak positive correlation \\
+% PASTE FROM - R & 0.071 & 0.611 & Not Significant & Weak positive correlation \\
+% PASTE FROM GPT GENERAL & 0.210 & 0.131 & Not Significant & Weak positive correlation \\
+% EXTERNAL PASTE & 0.056 & 0.691 & Not Significant & Weak positive correlation \\
+% GPT GENERATE & 0.101 & 0.470 & Not Significant & Weak positive correlation \\
+% GPT UNUSED & -0.315 & 0.022 & Significant & Moderate negative correlation \\
+% \bottomrule
+% \end{tabular}
+% }
+% \caption{TAM}
+% \label{tab:tam}
+% \end{table}
+
+%     \subsubsection{Technology Acceptance Model}
+%     The results from our TAM correlations only had one significant comparison, shown in Table \ref{tab:tam}. This result was for GPT Unused words. Seeing a moderate negative correlation shows that participants who self-identified with a higher TAM score were more likely to use words from ChatGPT.
+    
+
+% \begin{table}[h!]
+% \centering
+% \resizebox{\textwidth}{!}{%
+% \begin{tabular}{lcccc}
+% \toprule
+% Comparisons & Correlation & P Score & Significance & Interpretation \\
+% \midrule
+% PO & & & & \\
+% MANUAL ADD & -0.383 & 0.005 & Significant & Moderate negative correlation \\
+% MANUAL DELETE & -0.033 & 0.815 & Not Significant & Weak negative correlation \\
+% PASTE TO - A & -0.418 & 0.002 & Significant & Moderate negative correlation \\
+% PASTE TO - P & -0.088 & 0.529 & Not Significant & Weak negative correlation \\
+% PASTE TO - T & 0.024 & 0.866 & Not Significant & Weak positive correlation \\
+% PASTE TO - R & -0.074 & 0.599 & Not Significant & Weak negative correlation \\
+% PASTE TO GPT GENERAL & -0.256 & 0.065 & Not Significant & Weak negative correlation \\
+% PASTE FROM - A & -0.063 & 0.327 & Not Significant & Weak negative correlation \\
+% PASTE FROM - P & -0.244 & 0.078 & Not Significant & Weak negative correlation \\
+% PASTE FROM - T & -0.086 & 0.539 & Not Significant & Weak negative correlation \\
+% PASTE FROM - R & 0.055 & 0.693 & Not Significant & Weak positive correlation \\
+% PASTE FROM GPT GENERAL & -0.198 & 0.155 & Not Significant & Weak negative correlation \\
+% EXTERNAL PASTE & 0.068 & 0.631 & Not Significant & Weak positive correlation \\
+% GPT GENERATE & -0.028 & 0.844 & Not Significant & Weak negative correlation \\
+% GPT UNUSED & 0.100 & 0.476 & Not Significant & Weak positive correlation \\
+% \bottomrule
+% \end{tabular}
+% }
+% \caption{Perceived Ownership}
+% \label{tab:po}
+% \end{table}
+
+%     \subsubsection{Perceived Ownership}
+%     In this category we found two significant correlations. The first was a moderate negative correlation for 'Pastes to ChatGPT' matching codes in the 'All' category. This shows that users who made paste events asking the LLM to write a paragraph or more were more likely to report a lower perceived ownership score. The other correlation we saw for a moderate negative for manual additions with perceived ownership. Although this result is surprising, we believe that these cases were mainly for users who self-reviewed AI-generated text. If the user has reservations about the ownership of the text before making revisions, the revisions could further enforce the idea that the text is not from the user. The complete results for the Perceived Ownership correlations are shown in Table \ref{tab:po}.
+
+% \begin{table}[h!]
+% \centering
+% \resizebox{\textwidth}{!}{%
+% \begin{tabular}{lcccc}
+% \toprule
+% Comparisons & Correlation & P Score & Significance & Interpretation \\
+% \midrule
+% CSI & & & & \\
+% MANUAL ADD & 0.038 & 0.790 & Not Significant & Weak positive correlation \\
+% MANUAL DELETE & -0.036 & 0.797 & Not Significant & Weak negative correlation \\
+% PASTE TO - A & -0.213 & 0.126 & Not Significant & Weak negative correlation \\
+% PASTE TO - P & 0.015 & 0.912 & Not Significant & Weak positive correlation \\
+% PASTE TO - T & 0.120 & 0.392 & Not Significant & Weak positive correlation \\
+% PASTE TO - R & -0.089 & 0.527 & Not Significant & Weak negative correlation \\
+% PASTE TO GPT GENERAL & -0.134 & 0.337 & Not Significant & Weak negative correlation \\
+% PASTE FROM - A & 0.090 & 0.261 & Not Significant & Weak positive correlation \\
+% PASTE FROM - P & -0.050 & 0.720 & Not Significant & Weak negative correlation \\
+% PASTE FROM - T & 0.105 & 0.456 & Not Significant & Weak positive correlation \\
+% PASTE FROM - R & -0.016 & 0.907 & Not Significant & Weak negative correlation \\
+% PASTE FROM GPT GENERAL & 0.002 & 0.990 & Not Significant & Weak positive correlation \\
+% EXTERNAL PASTE & -0.046 & 0.746 & Not Significant & Weak negative correlation \\
+% GPT GENERATE & 0.032 & 0.823 & Not Significant & Weak positive correlation \\
+% GPT UNUSED & -0.132 & 0.347 & Not Significant & Weak negative correlation \\
+% \bottomrule
+% \end{tabular}
+% }
+% \caption{CSI}
+% \label{tab:csi}
+% \end{table}
+
+%     \subsubsection{Creativity Support Index}
+%     The CSI scores also showed no significance in our results. These results are show in Table \ref{tab:csi}
+    
+    
+    \section{Discussion}
+    % Introduction paragraph for how we interpret the results
+    \subsection{Categorizing AI Usage}
+    
+    From our qualitative analysis of each queries, we were able to devise a classification system with five different clusters (the writer groupings).
+    Our participants were distributed across our five clusters, indicating that there was no shared way that everyone used the system and that individual users varied.
+    % We can further conclude that there was no clear way that everyone used the system, and it varies greatly based on user types.
+    This is similar to findings from current literature that also found a difficulty in classifying users, stating that each user is different and will use a writing system in diverse ways. 
+
+    One exception based on the system was lack of Group T, a group that primarily used ChatGPT for Translating, which was a use case that creative writers valued higher in some prior work.
+    This may reflect the different values and motivations between student writers working on an assignment and creative writers working on their own projects.
+
+    \danny{(feel free to remove this comment without doing anything) We could talk about how our categorization was reasonable becuase XYZ; but that it could have been better in order to capture XYZ. And that future work can further try to capture salient features/categories of LLM-use.}
+
+    One possible application of our categorization of AI usage patterns is self-tracking and reflection.
+    % We do, however, see usage patterns that could be tracked over time for reflection purposes.
+    For example a student who is the planning writing type might change over a period of time--something that would be reflected in our qualitative analysis, but which could potentially be detected automatically.
+    This could help towards making a reflective framework for a student.
+    Over a period of time, a student could look at the query types a student makes in the context of essay writing, which could indicate potential areas for improvement.
+    For example, a student may realize that they always use Planning queries, and thus overly rely on ChatGPT for generating ideas; or a student may realize that they are using ChatGPT less as they improve their own writing.
+    This can be available option to instructor as well if an LLM-powered tool, such as Packback, is integrated into their learning management system (e.g., Canvas). 
+    % they could find areas that said person struggles or is weakest in.
+    This type of tracking may benefit both an individual student and also an instructor who wishes to understand the strengths of their class as well as areas for growth. 
+    % This tracking could theoretically show a growth or lack of growth in a user depending on how much they rely on ChatGPT.
+    % Additionally, an instructor could look at the entire dataset to see areas that need improvement.
+    For example, if most students in a class fall into the Group P, the instructor could tailor their learning plan towards finding information and critical thinking.
+
+    We should note that, with the exception of the ``All'' category, we cannot conclude that one type of query to ChatGPT is more appropriate than another.
+    % Context is also very important when addressing the impact on student learning.
+    Depending on the context of the assignment and instructor expectations, what is considered ``good'' or ``bad'' usage will vary .
+    For example, the instructor of an ethics class might care more about students coming up with their own ideas and opinions, and less about the polished final product, and thus might not mind if students use ChatGPT for Reviewing their writing; while the instructor of an English class might care more about practicing rhetorical style, and Planning might be a less problematic usage for ChatGPT than Reviewing or Translating.
+
+    Furthermore, beyond the coarse classification into Planning, Translating, and Reviewing, it might be beneficial to look into our codebook for further analysis.
+    Similar to Flower and Hayes's model, queries belonging to these categories occurred in various ways.
+    Looking exclusively at the category does not provide enough context into how the participant used the question.
+    To refer to our previous example, an English instructor might care about how students outline and organize their essay, but not the example collection process, which may be equivalent to doing research online, so investigating deeper into the codes of Planning is more advisable.
+    
+    % Furthermore, beyond the coarse classification into Planning, Translating, and Reviewing, a more granular view might  be good lol. We have the classification and we did the coding to get subcodes and maybe they could be further analyzed. Perhaps one type of planning is better than another. there is some situation where you might want to do planning (context of class might make things okay) but if you drill into subcodes can also make an impact. Cant ban all of Planning per se ... 
+    % With this in might we do not make any claims towards the correct way to use ChatGPT in writing, as a college class focused on technically writing would likely have different expectations when compared to a high school English class. This indicates an importance on something
+
+    % \danny{I think you could add the paragraph here on how there's no `right' usage, and it depends on the context (maybe?)}
+
+    % NOTES:
+    % Different types of usage 
+    % \begin{itemize}
+    %     \item 5 different clusters of people using it in specific ways; not everyone was one way or another (except no one used Translation)
+    %     \item Could act as a reflective framework. You could track the codes over time to say: ``hey, looks like you're week at planning/reviewing etc.'' (why don't you come up w/ your own ideas? lol)
+    % \end{itemize}
+
+
+% \jelson{I feel like these next two sections are too short but I don't know how to bolster them}
+
+    % \subsection{Mixed has CSI Enjoyment}
+    
+    % Using our Kruskal-Wallace tests we also found no significance in our data towards most of the CSI categories. We did however find some significance in CSI-Enjoyment in the Mixed writer type. We argue here that the Mixed users are using the system more effectively than the other categories, as they used it for multiple types of question rather than primarily one question. This expertise is then shown to be more enjoyable, in regards to the CSI responses. From this we can conclude that the expert users have more of a positive feedback loop with ChatGPT than the other types. Further, this enjoyment likely reinforces the usage of ChatGPT as a writing assistant, something that could be good or bad based on context of the essay assignment. 
+
+    % Mixed group has highest CSI ???
+    % \begin{itemize}
+    %     \item seems like more expert users have more positive engagement.
+    %     \item Seems to reinforce the usage. 
+    % \end{itemize}
+    
+    % \subsection{PO is high in the planning group}
+    % From our post hoc analysis we can see t
+
+    % NOTES:
+    % Something about the context of the assignment
+    % \begin{itemize}
+    %     \item the P group had a higher Personal Ownership. 
+    %     This could be bad in some contexts (e.g., you're supposed to think for yourself, and you're being misled), but it could be unimportant for others. So: whether this is good or bad might depend on the context. 
+    %     \item Paragraph about context: the context of the assignment can affect what's good or bad.
+    %     \item Probably can also relate to Katy Gero's paper (e.g., in creative writing context)
+    % \end{itemize}
+
+    \subsection{Social Identity May Impact AI Usage}
+    
+    From our investigation into the query usage, we found that Gender, Age, and Race being predictors for the number of queries in linear mixed model. 
+    % in the queries by category between men and women.
+    For example, we found that a participant being a women was a significant predictor that is positively associated with the number of queries for the Reviewing category.
+    While we do not know enough to pinpoint the underlying cause, one possibility is that the women cared more about the final written artifact than the men did and were more likely to use ChatGPT to revise and potentially improve their essay.
+    The results could also speak to the relative confidence of the two groups: 
+    Another possible interpretation is that the women in our study felt less confident in their writing than the men did, and thus sought validation or ways to improve their writing.
+    Previous work has shown some gender differences in terms of general attitudes towards AI usage, such as men being more likely to see AI in positive views. 
+    More work can be done to better understand how gender may affect the specific types of uses of ChatGPT and other LLM tools.
+    %I cannot find literature supporting this. It seems that literature shows that women are more wary of using AI and find it to be a bad thing
+    % We theorize here that this is because women care more about the final product than men and were more likely to use ChatGPT to revise and potentially improve their essay. This could also show confidence in their work, with men being overconfident or women being under confident. 
+
+    Another finding we had was that participants' self-efficacy in writing was negatively correlated with every type of query to ChatGPT, with the notable exception of queries in the All category.
+    This is mostly not surprising, as we would expect participants with less confidence in their writing ability to lean more heavily on ChatGPT for assistance.
+    However, we did not see a relationship between self-efficacy and A-type queries, i.e., queries asking ChatGPT to write large portions of the essay.
+    One possible interpretation is that participants who delegated most of their writing to ChatGPT did so primarily out of a lack of motivation rather than a lack of confidence; perhaps the lack of motivation is something that can manifest across students with varying levels of self-efficacy.
+    % except for queries in the All category.
+    
+    % Gender in AI usage
+    % \begin{itemize}
+    %     \item Women use R more.
+    %     \item Possible interpretations: women are underconfident; OR women care more about the final product.
+    % \end{itemize}
+
+    % Another interesting piece of information obtained from our generalized linear modeling is that Self Efficacy in Writing can predict every type of query count except for the All category. 
+    
+    % Self-efficacy predicts every type of query EXCEPT the `All' category
+    % \begin{itemize}
+    %     \item Laziness equally distributed.
+    % \end{itemize}
+    
+    
+
+% \begin{itemize}
+%     \item Group P having perceived Ownership can be a threat to some educators if they want them to think about the topic. 
+%     \item categorizing a user into one group is difficult and it depends on the context. Our classification of NPRAM did not work well in terms of classifying behaviors. However, the number of ChatGPT final words will not work either. If this was an English writing class, proofreading and entirely pasting what ChatGPT pasted would be a bad thing. However, if this was a class that focus on ethics/professionalism, proofreading may be a minor issue than planning. 
+%     \item Total words and ChatGPT Words is significant but User words is not indicates that using ChatGPT a lot does not necessarily mean that they are writing more on their own. AKA ChatGPT is not an engine to increase user word count in all cases
+%     \item It might be interesting to look at how CSI had no significant impact on Writer type as well?
+%     \item Maybe something on how the N writer type had the shortest essays compared to the ChatGPT assisted essays? Or that we only had 6 N writer types so when given ChatGPT students are more likely to use it?
+%     \item should we attempt to do some interpretation of the codes to say that Reviewing (then Planning) was the most popular in terms of count (user count and total count) so we can see that students primarily use ChatGPT as a helper to give them ideas or reviser? If we go off of writer type its (16 - Planning, 13 - Reviewing, 15 - All, 20 - Mixed, 6- None)
+%     \item Danny also mentioned comparing it with other literature \cite{gero_social_2023} looked at Creative Writers and what they desired in terms of Planning, Translating, Reviewing, They found that creative authors want Reviewing, Translating, then Planning in their work. We find similar results in reviewing but our Planning was much higher than theirs. Showing a difference between students and creative writers
+% \end{itemize}
+
+\section{Limitations}
+
+    One potential limitation of this work is the ecological validity of our study.
+    % that we recognize in our study relates to the ecological validity.
+    The study was done in a low-stakes environment where there was no negative consequences for using ChatGPT in ways that might normally be considered cheating.
+    We theorize that in this setting, it may be more likely to see queries asking ChatGPT to write the entire essay (the All category).
+    Furthermore, we note that actual writing assignments occur in a variety of contexts (e.g., timed classroom exercises; untimed homework), while our study had a soft 30-minute time constraint.
+    Never-the-less, we believe our study may reflect a common context where students want to spend just enough time to create an essay that they feel good enough about to turn in.
+    We also note that for an actual unsupervised writing assignment, there is no practical way to gain access to students' queries to ChatGPT or other AI writing assistants.
+    
+    % This study was done in a low-stakes environment where there was no negative implications of using ChatGPT in writing their essay.
+    % Without the threat of cheating-detection, we theorize that the All category may have more responses compared to a classroom setting where a student might worry about if using ChatGPT will set off a plagiarism detector.
+    % Additionally we asked participants to spend roughly 30 minutes on an essay, where students would likely get more time to complete an assignment.
+    % This could cause the participant to use ChatGPT more because of the time constraints.
+    % Repeating this study in a different environment, like a classroom could change the results.
+
+    Another limitation is that parts of our quantitative analysis relied on a qualitative categorization of the ChatGPT queries.
+    While the qualitative analysis had three researchers involved in the process, there is always the potential for bias or ambiguity. 
+    Additionally, we categorized queries primarily based on the query-response pairing alone, only occasionally looking at how the participants incorporated the response into their essays. 
+    % Additionally, we did our thematic coding\jelson{qualitative analysis} based on the inquiry-response pairing, and not the integration into the editor.
+    With that in mind, we can say that we did not know what the participants intention was with each query, and some questions may seem to belong in one category when they could be argued for another.
+    % Additionally, this could impact the parts of the quantitative analysis, as much of it relies on the query categorization.
+    % that each question was categorized into.
+    
+    % Limitations:
+    % \begin{itemize}
+    %     \item Quant analysis based on qual classification
+    %     \item Relatedly: didn't know intention of inquirer -- coded based on queries, not the entire context.
+    %     \item Ecological validity (All category might be higher due to lack of threats of cheating-detection); but also, it's sort of a low-stakes time-pressure thing?
+    % \end{itemize}
+
+    
+%     We had some limitations with this study. The first limitation is that 25 of our participants came from Prolific, a online recruitment platform. Most of theses users were in the 18-24 year old age grouping, keeping with the idea of student assessment. In total we had 14 users outside of the 18-24 range, with 5 being 35+. Of the 9 in the 25-34 range some were graduate students.
+    
+%     Another limitation of our study is that only one researcher conducted the qualitative coding process. While this approach can maintain consistency in applying the coding scheme, it may introduce potential bias, as the subjective interpretation of the data is reliant on one coder’s perspective. The absence of multiple coders also limits the opportunity for cross-validation. Without interrater reliability measures, there is a risk that the findings may reflect personal biases or overlook alternative interpretations
+
+% looked at QR pair not integration
+    
+    % Malicious vs Non-malicious actor here? - no way of knowing what the person is thinking - this goes into the context of classification
+    
+    %recruited from Prolific for half of our data sources (25 of the 53)
+    %other limitations
+
+
+
+\section{Future Work}
+    From our findings we see various directions that can be investigated. The first of these looks into the context of the essay/assignment to determine acceptable usage types. As mentioned above, different courses and instructors will have different definitions of what is "good" or "bad" ChatGPT usage, some might even consider ChatGPT to be cheating. With this in mind getting instructor feedback from a variety of fields is necessary towards further understanding. Another direction that can be investigated would be looking at the quality of the essay. This study focused on the inquiries and did not look into how good of an essay was written. Looking into this can also provide insight into implementation strategies, and if certain question types are better at increasing performance. With these ideas in mind, we plan to conduct a user study with instructors. We will ask them to evaluate the essay based on both quality and ChatGPT usage to further our understanding of this field from an instructor perspective. 
+    
+    %Later, we plan on using the recorded scenarios for an educator to evaluate what level of ChatGPT reliance is considered cheating or plagiarism.
+    
+    \section{Conclusion} 
+
+    Overall, we gain insight into how some students use ChatGPT when writing essays. With this information we identify some patterns into inquiry types, but ultimately conclude that these patterns are based on subjective data and vary over different fields of study. Additionally, we provide quantitative analysis on this data looking for significance between survey information and essay metrics. Furthermore, we identify places that we can expand our work into looking at this data from an instructors perspective, and look into future steps.
+
+    % Overall, we expect to gain insight into how users use ChatGPT when writing essays. We will be able to identify patterns in the questions asked and to what extent they implement ChatGPT in their writing. This will be beneficial to instructors who intend to better understand how their students might use ChatGPT and allow them to recognize the level at which their students might use an LLM in their assignment or how to better integrate ChatGPT into their course. This will also benefit software engineers or individuals who wish to create an LLM-powered writing assistant because they can see what features and questions are most common, leading to the development of a better tool.
+
+
+
+
+
+
+%TC:ignore
+%%
+%% The acknowledgments section is defined using the "acks" environment
+%% (and NOT an unnumbered section). This ensures the proper
+%% identification of the section in the article metadata, and the
+%% consistent spelling of the heading.
+\begin{acks}
+
+\end{acks}
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{gptwriting}
+
+%%
+%% If your work has an appendix, this is the place to put it.
+
+\end{document}
+\endinput
+%%
+%% End of file `sample-authordraft.tex'.
