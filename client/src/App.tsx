@@ -9,7 +9,7 @@ import { useAppStore } from "./store/useAppStore";
 function App() {
   const { userName, setUserName, setUserId } = useAppStore();
 
-  // 로컬 스토리지에서 사용자 정보 불러오기
+  // Load user information from local storage
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
     const storedUserId = localStorage.getItem('userId');

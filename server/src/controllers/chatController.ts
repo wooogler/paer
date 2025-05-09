@@ -332,20 +332,20 @@ export class ChatController {
         return reply.code(400).send({ error: "blockId is required" });
       }
 
-      // 메시지를 시간 순서대로 정렬 (오래된 메시지부터)
+      // Sort messages by time (oldest messages first)
       const sortedMessages = [...messages].sort((a, b) => 
         (a.timestamp || 0) - (b.timestamp || 0)
       );
 
-      // Format messages for OpenAI - "userName: [messageType] messageContent" 형식으로 변경
+      // Format messages for OpenAI - Change to "userName: [messageType] messageContent" format
       const formattedMessages = sortedMessages.map(msg => {
-        // role이 assistant나 system인 경우 무조건 'AI'로 설정
+        // For assistant or system role, always set to 'AI'
         const userName = (msg.role === 'system' || msg.role === 'assistant') 
           ? 'AI' 
           : (msg.userName || 'User');
         const messageType = msg.messageType || 'chat';
         
-        // Edit 타입일 경우 previousSentence와 updatedSentence를 사용
+        // For Edit type, use previousSentence and updatedSentence
         if (messageType === 'edit' && msg.previousSentence && msg.updatedSentence) {
           return `${userName}: [${messageType}] Changed "${msg.previousSentence}" to "${msg.updatedSentence}"`;
         }
@@ -370,13 +370,13 @@ ${formattedMessages}
 
       const summary = response.choices[0].message.content.trim();
 
-      // 블록의 summary 필드에 요약 결과 저장 (paperId와 userId가 제공된 경우)
+      // Save summary result in block's summary field (if paperId and userId provided)
       if (paperId && userId && blockId) {
         try {
           await this.paperService.updateBlock(userId, paperId, blockId, "summary", summary);
         } catch (updateError) {
           console.error("Error updating block summary:", updateError);
-          // 요약은 성공했지만 저장에 실패했다는 것을 클라이언트에 알림
+          // Notify client that summary succeeded but saving failed
           return { 
             success: true, 
             summary, 

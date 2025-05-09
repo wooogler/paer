@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { Paper, PaperSchema } from '@paer/shared/schemas/paperSchema';
 
-// Mongoose 문서 타입 정의 (타입스크립트용)
+// Define Mongoose document type (for TypeScript)
 export interface PaperDocument extends Omit<Paper, 'createdAt' | 'updatedAt' | '_id'>, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;

@@ -24,9 +24,9 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: {
         transformMixedEsModules: true,
       },
-      // 빌드 시 정적 에셋 경로 설정
+      // Set static asset path for build
       assetsDir: "",
-      // 에셋 경로 접두사
+      // Asset path prefix
       base: "/",
       // Generate separate chunks for better caching
       rollupOptions: {

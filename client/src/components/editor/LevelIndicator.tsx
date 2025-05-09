@@ -2,12 +2,12 @@ import React from "react";
 import { getTypeColor } from "../../utils/contentUtils";
 import { ContentType } from "@paer/shared";
 
-// Helper functions for content type styling - 대체됨
+// Helper functions for content type styling - replaced
 // export const getBackgroundColorClass = (contentType: string): string => { ... };
 // export const getBorderColorClass = (contentType: string): string => { ... };
 // export const getColorClass = (contentType: string): string => { ... };
 
-// 유틸리티 함수 새로 구현
+// New utility functions implementation
 export const getBackgroundColorClass = (contentType: string): string => {
   return getTypeColor(contentType as ContentType).bg;
 };

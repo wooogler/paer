@@ -209,7 +209,7 @@ export class LLMService {
 
         // Add properties in the specified order
         propertyOrder.forEach((prop) => {
-          // sentence 타입인 경우 intent 제외, 모든 타입에서 summary 제외
+          // For sentence type exclude intent, exclude summary for all types
           if (prop === "block-id") {
             if (obj["block-id"] !== undefined) {
               orderedObj["block-id"] = orderProperties(obj["block-id"]);

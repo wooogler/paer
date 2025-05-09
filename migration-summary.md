@@ -1,121 +1,121 @@
-# MongoDB 마이그레이션 및 다중 사용자 지원 요약
+# MongoDB Migration and Multi-User Support Summary
 
-## 변경 사항
+## Changes
 
-1. **MongoDB 연결 설정**
-   - `server/src/config/database.ts` 파일 생성
-   - mongoose를 사용한 데이터베이스 연결 설정
+1. **MongoDB Connection Settings**
+- Created `server/src/config/database.ts` file
+- Database connection setup using mongoose
 
-2. **모델 정의**
-   - `server/src/models/User.ts` - 사용자 모델
-   - `server/src/models/Paper.ts` - 문서 모델
-   - `server/src/models/Chat.ts` - 채팅 모델
+2. **Model Definitions**
+- `server/src/models/User.ts` - User model
+- `server/src/models/Paper.ts` - Document model
+- `server/src/models/Chat.ts` - Chat model
 
-3. **Repository 클래스 업데이트**
-   - `PaperRepository`: 파일 기반 저장에서 MongoDB 기반으로 변경
-   - `ChatRepository`: 파일 기반 저장에서 MongoDB 기반으로 변경
-   - 모든 메서드가 userId와 paperId를 받도록 변경
+3. **Repository Class Updates**
+- `PaperRepository`: Changed from file-based to MongoDB-based storage
+- `ChatRepository`: Changed from file-based to MongoDB-based storage
+- All methods updated to accept userId and paperId
 
-4. **Service 클래스 업데이트**
-   - `PaperService`: 다중 사용자 지원 메서드 추가
-   - `ChatService`: 다중 사용자 지원 메서드 추가
-   - `UserService`: 새로 추가됨
+4. **Service Class Updates**
+- `PaperService`: Added multi-user support methods
+- `ChatService`: Added multi-user support methods
+- `UserService`: Added new
 
-5. **Controller 클래스 업데이트**
-   - `PaperController`: 다중 사용자 지원 메서드 추가
-   - `ChatController`: 다중 사용자 지원 메서드 추가
-   - `UserController`: 새로 추가됨
+5. **Controller Class Updates**
+- `PaperController`: Added multi-user support methods
+- `ChatController`: Added multi-user support methods
+- `UserController`: Added new
 
-6. **라우트 업데이트**
-   - `papers.ts`: 경로에 사용자 ID 파라미터 추가
-   - `chat.ts`: 경로에 문서 ID와 사용자 ID 파라미터 추가
-   - `users.ts`: 새로 추가됨
+6. **Route Updates**
+- `papers.ts`: Added user ID parameter to path
+- `chat.ts`: Added document ID and user ID parameters to path
+- `users.ts`: Added new
 
-7. **메인 애플리케이션 파일 업데이트**
-   - MongoDB 연결 설정 추가
-   - 사용자 라우트 등록
+7. **Main Application File Updates**
+- Added MongoDB connection setup
+- Registered user routes
 
-## 데이터 구조 변경
+## Data Structure Changes
 
-### 문서 모델
+### Document Model
 ```typescript
 {
-  userId: ObjectId,         // 문서 소유자 ID
-  title: String,            // 문서 제목
-  content: Paper,           // 문서 내용 (기존 JSON 구조 유지)
-  collaborators: [ObjectId] // 협업자 ID 배열
+  userId: ObjectId,         // Document owner ID
+  title: String,            // Document title
+  content: Paper,           // Document content (keeping original JSON structure)
+  collaborators: [ObjectId] // Array of collaborator IDs
 }
 ```
 
-### 채팅 모델
+### Chat Model
 ```typescript
 {
-  userId: ObjectId,       // 사용자 ID
-  paperId: ObjectId,      // 문서 ID
-  messages: [            // 메시지 배열
+  userId: ObjectId,       // User ID
+  paperId: ObjectId,      // Document ID
+  messages: [            // Array of messages
     {
-      id: String,         // 메시지 ID
-      role: String,       // 역할 (user/system/assistant)
-      content: String,    // 메시지 내용
-      timestamp: Number,  // 타임스탬프
-      blockId: String     // 연결된 블록 ID
+      id: String,         // Message ID
+      role: String,       // Role (user/system/assistant)
+      content: String,    // Message content
+      timestamp: Number,  // Timestamp
+      blockId: String     // Connected block ID
     }
   ]
 }
 ```
 
-### 사용자 모델
+### User Model
 ```typescript
 {
-  username: String,       // 사용자명 (고유)
-  email: String,          // 이메일 (선택사항)
+  username: String,       // User name (unique)
+  email: String,          // Email (optional)
 }
 ```
 
-## 마이그레이션 방법
+## Migration Method
 
-1. **환경 설정**
-   - MongoDB 설치 또는 Atlas 계정 생성
-   - `.env` 파일에 MongoDB 연결 문자열 추가:
-     ```
-     MONGODB_URI=mongodb://localhost:27017/paer
-     ```
+1. **Environment Setup**
+- Install MongoDB or create an Atlas account
+- Add MongoDB connection string to `.env` file:
+  ```
+  MONGODB_URI=mongodb://localhost:27017/paer
+  ```
 
-2. **기존 데이터 마이그레이션**
-   - 기존 JSON 파일의 데이터를 MongoDB로 마이그레이션하는 스크립트 작성 필요
-   - 초기 사용자 계정 생성 필요
+2. **Initial Data Migration**
+- Need to write a script to migrate data from existing JSON files to MongoDB
+- Need to create initial user account
 
-3. **API 사용 방법 변경**
-   - 모든 API 요청에 `userId` 파라미터 추가
-   - 채팅 API에 `paperId` 파라미터 추가
+3. **API Usage Method Changes**
+- Added userId parameter to all API requests
+- Added paperId parameter to chat API
 
-## 다중 사용자 지원 기능
+## Multi-User Support Features
 
-1. **사용자 관리**
-   - 사용자 생성: `POST /api/users`
-   - 사용자 조회: `GET /api/users/:id`
-   - 사용자명으로 조회: `GET /api/users/username/:username`
+1. **User Management**
+- Create user: `POST /api/users`
+- Get user: `GET /api/users/:id`
+- Get user by username: `GET /api/users/username/:username`
 
-2. **문서 관리**
-   - 사용자별 문서 목록: `GET /api/papers?userId=:userId`
-   - 문서 생성: `POST /api/papers` (body에 userId 포함)
-   - 문서 협업자 추가: `POST /api/papers/:id/collaborators`
+2. **Document Management**
+- User-specific document list: `GET /api/papers?userId=:userId`
+- Create document: `POST /api/papers` (include userId in body)
+- Add document collaborator: `POST /api/papers/:id/collaborators`
 
-3. **채팅**
-   - 문서별 채팅 메시지: `GET /api/chat/:paperId/messages?userId=:userId`
-   - 채팅 메시지 추가: `POST /api/chat/:paperId/messages` (body에 userId 포함)
+3. **Chat**
+- Document-specific chat messages: `GET /api/chat/:paperId/messages?userId=:userId`
+- Add chat message: `POST /api/chat/:paperId/messages` (include userId in body)
 
-## 보안 고려사항
+## Security Considerations
 
-현재는 간단한 사용자 인증만 구현되어 있으므로, 향후 다음과 같은 보안 기능 추가가 필요합니다:
+Currently, only simple user authentication is implemented, so the following security features need to be added in the future:
 
-1. 토큰 기반 인증 (JWT)
-2. 비밀번호 해싱 저장
-3. 권한 관리
-4. API 요청 제한
+1. Token-based authentication (JWT)
+2. Password hashing storage
+3. Permission management
+4. API request restrictions
 
-## 후속 작업
+## Follow-Up Tasks
 
-1. 클라이언트 UI 업데이트하여 다중 사용자 기능 지원
-2. 사용자 인증 개선
-3. 실시간 협업 기능 구현 (Socket.io/WebSocket) 
+1. Update client UI to support multi-user features
+2. Improve user authentication
+3. Implement real-time collaboration features (Socket.io/WebSocket) 

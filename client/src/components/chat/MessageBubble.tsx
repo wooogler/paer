@@ -24,14 +24,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isComment = message.messageType === "comment";
   const isEdit = message.messageType === "edit";
 
-  // 메시지에 연결된 blockId가 있는지 확인
+  // Check if message has a connected blockId
   const hasBlockReference = !!message.blockId;
 
-  // blockId로 콘텐츠 찾기
+  // Find content by blockId
   const linkedContent = useMemo((): Content | null => {
     if (!message.blockId || !content) return null;
 
-    // 헬퍼 함수로 콘텐츠 트리를 재귀적으로 탐색
+    // Helper function to recursively search content tree
     const findContentByBlockId = (node: any): Content | null => {
       if (node && node["block-id"] === message.blockId) {
         return node;
@@ -75,14 +75,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     });
   };
 
-  // 메시지 배경색 결정
+  // Determine message background color
   const getBgColor = () => {
     if (isComment) return 'bg-yellow-50 text-yellow-900';
     if (isEdit) return 'bg-purple-50 text-purple-900';
     return isUser ? 'bg-gray-100 text-gray-800' : 'bg-white text-gray-800';
   };
 
-  // 선택 및 공유 상태에 따른 테두리 설정
+  // Set border based on selection and sharing status
   const getRingStyle = () => {
     if (isSelected) return 'ring-2 ring-blue-500 ring-opacity-50';
     if (message.viewAccess === "public") return 'ring-2 ring-green-500 ring-opacity-70';

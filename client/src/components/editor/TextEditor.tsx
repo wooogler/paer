@@ -72,11 +72,11 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       dismiss,
     ]);
 
-    // 현재 렌더링되는 문장이 selectedContent인지 확인
+    // Check if current sentence is selectedContent
     const isSelectedContent =
       selectedContent && content["block-id"] === selectedContent["block-id"];
 
-    // 현재 항목이 필터링된 메시지의 BlockId와 같은지 확인
+    // Check if current item matches filtered message BlockId
     const isActiveMessageFilter =
       content["block-id"] === filterBlockId && isFilteringEnabled;
 
@@ -188,9 +188,9 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Add onBlur event handler
     const handleBlur = useCallback(
       (e: React.FocusEvent<HTMLTextAreaElement>) => {
-        // 버튼 클릭을 방해하지 않도록 이벤트 타겟 확인
+        // Check event target to not interfere with button clicks
         const relatedTarget = e.relatedTarget as HTMLElement | null;
-        // 포커스가 버튼으로 이동한 경우에는 포커스 상태 유지
+        // Keep focus state when focus moves to button
         if (
           relatedTarget &&
           (relatedTarget.tagName === "BUTTON" ||
@@ -263,7 +263,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
       initialContent
     ]);
 
-    // Update with shift+Enter handler (새 문장 추가 또는 다음 문장으로 포커스 이동)
+    // Update with shift+Enter handler (add new sentence or move focus to next sentence)
     const handleUpdateWithNext = useCallback(() => {
       console.log("handleUpdateWithNext called", content["block-id"]);
       if (content.type === "sentence" && content["block-id"] && !isUpdating) {
@@ -292,7 +292,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               // Also update initial content with current value
               setInitialContent(localValue);
 
-              // 업데이트 성공 후 다음 액션 수행
+              // Perform next action after successful update
               // If this is the last sentence, add a new one
               if (isLast && onAddNewSentence) {
                 onAddNewSentence();
@@ -355,7 +355,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     // Keyboard event handler
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // 업데이트 중인 경우 키보드 이벤트 비활성화
+        // Disable keyboard events while updating
         if (isUpdating) return;
 
         // When Enter key is pressed (without Shift key)
@@ -496,7 +496,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
     const bgColorClass = getBackgroundColorClass(content.type || "");
     const borderColorClass = getBorderColorClass(content.type || "");
 
-    // selectedContent인 경우 진한 파란색 테두리 스타일
+    // Dark blue border style for selectedContent
     const selectedContentBorderStyle = isSelectedContent
       ? "border-blue-600 border-2"
       : borderColorClass;
@@ -616,7 +616,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               isSelectedContent ? "bg-blue-100" : bgColorClass
             } relative`}
           >
-            {/* Summary Field - sentence 타입이 아닐 경우에만 표시 */}
+            {/* Summary Field - only shown for non-sentence types */}
             {content.type !== "sentence" && (
               <EditableField
                 value={localSummary}
@@ -634,7 +634,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
               />
             )}
 
-            {/* Intent Field - sentence 타입인 경우에만 표시하고, intent가 있을 때만 아이콘 표시 */}
+            {/* Intent Field - only shown for sentence type, and icon only shown when intent exists */}
             {/* {content.type === "sentence" && (
               <EditableField
                 value={localIntent}
@@ -685,7 +685,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation(); // 이벤트 버블링 방지
+                    e.stopPropagation(); // Prevent event bubbling
                     e.preventDefault();
                     console.log("Cancel button clicked");
                     handleCancel();
@@ -698,7 +698,7 @@ const TextEditor: React.FC<TextEditorProps> = React.memo(
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.stopPropagation(); // 이벤트 버블링 방지
+                    e.stopPropagation(); // Prevent event bubbling
                     e.preventDefault();
                     console.log("Update button clicked");
                     handleUpdate();

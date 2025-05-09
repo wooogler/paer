@@ -106,7 +106,7 @@ const CollaboratorModal: React.FC<CollaboratorModalProps> = ({ isOpen, onClose, 
 
   useEffect(() => {
     if (allUsers.length > 0 && authorId) {
-      // 현재 로그인한 유저와 이미 협력자로 등록된 유저를 제외
+      // Exclude current user and existing collaborators
       const collaboratorIds = collaborators.map(c => c.userId);
       const filtered = allUsers.filter(user => 
         user._id !== authorId && !collaboratorIds.includes(user._id)

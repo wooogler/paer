@@ -3,7 +3,7 @@ import { useAppStore } from "../store/useAppStore";
 import { useContentStore } from "../store/useContentStore";
 import { Paper } from "@paer/shared";
 
-// API instance 생성
+// Create API instance
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
   headers: {

@@ -144,7 +144,7 @@ const ChatInterface: React.FC = () => {
     if (selectedMessageIds.length === messages.filter(msg => msg.userId === userId).length) {
       setSelectedMessageIds([]);
     } else {
-      // 자신의 메시지만 선택
+      // Only select own messages
       const myMessages = messages.filter(msg => msg.userId === userId);
       setSelectedMessageIds(myMessages.map(msg => msg.id));
     }
@@ -303,7 +303,7 @@ const ChatInterface: React.FC = () => {
   }, []);
 
   const handleMessageSelect = useCallback((messageId: string) => {
-    // 자신의 메시지만 선택 가능하도록 수정
+    // Only select own messages
     const message = messages.find(msg => msg.id === messageId);
     if (!message || message.userId !== userId) return;
 
@@ -325,15 +325,15 @@ const ChatInterface: React.FC = () => {
     try {
       setIsSharing(true);
 
-      // 자신의 메시지만 필터링
+      // Only filter own messages
       const myMessages = messages.filter(msg => msg.userId === userId);
       
-      // 현재 공개된 메시지 중 선택되지 않은 메시지들을 private로 변경
+      // Current publicly shared messages that are not selected to be unshared
       const messagesToUnshare = myMessages
         .filter(msg => msg.viewAccess === "public" && !selectedMessageIds.includes(msg.id))
         .map(msg => msg.id);
 
-      // 선택된 메시지들을 public으로 변경
+      // Selected messages to be shared
       const messagesToShare = selectedMessageIds.filter(id => {
         const message = myMessages.find(msg => msg.id === id);
         return message && message.userId === userId;
@@ -373,7 +373,10 @@ const ChatInterface: React.FC = () => {
   }, [isSelectionMode, messages, userId]);
 
   const handleViewChange = (newViews: ViewingMode[]) => {
-    // 선택된 뷰가 없는 경우에도 빈 배열로 설정
+    // Selection mode should not be allowed if no views are selected
+    if (newViews.length === 0) {
+      setIsSelectionMode(false);
+    }
     setSelectedViews(newViews);
   };
 

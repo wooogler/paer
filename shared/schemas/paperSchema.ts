@@ -11,8 +11,8 @@ export interface Paper extends Omit<Content, "content"> {
   createdAt?: string;
   updatedAt?: string;
   version?: number;
-  authorId: string; // 논문 작성자 ID
-  collaboratorIds: string[]; // 협업자 ID 목록
+  authorId: string; // Author ID of the paper
+  collaboratorIds: string[]; // List of collaborator IDs
   "block-id"?: string; // Also include block-id at the Paper level
 }
 

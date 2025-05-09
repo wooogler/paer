@@ -23,15 +23,15 @@ const TreeItem: React.FC<TreeItemProps> = memo(
     const { setFilterBlockId, isFilteringEnabled, filterBlockId, toggleFiltering } =
       useChatStore();
 
-    // 현재 항목이 selectedBlock인지 확인
+    // Check if current item is selectedBlock
     const isSelectedBlock = selectedBlockPath?.join(",") === path.join(",");
-    // 현재 항목이 selectedContent인지 확인
+    // Check if current item is selectedContent
     const isSelectedContent = selectedPath?.join(",") === path.join(",");
-    // 현재 항목이 필터링된 메시지의 BlockId와 같은지 확인 (active 상태 표시용)
+    // Check if current item is active message filter
     const isActiveMessageFilter =
       content?.["block-id"] === filterBlockId && isFilteringEnabled;
 
-    // 현재 항목이 업데이트 중인지 확인
+    // Check if current item is updating
     const isUpdating = content?.["block-id"]
       ? isBlockUpdating(content["block-id"] as string)
       : false;
@@ -51,32 +51,32 @@ const TreeItem: React.FC<TreeItemProps> = memo(
       }
     };
 
-    // 채팅 필터링 활성화/비활성화 토글 처리
+    // Handle chat filtering toggle
     const handleShowMessages = (e: React.MouseEvent) => {
-      e.stopPropagation(); // 부모 요소의 클릭 이벤트 전파 방지
+      e.stopPropagation(); // Prevent parent element click event propagation
 
-      // 업데이트 중인 항목은 버튼 비활성화
+      // Disable button for updating items
       if (isUpdating) return;
 
       if (content["block-id"]) {
         if (isActiveMessageFilter) {
-          // 이미 active 상태일 경우, 필터링 해제
+          // If already active, clear filtering
           setFilterBlockId(null);
           toggleFiltering(false);
         } else {
-          // active 상태가 아닐 경우, 해당 블록으로 필터링
+          // If not active, filter by this block
           setFilterBlockId(content["block-id"]);
           toggleFiltering(true);
         }
       }
     };
 
-    // 메시지 아이콘 표시 여부 결정
-    // 1. 필터링 모드일 때: 필터링된 아이템의 아이콘만 표시
-    // 2. 필터링 모드가 아닐 때: 선택된 아이템의 아이콘만 표시
+    // Determine whether to show message icon
+    // 1. In filtering mode: only show icon for filtered item
+    // 2. In normal mode: show icon for selected item
     const shouldShowMessageIcon = isFilteringEnabled
-      ? content["block-id"] === filterBlockId // 필터링 모드: 필터링된 아이템만 아이콘 표시
-      : isSelectedContent || isSelectedBlock; // 일반 모드: 선택된 아이템만 아이콘 표시
+      ? content["block-id"] === filterBlockId // Filtering mode: show icon for filtered item
+      : isSelectedContent || isSelectedBlock; // Normal mode: show icon for selected item
 
     // Get color class based on content type
     const contentColorClass = getTypeColor(content.type as ContentType).main;
@@ -114,7 +114,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
             : `Subsubsection ${path.map((idx) => idx + 1).join(".")}`
         );
       }
-      // content.type이 없는 경우 기본값 처리
+      // Handle default case when content.type is missing
       if (!content.type) {
         return `Unknown ${path.map((idx) => idx + 1).join(".")}`;
       }
@@ -150,7 +150,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
                 <span
                   className={`${contentColorClass} ${
                     content.type === "paragraph"
-                      ? "text-xs" // paragraph 타입의 경우 더 작은 폰트 사이즈 적용
+                      ? "text-xs" // Apply smaller font size for paragraph type
                       : "text-sm font-bold"
                   } ${isSelectedContent ? "" : ""} ${
                     isSelectedContent ? "" : "truncate"
@@ -161,7 +161,7 @@ const TreeItem: React.FC<TreeItemProps> = memo(
                 </span>
               </div>
 
-              {/* 메시지 아이콘 버튼 - 선택된 항목일 때 표시하고, active 상태일 때 파란색으로 표시 */}
+              {/* Message icon button - shown for selected items, blue when active */}
               {shouldShowMessageIcon && (
                 <button
                   onClick={handleShowMessages}

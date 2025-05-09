@@ -30,7 +30,7 @@ export class UserController {
         });
       }
 
-      // mongoose의 _id를 문자열로 변환
+      // Convert mongoose _id to string
       const userId = user._id instanceof mongoose.Types.ObjectId 
         ? user._id.toString() 
         : String(user._id);

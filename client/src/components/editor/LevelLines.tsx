@@ -6,15 +6,15 @@ interface LevelLinesProps {
 }
 
 /**
- * 수직 레벨 표시선 컴포넌트
- * 계층 구조의 수준을 시각적으로 보여주는 수직선을 렌더링합니다.
+ * Vertical level indicator component
+ * Renders vertical lines that visually show the levels of the hierarchy.
  */
 const LevelLines: React.FC<LevelLinesProps> = ({ level, iconColorClass }) => {
   if (level === 0) return null;
 
   const lines = [];
   for (let i = 0; i < level; i++) {
-    // 마지막 선은 콘텐츠 타입 색상을 사용하고, 나머지는 회색으로 표시
+    // Last line uses content type color, others are gray
     const lineColorClass = i === level - 1 ? iconColorClass : "border-gray-300";
 
     lines.push(

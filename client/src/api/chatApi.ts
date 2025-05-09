@@ -23,7 +23,7 @@ export interface MessageAccessList {
 }
 
 /**
- * 모든 채팅 메시지를 가져옵니다
+ * Get all chat messages
  */
 export const getMessages = async (userId: string, paperId: string): Promise<Message[]> => {
   try {
@@ -31,7 +31,7 @@ export const getMessages = async (userId: string, paperId: string): Promise<Mess
       params: { userId }
     });
     
-    // 응답 구조 확인 및 올바른 메시지 배열 반환
+    // Check response structure and return correct message array
     if (response.data && response.data.messages && Array.isArray(response.data.messages)) {
       return response.data.messages;
     } else if (response.data && Array.isArray(response.data)) {
@@ -47,7 +47,7 @@ export const getMessages = async (userId: string, paperId: string): Promise<Mess
 };
 
 /**
- * 특정 블록 ID에 연결된 메시지들을 가져옵니다
+ * Get messages connected to a specific block ID
  */
 export const getMessagesByBlockId = async (paperId: string, blockId: string, userId: string): Promise<Message[]> => {
   try {
@@ -62,7 +62,7 @@ export const getMessagesByBlockId = async (paperId: string, blockId: string, use
 };
 
 /**
- * 새로운 메시지를 서버에 추가합니다
+ * Add a new message to the server
  */
 export const addMessage = async (paperId: string, message: Message & { userId: string }): Promise<Message> => {
   try {
@@ -75,7 +75,7 @@ export const addMessage = async (paperId: string, message: Message & { userId: s
 };
 
 /**
- * 여러 메시지들을 한번에 저장합니다
+ * Save multiple messages at once
  */
 export const saveMessages = async (paperId: string, messages: Message[], userId: string): Promise<void> => {
   try {
@@ -87,7 +87,7 @@ export const saveMessages = async (paperId: string, messages: Message[], userId:
 };
 
 /**
- * 모든 메시지를 삭제합니다
+ * Delete all messages
  */
 export const clearMessages = async (paperId: string, userId: string): Promise<void> => {
   try {
@@ -101,7 +101,7 @@ export const clearMessages = async (paperId: string, userId: string): Promise<vo
 };
 
 /**
- * 특정 ID의 메시지를 삭제합니다
+ * Delete a message with a specific ID
  */
 export const deleteMessage = async (paperId: string, messageId: string, userId: string): Promise<boolean> => {
   try {
@@ -128,7 +128,7 @@ export const updateMessageAccess = async (paperId: string, userId: string, messa
 }
 
 /**
- * 특정 블록과 관련된 메시지를 요약하고 결과를 블록의 summary 필드에 저장합니다
+ * Summarize messages related to a specific block and store the result in the block's summary field
  */
 export const summarizeMessages = async (messages: Message[], blockId: string, paperId?: string, userId?: string): Promise<{ summary: string; summaryUpdated: boolean }> => {
   try {

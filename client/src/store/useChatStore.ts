@@ -17,7 +17,7 @@ interface ChatState {
   clearMessages: () => Promise<void>;
   setFilterBlockId: (blockId: string | null) => void;
   toggleFiltering: (enabled: boolean) => void;
-  // 챗 UI의 가시성 상태
+  // Chat UI visibility state
   isChatVisible: boolean;
   toggleChatVisibility: () => void;
   setLoading: (isLoading: boolean) => void;
@@ -32,15 +32,15 @@ export const useChatStore = create<ChatState>()(
       isLoading: false,
       filterBlockId: null,
       isFilteringEnabled: false,
-      // 기본적으로 챗 UI는 보이는 상태로 설정
+      // Set chat UI to visible by default
       isChatVisible: true,
 
-      // 챗 UI 가시성 토글 함수
+      // Chat UI visibility toggle function
       toggleChatVisibility: () => {
         set((state) => ({ isChatVisible: !state.isChatVisible }));
       },
 
-      // 서버에서 메시지 가져오기
+      // Fetch messages from server
       fetchMessages: async () => {
         const userId = useAppStore.getState().userId;
         const selectedPaperId = useContentStore.getState().selectedPaperId;
@@ -49,7 +49,7 @@ export const useChatStore = create<ChatState>()(
         set({ isLoading: true });
         try {
           const messages = await getMessages(userId, selectedPaperId);
-          // 메시지가 배열인지 확인
+          // Check if messages is an array
           if (Array.isArray(messages)) {
             set({ messages });
           } else {
@@ -64,7 +64,7 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      // 특정 블록 ID의 메시지 가져오기
+      // Get messages for specific block ID
       fetchMessagesByBlockId: async (blockId: string) => {
         const userId = useAppStore.getState().userId;
         const selectedPaperId = useContentStore.getState().selectedPaperId;
@@ -81,27 +81,27 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      // 필터링 모드 토글 함수
+      // Filter mode toggle function
       toggleFiltering: (enabled) => {
         set({ isFilteringEnabled: enabled });
       },
 
-      // 필터 blockId 설정 함수
+      // Set filter blockId function
       setFilterBlockId: (blockId) => {
         set({ filterBlockId: blockId });
       },
 
-      // 메시지 배열을 직접 설정하는 함수
+      // Function to directly set message array
       setMessages: (messages: Message[]) => {
         set({ messages });
       },
 
       addMessage: async (message: Message) => {
         try {
-          // Add user message immediately to show it in the UI
+          // Send user message
           set((state) => ({
             messages: [...state.messages, message],
-            isLoading: true // 로딩 상태 켜기
+            isLoading: true // Turn on loading state
           }));
 
           // Send to server and update with response
@@ -110,13 +110,13 @@ export const useChatStore = create<ChatState>()(
             throw new Error("User ID is required");
           }
           
-          // 사용자 메시지 전송
+          // Send user message
           await chatApi.addMessage(message.paperId, { ...message, userId });
           
-          // 메시지 전송 성공 후 모든 메시지 다시 불러오기
+          // Reload all messages after successful message send
           await get().fetchMessages();
           
-          // 로딩 상태 종료
+          // End loading state
           set({ isLoading: false });
           
         } catch (error) {

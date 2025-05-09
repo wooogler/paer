@@ -90,7 +90,7 @@ const ChatSchema = new Schema<IChat>(
   }
 );
 
-// 복합 인덱스 생성: 사용자별 문서별 채팅 조회를 빠르게 하기 위함
+// Create compound index: for fast retrieval of chats by user and document
 ChatSchema.index({ userId: 1, paperId: 1 });
 
 export const Chat = mongoose.model<IChat>('Chat', ChatSchema); 

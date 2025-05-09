@@ -31,16 +31,16 @@ const Editor: React.FC<EditorProps> = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
 
-  // 중요: paper 데이터의 변경을 직접 구독
+  // Important: Directly subscribe to paper data changes
   const { data: paperData } = usePaperQuery();
 
-  // paperData가 변경될 때만 선택된 블록을 업데이트
+  // Update selected block with latest data
   useEffect(() => {
     if (!paperData || !selectedBlockPath) return;
 
-    // 디바운스: 짧은 시간 내에 여러 번 호출되는 것 방지
+    // Debounce: Prevent multiple calls in a short time
     const timeoutId = setTimeout(() => {
-      // 선택된 블록의 최신 데이터를 찾아 업데이트
+      // Find the latest data for the selected block
       const updatedBlock = getContentByPath(selectedBlockPath);
       if (
         updatedBlock &&
@@ -70,16 +70,16 @@ const Editor: React.FC<EditorProps> = () => {
     }
   }, [selectedBlockPath, selectedBlock, getContentByPath, setSelectedBlock]);
 
-  // 블록과 하위 블록의 모든 ID를 수집하는 함수
+  // Function to collect all IDs of block and its sub-blocks
   const collectBlockIds = (content: Content): string[] => {
     const ids: string[] = [];
 
-    // 현재 블록의 ID 추가
+    // Add current block ID
     if (content["block-id"]) {
       ids.push(content["block-id"] as string);
     }
 
-    // 하위 블록 처리
+    // Process sub-blocks
     if (content.content && Array.isArray(content.content)) {
       for (const child of content.content) {
         if (typeof child !== "string") {
@@ -110,10 +110,10 @@ const Editor: React.FC<EditorProps> = () => {
 
     setIsUpdating(true);
 
-    // 업데이트 시작 시 모든 업데이트 블록 ID 초기화
+    // Reset all update block IDs at start of update
     clearUpdatingBlockIds();
 
-    // 현재 블록과 모든 하위 블록의 ID 수집 및 업데이트 중 상태로 설정
+    // Collect IDs of current block and all sub-blocks and set them as updating
     const blockIds = collectBlockIds(selectedBlock);
     blockIds.forEach((id) => addUpdatingBlockId(id));
 
@@ -219,7 +219,7 @@ const Editor: React.FC<EditorProps> = () => {
         throw new Error(response.data.error || "Failed to update summaries");
       }
 
-      // 데이터 갱신을 위해 쿼리 무효화 및 리패치
+      // Invalidate and refetch query to refresh data
       await queryClient.invalidateQueries({
         queryKey: ["papers", userId],
         exact: false,
@@ -232,13 +232,13 @@ const Editor: React.FC<EditorProps> = () => {
         error instanceof Error ? error.message : "Failed to update summaries"
       );
     } finally {
-      // 업데이트 완료 시 모든 업데이트 블록 ID 초기화
+      // Reset all update block IDs at start of update
       clearUpdatingBlockIds();
       setIsUpdating(false);
     }
   };
 
-  // 렌더링을 위한 메모이제이션된 컨텐츠 및 메시지
+  // Memoized content and messages for rendering
   const renderContent = useMemo(() => {
     if (!content) {
       return (
@@ -280,7 +280,7 @@ const Editor: React.FC<EditorProps> = () => {
       );
     }
 
-    // 실제 에디터 UI 반환
+    // Return actual editor UI
     return (
       <div
         className={`p-5 relative ${
@@ -299,10 +299,10 @@ const Editor: React.FC<EditorProps> = () => {
           </div>
         )}
 
-        {/* 계층 구조 정보 및 업데이트 버튼 */}
-        <div className="mb-4">
-          {/* 상위 계층 구조는 showHierarchy가 true일 때만 표시 */}
-          {showHierarchy &&
+        {/* Hierarchy information and update button */}
+        <div className="flex flex-col space-y-2 mb-4">
+          {/* Show parent hierarchy only when showHierarchy is true */}
+          {showHierarchy && parentContents.length > 0 && (
             parentContents.map((content, index) => (
               <HierarchyTitle
                 key={index}
@@ -310,10 +310,11 @@ const Editor: React.FC<EditorProps> = () => {
                 level={index}
                 isCurrentSelected={false}
               />
-            ))}
+            ))
+          )}
 
-          {/* 선택된 블록과 업데이트 버튼은 항상 표시 */}
-          <div className="flex items-center">
+          {/* Selected block and update button are always shown */}
+          <div className="flex items-center justify-between">
             <div className="flex-grow">
               <HierarchyTitle
                 content={selectedBlock}

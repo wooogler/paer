@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 export class UserRepository {
   /**
-   * username으로 사용자 조회
+   * Get user by username
    */
   async getUserByUsername(username: string): Promise<mongoose.Document | null> {
     try {

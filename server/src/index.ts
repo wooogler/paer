@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== "production") {
   console.log("Running in production mode");
 }
 
-// Railway 배포 환경이면 NODE_ENV를 production으로 강제 설정
+// Railway deployment environment, force NODE_ENV to production
 if (process.env.RAILWAY_ENVIRONMENT === "true") {
   process.env.NODE_ENV = "production";
   console.log("Detected Railway environment, setting NODE_ENV to production");
@@ -56,7 +56,7 @@ console.log(`Current directory: ${process.cwd()}`);
 console.log(`Server __dirname: ${__dirname}`);
 console.log(`Railway environment: ${process.env.RAILWAY_ENVIRONMENT}`);
 
-// 프로덕션 환경에서만 정적 파일 제공 (개발 환경에서는 Vite 개발 서버가 처리)
+// Serve static files only in production (Vite dev server handles in development)
 if (process.env.NODE_ENV === "production") {
   const clientDistPath = path.join(process.cwd(), "client/dist");
   

@@ -22,12 +22,12 @@ interface ActivityStatsProps {
   blockId: string | undefined;
 }
 
-// 채팅 메시지를 Q&A 쌍으로 그룹화하는 인터페이스
+// Interface for grouping chat messages into Q&A pairs
 interface MessageGroup {
-  id: string; // 그룹 식별자
-  type: string; // 메시지 타입
-  messages: Message[]; // 그룹 내 메시지들
-  timestamp?: number; // 그룹의 타임스탬프
+  id: string; // Group identifier
+  type: string; // Message type
+  messages: Message[]; // Messages in the group
+  timestamp?: number; // Group timestamp
 }
 
 const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
@@ -69,24 +69,24 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     summaryHover, summaryFocus, summaryDismiss
   ]);
 
-  // useChatStore에서 메시지 가져오기
+  // Get messages from useChatStore
   const { messages } = useChatStore();
   const { selectedPaperId, content: rootContent, updateContent } = useContentStore();
   const { userId } = useAppStore();
 
-  // 이 블록에 관련된 메시지 필터링
+  // Filter messages related to this block
   const relatedMessages = useMemo(() => {
     if (!blockId || !messages || messages.length === 0) return [];
     return messages.filter(msg => msg.blockId === blockId)
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }, [blockId, messages]);
 
-  // 메시지를 그룹화 (chat은 Q&A 쌍으로, 다른 타입은 개별적으로)
+  // Group messages (chat as Q&A pairs, other types individually)
   const messageGroups = useMemo(() => {
     const groups: MessageGroup[] = [];
-    const chatGroups: Record<string, Message[]> = {}; // Q&A 쌍을 저장할 객체
+    const chatGroups: Record<string, Message[]> = {}; // Object to store Q&A pairs
     
-    // 메시지를 시간 순서로 정렬 (오래된 것부터)
+    // Sort messages by time (oldest first)
     const sortedMessages = [...relatedMessages].sort((a, b) => 
       new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
@@ -94,18 +94,18 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     sortedMessages.forEach((msg) => {
       const type = msg.messageType || 'unknown';
       
-      // chat 타입은 Q&A 쌍으로 묶기
+      // Group chat type into Q&A pairs
       if (type === 'chat') {
         const role = msg.role;
         
-        // 사용자(user) 메시지인 경우, 새 Q&A 쌍의 시작
+        // For user messages, start a new Q&A pair
         if (role === 'user') {
           const groupId = `chat-${msg.id}`;
           chatGroups[groupId] = [msg];
         } 
-        // assistant 메시지인 경우, 가장 최근 user 메시지와 쌍을 이룸
+        // For assistant messages, pair with most recent user message
         else if (role === 'assistant') {
-          // 가장 최근에 추가된 user 메시지를 찾음
+          // Find the most recently added user message
           const latestUserGroupId = Object.keys(chatGroups).find(key => {
             const messages = chatGroups[key];
             return messages.length === 1 && messages[0].role === 'user';
@@ -114,13 +114,13 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
           if (latestUserGroupId) {
             chatGroups[latestUserGroupId].push(msg);
           } else {
-            // 매칭되는 user 메시지가 없으면 독립적으로 처리
+            // If no matching user message, handle independently
             const groupId = `chat-${msg.id}`;
             chatGroups[groupId] = [msg];
           }
         }
       } 
-      // chat 이외의 타입(edit, comment 등)은 개별적으로 그룹화
+      // Group non-chat types (edit, comment, etc.) individually
       else {
         groups.push({
           id: `${type}-${msg.id}`,
@@ -131,9 +131,9 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
       }
     });
     
-    // chat 그룹을 결과 배열에 추가
+    // Add chat groups to result array
     Object.entries(chatGroups).forEach(([id, chatMessages]) => {
-      // 그룹 내에서 가장 오래된 메시지의 타임스탬프를 그룹 타임스탬프로 사용
+      // Use timestamp of oldest message in group as group timestamp
       const oldestTimestamp = chatMessages.reduce((oldest, msg) => {
         return oldest < msg.timestamp ? oldest : msg.timestamp;
       }, Date.now());
@@ -146,7 +146,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
       });
     });
     
-    // 시간순으로 정렬 (오래된 메시지가 먼저)
+    // Sort by time (oldest messages first)
     return groups.sort((a, b) => {
       const timestampA = a.timestamp || 0;
       const timestampB = b.timestamp || 0;
@@ -154,7 +154,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     });
   }, [relatedMessages]);
 
-  // 메시지 타입별 색상 설정
+  // Set colors by message type
   const getMessageColor = (type?: string) => {
     switch (type) {
       case 'chat': return 'border-blue-500 bg-blue-100';
@@ -164,11 +164,11 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     }
   };
 
-  // blockId로 콘텐츠 찾기
+  // Find content by blockId
   const linkedContent = useMemo((): any | null => {
     if (!blockId || !rootContent) return null;
 
-    // 헬퍼 함수로 콘텐츠 트리를 재귀적으로 탐색
+    // Helper function to recursively search content tree
     const findContentByBlockId = (node: any): any | null => {
       if (node && node["block-id"] === blockId) {
         return node;
@@ -187,12 +187,12 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
     return findContentByBlockId(rootContent);
   }, [blockId, rootContent]);
 
-  // 블록에 이미 저장된 요약이 있는지 확인
+  // Check if block already has a saved summary
   const blockSummary = useMemo(() => {
     return linkedContent?.summary || "";
   }, [linkedContent]);
 
-  // 메시지 요약 함수
+  // Message summary function
   const handleSummarize = async () => {
     if (!blockId || relatedMessages.length === 0) return;
     
@@ -201,17 +201,17 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
       const result = await summarizeMessages(relatedMessages, blockId, selectedPaperId || undefined, userId || undefined);
       setSummary(result.summary);
       
-      // summary가 성공적으로 업데이트되었으면 contentStore의 updateContent 호출하여 리렌더링
+      // If summary was successfully updated, call contentStore's updateContent to trigger re-render
       if (result.summaryUpdated && blockId) {
-        // 블록 ID로 콘텐츠 찾기
+        // Find content by block ID
         const updateBlock = (node: any): boolean => {
           if (node && node["block-id"] === blockId) {
-            // 현재 노드가 찾는 블록이면 summary 업데이트
+            // If current node is target block, update summary
             updateContent(blockId, { summary: result.summary });
             return true;
           }
 
-          // 재귀적으로 자식 노드 검색
+          // Recursively search child nodes
           if (node && node.content && Array.isArray(node.content)) {
             for (const child of node.content) {
               if (updateBlock(child)) return true;
@@ -221,14 +221,14 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
           return false;
         };
 
-        // 전체 콘텐츠 트리에서 blockId에 해당하는 노드 찾아 업데이트
+        // Find and update node with blockId in entire content tree
         if (rootContent) {
           updateBlock(rootContent);
         }
       }
     } catch (error) {
-      console.error("메시지 요약 오류:", error);
-      setSummary("요약을 생성하는 데 문제가 발생했습니다.");
+      console.error("Error summarizing messages:", error);
+      setSummary("There was a problem generating the summary.");
     } finally {
       setIsSummarizing(false);
     }
@@ -240,7 +240,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
 
   return (
     <div className="flex items-center justify-end gap-1 mb-1">
-      {/* 메시지 그룹별로 표시 (chat은 Q&A 쌍으로, 다른 타입은 개별적으로) - 오래된 메시지가 왼쪽, 최신 메시지가 오른쪽 */}
+      {/* Display message groups (chat as Q&A pairs, other types individually) - older messages on left, newer on right */}
       {messageGroups.map((group) => (
         <div 
           key={group.id}
@@ -257,7 +257,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
         />
       ))}
 
-      {/* 요약 버튼 */}
+      {/* Summary button */}
       {(blockSummary || summary) && (
         <button 
           ref={summaryRefs.setReference}
@@ -271,7 +271,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
         </button>
       )}
       
-      {/* 메시지 팝업 */}
+      {/* Message popup */}
       {open && hoveredGroup && (
         <FloatingPortal>
           <div
@@ -285,7 +285,7 @@ const ActivityStats: React.FC<ActivityStatsProps> = ({ blockId }) => {
         </FloatingPortal>
       )}
 
-      {/* 요약 팝업 */}
+      {/* Summary popup */}
       {summaryOpen && (blockSummary || summary) && (
         <FloatingPortal>
           <div

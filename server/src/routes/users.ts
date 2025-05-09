@@ -5,7 +5,7 @@ import { UserController } from "../controllers/userController";
 const userRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const userController = new UserController();
 
-  // POST /api/users - 사용자 생성
+  // POST /api/users - Create user
   fastify.post<{ Body: { username: string } }>(
     "/",
     async (request, reply) => {
@@ -13,7 +13,7 @@ const userRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // GET /api/users/:id - ID로 사용자 조회
+  // GET /api/users/:id - Get user by ID
   fastify.get<{ Params: { id: string } }>(
     "/:id",
     async (request, reply) => {
@@ -21,7 +21,7 @@ const userRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // GET /api/users/username/:username - 사용자명으로 사용자 조회
+  // GET /api/users/username/:username - Get user by username
   fastify.get<{ Params: { username: string } }>(
     "/username/:username",
     async (request, reply) => {
@@ -29,7 +29,7 @@ const userRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // GET /api/users/id/:username - 사용자명으로 userId 조회
+  // GET /api/users/id/:username - Get userId by username
   fastify.get<{ Params: { username: string } }>(
     "/id/:username",
     async (request, reply) => {
@@ -37,7 +37,7 @@ const userRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // GET /api/users - 모든 사용자 목록 조회
+  // GET /api/users - Get all users list
   fastify.get(
     "/",
     async (request, reply) => {

@@ -8,7 +8,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   const chatController = new ChatController();
   const paperController = new PaperController();
 
-  // GET /api/chat/messages - 모든 메시지 가져오기 (paperId 없이)
+  // GET /api/chat/messages - Get all messages (without paperId)
   fastify.get<{ Querystring: { userId: string } }>(
     "/messages",
     async (request, reply) => {
@@ -19,7 +19,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
           return reply.code(400).send({ error: "userId is required" });
         }
         
-        // 기본 paperId를 사용하는 대신, 응답 코드와 함께 오류 메시지 반환
+        // Return error message with response code instead of using default paperId
         return reply.code(400).send({ 
           error: "paperId is required", 
           message: "Please specify a paper ID to get messages" 
@@ -31,7 +31,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // GET /api/chat/:paperId/messages - 특정 문서의 모든 메시지 가져오기
+  // GET /api/chat/:paperId/messages - Get all messages for specific document
   fastify.get<{ Params: { paperId: string }; Querystring: { userId: string } }>(
     "/:paperId/messages",
     async (request, reply) => {
@@ -39,7 +39,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // GET /api/chat/:paperId/messages/:blockId - 특정 문서의 특정 블록 ID 메시지 가져오기
+  // GET /api/chat/:paperId/messages/:blockId - Get messages for specific block ID in document
   fastify.get<{
     Params: { paperId: string; blockId: string };
     Querystring: { userId: string };
@@ -47,7 +47,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     return chatController.getMessagesByBlockId(request, reply);
   });
 
-  // POST /api/chat/:paperId/messages - 특정 문서에 새 메시지 추가
+  // POST /api/chat/:paperId/messages - Add new message to specific document
   fastify.post<{
     Params: { paperId: string };
     Body: ChatMessage & { userId: string };
@@ -55,7 +55,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     return chatController.addMessage(request, reply);
   });
 
-  // PUT /api/chat/:paperId/messages - 특정 문서의 여러 메시지 저장
+  // PUT /api/chat/:paperId/messages - Save multiple messages for specific document
   fastify.put<{
     Params: { paperId: string };
     Body: { userId: string; messages: ChatMessage[] };
@@ -63,7 +63,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     return chatController.saveMessages(request, reply);
   });
 
-  // DELETE /api/chat/:paperId/messages - 특정 문서의 모든 메시지 삭제
+  // DELETE /api/chat/:paperId/messages - Delete all messages for specific document
   fastify.delete<{
     Params: { paperId: string };
     Querystring: { userId: string };
@@ -71,7 +71,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     return chatController.clearMessages(request, reply);
   });
 
-  // DELETE /api/chat/:paperId/messages/:messageId - 특정 문서의 특정 메시지 삭제
+  // DELETE /api/chat/:paperId/messages/:messageId - Delete specific message from document
   fastify.delete<{
     Params: { paperId: string; messageId: string };
     Querystring: { userId: string };
@@ -79,7 +79,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     return chatController.deleteMessage(request, reply);
   });
 
-  // POST /api/chat/ask - LLM에 질문하기
+  // POST /api/chat/ask - Ask question to LLM
   fastify.post<{
     Body: { text: string; renderedContent?: string; blockId?: string };
   }>(
@@ -114,7 +114,7 @@ const chatRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     }
   );
 
-  // POST /api/chat/summarize-messages - 메시지 요약하기
+  // POST /api/chat/summarize-messages - Summarize messages
   fastify.post<{
     Body: { messages: ChatMessage[], blockId: string };
   }>(

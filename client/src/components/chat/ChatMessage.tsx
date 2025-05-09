@@ -40,7 +40,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     </div>
   );
 
-  // 사용자 메시지 - 회색 배경으로 오른쪽 정렬
+  // User message - right-aligned with gray background
   if (isUser) {
     return (
       <div className="flex w-full mb-4 items-start space-x-3 min-w-0">
@@ -58,7 +58,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
     );
   }
 
-  // 에이전트 메시지 - 배경 없이 전체 폭을 채움
+  // Agent message - full width without background
   return (
     <div className="flex w-full mb-4 items-start space-x-3 min-w-0">
       {selectionMode && <div className="pt-2"><SelectionCircle /></div>}

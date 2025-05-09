@@ -7,7 +7,7 @@ import { useContentStore } from "../../store/useContentStore";
 import { Paper } from "@paer/shared";
 import { toast } from "react-hot-toast";
 
-// 날짜 포맷팅 함수
+// Date formatting function
 const formatDate = (date: Date): string => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -30,7 +30,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
   const { userId } = useAppStore();
   const { setContent, setSelectedPaperId, selectedPaperId } = useContentStore();
 
-  // 논문 목록 가져오기
+  // Fetch paper list
   useEffect(() => {
     const fetchPapers = async () => {
       if (!userId || !isOpen) return;
@@ -51,16 +51,16 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
     fetchPapers();
   }, [userId, isOpen]);
 
-  // 논문 선택 처리
+  // Handle paper selection
   const handleSelectPaper = (paper: Paper) => {
     setSelectedPaperId(paper._id);
     setContent(paper);
     onClose();
   };
 
-  // 논문 삭제 처리
+  // Handle paper deletion
   const handleDeletePaper = async (paperId: string | undefined, event: React.MouseEvent) => {
-    event.stopPropagation(); // 이벤트 버블링 방지
+    event.stopPropagation(); // Prevent event bubbling
     
     if (!paperId) {
       toast.error("Invalid paper ID.");
@@ -79,17 +79,17 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
     try {
       const response = await deletePaper(paperId, userId);
       if (response.success) {
-        // 삭제된 논문을 목록에서 제거
+        // Remove deleted paper from the list
         setPapers(papers.filter(paper => paper._id !== paperId));
         
-        // 삭제된 논문이 현재 선택된 논문인 경우 초기화
+        // Reset if the deleted paper is currently selected
         if (paperId === selectedPaperId) {
           setSelectedPaperId(null);
           setContent(null);
         }
         
         toast.success("Paper deleted successfully.");
-        onClose(); // 삭제 성공 후 모달 닫기
+        onClose(); // Close modal after successful deletion
       } else {
         throw new Error(response.error || "Failed to delete paper.");
       }
@@ -99,17 +99,17 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // 사용자가 논문의 작성자인지 확인
+  // Check if user is the paper's author
   const isAuthor = (paper: Paper) => {
     return paper.authorId === userId;
   };
 
-  // 사용자가 논문의 협업자인지 확인
+  // Check if user is a collaborator of the paper
   const isCollaborator = (paper: Paper) => {
     return paper.collaboratorIds && paper.collaboratorIds.includes(userId || "");
   };
 
-  // 현재 선택된 논문인지 확인
+  // Check if the current paper is selected
   const isSelected = (paper: Paper) => {
     return paper._id === selectedPaperId;
   };
@@ -130,7 +130,7 @@ const PaperListModal: React.FC<PaperListModalProps> = ({ isOpen, onClose }) => {
             <div className="fixed inset-0 bg-black opacity-30" />
           </Transition.Child>
 
-          {/* 모달 컨테이너 위치 조정 */}
+          {/* Adjust modal container position */}
           <span className="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
           
           <Transition.Child

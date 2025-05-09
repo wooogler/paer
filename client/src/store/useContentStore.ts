@@ -52,35 +52,35 @@ export const useContentStore = create<ContentState>()(
 
         // Actions
         setContent: (content) => {
-          // content가 null이거나 selectedPaperId와 일치하는 경우에만 업데이트
+          // Update only if content is null or matches selectedPaperId
           const currentPaperId = get().selectedPaperId;
           if (!content || content._id === currentPaperId) {
             set({ content });
           }
         },
 
-        // 추가: 페이퍼 ID 설정 함수
+        // Add: Function to set paper ID
         setSelectedPaperId: (paperId) => {
           set({ selectedPaperId: paperId });
-          // 페이퍼 ID가 변경되면 content 초기화
+          // Initialize content when paper ID changes
           if (paperId !== get().selectedPaperId) {
             set({ content: null });
           }
         },
 
-        // 로딩 상태 설정
+        // Set loading state
         setLoading: (isLoading) => {
           set({ isLoading });
         },
 
-        // 업데이트 중인 블록 ID 추가
+        // Add block ID to updating blocks
         addUpdatingBlockId: (blockId) => {
           set((state) => ({
             updatingBlockIds: [...state.updatingBlockIds, blockId],
           }));
         },
 
-        // 업데이트 중인 블록 ID 제거
+        // Remove block ID from updating blocks
         removeUpdatingBlockId: (blockId) => {
           set((state) => ({
             updatingBlockIds: state.updatingBlockIds.filter(
@@ -89,12 +89,12 @@ export const useContentStore = create<ContentState>()(
           }));
         },
 
-        // 업데이트 중인 블록 ID 모두 제거
+        // Remove all updating block IDs
         clearUpdatingBlockIds: () => {
           set({ updatingBlockIds: [] });
         },
 
-        // 해당 블록이 업데이트 중인지 확인
+        // Check if the block is being updated
         isBlockUpdating: (blockId) => {
           return get().updatingBlockIds.includes(blockId);
         },

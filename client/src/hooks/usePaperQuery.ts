@@ -42,7 +42,7 @@ export const usePaperQuery = () => {
 
   useEffect(() => {
     if (query.data) {
-      // 항상 최신 데이터로 업데이트
+      // Always update with latest data
       const papers = Array.isArray(query.data) ? query.data : [query.data];
       const selectedPaper = selectedPaperId 
         ? papers.find(paper => paper._id === selectedPaperId)
@@ -51,7 +51,7 @@ export const usePaperQuery = () => {
       if (selectedPaper) {
         setContent(selectedPaper);
 
-        // 디버깅을 위한 로그 추가
+        // Add debug logging
         console.log("Paper data updated:", selectedPaper);
       }
     }

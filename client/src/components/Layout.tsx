@@ -95,22 +95,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         throw new Error("User ID is required");
       }
 
-      // 파일 가져오기 시작 시 로딩 상태 설정
+      // Set loading state when file import starts
       const { setLoading } = useContentStore.getState();
       setLoading(true);
 
-      // FileImport 컴포넌트 내부에서도 로딩 상태를 관리합니다
+      // Loading state is also managed within the FileImport component
       const response = await importPaper(content, userId);
       if (response.message === 'Paper created successfully') {
-        // 새로 생성된 논문을 가져옵니다
+        // Fetch the newly created paper
         const newPaper = await getPaperById(response.paperId, userId);
         setContent(newPaper);
-        // 새로 생성된 논문을 자동으로 선택합니다
+        // Automatically select the newly created paper
         setSelectedPaperId(response.paperId);
-        // 데이터 캐시 무효화하여 UI 업데이트
+        // Invalidate data cache to update UI
         await queryClient.invalidateQueries({
           queryKey: ["papers", userId],
-          refetchType: "active", // 즉시 refetch 수행
+          refetchType: "active", // Perform immediate refetch
         });
         toast.success("Paper imported successfully.");
       } else {
@@ -120,7 +120,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       console.error("Error importing paper:", error);
       toast.error(error instanceof Error ? error.message : "Failed to import paper.");
     } finally {
-      // 로딩 상태 해제
+      // Clear loading state
       const { setLoading } = useContentStore.getState();
       setLoading(false);
     }
@@ -281,7 +281,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <button
                 onClick={() => setIsPaperListOpen(true)}
                 className="p-2 text-gray-600 hover:text-gray-800"
-                title="논문 목록"
+                title="Paper List"
               >
                 <FiList />
               </button>
@@ -300,7 +300,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </Pane>
       )}
 
-      {/* 논문 목록 모달 */}
+      {/* Paper List Modal */}
       <PaperListModal isOpen={isPaperListOpen} onClose={() => setIsPaperListOpen(false)} />
 
       {/* Left Resizer - Always visible */}
@@ -375,7 +375,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <button
                   onClick={handleLogout}
                   className="p-1.5 text-gray-600 hover:text-red-600 rounded-md hover:bg-gray-100 transition-colors"
-                  title="로그아웃"
+                  title="Logout"
                 >
                   <FiLogOut />
                 </button>
@@ -419,7 +419,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           }
         >
           <div className="h-full flex flex-col">
-            {/* 필터링된 콘텐츠 정보 표시 */}
+            {/* Display filtered content information */}
             {isFilteringEnabled && filterBlockId && filteredContent && (
               <div className="border-b border-gray-200">
                 <ContentInfo content={filteredContent} isClickable={true} />

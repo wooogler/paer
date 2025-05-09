@@ -66,9 +66,9 @@ export const isSelectableContent = (type: ContentType): boolean => {
   ].includes(type);
 };
 
-// 버튼 배경색 가져오기
+// Get button background color
 export const getButtonColor = (type: ContentType): string => {
-  // 각 타입에 따른 배경색 직접 매핑
+  // Direct mapping of background colors for each type
   switch (type) {
     case "section":
       return "bg-emerald-500 hover:bg-emerald-600";
@@ -85,7 +85,7 @@ export const getButtonColor = (type: ContentType): string => {
   }
 };
 
-// 호버 영역 배경색 가져오기
+// Get hover area background color
 export const getHoverBackgroundColor = (type: ContentType): string => {
   switch (type) {
     case "section":

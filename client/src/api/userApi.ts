@@ -7,9 +7,9 @@ interface ApiResponse {
 }
 
 /**
- * username으로 사용자 ID를 조회하는 함수
- * @param username 조회할 사용자 이름
- * @returns 조회된 사용자 ID를 포함한 응답
+ * Function to get user ID by username
+ * @param username Username to look up
+ * @returns Response containing the found user ID
  */
 export const getUserIdByUsername = async (username: string): Promise<ApiResponse> => {
   try {
@@ -23,24 +23,24 @@ export const getUserIdByUsername = async (username: string): Promise<ApiResponse
 };
 
 /**
- * 사용자 정보 조회 함수
- * @param userId 조회할 사용자 ID
- * @returns 사용자 정보 객체
+ * Function to get user information
+ * @param userId User ID to look up
+ * @returns User information object
  */
 export const getUserInfo = async (userId: string) => {
   try {
     const response = await api.get(`/users/${userId}`);
     return response.data;
   } catch (error) {
-    console.error("사용자 정보 조회 오류:", error);
+    console.error("Error fetching user information:", error);
     throw error;
   }
 };
 
 /**
- * 새 사용자 생성 함수
- * @param username 생성할 사용자 이름
- * @returns 생성된 사용자 ID를 포함한 응답
+ * Function to create a new user
+ * @param username Username to create
+ * @returns Response containing the created user ID
  */
 export const createUser = async (username: string): Promise<ApiResponse> => {
   try {

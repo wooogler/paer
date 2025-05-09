@@ -303,7 +303,7 @@ export class PaperService {
     blockId: string
   ): Promise<any> {
     try {
-      // 1. 먼저 renderedContent 저장
+      // 1. First save renderedContent
       await this.paperRepository.updateBlock(
         authorId,
         paperId,
@@ -312,53 +312,53 @@ export class PaperService {
         renderedContent
       );
       
-      // 2. 해당 블록 찾기
+      // 2. Find the target block
       const block = await this.findBlockById(authorId, paperId, blockId);
       if (!block) {
         throw new Error("Block not found");
       }
       
-      // 3. LLM 서비스를 통해 intent 일괄 업데이트 (summary 제외)
+      // 3. Batch update intents through LLM service (exclude summary)
       const result = await this.llmService.updateRenderedSummaries(block);
       
-      // 4. 페이퍼 가져오기
+      // 4. Get paper
       const paper = await this.getPaperById(authorId, paperId);
       if (!paper) {
         throw new Error("Paper not found");
       }
       
-      // 5. 블록 교체 함수
+      // 5. Block replacement function
       const replaceBlock = (content: any): boolean => {
         if (typeof content === "string") return false;
         
-        // 타겟 블록인 경우 대체
+        // Replace if target block
         if (content["block-id"] === blockId) {
-          // 원래 block-id 보존
+          // Preserve original block-id
           const originalBlockId = content["block-id"];
           const parsedResult = result.apiResponse.parsedResult;
           
-          // 결과에 block-id가 없으면 원래 block-id를 추가
+          // Add original block-id if result doesn't have one
           if (!parsedResult["block-id"]) {
-            console.log(`LLM 응답에 block-id가 없어서 원래 ID(${originalBlockId})를 사용합니다.`);
+            console.log(`Using original ID(${originalBlockId}) because LLM response doesn't have block-id`);
           }
           
-          // 각 속성을 개별적으로 복사하면서 block-id는 유지, summary는 무시
+          // Copy each property individually while keeping block-id and ignoring summary
           Object.keys(parsedResult).forEach((key) => {
             if (key !== "block-id" && key !== "summary") {
-              // sentence 타입인 경우 intent도 무시
+              // For sentence type, ignore intent as well
               if (!(key === "intent" && content.type === "sentence")) {
                 content[key] = parsedResult[key];
               }
             }
           });
           
-          // block-id 명시적으로 보존
+          // Explicitly preserve block-id
           content["block-id"] = originalBlockId;
           
           return true;
         }
         
-        // 자식 블록 확인
+        // Check child blocks
         if (Array.isArray(content.content)) {
           for (let i = 0; i < content.content.length; i++) {
             if (content.content[i] && typeof content.content[i] !== "string") {
@@ -372,11 +372,11 @@ export class PaperService {
         return false;
       };
       
-      // 6. 루트부터 시작해서 블록 교체
+      // 6. Start block replacement from root
       if (paper) {
         replaceBlock(paper);
         
-        // 7. 업데이트된 페이퍼 저장
+        // 7. Save updated paper
         await this.savePaper({...paper, authorId});
       }
       

@@ -1,7 +1,7 @@
 {
   "name": "paer-server",
   "version": "1.0.0",
-  "description": "Express 백엔드 서버",
+  "description": "Express backend server",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
